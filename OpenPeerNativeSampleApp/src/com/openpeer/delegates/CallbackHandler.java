@@ -2,6 +2,7 @@ package com.openpeer.delegates;
 
 import java.util.ArrayList;
 
+import android.text.format.Time;
 import android.util.Log;
 
 import com.openpeer.javaapi.AccountStates;
@@ -9,8 +10,11 @@ import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
+import com.openpeer.javaapi.OutputAudioRoutes;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
+import com.openpeer.javaapi.OPCache;
+import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPContact;
@@ -18,6 +22,10 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
+import com.openpeer.javaapi.OPIdentityLookup;
+import com.openpeer.javaapi.OPIdentityLookupDelegate;
+import com.openpeer.javaapi.OPMediaEngine;
+import com.openpeer.javaapi.OPMediaEngineDelegate;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackDelegate;
 
@@ -200,7 +208,7 @@ public class CallbackHandler{
 	/////////////////////////////////////////////////////////////////////
 	// CALL DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
-	//OPIdentityDelegate support
+	//OPCallDelegate support
 	private OPCall mCall;
 	ArrayList<OPCallDelegate> callDelegates = new ArrayList<OPCallDelegate> ();
 
@@ -234,7 +242,7 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterIdentityDelegate(OPCallDelegate delegate)
+	public void unregisterCallDelegate(OPCallDelegate delegate)
 	{
 		mCall = null;
 		this.callDelegates.remove(delegate);
@@ -244,7 +252,7 @@ public class CallbackHandler{
 	/////////////////////////////////////////////////////////////////////
 	// CONVERSATION THREAD DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
-	//OPIdentityDelegate support
+	//OPConversationThreadDelegate support
 	private OPConversationThread mConversationThread;
 	ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate> ();
 	
@@ -336,6 +344,204 @@ public class CallbackHandler{
 				Log.e("openpeer-android-sdk", "No conversation thread or listener available!!!");
 			}
 		}
+	}
+	
+	//Conversation Thread delegate register/unregister methods
+	public boolean registerConversationThreadDelegate(OPConversationThread conversationThread, OPConversationThreadDelegate delegate)
+	{
+		if (conversationThread == null || delegate == null)
+		{
+			return false;
+		}
+
+		if (mConversationThread == null)
+		{
+			mConversationThread = conversationThread;
+		}
+
+		// Store the delegate object
+		this.conversationThreadDelegates.add(delegate);
+
+		return true;
+	}
+
+	public void unregisterConversationThreadDelegate(OPCallDelegate delegate)
+	{
+		mConversationThread = null;
+		this.conversationThreadDelegates.remove(delegate);
+
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// CACHE DELEGATE GLUE
+	/////////////////////////////////////////////////////////////////////
+	//OPCacheDelegate support
+	//private OPCache mCache;
+	ArrayList<OPCacheDelegate> cacheDelegates = new ArrayList<OPCacheDelegate> ();
+	
+	public void fetch(String cookieNamePath) {
+
+		for (OPCacheDelegate delegate : cacheDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.fetch(cookieNamePath );
+			}
+		}
+	}
+	
+	public void store(String cookieNamePath, int time, String dataToStore) {
+		//TODO: Fix time
+		for (OPCacheDelegate delegate : cacheDelegates)
+		{
+			if (delegate != null)
+			{
+				Time t = new Time();
+				delegate.store(cookieNamePath, t, dataToStore);
+			}
+		}
+	}
+	
+	public void clear(String cookieNamePath) {
+
+		for (OPCacheDelegate delegate : cacheDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.clear(cookieNamePath);
+			}
+		}
+	}
+	
+	//Cache delegate register/unregister methods
+	public boolean registerCacheDelegate(OPCacheDelegate delegate)
+	{
+		if (delegate == null)
+		{
+			return false;
+		}
+
+		// Store the delegate object
+		this.cacheDelegates.add(delegate);
+
+		return true;
+	}
+
+	public void unregisterCacheDelegate(OPCacheDelegate delegate)
+	{
+		this.cacheDelegates.remove(delegate);
+
+	}
+	
+
+	/////////////////////////////////////////////////////////////////////
+	// IDENTITY LOOKUP DELEGATE GLUE
+	/////////////////////////////////////////////////////////////////////
+	//OPIdentityLookupDelegate support
+	private OPIdentityLookup mIdentityLookup;
+	ArrayList<OPIdentityLookupDelegate> identityLookupDelegates = new ArrayList<OPIdentityLookupDelegate> ();
+
+	public void onIdentityLookupCompleted() {
+
+		for (OPIdentityLookupDelegate delegate : identityLookupDelegates)
+		{
+			if (mIdentityLookup != null && delegate != null)
+			{
+				delegate.onIdentityLookupCompleted(mIdentityLookup );
+			}
+		}
+	}
+
+	//Identity lookup delegate register/unregister methods
+	public boolean registerCallDelegate(OPIdentityLookup identityLookup, OPIdentityLookupDelegate delegate)
+	{
+		if (identityLookup == null || delegate == null)
+		{
+			return false;
+		}
+
+		if (mIdentityLookup == null)
+		{
+			mIdentityLookup = identityLookup;
+		}
+
+		// Store the delegate object
+		this.identityLookupDelegates.add(delegate);
+
+		return true;
+	}
+
+	public void unregisterCallDelegate(OPIdentityLookupDelegate delegate)
+	{
+		mIdentityLookup = null;
+		this.identityLookupDelegates.remove(delegate);
+
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// MEDIA ENGINE DELEGATE GLUE
+	/////////////////////////////////////////////////////////////////////
+	//OPMediaEngineDelegate support
+	private OPMediaEngine mMediaEngine;
+	ArrayList<OPMediaEngineDelegate> mediaEngineDelegates = new ArrayList<OPMediaEngineDelegate> ();
+
+	public void onMediaEngineAudioRouteChanged(int audioRoute) {
+
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
+		{
+			if (mMediaEngine != null && delegate != null)
+			{
+				delegate.onMediaEngineAudioRouteChanged( OutputAudioRoutes.values()[audioRoute]);
+			}
+		}
+	}
+	
+	public void onMediaEngineFaceDetected() {
+
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
+		{
+			if (mMediaEngine != null && delegate != null)
+			{
+				delegate.onMediaEngineFaceDetected();
+			}
+		}
+	}
+	
+	public void onMediaEngineVideoCaptureRecordStopped() {
+
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
+		{
+			if (mMediaEngine != null && delegate != null)
+			{
+				delegate.onMediaEngineVideoCaptureRecordStopped();
+			}
+		}
+	}
+
+	//Media engine delegate register/unregister methods
+	public boolean registerCallDelegate(OPMediaEngine mediaEngine, OPMediaEngineDelegate delegate)
+	{
+		if (mediaEngine == null || delegate == null)
+		{
+			return false;
+		}
+
+		if (mMediaEngine == null)
+		{
+			mMediaEngine = mediaEngine;
+		}
+
+		// Store the delegate object
+		this.mediaEngineDelegates.add(delegate);
+
+		return true;
+	}
+
+	public void unregisterCallDelegate(OPMediaEngineDelegate delegate)
+	{
+		mMediaEngine = null;
+		this.mediaEngineDelegates.remove(delegate);
+
 	}
 	////
 	public static void onJniCallback()
