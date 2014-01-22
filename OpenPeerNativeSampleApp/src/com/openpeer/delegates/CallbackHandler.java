@@ -49,7 +49,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onAccountAssociatedIdentitiesChanged(OPAccount account) {
+	public void onAccountAssociatedIdentitiesChanged() {
 
 		for (OPAccountDelegate delegate : accountDelegates)
 		{
@@ -61,8 +61,7 @@ public class CallbackHandler{
 		
 	}
 
-	public void onAccountPendingMessageForInnerBrowserWindowFrame(
-			OPAccount account) {
+	public void onAccountPendingMessageForInnerBrowserWindowFrame() {
 
 		for (OPAccountDelegate delegate : accountDelegates)
 		{

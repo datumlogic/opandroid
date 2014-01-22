@@ -2,8 +2,10 @@
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/IAccount.h"
 #include "openpeer/core/IIdentity.h"
+#include "openpeer/core/IIdentityLookup.h"
 #include "openpeer/core/IConversationThread.h"
 #include "openpeer/core/ICall.h"
+#include "openpeer/core/ICache.h"
 #include "openpeer/core/IMediaEngine.h"
 //#define NULL ((void*) 0)
 
@@ -18,7 +20,9 @@ class EventManager : public IStackMessageQueueDelegate,
 					 public IAccountDelegate,
 					 public IIdentityDelegate,
 					 public IConversationThreadDelegate,
-					 public ICallDelegate
+					 public ICallDelegate,
+					 public IIdentityLookupDelegate,
+					 public ICacheDelegate
 {
 public:
 	//IStackMessageQueueDelegate implementation
@@ -70,6 +74,18 @@ public:
 	                                          );
 	virtual void onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity);
 	virtual void onIdentityRolodexContactsDownloaded(IIdentityPtr identity);
+
+	//IIdentityLookupDelegate implementation
+	virtual void onIdentityLookupCompleted(
+			IIdentityLookupPtr identity
+	);
+
+	//ICacheDelegate implementation
+	virtual zsLib::String fetch(const char *cookieNamePath);
+	virtual void store(const char *cookieNamePath,
+            Time expires,
+            const char *str);
+	virtual void clear(const char *cookieNamePath);
 
 	virtual ~EventManager();
 };

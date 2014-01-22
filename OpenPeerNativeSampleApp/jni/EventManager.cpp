@@ -38,15 +38,72 @@ void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
 //IMediaEngine implementation
 void EventManager::onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onMediaEngineAudioRouteChanged", "(I)V");
+	jni_env->CallVoidMethod(gCallbackClass, method, (jint) audioRoute);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 
 }
 void EventManager::onMediaEngineFaceDetected()
 {
 
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onMediaEngineFaceDetected", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onMediaEngineVideoCaptureRecordStopped()
 {
 
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onMediaEngineVideoCaptureRecordStopped", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 //IAccountDelegate implementation
@@ -108,10 +165,48 @@ void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountS
 void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
 {
 
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onAccountAssociatedIdentitiesChanged", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account)
 {
 
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onAccountPendingMessageForInnerBrowserWindowFrame", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 //IConversationThreadDelegate implementation
@@ -193,6 +288,31 @@ void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityP
 
 }
 void EventManager::onIdentityRolodexContactsDownloaded(IIdentityPtr identity)
+{
+
+}
+
+
+//IIdentityLookupDelegate implementation
+void EventManager::onIdentityLookupCompleted(
+			IIdentityLookupPtr identity
+	)
+{
+
+}
+
+	//ICacheDelegate implementation
+zsLib::String EventManager::fetch(const char *cookieNamePath)
+{
+
+}
+void EventManager::store(const char *cookieNamePath,
+            Time expires,
+            const char *str)
+{
+
+}
+void EventManager::clear(const char *cookieNamePath)
 {
 
 }
