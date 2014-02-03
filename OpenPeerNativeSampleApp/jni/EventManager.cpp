@@ -212,11 +212,48 @@ void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr
 //IConversationThreadDelegate implementation
 void EventManager::onConversationThreadNew(IConversationThreadPtr conversationThread)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onConversationThreadNew", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadContactsChanged(IConversationThreadPtr conversationThread)
 {
 
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onConversationThreadContactsChanged", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadContactStateChanged(
 	                                                     IConversationThreadPtr conversationThread,
@@ -225,13 +262,50 @@ void EventManager::onConversationThreadContactStateChanged(
 	                                                     )
 {
 
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onConversationThreadContactStateChanged", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadMessage(
 	                                         IConversationThreadPtr conversationThread,
 	                                         const char *messageID
 	                                        )
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onConversationThreadMessage", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadMessageDeliveryStateChanged(
 	                                                             IConversationThreadPtr conversationThread,
@@ -239,7 +313,25 @@ void EventManager::onConversationThreadMessageDeliveryStateChanged(
 	                                                             IConversationThread::MessageDeliveryStates state
 	                                                             )
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onConversationThreadMessageDeliveryStateChanged", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadPushMessage(
 	                                             IConversationThreadPtr conversationThread,
@@ -247,13 +339,49 @@ void EventManager::onConversationThreadPushMessage(
 	                                             IContactPtr contact
 	                                             )
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onConversationThreadPushMessage", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 //ICallDelegate implementation
 void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onCallStateChanged", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 //IIdentityDelegate implementation
@@ -273,9 +401,9 @@ void EventManager::onIdentityStateChanged(
 		   return;
 		}
 
-		jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-		method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged", "(I)V");
-		gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
+		//jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
+		method = gEnv->GetStaticMethodID(gCallbackClass, "onIdentityStateChanged", "(I)V");
+		gEnv->CallStaticVoidMethod(gCallbackClass, method, (jint) state);
 
 		if (gEnv->ExceptionCheck()) {
 			gEnv->ExceptionDescribe();
@@ -285,11 +413,47 @@ void EventManager::onIdentityStateChanged(
 }
 void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onIdentityPendingMessageForInnerBrowserWindowFrame", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::onIdentityRolodexContactsDownloaded(IIdentityPtr identity)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onIdentityRolodexContactsDownloaded", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 
@@ -298,23 +462,95 @@ void EventManager::onIdentityLookupCompleted(
 			IIdentityLookupPtr identity
 	)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onIdentityLookupCompleted", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 	//ICacheDelegate implementation
 zsLib::String EventManager::fetch(const char *cookieNamePath)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "fetch", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::store(const char *cookieNamePath,
             Time expires,
             const char *str)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "store", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 void EventManager::clear(const char *cookieNamePath)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "clear", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 EventManager::~EventManager()

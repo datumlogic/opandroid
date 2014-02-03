@@ -3,25 +3,32 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 SOURCE_PATH := $(LOCAL_PATH)/opandroid/openpeer-android-sdk/jni
-INCLUDE_PATH := $(LOCAL_PATH)/../../../opios/libs/op
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../opios/libs/op
+INCLUDE_PATH := $(LOCAL_PATH)/../../libs/op/libs/op-core-cpp \
+				$(LOCAL_PATH)/../../libs/op/libs/op-stack-cpp \
+				$(LOCAL_PATH)/../../libs/op/libs/ortc-lib/libs/op-services-cpp \
+				$(LOCAL_PATH)/../../libs/op/libs/ortc-lib/libs/zsLib \
+				$(LOCAL_PATH)/../../libs/op/libs/ortc-lib/libs/op-services-cpp
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../libs/op/libs/op-core-cpp
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := hfcore
 LOCAL_SRC_FILES := libhfcore.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../opios/libs/op
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../libs/op/libs/op-core-cpp \
+							$(LOCAL_PATH)/../../libs/op/libs/op-stack-cpp \
+							$(LOCAL_PATH)/../../libs/op/libs/ortc-lib/libs/zsLib \
+							$(LOCAL_PATH)/../../libs/op/libs/ortc-lib/libs/boost
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := hfservices
 LOCAL_SRC_FILES := libhfservices.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../opios/libs/op
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../libs/op/libs/ortc-lib/libs/op-services-cpp
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := hfstack
 LOCAL_SRC_FILES := libhfstack.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../opios/libs/op
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../libs/op/libs/op-stack-cpp
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
