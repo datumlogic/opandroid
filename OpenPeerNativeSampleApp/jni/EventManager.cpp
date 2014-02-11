@@ -494,7 +494,7 @@ zsLib::String EventManager::fetch(const char *cookieNamePath)
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
 	{
-		return;
+		return "";
 	}
 	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
 	method = jni_env->GetMethodID(gCallbackClass, "fetch", "()V");

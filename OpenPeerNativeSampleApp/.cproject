@@ -31,7 +31,7 @@
 							</builder>
 							<tool id="com.android.gcc.compiler.2012873277" name="Android GCC Compiler" superClass="com.android.gcc.compiler">
 								<option id="com.android.gcc.option.includePath.1204777072" superClass="com.android.gcc.option.includePath" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Users/appl/Repos/github/Hookflash/Android/17-01-2014/opandroid/libs/op/libs/op-core-cpp/"/>
+									<listOptionValue builtIn="false" value="/usr/ndk/x86_64/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.7/include"/>
 								</option>
 								<inputType id="com.android.gcc.inputType.915404907" superClass="com.android.gcc.inputType"/>
 							</tool>
