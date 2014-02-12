@@ -39,7 +39,7 @@ namespace OpenPeerSampleAppCSharp
 			tabHost.AddTab (tabSpec1);
 			tabHost.AddTab (tabSpec2);
 
-			tabHost.SetCurrentTabByTag ("contacts");
+			tabHost.CurrentTab = 0;
 		}
 	}
 }
