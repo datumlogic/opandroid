@@ -47,6 +47,9 @@ namespace OpenPeerSampleAppCSharp
 			tabHost.AddTab (tabSpec3);
 
 			tabHost.CurrentTab = 0;
+
+			intent = new Intent (this, typeof(LoginActivity));
+			StartActivity (intent);
 		}
 	}
 }

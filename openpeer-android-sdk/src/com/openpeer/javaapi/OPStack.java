@@ -1,8 +1,12 @@
 package com.openpeer.javaapi;
 
+import android.text.format.Time;
+
 
 public class OPStack {
 
+	public static native OPStack singleton();
+	
 	public native void setup(
             OPStackDelegate stackDelegate,
             OPMediaEngineDelegate mediaEngineDelegate,
@@ -17,4 +21,10 @@ public class OPStack {
             );
 	
 	public native void shutdown();
+	
+	public static native String createAuthorizedApplicationID(
+			String applicationID,
+			String applicationIDSharedSecret,
+            Time expires
+            );
 }
