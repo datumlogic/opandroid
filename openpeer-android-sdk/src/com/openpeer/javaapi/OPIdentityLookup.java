@@ -10,12 +10,11 @@ public class OPIdentityLookup {
 	public static native OPIdentityLookup create(
                                      OPAccount account,
                                      OPIdentityLookupDelegate delegate,
-                                     List<String> identityURIs,
-                                     String identityServiceDomain,
-                                     Boolean checkForUpdatesOnly   // "true" is a "cheap" server operation; "false" is "expensive" server operation
+                                     List<OPIdentityLookupInfo> identityURIs,
+                                     String identityServiceDomain
                                      );
 
-	public native long getID();
+	public native String getStableID();
 
 	public native Boolean isComplete();
 	
@@ -26,5 +25,7 @@ public class OPIdentityLookup {
 
 	public native void cancel();
 
-	public native List<OPIdentityLookupInfo> getIdentities();
+	public native List<OPIdentityContact> getUpdatedIdentities();
+	public native List<OPIdentityLookupInfo> getUnchangedIdentities();
+	public native List<OPIdentityLookupInfo> getInvalidIdentities();
 }

@@ -1,5 +1,6 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
-#include "../../../opios/libs/op/openpeer/core/IStack.h"
+#include "openpeer/core/IStack.h"
+#include "openpeer/core/ILogger.h"
 
 #include "globals.h"
 
@@ -64,8 +65,16 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 		return;
 	}
 
-	IStackPtr stack = IStack::singleton();
-	stack->setup(globalEventManager, globalEventManager, (char const *)appIDStr,
+	ILogger::setLogLevel(ILogger::Trace);
+	ILogger::installTelnetLogger(59999, 60, true);
+    ILogger::installStdOutLogger(true);
+//	queuePtr = IStackMessageQueue::singleton();
+//	if (globalEventManager) {
+//		queuePtr->interceptProcessing(globalEventManager);
+//	}
+
+	stackPtr = IStack::singleton();
+	stackPtr->setup(globalEventManager, globalEventManager, (char const *)appIDStr,
 			(char const *)appNameStr, (char const *)appImageURLStr, (char const *)appURLStr, (char const *)userAgentStr,
 			(char const *)deviceIDStr, (char const *)osStr, (char const *)systemStr);
 }

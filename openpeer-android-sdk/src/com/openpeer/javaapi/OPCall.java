@@ -19,7 +19,7 @@ public class OPCall {
                               Boolean includeVideo
                               );
 
-    public native long getID();
+    public native String getStableID();
 
     public native String getCallID();
 

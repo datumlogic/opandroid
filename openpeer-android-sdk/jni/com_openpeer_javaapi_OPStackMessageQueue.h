@@ -31,6 +31,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_interceptPr
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_notifyProcessMessageFromCustomThread
   (JNIEnv *, jobject);
 
+jclass findClass(const char* name);
+
 #ifdef __cplusplus
 }
 #endif

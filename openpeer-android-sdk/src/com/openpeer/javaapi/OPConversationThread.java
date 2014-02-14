@@ -13,7 +13,7 @@ public class OPConversationThread {
 	
 	public static native OPConversationThread create(
                                          OPAccount account,
-                                         OPElement profileBundleEl
+                                         String profileBundleEl
                                          );
 
 	public static native List<OPConversationThread> getConversationThreads(OPAccount account);
@@ -22,7 +22,7 @@ public class OPConversationThread {
                                                             OPAccount account,
                                                             String threadID
                                                             );
-	public native long getID();
+	public native String getStableID();
 
 	public native String getThreadID();
 
@@ -32,7 +32,7 @@ public class OPConversationThread {
 
 	public native List<OPContact> getContacts();
 
-	public native OPElement getProfileBundle(OPContact contact);
+	public native String getProfileBundle(OPContact contact);
 	
 	public native ContactStates getContactState(OPContact contact);
 
