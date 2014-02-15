@@ -60,6 +60,12 @@ namespace OpenPeerSampleAppCSharp
 			WebView view = FindViewById<WebView> (Resource.Id.loginWebView);
 			view.LoadUrl("javascript:sendToInner('" + escaped + "')");
 		}
+
+		public override void OnBackPressed ()
+		{
+			// prevent back button during login process
+			//base.OnBackPressed ();
+		}
 	}
 
 	class LoginActivityRedirect : Java.Lang.Object

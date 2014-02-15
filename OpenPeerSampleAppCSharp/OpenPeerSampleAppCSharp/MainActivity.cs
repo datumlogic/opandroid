@@ -8,7 +8,7 @@ using Android.OS;
 
 namespace OpenPeerSampleAppCSharp
 {
-	[Activity (Label = "Open Peer Sample App", MainLauncher = true)]
+	[Activity (Label = "Open Peer Sample App")]
 	public class MainActivity : ActivityGroup
 	{
 		protected override void OnCreate (Bundle bundle)
