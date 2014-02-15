@@ -8,4 +8,5 @@ public abstract class OPIdentityDelegate {
             IdentityStates state
             );
 	public abstract void onIdentityPendingMessageForInnerBrowserWindowFrame(OPIdentity identity);
+	public abstract void onIdentityRolodexContactsDownloaded(OPIdentity identity);
 }
