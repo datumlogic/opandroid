@@ -73,6 +73,7 @@
     <AndroidResource Include="Resources\menu\main_menu.xml" />
     <AndroidResource Include="Resources\layout\ContactListItem.axml" />
     <AndroidResource Include="Resources\layout\MediaTest.axml" />
+    <AndroidResource Include="Resources\drawable\chat.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
