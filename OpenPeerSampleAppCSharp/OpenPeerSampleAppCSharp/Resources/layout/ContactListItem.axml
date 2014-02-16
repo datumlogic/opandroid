@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:p1="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:p1="http://schemas.android.com/apk/res/android"
     p1:minWidth="25px"
     p1:minHeight="25px"
     p1:layout_width="match_parent"
     p1:layout_height="wrap_content"
-    p1:id="@+id/contactItemRelativeLayout">
-    <FrameLayout
+    p1:id="@+id/contactItemLinearLayout"
+    p1:descendantFocusability="blocksDescendants">
+    <RelativeLayout
         p1:minWidth="25px"
         p1:minHeight="25px"
         p1:layout_width="match_parent"
         p1:layout_height="wrap_content"
-        p1:id="@+id/frameLayout">
+        p1:id="@+id/contactItemRelativeLayout">
         <RelativeLayout
             p1:minWidth="25px"
             p1:minHeight="25px"
@@ -23,7 +24,10 @@
                 p1:id="@+id/avatarImageView"
                 p1:layout_width="65dp"
                 p1:layout_height="65dp"
-                p1:layout_centerVertical="true" />
+                p1:layout_centerVertical="true"
+                p1:focusable="false"
+                p1:focusableInTouchMode="false"
+                p1:clickable="false" />
             <LinearLayout
                 p1:orientation="vertical"
                 p1:minWidth="25px"
@@ -38,32 +42,45 @@
                     p1:layout_height="wrap_content"
                     p1:id="@+id/nameTextView"
                     p1:textSize="22sp"
-                    p1:inputType="none" />
+                    p1:inputType="none"
+                    p1:text="Name"
+                    p1:focusable="false"
+                    p1:focusableInTouchMode="false"
+                    p1:clickable="false" />
                 <TextView
                     p1:text="username"
                     p1:layout_width="match_parent"
                     p1:layout_height="wrap_content"
                     p1:id="@+id/usernameTextView"
                     p1:textSize="14sp"
-                    p1:inputType="none" />
+                    p1:inputType="none"
+                    p1:focusable="false"
+                    p1:focusableInTouchMode="false"
+                    p1:clickable="false" />
             </LinearLayout>
             <ImageButton
                 p1:id="@+id/detailsButton"
                 p1:gravity="center"
-                p1:layout_width="wrap_content"
-                p1:layout_height="wrap_content"
+                p1:layout_width="30dp"
+                p1:layout_height="30dp"
                 p1:layout_alignParentRight="true"
                 p1:layout_centerVertical="true"
-                p1:src="@drawable/Icon"
+                p1:src="@drawable/chat"
                 p1:padding="0dp"
-                p1:background="@null" />
+                p1:background="@null"
+                p1:maxHeight="10dp"
+                p1:adjustViewBounds="false"
+                p1:scaleType="fitCenter"
+                p1:focusable="false"
+                p1:focusableInTouchMode="false"
+                p1:clickable="false" />
         </RelativeLayout>
         <RelativeLayout
             p1:minHeight="25px"
             p1:id="@+id/badgeRelativeLayout"
             p1:padding="5dp"
             p1:layout_width="match_parent"
-            p1:layout_height="match_parent">
+            p1:layout_height="wrap_content">
             <RelativeLayout
                 p1:minWidth="25px"
                 p1:minHeight="25px"
@@ -72,10 +89,13 @@
                 p1:layout_height="wrap_content" />
             <TextView
                 p1:id="@+id/badgeAnchorTextView"
-                p1:layout_width="20dp"
-                p1:layout_height="20dp"
+                p1:layout_width="50dp"
+                p1:layout_height="30dp"
                 p1:layout_toRightOf="@id/badgeSpacerRelativeLayout"
-                p1:gravity="center" />
+                p1:gravity="center"
+                p1:focusable="false"
+                p1:focusableInTouchMode="false"
+                p1:clickable="false" />
         </RelativeLayout>
-    </FrameLayout>
-</RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

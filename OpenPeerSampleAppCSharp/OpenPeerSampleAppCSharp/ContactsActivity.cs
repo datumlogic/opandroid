@@ -11,15 +11,19 @@ using Android.Widget;
 
 namespace OpenPeerSampleAppCSharp
 {
-	[Activity (Label = "ContactsActivity", MainLauncher = true)]			
-	public class ContactsActivity : Activity
+	[Activity (Label = "Open Peer Sample App - Contact List", MainLauncher = true)]			
+	public class ContactsActivity : ListActivity
 	{
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-
-			// Create your application here
 			SetContentView (Resource.Layout.Contacts);
+
+			// ListView view = FindViewById<ListView> (Android.Resource.Id.List);
+
+			//			view.ItemClick += OnMyListItemClicked;
+
+			this.ListAdapter = new ContactAdapter (this);
 		}
 
 		public override bool OnCreateOptionsMenu(IMenu menu)
@@ -46,6 +50,18 @@ namespace OpenPeerSampleAppCSharp
 				}
 			}
 			return base.OnOptionsItemSelected (item);
+		}
+		/*
+		protected void OnMyListItemClicked( object sender, ListView.ItemClickEventArgs e)
+		{
+			Android.Widget.Toast.MakeText(this, "item " + e.Position.ToString(), Android.Widget.ToastLength.Short).Show();
+		}
+		*/
+
+		protected override void OnListItemClick(ListView l, View v, int position, long id)
+		{
+			base.OnListItemClick (l, v, position, id);
+			Android.Widget.Toast.MakeText(this, "hello " + position.ToString(), Android.Widget.ToastLength.Short).Show();
 		}
 	}
 }

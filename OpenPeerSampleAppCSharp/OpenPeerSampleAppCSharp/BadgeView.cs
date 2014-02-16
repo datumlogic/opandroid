@@ -33,7 +33,7 @@ namespace OpenPeerSampleAppCSharp
 		private const int DefaultLRPaddingDip = 5;
 		private const int DefaultCornerRadiusDip = 8;
 		private const Position DefaultPosition = Position.TopRight;
-		private static Color DefaultBadgeColor = Color.ParseColor ("#CCFF000");
+		private static Color DefaultBadgeColor = Color.ParseColor ("#CCFF0000");
 		private static Color DefaultTextColor = Color.White;
 
 		private static Animation FadeIn;
@@ -59,7 +59,7 @@ namespace OpenPeerSampleAppCSharp
 			FadeIn.Duration = 200;
 
 			FadeOut = new AlphaAnimation (1.0f, 0.0f);
-			FadeIn.Interpolator = new AccelerateDecelerateInterpolator ();
+			FadeOut.Interpolator = new AccelerateDecelerateInterpolator ();
 			FadeOut.Duration = 200;
 		}
 
@@ -119,6 +119,11 @@ namespace OpenPeerSampleAppCSharp
 			var lp = target.LayoutParameters;
 			IViewParent parent = target.Parent;
 			FrameLayout container = new FrameLayout (context);
+
+			// borrow some properties from the view which the badge is being applied
+			this.Clickable = target.Clickable;
+			this.Focusable = target.Focusable;
+			this.FocusableInTouchMode = target.FocusableInTouchMode;
 
 			if (target is TabWidget) {
 				target = ((TabWidget)target).GetChildTabViewAt (targetTabIndex);

@@ -55,7 +55,7 @@
     <Compile Include="SettingsActivity.cs" />
     <Compile Include="LoginActivity.cs" />
     <Compile Include="BadgeView.cs" />
-    <Compile Include="MediaTestActivity.cs" />
+    <Compile Include="ContactAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -67,13 +67,12 @@
     <AndroidResource Include="Resources\values\Strings.xml" />
     <AndroidResource Include="Resources\drawable\Icon.png" />
     <AndroidResource Include="Resources\layout\Splash.axml" />
-    <AndroidResource Include="Resources\layout\Contacts.axml" />
     <AndroidResource Include="Resources\layout\Settings.axml" />
     <AndroidResource Include="Resources\layout\Login.axml" />
     <AndroidResource Include="Resources\menu\main_menu.xml" />
-    <AndroidResource Include="Resources\layout\ContactListItem.axml" />
-    <AndroidResource Include="Resources\layout\MediaTest.axml" />
     <AndroidResource Include="Resources\drawable\chat.png" />
+    <AndroidResource Include="Resources\layout\Contacts.axml" />
+    <AndroidResource Include="Resources\layout\ContactListItem.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

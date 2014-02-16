@@ -75,17 +75,17 @@ namespace OpenPeerSampleAppCSharp
 			// aapt resource value: 0x7f060009
 			public const int badgeSpacerRelativeLayout = 2131099657;
 			
-			// aapt resource value: 0x7f060010
-			public const int badgeView = 2131099664;
-			
 			// aapt resource value: 0x7f06000f
-			public const int button1 = 2131099663;
+			public const int badgeView = 2131099663;
+			
+			// aapt resource value: 0x7f06000e
+			public const int button1 = 2131099662;
 			
 			// aapt resource value: 0x7f060000
-			public const int contactItemRelativeLayout = 2131099648;
+			public const int contactItemLinearLayout = 2131099648;
 			
-			// aapt resource value: 0x7f06000b
-			public const int contactsListView = 2131099659;
+			// aapt resource value: 0x7f060001
+			public const int contactItemRelativeLayout = 2131099649;
 			
 			// aapt resource value: 0x7f060007
 			public const int detailsButton = 2131099655;
@@ -93,26 +93,23 @@ namespace OpenPeerSampleAppCSharp
 			// aapt resource value: 0x7f060002
 			public const int detailsRelativeLayout = 2131099650;
 			
-			// aapt resource value: 0x7f060001
-			public const int frameLayout = 2131099649;
+			// aapt resource value: 0x7f06000d
+			public const int linearLayout = 2131099661;
 			
-			// aapt resource value: 0x7f06000e
-			public const int linearLayout = 2131099662;
+			// aapt resource value: 0x7f06000b
+			public const int loginWebView = 2131099659;
 			
-			// aapt resource value: 0x7f06000c
-			public const int loginWebView = 2131099660;
-			
-			// aapt resource value: 0x7f060012
-			public const int logoutMenuItem = 2131099666;
+			// aapt resource value: 0x7f060011
+			public const int logoutMenuItem = 2131099665;
 			
 			// aapt resource value: 0x7f060005
 			public const int nameTextView = 2131099653;
 			
-			// aapt resource value: 0x7f060011
-			public const int settingsMenuItem = 2131099665;
+			// aapt resource value: 0x7f060010
+			public const int settingsMenuItem = 2131099664;
 			
-			// aapt resource value: 0x7f06000d
-			public const int tabHost = 2131099661;
+			// aapt resource value: 0x7f06000c
+			public const int tabHost = 2131099660;
 			
 			// aapt resource value: 0x7f060004
 			public const int textAreaLinearLayout = 2131099652;
@@ -146,13 +143,10 @@ namespace OpenPeerSampleAppCSharp
 			public const int Main = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int MediaTest = 2130903044;
+			public const int Settings = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int Settings = 2130903045;
-			
-			// aapt resource value: 0x7f030006
-			public const int Splash = 2130903046;
+			public const int Splash = 2130903045;
 			
 			static Layout()
 			{

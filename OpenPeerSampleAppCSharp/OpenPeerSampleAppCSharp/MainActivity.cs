@@ -23,7 +23,6 @@ namespace OpenPeerSampleAppCSharp
 
 			TabHost.TabSpec tabSpec1 = tabHost.NewTabSpec ("Contacts");
 			TabHost.TabSpec tabSpec2 = tabHost.NewTabSpec ("Settings");
-			TabHost.TabSpec tabSpec3 = tabHost.NewTabSpec ("MediaTest");
 
 			Intent intent;
 
@@ -37,14 +36,8 @@ namespace OpenPeerSampleAppCSharp
 			intent.AddFlags (ActivityFlags.NewTask);
 			tabSpec2.SetContent (intent);
 
-			tabSpec3.SetIndicator ("MediaTest");
-			intent = new Intent (this, typeof(MediaTestActivity));
-			intent.AddFlags (ActivityFlags.NewTask);
-			tabSpec3.SetContent (intent);
-
 			tabHost.AddTab (tabSpec1);
 			tabHost.AddTab (tabSpec2);
-			tabHost.AddTab (tabSpec3);
 
 			tabHost.CurrentTab = 0;
 
