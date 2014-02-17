@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics.Contracts;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -14,6 +15,25 @@ namespace OpenPeerSampleAppCSharp
 	public class SettingsAdapter : BaseAdapter<object>
 	{
 		Activity context;
+
+		string [] subsystemFriendlyNames;
+		string [] subsystemInternalNames;
+		EventHandler<AdapterView.ItemSelectedEventArgs> spinnerItemSelectedEventHandler;// = new EventHandler<AdapterView.ItemSelectedEventArgs> (spinner_ItemSelected);
+
+		class SubsystemBoxer : Java.Lang.Object
+		{
+			public string SubsystemFriendlyName { get; set; }
+			public string SubsystemName { get; set; }
+
+			public SubsystemBoxer(
+				string subsystemFriendlyName,
+				string subsystemName
+			)
+			{
+				this.SubsystemFriendlyName = subsystemFriendlyName;
+				this.SubsystemName = subsystemName;
+			}
+		}
 
 		enum Setting
 		{
@@ -55,8 +75,16 @@ namespace OpenPeerSampleAppCSharp
 			public Spinner Spinner { get; set; }
 		}
 
-		public SettingsAdapter(Activity context) : base() {
+		public SettingsAdapter(Activity context) : base()
+		{
 			this.context = context;
+			this.spinnerItemSelectedEventHandler = new EventHandler<AdapterView.ItemSelectedEventArgs> (spinner_ItemSelected);
+
+			subsystemFriendlyNames = context.Resources.GetTextArray (Resource.Array.log_subsystem_friend_names_array);
+			subsystemInternalNames = context.Resources.GetTextArray (Resource.Array.log_subsystem_array);
+
+			Contract.Assert (subsystemFriendlyNames.Length == subsystemInternalNames.Length);
+			Contract.Assert (subsystemFriendlyNames.Length > 0);
 		}
 
 		public override long GetItemId(int position)
@@ -78,11 +106,20 @@ namespace OpenPeerSampleAppCSharp
 		}
 
 		public override object this[int position] {  
-			get { return null; }
+			get {
+				if (position < (int)Setting.Total) {
+					return null;
+				}
+
+				return new SubsystemBoxer(
+					subsystemFriendlyNames[position - (int)Setting.Total],
+					subsystemInternalNames[position - (int)Setting.Total]
+				);
+			}
 		}
 
 		public override int Count {
-			get { return 24; }
+			get { return ((int)Setting.Total) + subsystemFriendlyNames.Length; }
 		}
 
 		public override int ViewTypeCount{
@@ -120,7 +157,7 @@ namespace OpenPeerSampleAppCSharp
 					var adapter = ArrayAdapter.CreateFromResource (context, Resource.Array.log_levels_array, Android.Resource.Layout.SimpleSpinnerItem);
 					adapter.SetDropDownViewResource (Android.Resource.Layout.SimpleSpinnerDropDownItem);
 					spinnerHolder.Spinner.Adapter = adapter;
-					spinnerHolder.Spinner.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs> (spinner_ItemSelected);
+					spinnerHolder.Spinner.ItemSelected += spinnerItemSelectedEventHandler;
 					break;
 				default:
 					throw new NotImplementedException();
@@ -146,8 +183,6 @@ namespace OpenPeerSampleAppCSharp
 				}
 			}
 
-			object source = this [position];
-
 			switch ((Setting)position) {
 			case Setting.StandardOutLoggerSwitch:
 				holder.LabelTextView.Text = context.Resources.GetString(Resource.String.standard_out_logger);
@@ -167,7 +202,11 @@ namespace OpenPeerSampleAppCSharp
 				editHolder.EditText.Text = "59999";
 				break;
 			default:
-				holder.LabelTextView.Text = "Log Level Module " + position.ToString ();
+				SubsystemBoxer boxer = (SubsystemBoxer)this [position];
+				holder.LabelTextView.Text = boxer.SubsystemFriendlyName;
+				spinnerHolder.Spinner.Prompt = boxer.SubsystemFriendlyName;
+				spinnerHolder.Spinner.Tag = boxer;
+				spinnerHolder.Spinner.SetSelection (position % (spinnerHolder.Spinner.Adapter.Count));
 				break;
 			}
 
@@ -178,8 +217,10 @@ namespace OpenPeerSampleAppCSharp
 		{
 			Spinner spinner = (Spinner)sender;
 
-			string toast = string.Format ("The value is {0}", spinner.GetItemAtPosition (e.Position));
-			Toast.MakeText (context, toast, ToastLength.Long).Show ();
+			SubsystemBoxer boxer = (SubsystemBoxer)spinner.Tag;
+
+			string output = string.Format ("Setting {0} ({1}) to {2}", boxer.SubsystemFriendlyName, boxer.SubsystemName, spinner.GetItemAtPosition (e.Position));
+			Console.WriteLine (output);
 		}
 	}
 }

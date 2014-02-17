@@ -11,7 +11,7 @@ using Android.Widget;
 
 namespace OpenPeerSampleAppCSharp
 {
-	[Activity (Label = "SettingsActivity")]			
+	[Activity (Label = "Open Peer Sample App - Settings", WindowSoftInputMode = SoftInput.AdjustPan)]			
 	public class SettingsActivity : ListActivity
 	{
 		protected override void OnCreate (Bundle bundle)
@@ -21,6 +21,9 @@ namespace OpenPeerSampleAppCSharp
 			// Create your application here
 			SetContentView (Resource.Layout.Settings);
 
+			ListView view = FindViewById<ListView> (Android.Resource.Id.List);
+			view.ItemsCanFocus = true;
+
 			this.ListAdapter = new SettingsAdapter (this);
 		}
 
@@ -28,6 +31,7 @@ namespace OpenPeerSampleAppCSharp
 		{
 			base.OnListItemClick (l, v, position, id);
 			Android.Widget.Toast.MakeText(this, "setting " + position.ToString(), Android.Widget.ToastLength.Short).Show();
+
 		}
 	}
 }
