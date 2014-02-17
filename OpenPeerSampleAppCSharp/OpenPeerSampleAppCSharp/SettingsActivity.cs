@@ -31,7 +31,12 @@ namespace OpenPeerSampleAppCSharp
 		{
 			base.OnListItemClick (l, v, position, id);
 			Android.Widget.Toast.MakeText(this, "setting " + position.ToString(), Android.Widget.ToastLength.Short).Show();
+		}
 
+		protected override void OnStop()
+		{
+			base.OnStop ();
+			Console.WriteLine ("stopping");
 		}
 	}
 }

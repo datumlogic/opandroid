@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Android.Text;
 
 namespace OpenPeerSampleAppCSharp
 {
@@ -19,13 +20,15 @@ namespace OpenPeerSampleAppCSharp
 		string [] subsystemFriendlyNames;
 		string [] subsystemInternalNames;
 		EventHandler<AdapterView.ItemSelectedEventArgs> spinnerItemSelectedEventHandler;// = new EventHandler<AdapterView.ItemSelectedEventArgs> (spinner_ItemSelected);
+		EventHandler<Android.Text.TextChangedEventArgs> textChangedEventHandler;
+		EventHandler<View.FocusChangeEventArgs> focusChangedEventHandler;
 
-		class SubsystemBoxer : Java.Lang.Object
+		class SubsystemHolder : Java.Lang.Object
 		{
 			public string SubsystemFriendlyName { get; set; }
 			public string SubsystemName { get; set; }
 
-			public SubsystemBoxer(
+			public SubsystemHolder(
 				string subsystemFriendlyName,
 				string subsystemName
 			)
@@ -79,6 +82,8 @@ namespace OpenPeerSampleAppCSharp
 		{
 			this.context = context;
 			this.spinnerItemSelectedEventHandler = new EventHandler<AdapterView.ItemSelectedEventArgs> (spinner_ItemSelected);
+			this.textChangedEventHandler = new EventHandler<Android.Text.TextChangedEventArgs> (edittext_TextChanged);
+			this.focusChangedEventHandler = new EventHandler<View.FocusChangeEventArgs> (view_FocusChanged);
 
 			subsystemFriendlyNames = context.Resources.GetTextArray (Resource.Array.log_subsystem_friend_names_array);
 			subsystemInternalNames = context.Resources.GetTextArray (Resource.Array.log_subsystem_array);
@@ -111,7 +116,7 @@ namespace OpenPeerSampleAppCSharp
 					return null;
 				}
 
-				return new SubsystemBoxer(
+				return new SubsystemHolder(
 					subsystemFriendlyNames[position - (int)Setting.Total],
 					subsystemInternalNames[position - (int)Setting.Total]
 				);
@@ -148,6 +153,8 @@ namespace OpenPeerSampleAppCSharp
 					view = context.LayoutInflater.Inflate (Resource.Layout.SettingsTextEditListItem, null);
 					holder = editHolder = new TextEditViewHolder ();
 					editHolder.EditText = view.FindViewById<EditText> (Resource.Id.editText);
+					editHolder.EditText.TextChanged += textChangedEventHandler;
+					editHolder.EditText.FocusChange += view_FocusChanged;
 					break;
 				case ListItemType.Spinner:
 					view = context.LayoutInflater.Inflate (Resource.Layout.SettingsSpinnerListItem, null);
@@ -202,7 +209,7 @@ namespace OpenPeerSampleAppCSharp
 				editHolder.EditText.Text = "59999";
 				break;
 			default:
-				SubsystemBoxer boxer = (SubsystemBoxer)this [position];
+				SubsystemHolder boxer = (SubsystemHolder)this [position];
 				holder.LabelTextView.Text = boxer.SubsystemFriendlyName;
 				spinnerHolder.Spinner.Prompt = boxer.SubsystemFriendlyName;
 				spinnerHolder.Spinner.Tag = boxer;
@@ -217,9 +224,29 @@ namespace OpenPeerSampleAppCSharp
 		{
 			Spinner spinner = (Spinner)sender;
 
-			SubsystemBoxer boxer = (SubsystemBoxer)spinner.Tag;
+			SubsystemHolder boxer = (SubsystemHolder)spinner.Tag;
 
 			string output = string.Format ("Setting {0} ({1}) to {2}", boxer.SubsystemFriendlyName, boxer.SubsystemName, spinner.GetItemAtPosition (e.Position));
+			Console.WriteLine (output);
+		}
+
+		private void edittext_TextChanged (object sender, Android.Text.TextChangedEventArgs e)
+		{
+			EditText editText = (EditText)sender;
+
+			string value = e.Text.ToString();
+
+			string output = string.Format ("TextEdit value as {0}", value);
+			Console.WriteLine (output);
+		}
+
+		private void view_FocusChanged (object sender, View.FocusChangeEventArgs e)
+		{
+			EditText editText = (EditText)sender;
+
+			bool hasFocus = e.HasFocus;
+
+			string output = string.Format ("Focus value as {0}", hasFocus.ToString());
 			Console.WriteLine (output);
 		}
 	}
