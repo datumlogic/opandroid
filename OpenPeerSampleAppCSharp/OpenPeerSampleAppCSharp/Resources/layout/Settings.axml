@@ -5,13 +5,10 @@
     android:layout_height="fill_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-    <Button
-        android:text="Button"
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button1" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/badgeView" />
+        android:id="@android:id/list" />
 </LinearLayout>

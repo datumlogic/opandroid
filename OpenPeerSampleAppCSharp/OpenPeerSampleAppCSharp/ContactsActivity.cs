@@ -19,10 +19,6 @@ namespace OpenPeerSampleAppCSharp
 			base.OnCreate (bundle);
 			SetContentView (Resource.Layout.Contacts);
 
-			// ListView view = FindViewById<ListView> (Android.Resource.Id.List);
-
-			//			view.ItemClick += OnMyListItemClicked;
-
 			this.ListAdapter = new ContactAdapter (this);
 		}
 
@@ -51,12 +47,6 @@ namespace OpenPeerSampleAppCSharp
 			}
 			return base.OnOptionsItemSelected (item);
 		}
-		/*
-		protected void OnMyListItemClicked( object sender, ListView.ItemClickEventArgs e)
-		{
-			Android.Widget.Toast.MakeText(this, "item " + e.Position.ToString(), Android.Widget.ToastLength.Short).Show();
-		}
-		*/
 
 		protected override void OnListItemClick(ListView l, View v, int position, long id)
 		{

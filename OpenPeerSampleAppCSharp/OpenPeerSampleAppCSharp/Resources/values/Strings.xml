@@ -2,4 +2,17 @@
 <resources>
 	<string name="hello">Hello World, Click Me!</string>
 	<string name="app_name">Open Peer Sample App</string>
+	<string name="standard_out_logger">Standard Out Logger</string>
+	<string name="outgoing_telnet_logger">Outgoing Telnet Logger</string>
+	<string name="outgoing_telnet_logger_server_prompt">Server:</string>
+	<string name="telnet_logger">Telnet Logger</string>
+	<string name="telnet_logger_port_prompt">Port:</string>
+    <string-array name="log_levels_array">
+        <item>None</item>
+        <item>Basic</item>
+        <item>Detail</item>
+        <item>Debug</item>
+        <item>Trace</item>
+        <item>Insane</item>
+    </string-array>
 </resources>

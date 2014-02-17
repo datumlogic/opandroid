@@ -15,6 +15,13 @@ namespace OpenPeerSampleAppCSharp
 	{
 		Activity context;
 
+		class ViewHolder : Java.Lang.Object
+		{
+			public BadgeView BadgeView { get; set; }
+			public TextView NameTextView { get; set; }
+			public TextView UsernameTextView { get; set; }
+		}
+
 		public ContactAdapter(Activity context) : base() {
 			this.context = context;
 		}
@@ -36,25 +43,32 @@ namespace OpenPeerSampleAppCSharp
 		{
 			View view = convertView; // re-use an existing view, if one is available
 
+			ViewHolder holder;
+
 			if (view == null) { // otherwise create a new one
 				view = context.LayoutInflater.Inflate (Resource.Layout.ContactListItem, null);
 
 				TextView badgeTextView = view.FindViewById<TextView> (Resource.Id.badgeAnchorTextView);
 
-				BadgeView badgeView = new BadgeView(context, badgeTextView);
+				BadgeView badgeView = new BadgeView (context, badgeTextView);
 				badgeView.BadgePosition = BadgeView.Position.TopLeft;
-				view.Tag = badgeView;
+
+				holder = new ViewHolder ();
+				holder.BadgeView = badgeView;
+				holder.NameTextView = view.FindViewById<TextView> (Resource.Id.nameTextView);
+				holder.UsernameTextView = view.FindViewById<TextView> (Resource.Id.usernameTextView);
+				view.Tag = holder;
+			} else {
+				holder = (ViewHolder)view.Tag;
 			}
 
 			object source = this [position];
 
-			BadgeView badge = (BadgeView)view.Tag;
+			holder.NameTextView.Text = "My Name " + position.ToString();
+			holder.UsernameTextView.Text = "Username" + position.ToString();
 
-			view.FindViewById<TextView> (Resource.Id.nameTextView).Text = "My Name " + position.ToString();
-			view.FindViewById<TextView> (Resource.Id.usernameTextView).Text = "Username" + position.ToString();
-
-			badge.Text = position.ToString();
-			badge.Show ();
+			holder.BadgeView.Text = position.ToString();
+			holder.BadgeView.Show ();
 
 			return view;
 		}
