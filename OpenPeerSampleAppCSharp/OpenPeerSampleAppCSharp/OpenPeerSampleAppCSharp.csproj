@@ -46,6 +46,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="Mono.Android.Export" />
+    <Reference Include="Mono.Android.Support.v4" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -77,9 +78,16 @@
     <AndroidResource Include="Resources\layout\SettingsSpinnerListItem.axml" />
     <AndroidResource Include="Resources\layout\SettingsTextEditListItem.axml" />
     <AndroidResource Include="Resources\layout\SettingsToggleListItem.axml" />
+    <AndroidResource Include="Resources\layout\ContactsWithPull.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Resources\menu\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
+      <Project>{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}</Project>
+      <Name>PullToRefresharp.Android</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

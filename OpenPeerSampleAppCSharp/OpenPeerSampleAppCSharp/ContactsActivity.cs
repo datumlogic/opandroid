@@ -9,15 +9,25 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
+using PullToRefresharp.Android.Views;
+
 namespace OpenPeerSampleAppCSharp
 {
 	[Activity (Label = "Open Peer Sample App - Contact List", MainLauncher = true)]			
 	public class ContactsActivity : ListActivity
 	{
+		private IPullToRefresharpView refreshListView;
+
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-			SetContentView (Resource.Layout.Contacts);
+			SetContentView (Resource.Layout.ContactsWithPull);
+
+			refreshListView = this.ListView as IPullToRefresharpView;
+
+			if (refreshListView != null) {
+				refreshListView.RefreshActivated += pullview_RefreshActivated;
+			}
 
 			this.ListAdapter = new ContactAdapter (this);
 		}
@@ -53,6 +63,17 @@ namespace OpenPeerSampleAppCSharp
 			base.OnListItemClick (l, v, position, id);
 			Android.Widget.Toast.MakeText(this, "hello " + position.ToString(), Android.Widget.ToastLength.Short).Show();
 		}
+
+		private void pullview_RefreshActivated(object sender, EventArgs args)
+		{
+			ListView.PostDelayed(() => {
+				if (refreshListView != null) {
+					// When you are done refreshing your content, let PullToRefresharp know you're done.
+					refreshListView.OnRefreshCompleted();
+				}
+			}, 2000);
+		}
+
 	}
 }
 

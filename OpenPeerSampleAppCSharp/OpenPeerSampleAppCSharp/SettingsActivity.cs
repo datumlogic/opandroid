@@ -23,6 +23,8 @@ namespace OpenPeerSampleAppCSharp
 
 			ListView view = FindViewById<ListView> (Android.Resource.Id.List);
 			view.ItemsCanFocus = true;
+		
+
 
 			this.ListAdapter = new SettingsAdapter (this);
 		}

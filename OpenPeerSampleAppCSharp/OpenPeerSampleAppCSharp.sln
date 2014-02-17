@@ -3,12 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenPeerSampleAppCSharp", "OpenPeerSampleAppCSharp\OpenPeerSampleAppCSharp.csproj", "{9A699589-647F-43AB-B450-560A40DF55DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PullToRefresharp.Android", "..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj", "{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A699589-647F-43AB-B450-560A40DF55DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9A699589-647F-43AB-B450-560A40DF55DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A699589-647F-43AB-B450-560A40DF55DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
