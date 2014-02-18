@@ -17,5 +17,6 @@ extern IAccountPtr accountPtr;
 extern IStackPtr stackPtr;
 extern IStackMessageQueuePtr queuePtr;
 extern IIdentityPtr identityPtr;
+extern IMediaEnginePtr mediaEnginePtr;
 
 #endif

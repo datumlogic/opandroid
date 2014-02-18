@@ -13,6 +13,8 @@ import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 
 public class LoginManager {
+	
+	static CallbackHandler mCallbackHandler = new CallbackHandler();
 
 	public static void LoginWithFacebook (){
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
@@ -33,14 +35,14 @@ public class LoginManager {
 		mAccountDelegate = new OPAccountDelegateImplementation();
 		mAccount = new OPAccount();
 		//register delegates and class for callback from native code
-		CallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
+		mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
 		
 		
 		mIdentityDelegate = new OPIdentityDelegateImplementation();
 		mIdentity = new OPIdentity();
-		CallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
+		mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
 		//TODO: Now we can start login procedure
-		OPAccount.login(null, null, null, null, null, null, null, null, null);//delegate, conversationThreadDelegate, callDelegate, namespaceGrantOuterFrameURLUponReload, namespaceGrantServiceDomain, grantID, grantSecret, lockboxServiceDomain, forceCreateNewLockboxAccount)
+		OPAccount.login(null, null, null, null, null, null, null);//delegate, conversationThreadDelegate, callDelegate, namespaceGrantOuterFrameURLUponReload, namespaceGrantServiceDomain, grantID, grantSecret, lockboxServiceDomain, forceCreateNewLockboxAccount)
 		
 		OPIdentity.login(mAccount, mIdentityDelegate, "idprovider-javascript.hookflash.me", "identity://idprovider-javascript.hookflash.me/", "https://app-javascript.hookflash.me/outer.html?reload=true");
 	}

@@ -9,3 +9,4 @@ IAccountPtr accountPtr;
 IStackPtr stackPtr;
 IStackMessageQueuePtr queuePtr;
 IIdentityPtr identityPtr;
+IMediaEnginePtr mediaEnginePtr;
