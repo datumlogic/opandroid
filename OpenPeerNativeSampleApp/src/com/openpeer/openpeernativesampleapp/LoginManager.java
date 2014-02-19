@@ -11,6 +11,8 @@ import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
+import com.openpeer.javaapi.OPMediaEngine;
+import com.openpeer.javaapi.OPMediaEngineDelegate;
 
 public class LoginManager {
 	
@@ -42,9 +44,14 @@ public class LoginManager {
 		mIdentity = new OPIdentity();
 		mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
 		//TODO: Now we can start login procedure
-		OPAccount.login(null, null, null, null, null, null, null);//delegate, conversationThreadDelegate, callDelegate, namespaceGrantOuterFrameURLUponReload, namespaceGrantServiceDomain, grantID, grantSecret, lockboxServiceDomain, forceCreateNewLockboxAccount)
+		//OPAccount.login(null, null, null, null, null, null, null);//delegate, conversationThreadDelegate, callDelegate, namespaceGrantOuterFrameURLUponReload, namespaceGrantServiceDomain, grantID, grantSecret, lockboxServiceDomain, forceCreateNewLockboxAccount)
 		
-		OPIdentity.login(mAccount, mIdentityDelegate, "idprovider-javascript.hookflash.me", "identity://idprovider-javascript.hookflash.me/", "https://app-javascript.hookflash.me/outer.html?reload=true");
+		//OPIdentity.login(mAccount, mIdentityDelegate, "idprovider-javascript.hookflash.me", "identity://idprovider-javascript.hookflash.me/", "https://app-javascript.hookflash.me/outer.html?reload=true");
+		
+		//mMediaEngine = new OPMediaEngine();
+		//OPMediaEngine.singleton().setEcEnabled(true);
+		mMediaEngine = OPMediaEngine.singleton();
+		mMediaEngine.setEcEnabled(true);
 	}
 	
 	
@@ -62,6 +69,7 @@ public class LoginManager {
 	public static OPAccountDelegate mAccountDelegate;
 	public static OPIdentity mIdentity;
 	public static OPIdentityDelegate mIdentityDelegate;
+	public static OPMediaEngine mMediaEngine;
 	static LoginHandlerInterface mLoginHandler;
 	
 	public static void setHandlerListener(LoginHandlerInterface listener)
