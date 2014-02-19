@@ -54,6 +54,16 @@ namespace OpenPeerSampleAppCSharp
 			return position;
 		}
 
+		public override bool AreAllItemsEnabled ()
+		{
+			return false;
+		}
+
+		public override bool IsEnabled(int position)
+		{
+			return false;
+		}
+
 		public override int GetItemViewType (int position)
 		{
 			switch (position % 6) {

@@ -19,7 +19,7 @@ namespace OpenPeerSampleAppCSharp
 
 		string [] subsystemFriendlyNames;
 		string [] subsystemInternalNames;
-		EventHandler<AdapterView.ItemSelectedEventArgs> spinnerItemSelectedEventHandler;// = new EventHandler<AdapterView.ItemSelectedEventArgs> (spinner_ItemSelected);
+		EventHandler<AdapterView.ItemSelectedEventArgs> spinnerItemSelectedEventHandler;
 		EventHandler<Android.Text.TextChangedEventArgs> textChangedEventHandler;
 		EventHandler<View.FocusChangeEventArgs> focusChangedEventHandler;
 
