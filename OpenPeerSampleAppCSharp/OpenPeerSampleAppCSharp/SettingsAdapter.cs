@@ -154,7 +154,7 @@ namespace OpenPeerSampleAppCSharp
 					holder = editHolder = new TextEditViewHolder ();
 					editHolder.EditText = view.FindViewById<EditText> (Resource.Id.editText);
 					editHolder.EditText.TextChanged += textChangedEventHandler;
-					editHolder.EditText.FocusChange += view_FocusChanged;
+					editHolder.EditText.FocusChange += focusChangedEventHandler;
 					break;
 				case ListItemType.Spinner:
 					view = context.LayoutInflater.Inflate (Resource.Layout.SettingsSpinnerListItem, null);

@@ -61,7 +61,9 @@ namespace OpenPeerSampleAppCSharp
 		protected override void OnListItemClick(ListView l, View v, int position, long id)
 		{
 			base.OnListItemClick (l, v, position, id);
-			Android.Widget.Toast.MakeText(this, "hello " + position.ToString(), Android.Widget.ToastLength.Short).Show();
+			Intent intent = new Intent (this, typeof(ChatActivity));
+			StartActivity (intent);
+			//			Android.Widget.Toast.MakeText(this, "hello " + position.ToString(), Android.Widget.ToastLength.Short).Show();
 		}
 
 		private void pullview_RefreshActivated(object sender, EventArgs args)

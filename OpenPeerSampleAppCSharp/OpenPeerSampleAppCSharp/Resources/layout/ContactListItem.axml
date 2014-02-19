@@ -58,14 +58,13 @@
                     p1:focusableInTouchMode="false"
                     p1:clickable="false" />
             </LinearLayout>
-            <ImageButton
-                p1:id="@+id/detailsButton"
+            <ImageView
                 p1:gravity="center"
                 p1:layout_width="30dp"
                 p1:layout_height="30dp"
                 p1:layout_alignParentRight="true"
                 p1:layout_centerVertical="true"
-                p1:src="@drawable/chat"
+                p1:src="@drawable/chat_alt"
                 p1:padding="0dp"
                 p1:background="@null"
                 p1:maxHeight="10dp"
@@ -73,7 +72,8 @@
                 p1:scaleType="fitCenter"
                 p1:focusable="false"
                 p1:focusableInTouchMode="false"
-                p1:clickable="false" />
+                p1:clickable="false"
+                p1:id="@+id/chatIcon" />
         </RelativeLayout>
         <RelativeLayout
             p1:minHeight="25px"

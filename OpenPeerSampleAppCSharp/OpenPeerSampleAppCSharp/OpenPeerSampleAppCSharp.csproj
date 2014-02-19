@@ -58,6 +58,8 @@
     <Compile Include="BadgeView.cs" />
     <Compile Include="ContactAdapter.cs" />
     <Compile Include="SettingsAdapter.cs" />
+    <Compile Include="ChatActivity.cs" />
+    <Compile Include="ChatAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -79,10 +81,31 @@
     <AndroidResource Include="Resources\layout\SettingsTextEditListItem.axml" />
     <AndroidResource Include="Resources\layout\SettingsToggleListItem.axml" />
     <AndroidResource Include="Resources\layout\ContactsWithPull.axml" />
+    <AndroidResource Include="Resources\drawable\chat_alt.png" />
+    <AndroidResource Include="Resources\layout\Chat.axml" />
+    <AndroidResource Include="Resources\drawable-hdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable\chat_bubble_left_source.png" />
+    <AndroidResource Include="Resources\drawable\chat_bubble_right_source.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\layout\ChatLeftSideHeaderListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatRightSideHeaderListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatMarginHeaderListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatLeftSideListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatRightSideListItem.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Resources\menu\" />
+    <Folder Include="Resources\drawable-hdpi\" />
+    <Folder Include="Resources\drawable-mdpi\" />
+    <Folder Include="Resources\drawable-xhdpi\" />
+    <Folder Include="Resources\drawable-xxhdpi\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
