@@ -91,17 +91,10 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
     }
 	
 	static {
-//		try {
-//		    //System.loadLibrary("mysharedlibrary");
-//		    System.loadLibrary("stlport_shared");
-//		} catch (UnsatisfiedLinkError use) {
-//		    Log.e("JNI", "WARNING: Could not load libstlport_shared.so");
-//		}
 		try {
-		    //System.loadLibrary("mysharedlibrary");
-		    System.loadLibrary("opjni");
+			System.loadLibrary("openpeer");
 		} catch (UnsatisfiedLinkError use) {
-		    Log.e("JNI", "WARNING: Could not load libopjni.so");
+			Log.e("JNI", "WARNING: Could not load libopenpeer.so");
 		}
 	}
 

@@ -1,4 +1,5 @@
 #include "com_openpeer_javaapi_OPMediaEngine.h"
+#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
 
@@ -23,24 +24,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	jni_env = getEnv();
+	if(jni_env)
 	{
-		return object;
+		cls = findClass("com/openpeer/javaapi/OPMediaEngine");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		mediaEnginePtr = IMediaEngine::singleton();
+
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	//method = jni_env->GetMethodID(gCallbackClass, "onMediaEngineFaceDetected", "()V");
-	//jni_env->CallVoidMethod(gCallbackClass, method);
-
-	mediaEnginePtr = IMediaEngine::singleton();
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-
-
+	return object;
 
 }
 
