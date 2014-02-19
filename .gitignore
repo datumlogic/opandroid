@@ -1,2 +1,9 @@
 Debug
 *.userprefs
+.metadata
+Tests/OpenPeerMediaTestApp/bin
+Tests/OpenPeerMediaTestApp/obj
+Tests/OpenPeerMediaTestApp/Libs
+Tests/OpenPeerMediaTestApp/OpenPeerAndroidSDK/bin
+Tests/OpenPeerMediaTestApp/OpenPeerAndroidSDK/obj
+Tests/OpenPeerMediaTestApp/OpenPeerAndroidSDK/Jars
