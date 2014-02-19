@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--- Taken from: http://stackoverflow.com/questions/17852481/android-slide-in-slide-out-for-activity -->
+<set xmlns:android="http://schemas.android.com/apk/res/android" >
+    <translate
+        android:duration="@android:integer/config_mediumAnimTime"
+        android:fromXDelta="-100%"
+        android:fromYDelta="0"
+        android:interpolator="@android:anim/linear_interpolator"
+        android:toXDelta="0"
+        android:toYDelta="0" />
+</set>

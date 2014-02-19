@@ -98,6 +98,10 @@
     <AndroidResource Include="Resources\layout\ChatMarginHeaderListItem.axml" />
     <AndroidResource Include="Resources\layout\ChatLeftSideListItem.axml" />
     <AndroidResource Include="Resources\layout\ChatRightSideListItem.axml" />
+    <AndroidResource Include="Resources\anim\SlideInRight.xml" />
+    <AndroidResource Include="Resources\anim\SlideOutRight.xml" />
+    <AndroidResource Include="Resources\anim\SlideInLeft.xml" />
+    <AndroidResource Include="Resources\anim\SlideOutLeft.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -106,6 +110,7 @@
     <Folder Include="Resources\drawable-mdpi\" />
     <Folder Include="Resources\drawable-xhdpi\" />
     <Folder Include="Resources\drawable-xxhdpi\" />
+    <Folder Include="Resources\anim\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">

@@ -53,18 +53,11 @@ namespace OpenPeerSampleAppCSharp
 			Console.WriteLine ("stopping");
 		}
 
-		protected void CloseSoftInput()
+		public override void OnBackPressed ()
 		{
-			View currentView = this.CurrentFocus;
-			if (currentView == null)
-				return;
-
-			InputMethodManager inputManager = 
-				(InputMethodManager)GetSystemService (InputMethodService);
-
-			inputManager.HideSoftInputFromWindow(
-				currentView.WindowToken,
-				HideSoftInputFlags.NotAlways); 
+			// prevent back button during login process
+			Finish ();
+			this.OverridePendingTransition (Resource.Animation.SlideInLeft, Resource.Animation.SlideOutRight);
 		}
 
 		bool View.IOnKeyListener.OnKey (View v, Keycode keyCode, KeyEvent e)
@@ -86,9 +79,23 @@ namespace OpenPeerSampleAppCSharp
 			}
 		}
 
+		protected void CloseSoftInput()
+		{
+			View currentView = this.CurrentFocus;
+			if (currentView == null)
+				return;
+
+			InputMethodManager inputManager = 
+				(InputMethodManager)GetSystemService (InputMethodService);
+
+			inputManager.HideSoftInputFromWindow(
+				currentView.WindowToken,
+				HideSoftInputFlags.NotAlways); 
+		}
+
 		protected void OnSend()
 		{
-			Console.WriteLine("send button clicked!!");
+			Console.WriteLine("send!!");
 
 			editText.Text = "";
 			editText.RequestFocus ();

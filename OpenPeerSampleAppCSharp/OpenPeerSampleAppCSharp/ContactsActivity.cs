@@ -63,6 +63,8 @@ namespace OpenPeerSampleAppCSharp
 			base.OnListItemClick (l, v, position, id);
 			Intent intent = new Intent (this, typeof(ChatActivity));
 			StartActivity (intent);
+			//			this.OverridePendingTransition (Android.Resource.Animation.SlideInLeft, Android.Resource.Animation.SlideOutRight);
+			this.OverridePendingTransition (Resource.Animation.SlideInRight, Resource.Animation.SlideOutLeft);
 			//			Android.Widget.Toast.MakeText(this, "hello " + position.ToString(), Android.Widget.ToastLength.Short).Show();
 		}
 
