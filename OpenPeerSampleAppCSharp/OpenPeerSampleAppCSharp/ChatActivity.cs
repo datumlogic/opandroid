@@ -11,6 +11,8 @@ using Android.Widget;
 using Android.Views.InputMethods;
 using Android.Text.Method;
 
+using OpenPeerSampleAppCSharp.Services;
+
 namespace OpenPeerSampleAppCSharp
 {
 	[Activity (Label = "Open Peer Sample App - Chat", WindowSoftInputMode = SoftInput.AdjustPan)]			
@@ -18,6 +20,7 @@ namespace OpenPeerSampleAppCSharp
 								View.IOnKeyListener
 	{
 		private EditText editText;
+		private ServiceConnection<Services.AvatarCachingService> avatarServiceConnection;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -25,6 +28,8 @@ namespace OpenPeerSampleAppCSharp
 
 			// Create your application here
 			SetContentView (Resource.Layout.Chat);
+
+			avatarServiceConnection = ServiceConnection<Services.AvatarCachingService>.Bind (this);
 
 			this.ListAdapter = new ChatAdapter (this);
 
@@ -47,10 +52,14 @@ namespace OpenPeerSampleAppCSharp
 			editText.SetOnKeyListener (this);
 		}
 
-		protected override void OnStop()
+		protected override void OnDestroy ()
 		{
-			base.OnStop ();
-			Console.WriteLine ("stopping");
+			if (avatarServiceConnection != null) {
+				avatarServiceConnection.Dispose ();
+				avatarServiceConnection = null;
+			}
+
+			base.OnDestroy ();
 		}
 
 		public override void OnBackPressed ()

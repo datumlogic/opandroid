@@ -11,17 +11,22 @@ using Android.Widget;
 
 using PullToRefresharp.Android.Views;
 
+using OpenPeerSampleAppCSharp.Services;
+
 namespace OpenPeerSampleAppCSharp
 {
 	[Activity (Label = "Open Peer Sample App - Contact List", MainLauncher = true)]			
 	public class ContactsActivity : ListActivity
 	{
 		private IPullToRefresharpView refreshListView;
+		private ServiceConnection<Services.AvatarCachingService> avatarServiceConnection;
 
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 			SetContentView (Resource.Layout.ContactsWithPull);
+
+			avatarServiceConnection = ServiceConnection<Services.AvatarCachingService>.Bind (this);
 
 			refreshListView = this.ListView as IPullToRefresharpView;
 
@@ -30,6 +35,16 @@ namespace OpenPeerSampleAppCSharp
 			}
 
 			this.ListAdapter = new ContactAdapter (this);
+		}
+
+		protected override void OnDestroy ()
+		{
+			if (avatarServiceConnection != null) {
+				avatarServiceConnection.Dispose ();
+				avatarServiceConnection = null;
+			}
+
+			base.OnDestroy ();
 		}
 
 		public override bool OnCreateOptionsMenu(IMenu menu)
