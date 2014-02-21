@@ -25,14 +25,14 @@ namespace OpenPeerSampleAppCSharp
 		{
 			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
 			private IPullToRefresharpView refreshListView;
-			private ServiceConnection<ImageCachingService> avatarServiceConnection;
+			private ServiceConnection<ImageCachingService> imageCachingServiceConnection;
 
 			protected override void OnCreate (Bundle bundle)
 			{
 				base.OnCreate (bundle);
 				SetContentView (Resource.Layout.ContactsWithPull);
 
-				avatarServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this, downloader);
+				imageCachingServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this, downloader);
 
 				refreshListView = this.ListView as IPullToRefresharpView;
 
@@ -45,9 +45,9 @@ namespace OpenPeerSampleAppCSharp
 
 			protected override void OnDestroy ()
 			{
-				if (avatarServiceConnection != null) {
-					avatarServiceConnection.Dispose ();
-					avatarServiceConnection = null;
+				if (imageCachingServiceConnection != null) {
+					imageCachingServiceConnection.Dispose ();
+					imageCachingServiceConnection = null;
 				}
 
 				base.OnDestroy ();

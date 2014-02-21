@@ -107,10 +107,10 @@ namespace OpenPeerSampleAppCSharp
 				View view = convertView; // re-use an existing view, if one is available
 
 				ViewHolder holder;
-				bool resourceLoaded = false;
+				bool firstTimeResourceLoaded = false;
 
 				if (view == null) { // otherwise create a new one
-					resourceLoaded = true;
+					firstTimeResourceLoaded = true;
 
 					view = context.LayoutInflater.Inflate (Resource.Layout.ContactListItem, null);
 
@@ -158,7 +158,7 @@ namespace OpenPeerSampleAppCSharp
 				if (null != bitmap) {
 					holder.AvatarImageView.SetImageDrawable (bitmap);
 				} else {
-					if (!resourceLoaded) {
+					if (!firstTimeResourceLoaded) {
 						holder.AvatarImageView.SetImageDrawable (holder.OriginalEmptyAvatarDrawable);	// reset back to original drawable
 					}
 				}
