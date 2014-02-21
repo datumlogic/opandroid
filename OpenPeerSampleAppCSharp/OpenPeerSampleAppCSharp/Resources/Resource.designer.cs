@@ -77,17 +77,42 @@ namespace OpenPeerSampleAppCSharp
 			global::PullToRefresharp.Resource.Styleable.PullToRefresharpWrapper_snapbackDuration = global::OpenPeerSampleAppCSharp.Resource.Styleable.PullToRefresharpWrapper_snapbackDuration;
 		}
 		
+		public partial class Animation
+		{
+			
+			// aapt resource value: 0x7f040000
+			public const int SlideInLeft = 2130968576;
+			
+			// aapt resource value: 0x7f040001
+			public const int SlideInRight = 2130968577;
+			
+			// aapt resource value: 0x7f040002
+			public const int SlideOutLeft = 2130968578;
+			
+			// aapt resource value: 0x7f040003
+			public const int SlideOutRight = 2130968579;
+			
+			static Animation()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Animation()
+			{
+			}
+		}
+		
 		public partial class Array
 		{
 			
-			// aapt resource value: 0x7f080000
-			public const int log_levels_array = 2131230720;
+			// aapt resource value: 0x7f090000
+			public const int log_levels_array = 2131296256;
 			
-			// aapt resource value: 0x7f080002
-			public const int log_subsystem_array = 2131230722;
+			// aapt resource value: 0x7f090002
+			public const int log_subsystem_array = 2131296258;
 			
-			// aapt resource value: 0x7f080001
-			public const int log_subsystem_friend_names_array = 2131230721;
+			// aapt resource value: 0x7f090001
+			public const int log_subsystem_friend_names_array = 2131296257;
 			
 			static Array()
 			{
@@ -154,17 +179,17 @@ namespace OpenPeerSampleAppCSharp
 		public partial class Color
 		{
 			
-			// aapt resource value: 0x7f040001
-			public const int ptrsharp_sb_gradient_end = 2130968577;
+			// aapt resource value: 0x7f050001
+			public const int ptrsharp_sb_gradient_end = 2131034113;
 			
-			// aapt resource value: 0x7f040000
-			public const int ptrsharp_sb_gradient_start = 2130968576;
+			// aapt resource value: 0x7f050000
+			public const int ptrsharp_sb_gradient_start = 2131034112;
 			
-			// aapt resource value: 0x7f040002
-			public const int ptrsharp_sb_header_text = 2130968578;
+			// aapt resource value: 0x7f050002
+			public const int ptrsharp_sb_header_text = 2131034114;
 			
-			// aapt resource value: 0x7f040003
-			public const int ptrsharp_sb_header_text_shadow = 2130968579;
+			// aapt resource value: 0x7f050003
+			public const int ptrsharp_sb_header_text_shadow = 2131034115;
 			
 			static Color()
 			{
@@ -179,8 +204,8 @@ namespace OpenPeerSampleAppCSharp
 		public partial class Dimension
 		{
 			
-			// aapt resource value: 0x7f050000
-			public const int fastscroll_thumb_width = 2131034112;
+			// aapt resource value: 0x7f060000
+			public const int fastscroll_thumb_width = 2131099648;
 			
 			static Dimension()
 			{
@@ -247,113 +272,113 @@ namespace OpenPeerSampleAppCSharp
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f0a0005
-			public const int avatarImageView = 2131361797;
+			// aapt resource value: 0x7f0b0005
+			public const int avatarImageView = 2131427333;
 			
-			// aapt resource value: 0x7f0a0011
-			public const int badgeAnchorTextView = 2131361809;
+			// aapt resource value: 0x7f0b0011
+			public const int badgeAnchorTextView = 2131427345;
 			
-			// aapt resource value: 0x7f0a000f
-			public const int badgeRelativeLayout = 2131361807;
+			// aapt resource value: 0x7f0b000f
+			public const int badgeRelativeLayout = 2131427343;
 			
-			// aapt resource value: 0x7f0a0010
-			public const int badgeSpacerRelativeLayout = 2131361808;
+			// aapt resource value: 0x7f0b0010
+			public const int badgeSpacerRelativeLayout = 2131427344;
 			
-			// aapt resource value: 0x7f0a0007
-			public const int bubbleImageView = 2131361799;
+			// aapt resource value: 0x7f0b0007
+			public const int bubbleImageView = 2131427335;
 			
-			// aapt resource value: 0x7f0a0006
-			public const int bubbleTextRelativeLayout = 2131361798;
+			// aapt resource value: 0x7f0b0006
+			public const int bubbleTextRelativeLayout = 2131427334;
 			
-			// aapt resource value: 0x7f0a0008
-			public const int bubbleTextView = 2131361800;
+			// aapt resource value: 0x7f0b0008
+			public const int bubbleTextView = 2131427336;
 			
-			// aapt resource value: 0x7f0a000e
-			public const int chatIcon = 2131361806;
+			// aapt resource value: 0x7f0b000e
+			public const int chatIcon = 2131427342;
 			
-			// aapt resource value: 0x7f0a0009
-			public const int contactItemLinearLayout = 2131361801;
+			// aapt resource value: 0x7f0b0009
+			public const int contactItemLinearLayout = 2131427337;
 			
-			// aapt resource value: 0x7f0a000a
-			public const int contactItemRelativeLayout = 2131361802;
+			// aapt resource value: 0x7f0b000a
+			public const int contactItemRelativeLayout = 2131427338;
 			
-			// aapt resource value: 0x7f0a000b
-			public const int detailsRelativeLayout = 2131361803;
+			// aapt resource value: 0x7f0b000b
+			public const int detailsRelativeLayout = 2131427339;
 			
-			// aapt resource value: 0x7f0a0002
-			public const int editText = 2131361794;
+			// aapt resource value: 0x7f0b0002
+			public const int editText = 2131427330;
 			
-			// aapt resource value: 0x7f0a0017
-			public const int header = 2131361815;
+			// aapt resource value: 0x7f0b0017
+			public const int header = 2131427351;
 			
-			// aapt resource value: 0x7f0a0016
-			public const int header_container = 2131361814;
+			// aapt resource value: 0x7f0b0016
+			public const int header_container = 2131427350;
 			
-			// aapt resource value: 0x7f0a0019
-			public const int icon = 2131361817;
+			// aapt resource value: 0x7f0b0019
+			public const int icon = 2131427353;
 			
-			// aapt resource value: 0x7f0a001d
-			public const int labelTextView = 2131361821;
+			// aapt resource value: 0x7f0b001d
+			public const int labelTextView = 2131427357;
 			
-			// aapt resource value: 0x7f0a0015
-			public const int linearLayout = 2131361813;
+			// aapt resource value: 0x7f0b0015
+			public const int linearLayout = 2131427349;
 			
-			// aapt resource value: 0x7f0a0013
-			public const int loginWebView = 2131361811;
+			// aapt resource value: 0x7f0b0013
+			public const int loginWebView = 2131427347;
 			
-			// aapt resource value: 0x7f0a0023
-			public const int logoutMenuItem = 2131361827;
+			// aapt resource value: 0x7f0b0023
+			public const int logoutMenuItem = 2131427363;
 			
-			// aapt resource value: 0x7f0a0003
-			public const int nameTextView = 2131361795;
+			// aapt resource value: 0x7f0b0003
+			public const int nameTextView = 2131427331;
 			
-			// aapt resource value: 0x7f0a0012
-			public const int ptr_wrapper = 2131361810;
+			// aapt resource value: 0x7f0b0012
+			public const int ptr_wrapper = 2131427346;
 			
-			// aapt resource value: 0x7f0a0018
-			public const int pullDownProgressIndicator = 2131361816;
+			// aapt resource value: 0x7f0b0018
+			public const int pullDownProgressIndicator = 2131427352;
 			
-			// aapt resource value: 0x7f0a001c
-			public const int relativeLayout = 2131361820;
+			// aapt resource value: 0x7f0b001c
+			public const int relativeLayout = 2131427356;
 			
-			// aapt resource value: 0x7f0a0001
-			public const int sendButton = 2131361793;
+			// aapt resource value: 0x7f0b0001
+			public const int sendButton = 2131427329;
 			
-			// aapt resource value: 0x7f0a0000
-			public const int sendRelativeLayout = 2131361792;
+			// aapt resource value: 0x7f0b0000
+			public const int sendRelativeLayout = 2131427328;
 			
-			// aapt resource value: 0x7f0a0022
-			public const int settingsMenuItem = 2131361826;
+			// aapt resource value: 0x7f0b0022
+			public const int settingsMenuItem = 2131427362;
 			
-			// aapt resource value: 0x7f0a001b
-			public const int settingsSpinnerListItem = 2131361819;
+			// aapt resource value: 0x7f0b001b
+			public const int settingsSpinnerListItem = 2131427355;
 			
-			// aapt resource value: 0x7f0a001f
-			public const int settingsTextEditListItem = 2131361823;
+			// aapt resource value: 0x7f0b001f
+			public const int settingsTextEditListItem = 2131427359;
 			
-			// aapt resource value: 0x7f0a0020
-			public const int settingsToggleListItem = 2131361824;
+			// aapt resource value: 0x7f0b0020
+			public const int settingsToggleListItem = 2131427360;
 			
-			// aapt resource value: 0x7f0a0014
-			public const int tabHost = 2131361812;
+			// aapt resource value: 0x7f0b0014
+			public const int tabHost = 2131427348;
 			
-			// aapt resource value: 0x7f0a001a
-			public const int text = 2131361818;
+			// aapt resource value: 0x7f0b001a
+			public const int text = 2131427354;
 			
-			// aapt resource value: 0x7f0a000c
-			public const int textAreaLinearLayout = 2131361804;
+			// aapt resource value: 0x7f0b000c
+			public const int textAreaLinearLayout = 2131427340;
 			
-			// aapt resource value: 0x7f0a0004
-			public const int timeTextView = 2131361796;
+			// aapt resource value: 0x7f0b0004
+			public const int timeTextView = 2131427332;
 			
-			// aapt resource value: 0x7f0a0021
-			public const int toggleButton = 2131361825;
+			// aapt resource value: 0x7f0b0021
+			public const int toggleButton = 2131427361;
 			
-			// aapt resource value: 0x7f0a000d
-			public const int usernameTextView = 2131361805;
+			// aapt resource value: 0x7f0b000d
+			public const int usernameTextView = 2131427341;
 			
-			// aapt resource value: 0x7f0a001e
-			public const int valueSpinner = 2131361822;
+			// aapt resource value: 0x7f0b001e
+			public const int valueSpinner = 2131427358;
 			
 			static Id()
 			{
@@ -432,8 +457,8 @@ namespace OpenPeerSampleAppCSharp
 		public partial class Menu
 		{
 			
-			// aapt resource value: 0x7f090000
-			public const int main_menu = 2131296256;
+			// aapt resource value: 0x7f0a0000
+			public const int main_menu = 2131361792;
 			
 			static Menu()
 			{
@@ -448,38 +473,38 @@ namespace OpenPeerSampleAppCSharp
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f060005
-			public const int app_name = 2131099653;
+			// aapt resource value: 0x7f070005
+			public const int app_name = 2131165189;
 			
-			// aapt resource value: 0x7f060004
-			public const int hello = 2131099652;
+			// aapt resource value: 0x7f070004
+			public const int hello = 2131165188;
 			
-			// aapt resource value: 0x7f060000
-			public const int library_name = 2131099648;
+			// aapt resource value: 0x7f070000
+			public const int library_name = 2131165184;
 			
-			// aapt resource value: 0x7f060007
-			public const int outgoing_telnet_logger = 2131099655;
+			// aapt resource value: 0x7f070007
+			public const int outgoing_telnet_logger = 2131165191;
 			
-			// aapt resource value: 0x7f060008
-			public const int outgoing_telnet_logger_server_prompt = 2131099656;
+			// aapt resource value: 0x7f070008
+			public const int outgoing_telnet_logger_server_prompt = 2131165192;
 			
-			// aapt resource value: 0x7f060001
-			public const int ptrsharp_pull_to_refresh = 2131099649;
+			// aapt resource value: 0x7f070001
+			public const int ptrsharp_pull_to_refresh = 2131165185;
 			
-			// aapt resource value: 0x7f060003
-			public const int ptrsharp_refreshing = 2131099651;
+			// aapt resource value: 0x7f070003
+			public const int ptrsharp_refreshing = 2131165187;
 			
-			// aapt resource value: 0x7f060002
-			public const int ptrsharp_release_to_refresh = 2131099650;
+			// aapt resource value: 0x7f070002
+			public const int ptrsharp_release_to_refresh = 2131165186;
 			
-			// aapt resource value: 0x7f060006
-			public const int standard_out_logger = 2131099654;
+			// aapt resource value: 0x7f070006
+			public const int standard_out_logger = 2131165190;
 			
-			// aapt resource value: 0x7f060009
-			public const int telnet_logger = 2131099657;
+			// aapt resource value: 0x7f070009
+			public const int telnet_logger = 2131165193;
 			
-			// aapt resource value: 0x7f06000a
-			public const int telnet_logger_port_prompt = 2131099658;
+			// aapt resource value: 0x7f07000a
+			public const int telnet_logger_port_prompt = 2131165194;
 			
 			static String()
 			{
@@ -494,8 +519,8 @@ namespace OpenPeerSampleAppCSharp
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f070000
-			public const int HoloProgressMedium = 2131165184;
+			// aapt resource value: 0x7f080000
+			public const int HoloProgressMedium = 2131230720;
 			
 			static Style()
 			{
