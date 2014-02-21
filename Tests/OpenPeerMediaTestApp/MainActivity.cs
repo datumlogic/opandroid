@@ -6,14 +6,15 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Com.Openpeer.Javaapi;
+using Org.Webrtc.Videoengine;
 
 namespace OpenPeerMediaTestApp
 {
 	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true)]
 	public class MainActivity : Activity
 	{
-		int count = 1;
 		OPMediaEngine mediaEngine = null;
+		SurfaceView localView = null;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -27,16 +28,18 @@ namespace OpenPeerMediaTestApp
 
 			// Get our button from the layout resource,
 			// and attach an event to it
+			LinearLayout layout = FindViewById<LinearLayout> (Resource.Id.myLinearLayout);
 			Button button = FindViewById<Button> (Resource.Id.myButton);
+
+			localView = ViERenderer.CreateLocalRenderer(this);
+			layout.AddView (localView);
 			
 			button.Click += delegate {
 				Java.Lang.Boolean ecEnabled = new Java.Lang.Boolean (false);
 				mediaEngine = OPMediaEngine.Singleton ();
 				mediaEngine.SetEcEnabled (ecEnabled);
-				//Com.Example.Hellojni.HelloJni hello = new Com.Example.Hellojni.HelloJni();
-				//string msg = hello.StringFromJNI();
-				string msg = "";
-				button.Text = string.Format ("{0} {1}", count++, msg);
+				mediaEngine.StartVideoCapture ();
+				button.Text = string.Format ("Video Capture Started");
 			};
 		}
 	}
