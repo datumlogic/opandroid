@@ -88,7 +88,18 @@ namespace OpenPeerSampleAppCSharp
 				"http://www.avatar-zone.com/Avatars/Simpsons/Simpsons-40.gif",
 				"http://www.avatarist.com/avatars/Movies/Monsters-Inc/Mike-(Monsters-Inc).jpg",
 				"http://www.avatar-zone.com/Avatars/Fun/Avatar-9.jpg",
-				"http://irrationalgames.com/files/avatars/40761/f9da7e5728b67cb6a791722d99c9e114-bpthumb.jpg"
+				"http://irrationalgames.com/files/avatars/40761/f9da7e5728b67cb6a791722d99c9e114-bpthumb.jpg",
+				"http://fc07.deviantart.net/fs70/f/2014/051/d/4/wheeler_icon_by_th3frgt10warrior-d77c3p4.png",
+				"http://i3.squidoocdn.com/resize_square/squidoo_images/50/lm7a13ab09b8972e27373a0b4f05c8deda_5fbb0ed49e0a6777569e70af09d31fb1.png",
+				"https://www.neatoshop.com/images/product/93/6993/Doctor-Who-Dalek-USB-Desk-Protector_36726-s.jpg?v=36726",
+				"http://www.jeboavatars.com/images/avatars/241738204067earthdawg.gif",
+				"http://icons.iconarchive.com/icons/fixicon/farm/256/turtle-icon.png",
+				"http://www.avatarist.com/avatars/Games/Super-Smash-Bros-Brawl/Mario-in-Brawl.gif",
+				"http://avatarbox.net/avatars/img18/super_mario_kart_wario_avatar_picture_21060.gif",
+				"http://icons.iconarchive.com/icons/3xhumed/mega-games-pack-33/128/Call-of-Duty-Modern-Warfare-2-8-icon.png",
+				"http://www.jeboavatars.com/images/avatars/191415199067gagaga.jpg",
+				"https://lh3.googleusercontent.com/-boHOsb5ui34/AAAAAAAAAAI/AAAAAAAAHjQ/mGPd8FsVMXA/w48-c-h48/photo.jpg",
+				"http://25.media.tumblr.com/avatar_c80a99bd5fd4_128.png"
 			};
 
 			public override View GetView(int position, View convertView, ViewGroup parent)

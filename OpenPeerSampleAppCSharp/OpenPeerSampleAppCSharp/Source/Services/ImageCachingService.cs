@@ -152,6 +152,7 @@ namespace OpenPeerSampleAppCSharp
 
 				lock (this) {
 					EnsureCachePathExists ();
+					CleanupOlderFiles ();
 				}
 			}
 
@@ -219,6 +220,31 @@ namespace OpenPeerSampleAppCSharp
 				}
 			}
 
+			private void CleanupOlderFiles() {
+				string path = this.CachePath;
+
+				DateTime now = DateTime.UtcNow;
+				TimeSpan lifeTime = new TimeSpan(5, 0, 0, 0);	// 5 days maximum
+
+				try {
+					string [] fileEntries = Directory.GetFiles(path);
+					foreach(string fileName in fileEntries) {
+
+						DateTime fileCreationTime = File.GetCreationTimeUtc(fileName);
+
+						try {
+							if (fileCreationTime + lifeTime < now) {
+								File.Delete (path);
+							}
+						} catch (Exception e) {
+							Debug.WriteLine ("Failed to delete a cache file, filename=" + fileName + ", exception=" + e.ToString ());
+						}
+					}
+				} catch (Exception e) {
+					Debug.WriteLine ("Failed to clean up cache: " + e.ToString ());
+				}
+			}
+
 			private async void HandleDownloaded (CacheFile file)
 			{
 				List<CacheValue> pending = file.GetAllPendingNotifies ();
@@ -247,6 +273,12 @@ namespace OpenPeerSampleAppCSharp
 				public string Url { get; set; }
 				public bool HasLocalFile { get; set; }
 				public bool DownloadFailed { get; set; }
+
+				private static TimeSpan defaultRetryDuration = new TimeSpan (0, 0, 15);
+				private static TimeSpan maxRetryDuration = new TimeSpan (1, 0, 0);
+
+				DateTime downloadFailedTime;
+				TimeSpan lastRetryDuration = defaultRetryDuration;	// start at 15 seconds, thus first retry can only happen after 30 seconds
 
 				private string cachePath;
 				private List<CacheValue> notifyDownloadedList = new List<CacheValue> ();
@@ -301,10 +333,20 @@ namespace OpenPeerSampleAppCSharp
 							}
 
 							if (this.IsComplete) {
-								Debug.WriteLine ("Previous download already complete, url=" + this.Url);
-								goto completed;
+								if (!this.DownloadFailed) {
+									Debug.WriteLine ("Previous download already complete, url=" + this.Url);
+									goto completed;
+								}
+
+								if (this.downloadFailedTime + this.lastRetryDuration > DateTime.UtcNow) {
+									Debug.WriteLine ("Too soon to retry download, url=" + this.Url);
+									goto completed;
+								}
+
+								this.DownloadFailed = false;
+								Debug.WriteLine ("okay to retry download now, url=" + this.Url);
 							}
-								
+
 							startedDownload = this.isDownloading = true;
 						}
 
@@ -341,6 +383,15 @@ namespace OpenPeerSampleAppCSharp
 							lock (this) {
 								this.HasLocalFile = stored;
 								this.DownloadFailed = !stored;
+								this.downloadFailedTime = DateTime.UtcNow;
+								if (this.DownloadFailed) {
+									this.lastRetryDuration += this.lastRetryDuration;
+									if (lastRetryDuration > maxRetryDuration) {
+										lastRetryDuration = maxRetryDuration;
+									}
+								} else {
+									this.lastRetryDuration = CacheFile.defaultRetryDuration;
+								}
 								this.isDownloading = false;
 							}
 						}
@@ -446,7 +497,7 @@ namespace OpenPeerSampleAppCSharp
 
 					try {
 						if (file.DownloadFailed) {
-							Debug.WriteLine ("Notifying image url downloaded, url=" + file.Url);
+							Debug.WriteLine ("Notifying image download failure, url=" + file.Url);
 							goto completed;
 						}
 
