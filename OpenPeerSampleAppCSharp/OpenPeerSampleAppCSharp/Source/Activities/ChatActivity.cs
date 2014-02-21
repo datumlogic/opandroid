@@ -22,7 +22,7 @@ namespace OpenPeerSampleAppCSharp
 									View.IOnKeyListener
 		{
 			private EditText editText;
-			private ServiceConnection<Services.AvatarCachingService> avatarServiceConnection;
+			private ServiceConnection<Services.ImageCachingService> avatarServiceConnection;
 
 			protected override void OnCreate (Bundle bundle)
 			{
@@ -31,7 +31,7 @@ namespace OpenPeerSampleAppCSharp
 				// Create your application here
 				SetContentView (Resource.Layout.Chat);
 
-				avatarServiceConnection = ServiceConnection<Services.AvatarCachingService>.Bind (this);
+				avatarServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this);
 
 				this.ListAdapter = new ChatAdapter (this);
 
