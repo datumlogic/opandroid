@@ -115,10 +115,11 @@ namespace OpenPeerSampleAppCSharp
 			Dictionary<string, CacheFile> cachedFiles = new Dictionary<string, CacheFile> ();
 			Dictionary<CacheKey, CacheValue> cachedBitmaps = new Dictionary<CacheKey, CacheValue> ();
 
-			public static string CachePath {
+			public string CachePath {
 				get {
-					string localFolder = System.Environment.GetFolderPath (System.Environment.SpecialFolder.LocalApplicationData);
-					return System.IO.Path.Combine (localFolder, "image_cache");
+					string cacheFolder = this.CacheDir.AbsolutePath;
+					//					string localFolder = System.Environment.GetFolderPath (System.Environment.SpecialFolder.LocalApplicationData);
+					return System.IO.Path.Combine (cacheFolder, "image_cache");
 				}
 			}
 
@@ -175,7 +176,7 @@ namespace OpenPeerSampleAppCSharp
 
 				lock (this) {
 					if (!cachedFiles.TryGetValue (url, out file)) {
-						file = new CacheFile (url);
+						file = new CacheFile (url, this.CachePath);
 
 						cachedFiles [url] = file;
 					} else {
@@ -212,7 +213,7 @@ namespace OpenPeerSampleAppCSharp
 
 			private void EnsureCachePathExists ()
 			{
-				string path = ImageCachingService.CachePath;
+				string path = this.CachePath;
 				if (!Directory.Exists (path)) {
 					Directory.CreateDirectory (path);
 				}
@@ -247,6 +248,7 @@ namespace OpenPeerSampleAppCSharp
 				public bool HasLocalFile { get; set; }
 				public bool DownloadFailed { get; set; }
 
+				private string cachePath;
 				private List<CacheValue> notifyDownloadedList = new List<CacheValue> ();
 
 				bool isDownloading;
@@ -262,11 +264,11 @@ namespace OpenPeerSampleAppCSharp
 				{
 					get {
 						Contract.Assert (Url != null);
-						return System.IO.Path.Combine (ImageCachingService.CachePath,  ImageCachingService.CalculateUrlHash(Url));
+						return System.IO.Path.Combine (cachePath,  ImageCachingService.CalculateUrlHash(Url));
 					}
 				}
 
-				public CacheFile (string url) { this.Url = url;}
+				public CacheFile (string url, string cachePath) { this.Url = url; this.cachePath = cachePath;}
 
 				public void AddToNotifyList (CacheValue value)
 				{
