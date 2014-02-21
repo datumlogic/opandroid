@@ -21,8 +21,9 @@ namespace OpenPeerSampleAppCSharp
 		public class ChatActivity : ListActivity,
 									View.IOnKeyListener
 		{
+			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
 			private EditText editText;
-			private ServiceConnection<Services.AvatarCachingService> avatarServiceConnection;
+			private ServiceConnection<Services.ImageCachingService> imageCachingServiceConnection;
 
 			protected override void OnCreate (Bundle bundle)
 			{
@@ -31,9 +32,9 @@ namespace OpenPeerSampleAppCSharp
 				// Create your application here
 				SetContentView (Resource.Layout.Chat);
 
-				avatarServiceConnection = ServiceConnection<Services.AvatarCachingService>.Bind (this);
+				imageCachingServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this, downloader);
 
-				this.ListAdapter = new ChatAdapter (this);
+				this.ListAdapter = new ChatAdapter (this, downloader);
 
 				ListView listView = FindViewById<ListView> (Android.Resource.Id.List);
 				listView.ItemsCanFocus = true;
@@ -56,9 +57,9 @@ namespace OpenPeerSampleAppCSharp
 
 			protected override void OnDestroy ()
 			{
-				if (avatarServiceConnection != null) {
-					avatarServiceConnection.Dispose ();
-					avatarServiceConnection = null;
+				if (imageCachingServiceConnection != null) {
+					imageCachingServiceConnection.Dispose ();
+					imageCachingServiceConnection = null;
 				}
 
 				base.OnDestroy ();

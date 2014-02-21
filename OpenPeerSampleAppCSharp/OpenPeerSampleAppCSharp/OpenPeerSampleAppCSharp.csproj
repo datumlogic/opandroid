@@ -58,11 +58,11 @@
     <Compile Include="Source\Activities\MainActivity.cs" />
     <Compile Include="Source\Activities\SettingsActivity.cs" />
     <Compile Include="Source\Activities\SettingsAdapter.cs" />
-    <Compile Include="Source\Services\AvatarCachingService.cs" />
     <Compile Include="Source\Services\ServiceHelpers.cs" />
     <Compile Include="Source\Views\BadgeView.cs" />
     <Compile Include="Source\Activities\ContactsActivity.cs" />
     <Compile Include="Source\Activities\ContactAdapter.cs" />
+    <Compile Include="Source\Services\ImageCachingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

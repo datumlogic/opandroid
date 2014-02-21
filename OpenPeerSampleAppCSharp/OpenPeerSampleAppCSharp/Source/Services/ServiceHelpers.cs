@@ -17,10 +17,7 @@ namespace OpenPeerSampleAppCSharp
 	{
 		public interface IServiceConnection<ServiceType>
 		{
-			void OnServiceConnected (
-				ServiceType service,
-				ComponentName name
-			);
+			void OnServiceConnected ( ServiceType service, ComponentName name );
 			void OnServiceDisconnected (ComponentName name);
 		}
 
@@ -36,16 +33,24 @@ namespace OpenPeerSampleAppCSharp
 
 			static public ServiceConnection<ServiceType> Bind(Activity activity, Android.Content.Bind bindFlags = Android.Content.Bind.AutoCreate)
 			{
+				return Bind (activity, null, bindFlags);
+			}
+
+			static public ServiceConnection<ServiceType> Bind(Activity activity, IServiceConnection<ServiceType> altConnection, Android.Content.Bind bindFlags = Android.Content.Bind.AutoCreate)
+			{
 				Intent intent = new Intent (activity, typeof (ServiceType));
 
-				var realConnection = new ServiceConnection<ServiceType>(activity);
+				var realConnection = new ServiceConnection<ServiceType>(activity, altConnection);
 				activity.BindService (intent, realConnection, bindFlags);
 				return realConnection;
 			}
 
-			protected ServiceConnection (Activity activity)
+			protected ServiceConnection (Activity activity, IServiceConnection<ServiceType> altConnection)
 			{
-				this.connection = activity as IServiceConnection<ServiceType>;
+				if (null != altConnection)
+					this.connection = altConnection;
+				else
+					this.connection = activity as IServiceConnection<ServiceType>;
 			}
 
 			void IDisposable.Dispose ()

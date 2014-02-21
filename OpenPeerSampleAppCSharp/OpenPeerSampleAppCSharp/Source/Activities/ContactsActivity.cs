@@ -1,17 +1,20 @@
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using Android.App;
 using Android.Content;
+using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
 using PullToRefresharp.Android.Views;
 
 using OpenPeerSampleAppCSharp.Services;
+
+using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 
 namespace OpenPeerSampleAppCSharp
 {
@@ -20,15 +23,16 @@ namespace OpenPeerSampleAppCSharp
 		[Activity (Label = "Open Peer Sample App - Contact List", MainLauncher = true)]			
 		public class ContactsActivity : ListActivity
 		{
+			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
 			private IPullToRefresharpView refreshListView;
-			private ServiceConnection<Services.AvatarCachingService> avatarServiceConnection;
+			private ServiceConnection<ImageCachingService> imageCachingServiceConnection;
 
 			protected override void OnCreate (Bundle bundle)
 			{
 				base.OnCreate (bundle);
 				SetContentView (Resource.Layout.ContactsWithPull);
 
-				avatarServiceConnection = ServiceConnection<Services.AvatarCachingService>.Bind (this);
+				imageCachingServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this, downloader);
 
 				refreshListView = this.ListView as IPullToRefresharpView;
 
@@ -36,14 +40,14 @@ namespace OpenPeerSampleAppCSharp
 					refreshListView.RefreshActivated += pullview_RefreshActivated;
 				}
 
-				this.ListAdapter = new ContactsAdapter (this);
+				this.ListAdapter = new ContactsAdapter (this, downloader);
 			}
 
 			protected override void OnDestroy ()
 			{
-				if (avatarServiceConnection != null) {
-					avatarServiceConnection.Dispose ();
-					avatarServiceConnection = null;
+				if (imageCachingServiceConnection != null) {
+					imageCachingServiceConnection.Dispose ();
+					imageCachingServiceConnection = null;
 				}
 
 				base.OnDestroy ();
@@ -80,9 +84,8 @@ namespace OpenPeerSampleAppCSharp
 				base.OnListItemClick (l, v, position, id);
 				Intent intent = new Intent (this, typeof(ChatActivity));
 				StartActivity (intent);
-				//			this.OverridePendingTransition (Android.Resource.Animation.SlideInLeft, Android.Resource.Animation.SlideOutRight);
+
 				this.OverridePendingTransition (Resource.Animation.SlideInRight, Resource.Animation.SlideOutLeft);
-				//			Android.Widget.Toast.MakeText(this, "hello " + position.ToString(), Android.Widget.ToastLength.Short).Show();
 			}
 
 			private void pullview_RefreshActivated(object sender, EventArgs args)
