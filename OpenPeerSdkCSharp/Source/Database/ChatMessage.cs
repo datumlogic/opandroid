@@ -1,7 +1,7 @@
 using System;
 using SQLite;
 
-namespace OpenPeerSampleAppCSharp
+namespace OpenPeerSdk
 {
 	namespace Database
 	{

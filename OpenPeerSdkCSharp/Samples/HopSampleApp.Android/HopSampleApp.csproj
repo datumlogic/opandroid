@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9A699589-647F-43AB-B450-560A40DF55DC}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HopSampleApp</RootNamespace>
+    <AndroidApplication>True</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
+    <AssemblyName>HopSampleApp</AssemblyName>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;__MOBILE__;__ANDROID__;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <ConsolePause>false</ConsolePause>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>__MOBILE__;__ANDROID__;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
+    <Reference Include="Mono.Android.Export" />
+    <Reference Include="Mono.Android.Support.v4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\Activities\ChatActivity.cs" />
+    <Compile Include="Source\Activities\ChatAdapter.cs" />
+    <Compile Include="Source\Activities\LoginActivity.cs" />
+    <Compile Include="Source\Activities\MainActivity.cs" />
+    <Compile Include="Source\Activities\SettingsActivity.cs" />
+    <Compile Include="Source\Activities\SettingsAdapter.cs" />
+    <Compile Include="Source\Services\ServiceHelpers.cs" />
+    <Compile Include="Source\Views\BadgeView.cs" />
+    <Compile Include="Source\Activities\ContactsActivity.cs" />
+    <Compile Include="Source\Activities\ContactAdapter.cs" />
+    <Compile Include="Source\Services\ImageCachingService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AboutResources.txt" />
+    <None Include="Assets\AboutAssets.txt" />
+    <None Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Main.axml" />
+    <AndroidResource Include="Resources\values\Strings.xml" />
+    <AndroidResource Include="Resources\drawable\Icon.png" />
+    <AndroidResource Include="Resources\layout\Splash.axml" />
+    <AndroidResource Include="Resources\layout\Settings.axml" />
+    <AndroidResource Include="Resources\layout\Login.axml" />
+    <AndroidResource Include="Resources\menu\main_menu.xml" />
+    <AndroidResource Include="Resources\drawable\chat.png" />
+    <AndroidResource Include="Resources\layout\Contacts.axml" />
+    <AndroidResource Include="Resources\layout\ContactListItem.axml" />
+    <AndroidResource Include="Resources\layout\SettingsSpinnerListItem.axml" />
+    <AndroidResource Include="Resources\layout\SettingsTextEditListItem.axml" />
+    <AndroidResource Include="Resources\layout\SettingsToggleListItem.axml" />
+    <AndroidResource Include="Resources\layout\ContactsWithPull.axml" />
+    <AndroidResource Include="Resources\drawable\chat_alt.png" />
+    <AndroidResource Include="Resources\layout\Chat.axml" />
+    <AndroidResource Include="Resources\drawable-hdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_bubble_left.9.png" />
+    <AndroidResource Include="Resources\drawable\chat_bubble_left_source.png" />
+    <AndroidResource Include="Resources\drawable\chat_bubble_right_source.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_bubble_right.9.png" />
+    <AndroidResource Include="Resources\layout\ChatLeftSideHeaderListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatRightSideHeaderListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatMarginHeaderListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatLeftSideListItem.axml" />
+    <AndroidResource Include="Resources\layout\ChatRightSideListItem.axml" />
+    <AndroidResource Include="Resources\anim\SlideInRight.xml" />
+    <AndroidResource Include="Resources\anim\SlideOutRight.xml" />
+    <AndroidResource Include="Resources\anim\SlideInLeft.xml" />
+    <AndroidResource Include="Resources\anim\SlideOutLeft.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Resources\menu\" />
+    <Folder Include="Resources\drawable-hdpi\" />
+    <Folder Include="Resources\drawable-mdpi\" />
+    <Folder Include="Resources\drawable-xhdpi\" />
+    <Folder Include="Resources\drawable-xxhdpi\" />
+    <Folder Include="Resources\anim\" />
+    <Folder Include="Source\" />
+    <Folder Include="Source\Activities\" />
+    <Folder Include="Source\Services\" />
+    <Folder Include="Source\Views\" />
+    <Folder Include="Source\Database\" />
+    <Folder Include="Source\Helpers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
+      <Project>{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}</Project>
+      <Name>PullToRefresharp.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OpenPeerSdkCSharp.csproj">
+      <Project>{8E4FFF81-A605-4848-8633-FDC8CF6B77E5}</Project>
+      <Name>OpenPeerSdkCSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

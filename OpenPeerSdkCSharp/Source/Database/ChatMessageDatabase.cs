@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using SQLite;
 
-namespace OpenPeerSampleAppCSharp
+namespace OpenPeerSdk
 {
 	namespace Database
 	{
