@@ -27,6 +27,10 @@ namespace OpenPeerSampleAppCSharp
 			private IPullToRefresharpView refreshListView;
 			private ServiceConnection<ImageCachingService> imageCachingServiceConnection;
 
+			private DateTime lastRefresh;
+			private static TimeSpan redownloadIfRefreshWithin = TimeSpan.FromSeconds (15);
+			private static TimeSpan redownloadOlderThan = TimeSpan.FromMinutes (5);
+
 			protected override void OnCreate (Bundle bundle)
 			{
 				base.OnCreate (bundle);
@@ -90,6 +94,18 @@ namespace OpenPeerSampleAppCSharp
 
 			private void pullview_RefreshActivated(object sender, EventArgs args)
 			{
+				this.downloader.RedownloadMissingUponNextFetch ();
+
+				if (lastRefresh != default(DateTime)) {
+					if (lastRefresh + redownloadIfRefreshWithin < DateTime.UtcNow) {
+						this.downloader.RedownloadOlderThan (DateTime.UtcNow - redownloadOlderThan);
+					}
+				}
+
+				lastRefresh = DateTime.UtcNow;
+
+				ListView.InvalidateViews ();
+
 				ListView.PostDelayed(() => {
 					if (refreshListView != null) {
 						// When you are done refreshing your content, let PullToRefresharp know you're done.

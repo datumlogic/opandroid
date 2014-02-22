@@ -41,12 +41,17 @@ namespace OpenPeerSampleAppCSharp
 						Debug.WriteLine ("original view is no longer bound");
 						return;
 					}
-					object temp = bitmap;
-					if (bitmap is Drawable) {
-						holder.AvatarImageView.SetImageDrawable ((Drawable)temp);
-					} else {
-						holder.AvatarImageView.SetImageBitmap ((Bitmap)temp);
-					}
+					UseBitmap (holder, bitmap);
+				}
+
+				private static void UseBitmap (ViewHolder holder, Bitmap bitmap)
+				{
+					holder.AvatarImageView.SetImageBitmap (bitmap);
+				}
+
+				private static void UseBitmap (ViewHolder holder, BitmapDrawable bitmap)
+				{
+					holder.AvatarImageView.SetImageDrawable (bitmap);
 				}
 			}
 

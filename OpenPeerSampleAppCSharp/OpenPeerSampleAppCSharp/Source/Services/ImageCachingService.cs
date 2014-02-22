@@ -32,12 +32,17 @@ namespace OpenPeerSampleAppCSharp
 		public interface IImageCachingDownloader
 		{
 			BitmapType FetchNowOrAsyncDownload (string url, int width, int height, Action<BitmapType> callback);
+
+			void RedownloadMissingUponNextFetch ();
+			void RedownloadOlderThan (DateTime utcTime);
 		}
 
 		public class ImageCachingServiceDownloader : IImageCachingDownloader, IServiceConnection<ImageCachingService>
 		{
 			ImageCachingService service;
 			List<PendingDownload> pendingDownload = new List<PendingDownload> ();
+
+			private bool redownloadMissingUponNextFetch = false;
 
 			struct PendingDownload
 			{
@@ -58,7 +63,7 @@ namespace OpenPeerSampleAppCSharp
 			{
 			}
 
-			BitmapType IImageCachingDownloader.FetchNowOrAsyncDownload (string url, int maxWidth, int maxHeight, Action<BitmapType> callback)
+			public BitmapType FetchNowOrAsyncDownload (string url, int maxWidth, int maxHeight, Action<BitmapType> callback)
 			{
 				if (null != this.service) {
 					ImageCachingService.OutBitmap instantResult = new ImageCachingService.OutBitmap ();
@@ -73,10 +78,43 @@ namespace OpenPeerSampleAppCSharp
 				return null;
 			}
 
+			public void RedownloadMissingUponNextFetch ()
+			{
+				if (this.service == null) {
+					redownloadMissingUponNextFetch = true;
+					return;
+				}
+				this.service.RedownloadMissingUponNextFetch ();
+			}
+
+			public void RedownloadOlderThan (DateTime utcTime)
+			{
+				this.service.RedownloadOlderThan (utcTime);
+			}
+
+			BitmapType IImageCachingDownloader.FetchNowOrAsyncDownload (string url, int maxWidth, int maxHeight, Action<BitmapType> callback)
+			{
+				return this.FetchNowOrAsyncDownload (url, maxWidth, maxHeight, callback);
+			}
+
+			void IImageCachingDownloader.RedownloadMissingUponNextFetch ()
+			{
+				this.RedownloadMissingUponNextFetch ();
+			}
+
+			void IImageCachingDownloader.RedownloadOlderThan (DateTime utcTime)
+			{
+				this.RedownloadOlderThan (utcTime);
+			}
+
 			void IServiceConnection<ImageCachingService>.OnServiceConnected ( ImageCachingService service, ComponentName name )
 			{
 				this.service = service;
 
+				if (redownloadMissingUponNextFetch) {
+					this.service.RedownloadMissingUponNextFetch ();
+					redownloadMissingUponNextFetch = false;
+				}
 				DownloadNow ();
 			}
 
@@ -212,6 +250,31 @@ namespace OpenPeerSampleAppCSharp
 				await file.Download (HandleDownloaded);
 			}
 
+			public void RedownloadMissingUponNextFetch ()
+			{
+				Debug.WriteLine ("Forcing redownload of any missing image cache entries (when next fetched)...");
+
+				lock (this) {
+					foreach (KeyValuePair<string, CacheFile> keyValue in cachedFiles) {
+						keyValue.Value.RedownloadUponNextFetch ();
+					}
+				}
+			}
+
+			public void RedownloadOlderThan (DateTime utcTime)
+			{
+				Debug.WriteLine ("Forcing redownload of images older than specified time, time=" + utcTime.ToLocalTime ().ToString ());
+
+				lock (this) {
+					foreach (KeyValuePair<string, CacheFile> keyValue in cachedFiles) {
+						keyValue.Value.RedownloadOlderThan (utcTime);
+					}
+					foreach (KeyValuePair<CacheKey, CacheValue> keyValue in cachedBitmaps) {
+						keyValue.Value.RedownloadOlderThan (utcTime);
+					}
+				}
+			}
+
 			private void EnsureCachePathExists ()
 			{
 				string path = this.CachePath;
@@ -270,15 +333,17 @@ namespace OpenPeerSampleAppCSharp
 
 			class CacheFile
 			{
+				private const long maxBytesToDownload = (1024 * 1024);	// 1 megabyte max
 				public string Url { get; set; }
 				public bool HasLocalFile { get; set; }
 				public bool DownloadFailed { get; set; }
+				public bool PermanentFailure { get; set; }
 
 				private static TimeSpan defaultRetryDuration = new TimeSpan (0, 0, 15);
 				private static TimeSpan maxRetryDuration = new TimeSpan (1, 0, 0);
 
-				DateTime downloadFailedTime;
-				TimeSpan lastRetryDuration = defaultRetryDuration;	// start at 15 seconds, thus first retry can only happen after 30 seconds
+				DateTime nextRetryTime;
+				TimeSpan nextRetryDuration = defaultRetryDuration;	// start at 15 seconds, thus first retry can only happen after 30 seconds
 
 				private string cachePath;
 				private List<CacheValue> notifyDownloadedList = new List<CacheValue> ();
@@ -319,6 +384,60 @@ namespace OpenPeerSampleAppCSharp
 					return result;
 				}
 
+				public void RedownloadUponNextFetch ()
+				{
+					lock (this) {
+						if (this.isDownloading) {
+							Debug.WriteLine ("Cannot redownload while already downloading, url=" + this.Url);
+							return;
+						}
+
+						if (!this.DownloadFailed) {
+							Debug.WriteLine ("No need to redownload since download was never attempted or it succeeded, url=" + this.Url);
+							return;
+						}
+
+						if (this.notifyDownloadedList.Count > 0) {
+							Debug.WriteLine ("Cannot redownload while pending bitmap caching notifications exist, url=" + this.Url);
+							return;
+						}
+
+						Debug.WriteLine ("Will force redownload next fetch, url=" + this.Url);
+						nextRetryDuration = defaultRetryDuration;
+						nextRetryTime = DateTime.Now;
+					}
+				}
+
+				public void RedownloadOlderThan (DateTime utcTime)
+				{
+					string localPath = this.LocalFilePath;
+
+					lock (this) {
+						try {
+							if (this.isDownloading)
+								return;
+
+							if (this.notifyDownloadedList.Count > 0) {
+								Debug.WriteLine ("Cannot redownload while pending notifications exist, url=" + this.Url);
+								return;
+							}
+
+							if (System.IO.File.Exists (localPath)) {
+								DateTime fileTime = System.IO.File.GetCreationTimeUtc (localPath);
+								if (fileTime >= utcTime) {
+									Debug.WriteLine (string.Format("File is not old enough yet, file={0}, url={1}, created={2}", localPath, this.Url, fileTime.ToLocalTime ().ToString ()));
+									return;
+								}
+
+								Debug.WriteLine (string.Format("Deleting older cached image file, file={0}, url={1}, created={2}", localPath, this.Url, fileTime.ToLocalTime ().ToString ()));
+								System.IO.File.Delete (localPath);
+							}
+						} catch (Exception e) {
+							Debug.WriteLine (string.Format("Failed to access cached image file, file={0}, url={1}, exception=", localPath, this.Url, e));
+						}
+					}
+				}
+
 				public async Task Download (Action<CacheFile> notifyComplete)
 				{
 					bool startedDownload = false;
@@ -338,7 +457,12 @@ namespace OpenPeerSampleAppCSharp
 									goto completed;
 								}
 
-								if (this.downloadFailedTime + this.lastRetryDuration > DateTime.UtcNow) {
+								if (this.PermanentFailure) {
+									Debug.WriteLine ("Refusing to download this file, url=" + this.Url);
+									goto completed;
+								}
+
+								if (this.nextRetryTime <= DateTime.UtcNow) {
 									Debug.WriteLine ("Too soon to retry download, url=" + this.Url);
 									goto completed;
 								}
@@ -365,6 +489,7 @@ namespace OpenPeerSampleAppCSharp
 							var url = new Uri (this.Url);
 
 							try {
+								webClient.DownloadProgressChanged += DownloadProgressCallback;
 								await webClient.DownloadFileTaskAsync (url, localPath);
 								stored = true;
 							} catch (TaskCanceledException) {
@@ -383,14 +508,15 @@ namespace OpenPeerSampleAppCSharp
 							lock (this) {
 								this.HasLocalFile = stored;
 								this.DownloadFailed = !stored;
-								this.downloadFailedTime = DateTime.UtcNow;
 								if (this.DownloadFailed) {
-									this.lastRetryDuration += this.lastRetryDuration;
-									if (lastRetryDuration > maxRetryDuration) {
-										lastRetryDuration = maxRetryDuration;
+									this.nextRetryTime = DateTime.UtcNow + nextRetryDuration;
+									this.nextRetryDuration += this.nextRetryDuration;
+									if (nextRetryDuration > maxRetryDuration) {
+										nextRetryDuration = maxRetryDuration;
 									}
 								} else {
-									this.lastRetryDuration = CacheFile.defaultRetryDuration;
+									this.nextRetryTime = DateTime.UtcNow;
+									this.nextRetryDuration = CacheFile.defaultRetryDuration;
 								}
 								this.isDownloading = false;
 							}
@@ -400,6 +526,23 @@ namespace OpenPeerSampleAppCSharp
 				completed:
 
 					notifyComplete (this);
+				}
+
+				private void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
+				{
+					if ((e.TotalBytesToReceive > maxBytesToDownload) ||
+						(e.BytesReceived > maxBytesToDownload)) {
+						lock (this) {
+							Debug.WriteLine (string.Format("File download size is too big, refusing to download, total size={0}, downloaded={1}, url={2}", e.TotalBytesToReceive, e.BytesReceived, this.Url));
+							this.PermanentFailure = true;
+						}
+
+						WebClient webClient = (WebClient)sender;
+						webClient.CancelAsync ();
+						return;
+					}
+
+					Debug.WriteLine (string.Format("Image download progress, percentage={0}, total size={1}, downloaded={2}, url={2}", e.ProgressPercentage, e.TotalBytesToReceive, e.BytesReceived, this.Url));
 				}
 			}
 
@@ -457,6 +600,16 @@ namespace OpenPeerSampleAppCSharp
 						BitmapType result;
 						lock (this) {
 							result = this.bitmapWeak;
+
+							if (null != result) {
+								// check if the java object assocaited was GC
+								if (IntPtr.Zero == result.Handle) {
+									Debug.WriteLine ("Associated Java Object was GC'ed, url=" + Key.Url);
+
+									result = null;
+									this.bitmapWeak = null;
+								}
+							}
 						}
 						return result;
 					}
@@ -466,6 +619,7 @@ namespace OpenPeerSampleAppCSharp
 				Action<BitmapType> callbacks;
 				bool loadInProgess;
 				bool decodeFailed;
+				DateTime bitmapCreated;
 
 				public CacheValue (CacheKey key)
 				{
@@ -490,6 +644,24 @@ namespace OpenPeerSampleAppCSharp
 					return result;
 				}
 
+				public void RedownloadOlderThan (DateTime utcTime)
+				{
+					lock (this) {
+						if (this.loadInProgess)
+							return;
+
+						if (bitmapCreated == default(DateTime)) {
+							this.bitmapWeak = null;
+							return;
+						}
+
+						if (bitmapCreated < utcTime) {
+							this.bitmapWeak = null;
+							return;
+						}
+					}
+				}
+
 				public async Task HandleDownloaded (CacheFile file, Action<CacheValue, BitmapType> callback)
 				{
 					bool startedLoading = false;
@@ -502,7 +674,7 @@ namespace OpenPeerSampleAppCSharp
 						}
 
 						lock (this) {
-							bitmap = (BitmapType)this.bitmapWeak;
+							bitmap = this.Bitmap;
 						}
 
 						if (null != bitmap) {
@@ -526,36 +698,37 @@ namespace OpenPeerSampleAppCSharp
 
 						string localFile = file.LocalFilePath;
 
-						BitmapFactory.Options options = new BitmapFactory.Options ();
-						options.InJustDecodeBounds = true;
-						await BitmapFactory.DecodeFileAsync (localFile, options);
+						try {
+							BitmapFactory.Options options = new BitmapFactory.Options ();
+							options.InJustDecodeBounds = true;
+							await BitmapFactory.DecodeFileAsync (localFile, options);
 
-						int scale = 1;
+							int scale = 1;
 
-						if (this.Key.MaxHeight > 0) {
-							scale = options.OutHeight / Key.MaxHeight;
-						}
-						if (this.Key.MaxHeight > 0) {
-							int temp = options.OutWidth / Key.MaxWidth;
-							scale = (temp > scale ? temp : scale);
-						}
+							if (this.Key.MaxHeight > 0) {
+								scale = options.OutHeight / Key.MaxHeight;
+							}
+							if (this.Key.MaxHeight > 0) {
+								int temp = options.OutWidth / Key.MaxWidth;
+								scale = (temp > scale ? temp : scale);
+							}
 
-						options.InSampleSize = scale;
-						options.InJustDecodeBounds = false;
+							options.InSampleSize = scale;
+							options.InJustDecodeBounds = false;
 
-						Bitmap tempBitmap = await BitmapFactory.DecodeFileAsync (localFile, options);
+							Bitmap tempBitmap = await BitmapFactory.DecodeFileAsync (localFile, options);
 
-						if ((typeof (BitmapType) == typeof(BitmapDrawable)) ||
-							(typeof (BitmapType) == typeof(Drawable))) {
-							object temp = new BitmapDrawable(tempBitmap);
-							bitmap = (BitmapDrawable)temp;
-						} else {
-							object temp = tempBitmap;
-							bitmap = (BitmapType)temp;
-						}
+							bitmap = Convert(tempBitmap, bitmap);
 
-						lock (this) {
-							this.bitmapWeak = bitmap;
+						} catch(Exception e) {
+							Debug.WriteLine ("Decoding of image failed, url=" + file.Url + ", exception=" + e.ToString ());
+						} finally {
+							lock (this) {
+								if (null != bitmap) {
+									this.bitmapWeak = bitmap;
+									this.bitmapCreated = DateTime.UtcNow;
+								}
+							}
 						}
 
 						Debug.WriteLine ("Loading image url from cache completed, url=" + file.Url);
@@ -565,6 +738,7 @@ namespace OpenPeerSampleAppCSharp
 							lock (this) {
 								if (bitmap == null) {
 									this.decodeFailed = true;
+									this.bitmapCreated = default(DateTime);
 								}
 								this.loadInProgess = false;
 							}
@@ -573,6 +747,16 @@ namespace OpenPeerSampleAppCSharp
 
 				completed:
 					callback (this, bitmap);
+				}
+
+				protected static Bitmap Convert(Bitmap input, Bitmap selector)
+				{
+					return input;
+				}
+
+				protected static BitmapDrawable Convert(Bitmap input, BitmapDrawable selector)
+				{
+					return new BitmapDrawable(input);
 				}
 			}
 

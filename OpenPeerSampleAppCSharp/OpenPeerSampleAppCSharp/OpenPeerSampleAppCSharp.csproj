@@ -63,6 +63,9 @@
     <Compile Include="Source\Activities\ContactsActivity.cs" />
     <Compile Include="Source\Activities\ContactAdapter.cs" />
     <Compile Include="Source\Services\ImageCachingService.cs" />
+    <Compile Include="Source\Database\SQLite.cs" />
+    <Compile Include="Source\Database\ChatMessage.cs" />
+    <Compile Include="Source\Database\ChatMessageDatabase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -118,6 +121,7 @@
     <Folder Include="Source\Activities\" />
     <Folder Include="Source\Services\" />
     <Folder Include="Source\Views\" />
+    <Folder Include="Source\Database\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
