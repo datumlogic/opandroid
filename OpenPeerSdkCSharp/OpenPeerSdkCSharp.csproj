@@ -50,6 +50,8 @@
     <Compile Include="Source\Database\ChatMessage.cs" />
     <Compile Include="Source\Database\SQLite.cs" />
     <Compile Include="Source\Database\ChatMessageDatabase.cs" />
+    <Compile Include="Source\Helpers\Internal\Logger.cs" />
+    <Compile Include="Source\Helpers\Logger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -62,5 +64,6 @@
     <Folder Include="Source\" />
     <Folder Include="Source\Helpers\" />
     <Folder Include="Source\Database\" />
+    <Folder Include="Source\Helpers\Internal\" />
   </ItemGroup>
 </Project>

@@ -44,6 +44,12 @@ namespace HopSampleApp
 						Debug.WriteLine ("original view is no longer bound");
 						return;
 					}
+
+					if (null == bitmap) {
+						holder.AvatarImageView.SetImageDrawable (holder.OriginalEmptyAvatarDrawable);
+						return;
+					}
+
 					UseBitmap (holder, bitmap);
 				}
 

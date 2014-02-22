@@ -22,7 +22,7 @@ using OpenPeerSdk.Helpers;
 
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 using BitmapWeak = OpenPeerSdk.Helpers.WeakReference<Android.Graphics.Drawables.BitmapDrawable>;
-using Debug = System.Diagnostics.Debug;
+using Logger = OpenPeerSdk.Helpers.Logger;
 
 
 namespace HopSampleApp
@@ -177,14 +177,14 @@ namespace HopSampleApp
 
 			public override StartCommandResult OnStartCommand (Android.Content.Intent intent, StartCommandFlags flags, int startId)
 			{
-				Debug.WriteLine ("started");
+				Logger.Basic ("started");
 
 				return StartCommandResult.Sticky;
 			}	
 
 			public override void OnCreate ()
 			{
-				Debug.WriteLine ("OnCreate");
+				Logger.Basic ("OnCreate");
 
 				base.OnCreate ();
 
@@ -196,7 +196,7 @@ namespace HopSampleApp
 
 			public override void OnDestroy ()
 			{
-				Debug.WriteLine ("OnDestroy");
+				Logger.Basic ("OnDestroy");
 
 				base.OnDestroy ();
 			}
@@ -219,7 +219,7 @@ namespace HopSampleApp
 
 						cachedFiles [url] = file;
 					} else {
-						Debug.WriteLine ("Cached file is already present, url=" + url);
+						Logger.Trace ("Cached file is already present, url={0}", url);
 					}
 
 					// create a custom bitmap loader key
@@ -230,12 +230,12 @@ namespace HopSampleApp
 
 						cachedBitmaps [key] = value;
 					} else {
-						Debug.WriteLine ("Cached bitmap key is already present, url=" + url);
+						Logger.Trace ("Cached bitmap key is already present, url={0}", url);
 
 						BitmapType existingBitmap = value.Bitmap;
 						if (null != existingBitmap) {
 							if (null != outCachedResult) {
-								Debug.WriteLine ("Cached bitmap shortcircuited result, url=" + url);
+								Logger.Trace ("Cached bitmap shortcircuited result, url={0}", url);
 
 								outCachedResult.Bitmap = existingBitmap;
 								return;
@@ -252,7 +252,7 @@ namespace HopSampleApp
 
 			public void RedownloadMissingUponNextFetch ()
 			{
-				Debug.WriteLine ("Forcing redownload of any missing image cache entries (when next fetched)...");
+				Logger.Debug ("Forcing redownload of any missing image cache entries (when next fetched)...");
 
 				lock (this) {
 					foreach (KeyValuePair<string, CacheFile> keyValue in cachedFiles) {
@@ -263,7 +263,7 @@ namespace HopSampleApp
 
 			public void RedownloadOlderThan (DateTime utcTime)
 			{
-				Debug.WriteLine ("Forcing redownload of images older than specified time, time=" + utcTime.ToLocalTime ().ToString ());
+				Logger.Debug ("Forcing redownload of images older than specified time, time={0}", utcTime.ToLocalTime ().ToString ());
 
 				lock (this) {
 					foreach (KeyValuePair<string, CacheFile> keyValue in cachedFiles) {
@@ -300,11 +300,11 @@ namespace HopSampleApp
 								File.Delete (path);
 							}
 						} catch (Exception e) {
-							Debug.WriteLine ("Failed to delete a cache file, filename=" + fileName + ", exception=" + e.ToString ());
+							Logger.Error (Logger.Level.Detail, "Failed to delete a cache file, filename={0}, expection={1}", fileName, e.ToString ());
 						}
 					}
 				} catch (Exception e) {
-					Debug.WriteLine ("Failed to clean up cache: " + e.ToString ());
+					Logger.Error (Logger.Level.Basic, "Failed to clean up cache, exception={0}", e.ToString ());
 				}
 			}
 
@@ -388,23 +388,23 @@ namespace HopSampleApp
 				{
 					lock (this) {
 						if (this.isDownloading) {
-							Debug.WriteLine ("Cannot redownload while already downloading, url=" + this.Url);
+							Logger.Trace ("Cannot redownload while already downloading, url={0}", this.Url);
 							return;
 						}
 
 						if (!this.DownloadFailed) {
-							Debug.WriteLine ("No need to redownload since download was never attempted or it succeeded, url=" + this.Url);
+							Logger.Trace ("No need to redownload since download was never attempted or it succeeded, url={0}", this.Url);
 							return;
 						}
 
 						if (this.notifyDownloadedList.Count > 0) {
-							Debug.WriteLine ("Cannot redownload while pending bitmap caching notifications exist, url=" + this.Url);
+							Logger.Trace ("Cannot redownload while pending bitmap caching notifications exist, url={0}", this.Url);
 							return;
 						}
 
-						Debug.WriteLine ("Will force redownload next fetch, url=" + this.Url);
+						Logger.Trace ("Will force redownload next fetch, url={0}", this.Url);
 						nextRetryDuration = defaultRetryDuration;
-						nextRetryTime = DateTime.Now;
+						nextRetryTime = DateTime.UtcNow;
 					}
 				}
 
@@ -418,22 +418,22 @@ namespace HopSampleApp
 								return;
 
 							if (this.notifyDownloadedList.Count > 0) {
-								Debug.WriteLine ("Cannot redownload while pending notifications exist, url=" + this.Url);
+								Logger.Trace ("Cannot redownload while pending notifications exist, url={0}", this.Url);
 								return;
 							}
 
 							if (System.IO.File.Exists (localPath)) {
 								DateTime fileTime = System.IO.File.GetCreationTimeUtc (localPath);
 								if (fileTime >= utcTime) {
-									Debug.WriteLine (string.Format("File is not old enough yet, file={0}, url={1}, created={2}", localPath, this.Url, fileTime.ToLocalTime ().ToString ()));
+									Logger.Trace ("File is not old enough yet, file={0}, url={1}, created={2}", localPath, this.Url, fileTime.ToLocalTime ().ToString ());
 									return;
 								}
 
-								Debug.WriteLine (string.Format("Deleting older cached image file, file={0}, url={1}, created={2}", localPath, this.Url, fileTime.ToLocalTime ().ToString ()));
+								Logger.Trace ("Deleting older cached image file, file={0}, url={1}, created={2}", localPath, this.Url, fileTime.ToLocalTime ().ToString ());
 								System.IO.File.Delete (localPath);
 							}
 						} catch (Exception e) {
-							Debug.WriteLine (string.Format("Failed to access cached image file, file={0}, url={1}, exception=", localPath, this.Url, e));
+							Logger.Error (Logger.Level.Detail, "Failed to access cached image file, file={0}, url={1}, exception=", localPath, this.Url, e.ToString ());
 						}
 					}
 				}
@@ -447,40 +447,40 @@ namespace HopSampleApp
 					{
 						lock (this) {
 							if (this.isDownloading) {
-								Debug.WriteLine ("Already a downloader active, url=" + this.Url);
+								Logger.Trace ("Already a downloader active, url={0}", this.Url);
 								return;
 							}
 
 							if (this.IsComplete) {
 								if (!this.DownloadFailed) {
-									Debug.WriteLine ("Previous download already complete, url=" + this.Url);
+									Logger.Trace ("Previous download already complete, url={0}", this.Url);
 									goto completed;
 								}
 
 								if (this.PermanentFailure) {
-									Debug.WriteLine ("Refusing to download this file, url=" + this.Url);
+									Logger.Warning (Logger.Level.Detail, "Refusing to download this file, url={0}", this.Url);
 									goto completed;
 								}
 
 								if (this.nextRetryTime <= DateTime.UtcNow) {
-									Debug.WriteLine ("Too soon to retry download, url=" + this.Url);
+									Logger.Trace ("Too soon to retry download, url={0}", this.Url);
 									goto completed;
 								}
 
 								this.DownloadFailed = false;
-								Debug.WriteLine ("okay to retry download now, url=" + this.Url);
+								Logger.Debug ("okay to retry download now, url={0}", this.Url);
 							}
 
 							startedDownload = this.isDownloading = true;
 						}
 
-						Debug.WriteLine ("Download activating, url=" + this.Url);
+						Logger.Debug ("Download activating, url={0}", this.Url);
 
 						string localPath = this.LocalFilePath;
 
 						if (System.IO.File.Exists (localPath)) {
 							stored = true;
-							Debug.WriteLine ("Previous download already complete, url=" + this.Url);
+							Logger.Debug ("Previous download already complete, url={0}", this.Url);
 							goto completed;
 						}
 
@@ -493,15 +493,15 @@ namespace HopSampleApp
 								await webClient.DownloadFileTaskAsync (url, localPath);
 								stored = true;
 							} catch (TaskCanceledException) {
-								Debug.WriteLine ("Download cancelled, url=" + this.Url);
+								Logger.Warning (Logger.Level.Detail, "Download cancelled, url={0}", this.Url);
 								goto completed;
 							} catch (Exception e) {
-								Debug.WriteLine ("Download failure: " + e.ToString ());
+								Logger.Error (Logger.Level.Debug, "Download failure: {0}", e.ToString ());
 								goto completed;
 							}
 						}
 
-						Debug.WriteLine ("Download completed, url=" + this.Url);
+						Logger.Debug ("Download completed, url=", this.Url);
 						goto completed;
 					} finally {
 						if (startedDownload) {
@@ -533,7 +533,7 @@ namespace HopSampleApp
 					if ((e.TotalBytesToReceive > maxBytesToDownload) ||
 						(e.BytesReceived > maxBytesToDownload)) {
 						lock (this) {
-							Debug.WriteLine (string.Format("File download size is too big, refusing to download, total size={0}, downloaded={1}, url={2}", e.TotalBytesToReceive, e.BytesReceived, this.Url));
+							Logger.Warning (Logger.Level.Detail, "File download size is too big, refusing to download, total size={0}, downloaded={1}, url={2}", e.TotalBytesToReceive, e.BytesReceived, this.Url);
 							this.PermanentFailure = true;
 						}
 
@@ -542,7 +542,7 @@ namespace HopSampleApp
 						return;
 					}
 
-					Debug.WriteLine (string.Format("Image download progress, percentage={0}, total size={1}, downloaded={2}, url={2}", e.ProgressPercentage, e.TotalBytesToReceive, e.BytesReceived, this.Url));
+					Logger.Trace ("Image download progress, percentage={0}, total size={1}, downloaded={2}, url={2}", e.ProgressPercentage, e.TotalBytesToReceive, e.BytesReceived, this.Url);
 				}
 			}
 
@@ -604,7 +604,7 @@ namespace HopSampleApp
 							if (null != result) {
 								// check if the java object assocaited was GC
 								if (IntPtr.Zero == result.Handle) {
-									Debug.WriteLine ("Associated Java Object was GC'ed, url=" + Key.Url);
+									Logger.Trace ("Associated Java Object was GC'ed, url={0}", Key.Url);
 
 									result = null;
 									this.bitmapWeak = null;
@@ -669,7 +669,7 @@ namespace HopSampleApp
 
 					try {
 						if (file.DownloadFailed) {
-							Debug.WriteLine ("Notifying image download failure, url=" + file.Url);
+							Logger.Warning (Logger.Level.Debug, "Notifying image download failure, url={0}", file.Url);
 							goto completed;
 						}
 
@@ -678,23 +678,23 @@ namespace HopSampleApp
 						}
 
 						if (null != bitmap) {
-							Debug.WriteLine ("Bitmap already present, url=" + file.Url);
+							Logger.Trace ("Bitmap already present, url={0}", file.Url);
 							goto completed;
 						}
 
 						lock (this) {
 							if (this.decodeFailed) {
-								Debug.WriteLine ("Previous decoding failed, url=" + file.Url);
+								Logger.Warning (Logger.Level.Trace, "Previous decoding failed, url={0}", file.Url);
 							}
 							if (loadInProgess) {
-								Debug.WriteLine ("Load already in progress (must wait for it to complete, url=" + file.Url);
+								Logger.Trace ("Load already in progress (must wait for it to complete, url={0}", file.Url);
 								return;
 							}
 
 							startedLoading = this.loadInProgess = true;
 						}
 
-						Debug.WriteLine ("Loading image url from cache, url=" + file.Url);
+						Logger.Debug ("Loading image url from cache, url=" + file.Url);
 
 						string localFile = file.LocalFilePath;
 
@@ -721,7 +721,7 @@ namespace HopSampleApp
 							bitmap = Convert(tempBitmap, bitmap);
 
 						} catch(Exception e) {
-							Debug.WriteLine ("Decoding of image failed, url=" + file.Url + ", exception=" + e.ToString ());
+							Logger.Warning (Logger.Level.Debug, "Decoding of image failed, url={0}, expection={1}", file.Url, e.ToString ());
 						} finally {
 							lock (this) {
 								if (null != bitmap) {
@@ -731,7 +731,7 @@ namespace HopSampleApp
 							}
 						}
 
-						Debug.WriteLine ("Loading image url from cache completed, url=" + file.Url);
+						Logger.Debug ("Loading image url from cache completed, url={0}", file.Url);
 						goto completed;
 					} finally {
 						if (startedLoading) {
