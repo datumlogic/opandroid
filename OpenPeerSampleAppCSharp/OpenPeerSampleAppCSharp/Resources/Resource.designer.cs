@@ -75,6 +75,7 @@ namespace OpenPeerSampleAppCSharp
 			global::PullToRefresharp.Resource.Styleable.PullToRefresharpWrapper_refreshingText = global::OpenPeerSampleAppCSharp.Resource.Styleable.PullToRefresharpWrapper_refreshingText;
 			global::PullToRefresharp.Resource.Styleable.PullToRefresharpWrapper_releaseToRefreshText = global::OpenPeerSampleAppCSharp.Resource.Styleable.PullToRefresharpWrapper_releaseToRefreshText;
 			global::PullToRefresharp.Resource.Styleable.PullToRefresharpWrapper_snapbackDuration = global::OpenPeerSampleAppCSharp.Resource.Styleable.PullToRefresharpWrapper_snapbackDuration;
+			global::OpenPeerSdkCSharp.Resource.String.library_name = global::OpenPeerSampleAppCSharp.Resource.String.library_name;
 		}
 		
 		public partial class Animation
@@ -179,17 +180,17 @@ namespace OpenPeerSampleAppCSharp
 		public partial class Color
 		{
 			
-			// aapt resource value: 0x7f050001
-			public const int ptrsharp_sb_gradient_end = 2131034113;
+			// aapt resource value: 0x7f060001
+			public const int ptrsharp_sb_gradient_end = 2131099649;
 			
-			// aapt resource value: 0x7f050000
-			public const int ptrsharp_sb_gradient_start = 2131034112;
+			// aapt resource value: 0x7f060000
+			public const int ptrsharp_sb_gradient_start = 2131099648;
 			
-			// aapt resource value: 0x7f050002
-			public const int ptrsharp_sb_header_text = 2131034114;
+			// aapt resource value: 0x7f060002
+			public const int ptrsharp_sb_header_text = 2131099650;
 			
-			// aapt resource value: 0x7f050003
-			public const int ptrsharp_sb_header_text_shadow = 2131034115;
+			// aapt resource value: 0x7f060003
+			public const int ptrsharp_sb_header_text_shadow = 2131099651;
 			
 			static Color()
 			{
@@ -204,8 +205,8 @@ namespace OpenPeerSampleAppCSharp
 		public partial class Dimension
 		{
 			
-			// aapt resource value: 0x7f060000
-			public const int fastscroll_thumb_width = 2131099648;
+			// aapt resource value: 0x7f070000
+			public const int fastscroll_thumb_width = 2131165184;
 			
 			static Dimension()
 			{
@@ -473,38 +474,38 @@ namespace OpenPeerSampleAppCSharp
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f070005
-			public const int app_name = 2131165189;
+			// aapt resource value: 0x7f050005
+			public const int app_name = 2131034117;
 			
-			// aapt resource value: 0x7f070004
-			public const int hello = 2131165188;
+			// aapt resource value: 0x7f050004
+			public const int hello = 2131034116;
 			
-			// aapt resource value: 0x7f070000
-			public const int library_name = 2131165184;
+			// aapt resource value: 0x7f050000
+			public const int library_name = 2131034112;
 			
-			// aapt resource value: 0x7f070007
-			public const int outgoing_telnet_logger = 2131165191;
+			// aapt resource value: 0x7f050007
+			public const int outgoing_telnet_logger = 2131034119;
 			
-			// aapt resource value: 0x7f070008
-			public const int outgoing_telnet_logger_server_prompt = 2131165192;
+			// aapt resource value: 0x7f050008
+			public const int outgoing_telnet_logger_server_prompt = 2131034120;
 			
-			// aapt resource value: 0x7f070001
-			public const int ptrsharp_pull_to_refresh = 2131165185;
+			// aapt resource value: 0x7f050001
+			public const int ptrsharp_pull_to_refresh = 2131034113;
 			
-			// aapt resource value: 0x7f070003
-			public const int ptrsharp_refreshing = 2131165187;
+			// aapt resource value: 0x7f050003
+			public const int ptrsharp_refreshing = 2131034115;
 			
-			// aapt resource value: 0x7f070002
-			public const int ptrsharp_release_to_refresh = 2131165186;
+			// aapt resource value: 0x7f050002
+			public const int ptrsharp_release_to_refresh = 2131034114;
 			
-			// aapt resource value: 0x7f070006
-			public const int standard_out_logger = 2131165190;
+			// aapt resource value: 0x7f050006
+			public const int standard_out_logger = 2131034118;
 			
-			// aapt resource value: 0x7f070009
-			public const int telnet_logger = 2131165193;
+			// aapt resource value: 0x7f050009
+			public const int telnet_logger = 2131034121;
 			
-			// aapt resource value: 0x7f07000a
-			public const int telnet_logger_port_prompt = 2131165194;
+			// aapt resource value: 0x7f05000a
+			public const int telnet_logger_port_prompt = 2131034122;
 			
 			static String()
 			{
