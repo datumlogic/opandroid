@@ -20,14 +20,15 @@
             p1:id="@+id/detailsRelativeLayout"
             p1:padding="5dp">
             <ImageView
-                p1:src="@android:drawable/ic_menu_gallery"
+                p1:src="@drawable/avatar"
                 p1:id="@+id/avatarImageView"
-                p1:layout_width="65dp"
-                p1:layout_height="65dp"
+                p1:layout_width="60dp"
+                p1:layout_height="60dp"
                 p1:layout_centerVertical="true"
                 p1:focusable="false"
                 p1:focusableInTouchMode="false"
-                p1:clickable="false" />
+                p1:clickable="false"
+                p1:layout_marginRight="5dp" />
             <LinearLayout
                 p1:orientation="vertical"
                 p1:minWidth="25px"

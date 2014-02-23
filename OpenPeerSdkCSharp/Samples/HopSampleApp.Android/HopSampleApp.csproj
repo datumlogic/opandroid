@@ -105,6 +105,7 @@
     <AndroidResource Include="Resources\anim\SlideOutRight.xml" />
     <AndroidResource Include="Resources\anim\SlideInLeft.xml" />
     <AndroidResource Include="Resources\anim\SlideOutLeft.xml" />
+    <AndroidResource Include="Resources\drawable\avatar.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
