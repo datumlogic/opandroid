@@ -58,17 +58,32 @@ namespace OpenPeerSdk
 
 			public static void Warning (Level level, string message, params object[] list)
 			{
-				singleton.Log (level, Severity.Warning, message, list);
+				singleton.Warning (level, message, list);
 			}
 
 			public static void Error (Level level, string message, params object[] list)
 			{
-				singleton.Log (level, Severity.Error, message, list);
+				singleton.Error (level, message, list);
 			}
 
 			public static void Fatal (Level level, string message, params object[] list)
 			{
-				singleton.Log (level, Severity.Fatal, message, list);
+				singleton.Fatal (level, message, list);
+			}
+
+			public static void RegisterCurrentNamespace()
+			{
+				singleton.RegisterCurrentNamespace ();
+			}
+
+			public static void RegisterCurrentNamespace(string subsystemName)
+			{
+				singleton.RegisterCurrentNamespace (subsystemName);
+			}
+
+			public static void RegisterNamespace(string @namespace, string subsystemName)
+			{
+				singleton.RegisterNamespace (@namespace, subsystemName);
 			}
 		}
 

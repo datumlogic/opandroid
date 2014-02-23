@@ -12,11 +12,13 @@ using Android.Views.InputMethods;
 using Android.Text.Method;
 
 using HopSampleApp.Services;
+using OpenPeerSdk.Helpers;
 
 namespace HopSampleApp
 {
 	namespace Activities
 	{
+		[LoggerSubsystem("hop_sample_app")]
 		[Activity (Label = "Open Peer Sample App - Chat", WindowSoftInputMode = SoftInput.AdjustPan)]			
 		public class ChatActivity : ListActivity,
 									View.IOnKeyListener

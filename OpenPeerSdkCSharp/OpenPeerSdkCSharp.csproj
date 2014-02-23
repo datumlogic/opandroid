@@ -52,6 +52,8 @@
     <Compile Include="Source\Database\ChatMessageDatabase.cs" />
     <Compile Include="Source\Helpers\Internal\Logger.cs" />
     <Compile Include="Source\Helpers\Logger.cs" />
+    <Compile Include="Source\Helpers\LoggerSubsystemAttribute.cs" />
+    <Compile Include="Source\Helpers\Internal\LoggerSubsystemAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

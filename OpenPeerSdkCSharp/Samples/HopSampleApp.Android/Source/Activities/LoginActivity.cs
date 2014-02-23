@@ -12,10 +12,13 @@ using Android.Widget;
 using Android.Webkit;
 using Java.Interop;
 
+using OpenPeerSdk.Helpers;
+
 namespace HopSampleApp
 {
 	namespace Activities
 	{
+		[LoggerSubsystem("hop_sample_app")]
 		[Activity (Label = "LoginActivity")]			
 		public class LoginActivity : Activity
 		{

@@ -11,10 +11,13 @@ using Android.Views;
 using Android.Widget;
 using Android.Text;
 
+using OpenPeerSdk.Helpers;
+
 namespace HopSampleApp
 {
 	namespace Activities
 	{
+		[LoggerSubsystem("hop_sample_app")]
 		public class SettingsAdapter : BaseAdapter<object>
 		{
 			Activity context;

@@ -10,6 +10,8 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 
+using OpenPeerSdk.Helpers;
+
 using PullToRefresharp.Android.Views;
 
 using HopSampleApp.Services;
@@ -20,6 +22,7 @@ namespace HopSampleApp
 {
 	namespace Activities
 	{
+		[LoggerSubsystem("hop_sample_app")]
 		[Activity (Label = "Open Peer Sample App - Contact List", MainLauncher = true)]			
 		public class ContactsActivity : ListActivity
 		{

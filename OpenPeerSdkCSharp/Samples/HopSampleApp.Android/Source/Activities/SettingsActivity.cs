@@ -9,11 +9,14 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
+using OpenPeerSdk.Helpers;
+
 namespace HopSampleApp
 {
 	namespace Activities
 	{
-		[Activity (Label = "Open Peer Sample App - Settings", WindowSoftInputMode = SoftInput.AdjustPan)]			
+		[LoggerSubsystem("hop_sample_app")]
+		[Activity (Label = "Open Peer Sample App - Settings", WindowSoftInputMode = SoftInput.AdjustPan)]
 		public class SettingsActivity : ListActivity
 		{
 			protected override void OnCreate (Bundle bundle)

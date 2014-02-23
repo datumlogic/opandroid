@@ -14,10 +14,11 @@ using Android.Text;
 using Android.Views;
 using Android.Widget;
 
+using OpenPeerSdk.Helpers;
+
 using HopSampleApp.Services;
 
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
-using Debug = System.Diagnostics.Debug;
 
 using Helpers = OpenPeerSdk.Helpers;
 
@@ -25,6 +26,7 @@ namespace HopSampleApp
 {
 	namespace Activities
 	{
+		[LoggerSubsystem("hop_sample_app")]
 		public class ChatAdapter : BaseAdapter<object>
 		{
 			Activity context;
@@ -54,7 +56,7 @@ namespace HopSampleApp
 				{
 					DataViewHolder holder = (DataViewHolder)binding;
 					if (this != holder.CurrentDownloader) {
-						Debug.WriteLine ("original view is no longer bound");
+						Logger.Trace ("ChatAdapter original view is no longer bound");
 						return;
 					}
 					object temp = bitmap;

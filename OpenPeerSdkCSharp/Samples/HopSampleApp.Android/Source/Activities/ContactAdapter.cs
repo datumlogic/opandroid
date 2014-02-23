@@ -15,14 +15,13 @@ using HopSampleApp.Services;
 using HopSampleApp.Views;
 
 using Helpers = OpenPeerSdk.Helpers;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
-
 
 namespace HopSampleApp
 {
 	namespace Activities
 	{
+		[LoggerSubsystem("hop_sample_app")]
 		public class ContactsAdapter : BaseAdapter<object>
 		{
 			Activity context;
@@ -41,7 +40,7 @@ namespace HopSampleApp
 				{
 					ViewHolder holder = (ViewHolder)binding;
 					if (this != holder.CurrentDownloader) {
-						Debug.WriteLine ("original view is no longer bound");
+						Logger.Trace ("ContactsAdapter original view is no longer bound");
 						return;
 					}
 

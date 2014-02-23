@@ -10,10 +10,13 @@ using System.Net;
 using System.IO;
 using System.Text;
 
+using OpenPeerSdk.Helpers;
+
 namespace HopSampleApp
 {
 	namespace Activities
 	{
+		[LoggerSubsystem("hop_sample_app")]
 		[Activity (Label = "Open Peer Sample App")]
 		public class MainActivity : ActivityGroup
 		{

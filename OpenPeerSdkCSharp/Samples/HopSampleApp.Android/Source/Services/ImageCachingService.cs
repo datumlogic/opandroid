@@ -22,7 +22,6 @@ using OpenPeerSdk.Helpers;
 
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 using BitmapWeak = OpenPeerSdk.Helpers.WeakReference<Android.Graphics.Drawables.BitmapDrawable>;
-using Logger = OpenPeerSdk.Helpers.Logger;
 
 
 namespace HopSampleApp
@@ -37,6 +36,7 @@ namespace HopSampleApp
 			void RedownloadOlderThan (DateTime utcTime);
 		}
 
+		[LoggerSubsystem("hop_sample_app_services")]
 		public class ImageCachingServiceDownloader : IImageCachingDownloader, IServiceConnection<ImageCachingService>
 		{
 			ImageCachingService service;
@@ -140,6 +140,7 @@ namespace HopSampleApp
 
 		}
 
+		[LoggerSubsystem("hop_sample_app_services")]
 		[Service]
 		public class ImageCachingService : Service
 		{
@@ -184,6 +185,7 @@ namespace HopSampleApp
 
 			public override void OnCreate ()
 			{
+				Logger.RegisterCurrentNamespace ();
 				Logger.Basic ("OnCreate");
 
 				base.OnCreate ();
@@ -331,6 +333,7 @@ namespace HopSampleApp
 				}
 			}
 
+			[LoggerSubsystem("hop_sample_app_services")]
 			class CacheFile
 			{
 				private const long maxBytesToDownload = (1024 * 1024);	// 1 megabyte max
@@ -462,7 +465,7 @@ namespace HopSampleApp
 									goto completed;
 								}
 
-								if (this.nextRetryTime <= DateTime.UtcNow) {
+								if (this.nextRetryTime > DateTime.UtcNow) {
 									Logger.Trace ("Too soon to retry download, url={0}", this.Url);
 									goto completed;
 								}
@@ -546,6 +549,7 @@ namespace HopSampleApp
 				}
 			}
 
+			[LoggerSubsystem("hop_sample_app_services")]
 			class CacheKey
 			{
 				public string Url { get; set; }
