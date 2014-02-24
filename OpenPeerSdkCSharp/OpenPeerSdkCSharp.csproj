@@ -56,6 +56,13 @@
     <Compile Include="Source\Helpers\Internal\LoggerSubsystemAttribute.cs" />
     <Compile Include="Source\Database\Contact.cs" />
     <Compile Include="Source\Database\ContactDatabase.cs" />
+    <Compile Include="Source\Database\Common.cs" />
+    <Compile Include="Source\Database\Conversation.cs">
+      <DependentUpon>Conversation %28copy%29.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Database\ConversationDatabase.cs" />
+    <Compile Include="Source\Database\ConversationParticipant.cs" />
+    <Compile Include="Source\Database\ConversationParticipantRecord.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
