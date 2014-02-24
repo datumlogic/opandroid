@@ -63,6 +63,8 @@
     <Compile Include="Source\Database\ConversationDatabase.cs" />
     <Compile Include="Source\Database\ConversationParticipant.cs" />
     <Compile Include="Source\Database\ConversationParticipantRecord.cs" />
+    <Compile Include="Source\Helpers\OptionalOut.cs" />
+    <Compile Include="Source\Helpers\Helper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

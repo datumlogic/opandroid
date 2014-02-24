@@ -46,7 +46,7 @@ namespace HopSampleApp
 				Button sendButton = FindViewById<Button> (Resource.Id.sendButton);
 
 				listView.Touch += (object sender, View.TouchEventArgs e) => {
-					Console.WriteLine ("touch event");
+					Logger.Trace ("touch event");
 					ClearEditFocus ();
 				};
 
@@ -77,7 +77,7 @@ namespace HopSampleApp
 			bool View.IOnKeyListener.OnKey (View v, Keycode keyCode, KeyEvent e)
 			{
 				if (e.Action == KeyEventActions.Down && keyCode == Keycode.Enter) {
-					Console.WriteLine ("entered");
+					Logger.Debug ("entered pressed");
 					OnSend ();
 					return true;
 				}
@@ -89,7 +89,7 @@ namespace HopSampleApp
 				if (editText.HasFocus) {
 					CloseSoftInput ();
 					editText.ClearFocus ();
-					Console.WriteLine("focus cleared");
+					Logger.Debug("focus cleared");
 				}
 			}
 
@@ -109,7 +109,7 @@ namespace HopSampleApp
 
 			protected void OnSend()
 			{
-				Console.WriteLine("send!!");
+				Logger.Debug("send clicked");
 
 				editText.Text = "";
 				editText.RequestFocus ();

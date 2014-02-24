@@ -18,8 +18,11 @@ namespace OpenPeerSdk
 			[MaxLength(256)]
 			public string StableId { get; set; }
 
-			[Indexed, MaxLength(1024)]
+			[MaxLength(1024)]
 			public string PeerUri { get; set; }
+
+			[Indexed, MaxLength(128)]
+			public string PeerUriContactId { get; set; }
 
 			public string PeerFile { get; set; }
 

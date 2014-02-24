@@ -64,6 +64,14 @@ namespace OpenPeerSdk
 				}
 			}
 
+			public IEnumerable<Contact> GetByPeerUriContactId (string contactId)
+			{
+				lock (this) {
+					IEnumerable<Contact> result = this.Query<Contact> (@"SELECT * FROM Contact WHERE PeerUriContactId = ?", contactId);
+					return result;
+				}
+			}
+
 			public int Update (Contact item) 
 			{
 				lock (this) {

@@ -210,7 +210,7 @@ namespace HopSampleApp
 
 			public async void DownloadImageAsync (string url, int? maxWidth, int? maxHeight, Action<BitmapType> callbackOnUiThread, OutBitmap outCachedResult = null)
 			{
-				Contract.Assert (!String.IsNullOrEmpty (url));
+				Contract.Requires (!String.IsNullOrEmpty (url));
 
 				CacheFile file;
 				CacheValue value;
