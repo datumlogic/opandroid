@@ -54,6 +54,8 @@
     <Compile Include="Source\Helpers\Logger.cs" />
     <Compile Include="Source\Helpers\LoggerSubsystemAttribute.cs" />
     <Compile Include="Source\Helpers\Internal\LoggerSubsystemAttribute.cs" />
+    <Compile Include="Source\Database\Contact.cs" />
+    <Compile Include="Source\Database\ContactDatabase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

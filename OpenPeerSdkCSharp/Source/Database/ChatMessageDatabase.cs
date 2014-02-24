@@ -10,35 +10,35 @@ namespace OpenPeerSdk
 	{
 		public class ChatMessageDatabase : SQLiteConnection
 		{
-			private static string DatabaseFilePath (int dbId) {
-				var sqliteFilename = dbId.ToString() + "_chat.db3";
+			private static string DatabaseFilePath (int localUserID, int dbId) {
+				var sqliteFilename = localUserID.ToString () + "_" + dbId.ToString() + "_chat.db3";
 
-#if NETFX_CORE
+				#if NETFX_CORE
 				var path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, sqliteFilename);
-#else
+				#else
 
-#if SILVERLIGHT
+				#if SILVERLIGHT
 				// Windows Phone expects a local path, not absolute
 				var path = sqliteFilename;
-#else
+				#else
 
-#if __ANDROID__
+				#if __ANDROID__
 				// Just use whatever directory SpecialFolder.Personal returns
 				string libraryPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal); ;
-#else
+				#else
 				// we need to put in /Library/ on iOS5.1 to meet Apple's iCloud terms
 				// (they don't want non-user-generated data in Documents)
 				string documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal); // Documents folder
 				string libraryPath = Path.Combine (documentsPath, "../Library/"); // Library folder
-#endif
+				#endif
 				var path = Path.Combine (libraryPath, sqliteFilename);
-#endif		
+				#endif		
 
-#endif
+				#endif
 				return path;	
 			}
 
-			public ChatMessageDatabase (int chatMessageDatabaseId) : this(DatabaseFilePath(chatMessageDatabaseId))
+			public ChatMessageDatabase (int localUserID, int chatMessageDatabaseId) : this(DatabaseFilePath(localUserID, chatMessageDatabaseId))
 			{
 			}
 
@@ -47,10 +47,18 @@ namespace OpenPeerSdk
 				CreateTable<ChatMessage> ();
 			}
 
+			public int Rows {
+				get {
+					lock (this) {
+						return this.ExecuteScalar<int> (@"SELECT COUNT(*) FROM ChatMessage");
+					}
+				}
+			}
+
 			public IEnumerable<ChatMessage> GetLatestEntries (int limit, bool orderAsc = true) 
 			{
 				lock (this) {
-					IEnumerable<ChatMessage> result = this.Query<ChatMessage> ("SELECT * FROM ChatMessage ORDER BY When, _id DESC LIMIT " + limit.ToString ());
+					IEnumerable<ChatMessage> result = this.Query<ChatMessage> ("@SELECT * FROM ChatMessage ORDER BY When, _id DESC LIMIT ?", limit);
 					if (orderAsc)
 						return result.Reverse ();
 
@@ -64,13 +72,13 @@ namespace OpenPeerSdk
 
 				lock (this) {
 					if (0 != entriesBefore) {
-						IEnumerable<ChatMessage> beforeResult = this.Query<ChatMessage> ("SELECT * FROM ChatMessage ORDER BY When, _id DESC LIMIT " + entriesBefore.ToString () + " WHERE When < " + message.When.Ticks + " AND _id != " + message.Id);
+						IEnumerable<ChatMessage> beforeResult = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage ORDER BY When, _id DESC LIMIT ? WHERE When <= ? AND _id != ?", entriesBefore, message.When.Ticks, message.Id);
 
 						result = beforeResult.Reverse ();
 					}
 
 					if (0 != entriesAfter) {
-						IEnumerable<ChatMessage> afterResult = this.Query<ChatMessage> ("SELECT * FROM ChatMessage ORDER BY When, _id ASC LIMIT " + entriesAfter.ToString () + " WHERE When > " + message.When.Ticks + " AND _id != " + message.Id);
+						IEnumerable<ChatMessage> afterResult = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage ORDER BY When, _id ASC LIMIT ? WHERE When >= ? AND _id != ?", entriesAfter, message.When.Ticks, message.Id);
 						if (null != result) {
 							result = result.Concat(afterResult);
 						} else {
@@ -86,10 +94,18 @@ namespace OpenPeerSdk
 				return result;
 			}
 
-			public ChatMessage Get (int id)
+			public ChatMessage GetById (int id)
 			{
 				lock (this) {
-					IEnumerable<ChatMessage> result = this.Query<ChatMessage> ("SELECT * FROM ChatMessage WHERE _id = " + id);
+					IEnumerable<ChatMessage> result = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage WHERE _id = ?", id);
+					return result.FirstOrDefault ();
+				}
+			}
+
+			public ChatMessage GetByMessageId (string messageId)
+			{
+				lock (this) {
+					IEnumerable<ChatMessage> result = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage WHERE MessageId = ?", messageId);
 					return result.FirstOrDefault ();
 				}
 			}

@@ -5,15 +5,17 @@ namespace OpenPeerSdk
 {
 	namespace Database
 	{
-		public class ChatMessage {
+		public class ChatMessage
+		{
 			[PrimaryKey, AutoIncrement, Column("_id")]
 			public int Id { get; set; }
 
-			[Unique, MaxLength(100)]
+			[Indexed, Unique, MaxLength(100)]
 			public string MessageId { get; set; }
 			
 			public int ParticipantID { get; set; }
 
+			[Indexed]
 			public DateTime When { get; set; }
 
 			public string MimeType { get; set; }
