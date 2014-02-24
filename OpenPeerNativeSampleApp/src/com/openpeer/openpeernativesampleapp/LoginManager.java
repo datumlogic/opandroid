@@ -50,7 +50,7 @@ public class LoginManager {
 		
 		//mMediaEngine = new OPMediaEngine();
 		//OPMediaEngine.singleton().setEcEnabled(true);
-		mMediaEngine = OPMediaEngine.singleton();
+		mMediaEngine = OPMediaEngine.getInstance();
 		mMediaEngine.setEcEnabled(true);
 	}
 	

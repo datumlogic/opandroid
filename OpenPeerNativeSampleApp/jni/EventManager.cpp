@@ -16,7 +16,7 @@ void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread
 		   return;
 		}
 		//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-		method = jni_env->GetMethodID(gCallbackClass, "onJniCallback", "()V");
+		method = jni_env->GetMethodID(gCallbackClass, "onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread", "()V");
 		jni_env->CallVoidMethod(gCallbackClass, method);
 
 		if (jni_env->ExceptionCheck()) {
@@ -31,8 +31,25 @@ void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread
 //IStackDelegate implementation
 void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
 {
-	int i = 0;
-	i++;
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+
+	method = jni_env->GetMethodID(gCallbackClass, "onStackShutdown", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
 }
 
 //IMediaEngine implementation

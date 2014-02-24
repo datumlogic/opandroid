@@ -65,9 +65,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 		return;
 	}
 
-	ILogger::setLogLevel(ILogger::Trace);
-	ILogger::installTelnetLogger(59999, 60, true);
-    ILogger::installStdOutLogger(true);
+//	ILogger::setLogLevel(ILogger::Trace);
+//	ILogger::installTelnetLogger(59999, 60, true);
+//	//ILogger::installOutgoingTelnetLogger();
+//    ILogger::installStdOutLogger(true);
 //	queuePtr = IStackMessageQueue::singleton();
 //	if (globalEventManager) {
 //		queuePtr->interceptProcessing(globalEventManager);
@@ -87,8 +88,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
   (JNIEnv *, jobject)
 {
-	IStackPtr stack = IStack::singleton();
-	stack->shutdown();
+	if (stackPtr)
+	{
+		stackPtr->shutdown();
+	}
+
 }
 
 #ifdef __cplusplus

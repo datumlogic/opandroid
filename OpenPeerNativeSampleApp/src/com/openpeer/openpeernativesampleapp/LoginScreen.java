@@ -1,5 +1,6 @@
 package com.openpeer.openpeernativesampleapp;
 
+import com.openpeer.openpeernativesampleapp.R;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.openpeernativesampleapp.LoginManager;
