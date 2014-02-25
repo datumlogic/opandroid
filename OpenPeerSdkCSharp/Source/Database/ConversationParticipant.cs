@@ -10,7 +10,11 @@ namespace OpenPeerSdk
 			[PrimaryKey, AutoIncrement, Column("_id")]
 			public int Id { get; set; }
 
+			[Indexed]
 			public int ConversationId { get; set; }
+
+			[Indexed]
+			public int ParticipantId { get; set; }
 		}
 	}
 }

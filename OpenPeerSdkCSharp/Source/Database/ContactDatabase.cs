@@ -9,6 +9,8 @@ namespace OpenPeerSdk
 	{
 		public class ContactDatabase : SQLiteConnection
 		{
+			private static string tableName = typeof(Contact).Name;
+
 			private static string DatabaseFilePath (int localUserID) {
 				return Common.DatabasePath (localUserID.ToString() + "_contact.db3");
 			}
@@ -30,28 +32,22 @@ namespace OpenPeerSdk
 				}
 			}
 
-			public IEnumerable<Contact> GetByIndex (Contact contact, int index, int maxRows)
+			public IList<Contact> GetByIndex (Contact contact, int index, int maxRows)
 			{
-				IEnumerable<Contact> result = null;
-
 				lock (this) {
 					if (0 != maxRows) {
-						IEnumerable<Contact> rows = this.Query<Contact> (@"SELECT * FROM Contact ORDER BY DisplayName, IdentityURI, _id ASC OFFSET ? LIMIT ?", index, maxRows);
-						result = rows;
+						IEnumerable<Contact> rows = this.Query<Contact> (@"SELECT * FROM ? ORDER BY DisplayName, IdentityURI, _id ASC OFFSET ? LIMIT ?", tableName, index, maxRows);
+						return rows.ToList ();
 					}
 				}
 
-				if (null == result) {
-					result = new List<Contact> ();
-				}
-
-				return result;
+				return new List<Contact> ();
 			}
 
 			public Contact GetById (int id)
 			{
 				lock (this) {
-					IEnumerable<Contact> result = this.Query<Contact> (@"SELECT * FROM Contact WHERE _id = ?", id);
+					IEnumerable<Contact> result = this.Query<Contact> (@"SELECT * FROM ? WHERE _id = ?", tableName, id);
 					return result.FirstOrDefault ();
 				}
 			}
@@ -59,16 +55,16 @@ namespace OpenPeerSdk
 			public Contact GetByIdentityUri (string identityUri)
 			{
 				lock (this) {
-					IEnumerable<Contact> result = this.Query<Contact> (@"SELECT * FROM Contact WHERE IdentityURI = ?", identityUri);
+					IEnumerable<Contact> result = this.Query<Contact> (@"SELECT * FROM ? WHERE IdentityURI = ?", tableName, identityUri);
 					return result.FirstOrDefault ();
 				}
 			}
 
-			public IEnumerable<Contact> GetByPeerUriContactId (string contactId)
+			public IList<Contact> GetByPeerUriContactId (string contactId)
 			{
 				lock (this) {
-					IEnumerable<Contact> result = this.Query<Contact> (@"SELECT * FROM Contact WHERE PeerUriContactId = ?", contactId);
-					return result;
+					IEnumerable<Contact> result = this.Query<Contact> (@"SELECT * FROM ? WHERE PeerUriContactId = ?", tableName, contactId);
+					return result.ToList ();
 				}
 			}
 
@@ -96,14 +92,14 @@ namespace OpenPeerSdk
 			public void BeginRefresh ()
 			{
 				lock (this) {
-					this.Execute (@"UPDATE Contact SET RefreshFlag = ?", true);
+					this.Execute (@"UPDATE ? SET RefreshFlag = ?", tableName, true);
 				}
 			}
 
 			public int EndRefresh ()
 			{
 				lock (this) {
-					return this.Execute (@"DELETE FROM Contact WHERE RefreshFlag = ?", true);
+					return this.Execute (@"DELETE FROM ? WHERE RefreshFlag = ?", tableName, true);
 				}
 			}
 		}

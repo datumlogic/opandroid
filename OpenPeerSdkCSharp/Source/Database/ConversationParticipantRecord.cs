@@ -7,6 +7,8 @@ namespace OpenPeerSdk
 	{
 		public class ConversationPartipantRecord
 		{
+			public DateTime lastUpdated = DateTime.UtcNow;
+
 			[PrimaryKey, AutoIncrement, Column("_id")]
 			public int Id { get; set; }
 
@@ -23,7 +25,10 @@ namespace OpenPeerSdk
 			public string StableId { get; set; }
 
 			[Indexed]
-			public string ParticipantId { get; set; }
+			public int ParticipantId { get; set; }
+
+			[Indexed]
+			public DateTime LastUpdated { get { return lastUpdated; } set { lastUpdated = value; } }
 
 			// only used if identity / contact ID cannot be found in contacts table
 			public string LastKnownDisplayName { get; set; }

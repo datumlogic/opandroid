@@ -9,6 +9,8 @@ namespace OpenPeerSdk
 	{
 		public class ChatMessageDatabase : SQLiteConnection
 		{
+			private static string tableName = typeof(ChatMessage).Name;
+
 			private static string DatabaseFilePath (int localUserID, int dbId) {
 				return Common.DatabasePath (localUserID.ToString () + "_" + dbId.ToString () + "_chat.db3");
 			}
@@ -25,54 +27,53 @@ namespace OpenPeerSdk
 			public int Count {
 				get {
 					lock (this) {
-						return this.ExecuteScalar<int> (@"SELECT COUNT(*) FROM ChatMessage");
+						return this.ExecuteScalar<int> (@"SELECT COUNT(*) FROM ?", tableName);
 					}
 				}
 			}
 
-			public IEnumerable<ChatMessage> GetLatestEntries (int limit, bool orderAsc = true) 
+			public IList<ChatMessage> GetLatestEntries (int limit, bool orderAsc = true) 
 			{
 				lock (this) {
-					IEnumerable<ChatMessage> result = this.Query<ChatMessage> ("@SELECT * FROM ChatMessage ORDER BY When, _id DESC LIMIT ?", limit);
+					IEnumerable<ChatMessage> result = this.Query<ChatMessage> ("@SELECT * FROM ? ORDER BY When, _id DESC LIMIT ?", tableName, limit);
 					if (orderAsc)
-						return result.Reverse ();
+						return result.Reverse ().ToList ();
 
-					return result;
+					return result.ToList ();
 				}
 			}
 
-			public IEnumerable<ChatMessage> GetRelativeEntries (ChatMessage message, int entriesBefore, int entriesAfter)
+			public IList<ChatMessage> GetRelativeEntries (ChatMessage message, int entriesBefore, int entriesAfter)
 			{
 				IEnumerable<ChatMessage> result = null;
 
 				lock (this) {
 					if (0 != entriesBefore) {
-						IEnumerable<ChatMessage> beforeResult = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage ORDER BY When, _id DESC LIMIT ? WHERE When <= ? AND _id != ?", entriesBefore, message.When.Ticks, message.Id);
+						IEnumerable<ChatMessage> beforeResult = this.Query<ChatMessage> (@"SELECT * FROM ? ORDER BY When, _id DESC LIMIT ? WHERE When <= ? AND _id != ?", tableName, entriesBefore, message.When.Ticks, message.Id);
 
 						result = beforeResult.Reverse ();
 					}
 
 					if (0 != entriesAfter) {
-						IEnumerable<ChatMessage> afterResult = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage ORDER BY When, _id ASC LIMIT ? WHERE When >= ? AND _id != ?", entriesAfter, message.When.Ticks, message.Id);
-						if (null != result) {
-							result = result.Concat(afterResult);
-						} else {
-							result = afterResult;
-						}
+						IEnumerable<ChatMessage> afterResult = this.Query<ChatMessage> (@"SELECT * FROM ? ORDER BY When, _id ASC LIMIT ? WHERE When >= ? AND _id != ?", tableName, entriesAfter, message.When.Ticks, message.Id);
+						if (null == result)
+							return afterResult.ToList ();
+
+						return result.Concat (afterResult).ToList ();
+					}
+
+					if (null != result) {
+						return result.ToList ();
 					}
 				}
 
-				if (null == result) {
-					result = new List<ChatMessage> ();
-				}
-
-				return result;
+				return new List<ChatMessage> ();
 			}
 
 			public ChatMessage GetById (int id)
 			{
 				lock (this) {
-					IEnumerable<ChatMessage> result = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage WHERE _id = ?", id);
+					IEnumerable<ChatMessage> result = this.Query<ChatMessage> (@"SELECT * FROM ? WHERE _id = ?", tableName, id);
 					return result.FirstOrDefault ();
 				}
 			}
@@ -80,7 +81,7 @@ namespace OpenPeerSdk
 			public ChatMessage GetByMessageId (string messageId)
 			{
 				lock (this) {
-					IEnumerable<ChatMessage> result = this.Query<ChatMessage> (@"SELECT * FROM ChatMessage WHERE MessageId = ?", messageId);
+					IEnumerable<ChatMessage> result = this.Query<ChatMessage> (@"SELECT * FROM ? WHERE MessageId = ?", tableName, messageId);
 					return result.FirstOrDefault ();
 				}
 			}
