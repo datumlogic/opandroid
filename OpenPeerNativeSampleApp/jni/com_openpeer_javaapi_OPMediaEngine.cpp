@@ -91,6 +91,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setVideoOrientati
   (JNIEnv *, jobject)
 {
 
+	if (mediaEnginePtr)
+	{
+		mediaEnginePtr->setVideoOrientation();
+	}
 }
 
 /*
@@ -300,6 +304,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture
   (JNIEnv *, jobject)
 {
 
+	if (mediaEnginePtr)
+	{
+		mediaEnginePtr->startVideoCapture();
+	}
 }
 
 /*
@@ -310,7 +318,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_stopVideoCapture
   (JNIEnv *, jobject)
 {
-
+	if (mediaEnginePtr)
+	{
+		mediaEnginePtr->stopVideoCapture();
+	}
 }
 
 /*
@@ -332,7 +343,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startRecordVideoC
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_stopRecordVideoCapture
   (JNIEnv *, jobject)
 {
-
+	if (mediaEnginePtr)
+	{
+		mediaEnginePtr->stopRecordVideoCapture();
+	}
 }
 
 /*
