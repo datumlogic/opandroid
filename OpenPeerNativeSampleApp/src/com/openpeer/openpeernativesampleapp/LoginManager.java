@@ -39,7 +39,6 @@ public class LoginManager {
 		//register delegates and class for callback from native code
 		mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
 		
-		
 		mIdentityDelegate = new OPIdentityDelegateImplementation();
 		mIdentity = new OPIdentity();
 		mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);

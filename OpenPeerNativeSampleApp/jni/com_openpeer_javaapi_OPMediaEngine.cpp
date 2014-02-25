@@ -125,9 +125,24 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderV
  * Signature: (Ljava/lang/Boolean;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setEcEnabled
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject booleanObj)
 {
-	IMediaEngine::singleton()->setEcEnabled(true);
+	jclass cls;
+	JNIEnv *jni_env = 0;
+
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("java/lang/Boolean");
+		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
+		{
+			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
+			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
+			mediaEnginePtr->setEcEnabled(booleanValue);
+		}
+	}
+
 }
 
 /*
@@ -136,9 +151,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setEcEnabled
  * Signature: (Ljava/lang/Boolean;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setAgcEnabled
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject booleanObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("java/lang/Boolean");
+		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
+		{
+			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
+			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
+			mediaEnginePtr->setAgcEnabled(booleanValue);
+		}
+	}
 }
 
 /*
@@ -147,9 +176,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setAgcEnabled
  * Signature: (Ljava/lang/Boolean;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setNsEnabled
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject booleanObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("java/lang/Boolean");
+		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
+		{
+			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
+			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
+			mediaEnginePtr->setNsEnabled(booleanValue);
+		}
+	}
 }
 
 /*
@@ -180,9 +223,23 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceRecord
  * Signature: (Ljava/lang/Boolean;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setMuteEnabled
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject booleanObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("java/lang/Boolean");
+		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
+		{
+			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
+			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
+			mediaEnginePtr->setMuteEnabled(booleanValue);
+		}
+	}
 }
 
 /*
@@ -193,7 +250,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setMuteEnabled
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getMuteEnabled
   (JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			bool value = mediaEnginePtr->getMuteEnabled();
+			cls = findClass("java/lang/Boolean");
+			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
+			object = jni_env->NewObject(cls, method, value);
+		}
+	}
+	return object;
 }
 
 /*
@@ -202,9 +275,23 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getMuteEnabled
  * Signature: (Ljava/lang/Boolean;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setLoudspeakerEnabled
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject booleanObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("java/lang/Boolean");
+		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
+		{
+			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
+			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
+			mediaEnginePtr->setLoudspeakerEnabled(booleanValue);
+		}
+	}
 }
 
 /*
@@ -215,7 +302,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setLoudspeakerEna
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getLoudspeakerEnabled
   (JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			bool value = mediaEnginePtr->getLoudspeakerEnabled();
+			cls = findClass("java/lang/Boolean");
+			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
+			object = jni_env->NewObject(cls, method, value);
+		}
+	}
+	return object;
 }
 
 /*
@@ -235,9 +338,23 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getOutputAudio
  * Signature: (Ljava/lang/Boolean;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setContinuousVideoCapture
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject booleanObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("java/lang/Boolean");
+		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
+		{
+			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
+			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
+			mediaEnginePtr->setContinuousVideoCapture(booleanValue);
+		}
+	}
 }
 
 /*
@@ -248,7 +365,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setContinuousVide
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getContinuousVideoCapture
   (JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			bool value = mediaEnginePtr->getContinuousVideoCapture();
+			cls = findClass("java/lang/Boolean");
+			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
+			object = jni_env->NewObject(cls, method, value);
+		}
+	}
+	return object;
 }
 
 /*
@@ -257,9 +390,23 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getContinuousV
  * Signature: (Ljava/lang/Boolean;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setFaceDetection
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject booleanObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("java/lang/Boolean");
+		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
+		{
+			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
+			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
+			mediaEnginePtr->setFaceDetection(booleanValue);
+		}
+	}
 }
 
 /*
@@ -270,7 +417,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setFaceDetection
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getFaceDetection
   (JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			bool value = mediaEnginePtr->getFaceDetection();
+			cls = findClass("java/lang/Boolean");
+			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
+			object = jni_env->NewObject(cls, method, value);
+		}
+	}
+	return object;
 }
 
 /*
