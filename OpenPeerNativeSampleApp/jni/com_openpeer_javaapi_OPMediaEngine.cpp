@@ -44,9 +44,25 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
  * Signature: (Lcom/openpeer/javaapi/VideoOrientations;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setDefaultVideoOrientation
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject videoOrientationObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("com/openpeer/javaapi/VideoOrientations");
+		if(jni_env->IsInstanceOf(videoOrientationObj, cls) == JNI_TRUE)
+		{
+			jmethodID videoOrientationMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
+			int intValue = (int) jni_env->CallIntMethod(videoOrientationObj, videoOrientationMID);
+
+			IMediaEngine::VideoOrientations orientation = (IMediaEngine::VideoOrientations)intValue;
+			mediaEnginePtr->setDefaultVideoOrientation(orientation);
+		}
+	}
 }
 
 /*
@@ -57,6 +73,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setDefaultVideoOr
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getDefaultVideoOrientation
   (JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			IMediaEngine::VideoOrientations value = mediaEnginePtr->getDefaultVideoOrientation();
+			cls = findClass("com/openpeer/javaapi/VideoOrientations");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, (int)value);
+		}
+	}
+	return object;
 
 }
 
@@ -66,9 +99,25 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getDefaultVide
  * Signature: (Lcom/openpeer/javaapi/VideoOrientations;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setRecordVideoOrientation
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject videoOrientationObj)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("com/openpeer/javaapi/VideoOrientations");
+		if(jni_env->IsInstanceOf(videoOrientationObj, cls) == JNI_TRUE)
+		{
+			jmethodID videoOrientationMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
+			int intValue = (int) jni_env->CallIntMethod(videoOrientationObj, videoOrientationMID);
+
+			IMediaEngine::VideoOrientations orientation = (IMediaEngine::VideoOrientations)intValue;
+			mediaEnginePtr->setRecordVideoOrientation(orientation);
+		}
+	}
 }
 
 /*
@@ -79,7 +128,23 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setRecordVideoOri
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getRecordVideoOrientation
   (JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			IMediaEngine::VideoOrientations value = mediaEnginePtr->getRecordVideoOrientation();
+			cls = findClass("com/openpeer/javaapi/VideoOrientations");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, (int)value);
+		}
+	}
+	return object;
 }
 
 /*
@@ -330,6 +395,23 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getOutputAudio
   (JNIEnv *, jobject)
 {
 
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			IMediaEngine::OutputAudioRoutes value = mediaEnginePtr->getOutputAudioRoute();
+			cls = findClass("com/openpeer/javaapi/OutputAudioRoutes");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, (int)value);
+		}
+	}
+	return object;
 }
 
 /*
@@ -444,7 +526,23 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getFaceDetecti
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCameraType
   (JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			IMediaEngine::CameraTypes value = mediaEnginePtr->getCameraType();
+			cls = findClass("com/openpeer/javaapi/CameraTypes");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, (int)value);
+		}
+	}
+	return object;
 }
 
 /*
@@ -453,9 +551,26 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCameraType
  * Signature: (Lcom/openpeer/javaapi/CameraTypes;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCameraType
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject cameraTypeObj)
 {
 
+	jclass cls;
+	JNIEnv *jni_env = 0;
+
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		cls = findClass("com/openpeer/javaapi/CameraTypes");
+		if(jni_env->IsInstanceOf(cameraTypeObj, cls) == JNI_TRUE)
+		{
+			jmethodID cameraTypeMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
+			int intValue = (int) jni_env->CallIntMethod(cameraTypeObj, cameraTypeMID);
+
+			IMediaEngine::CameraTypes cameraType = (IMediaEngine::CameraTypes)intValue;
+			mediaEnginePtr->setCameraType(cameraType);
+		}
+	}
 }
 
 /*
