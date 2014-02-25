@@ -203,7 +203,7 @@ namespace OpenPeerSdk
 
 								Insert (record);
 
-								Logger.Trace ("added missing participant record for idenity, identity={0}, stable id={1}, participant id={2}", record.IdentityUri, record.StableId, record.ParticipantId);
+								Logger.Trace ("added missing participant record for idenity, participant id={0}, identity={1}, stable id={2}, peer uri={3}", record.ParticipantId, record.IdentityUri, record.StableId, record.PeerUri);
 							}
 						} else {
 							if (createdNewParticipantId) {
@@ -217,6 +217,8 @@ namespace OpenPeerSdk
 								record.LastKnownAvatarUrl = usingAvatarUrl;
 
 								Insert (record);
+
+								Logger.Trace ("added missing participant record for peer uri, participant id={0}, peer uri={1}", record.ParticipantId, record.PeerUri);
 							}
 						}
 					}
