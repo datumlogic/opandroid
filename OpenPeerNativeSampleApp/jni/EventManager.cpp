@@ -628,6 +628,87 @@ void EventManager::onLog(
 	android_jvm->DetachCurrentThread();
 }
 
+//ISettingsDelegate implementation
+	String EventManager::getString(const char *key) const
+	{
+		return "";
+	}
+
+	LONG EventManager::getInt(const char *key) const
+	{
+
+	}
+
+	ULONG EventManager::getUInt(const char *key) const
+	{
+
+	}
+
+	bool EventManager::getBool(const char *key) const
+	{
+
+	}
+
+	float EventManager::getFloat(const char *key) const
+	{
+
+	}
+
+	double EventManager::getDouble(const char *key) const
+	{
+
+	}
+
+	void EventManager::setString(
+			const char *key,
+			const char *value
+	)
+	{
+
+	}
+	void EventManager::setInt(
+			const char *key,
+			LONG value
+	)
+	{
+
+	}
+	void EventManager::setUInt(
+			const char *key,
+			ULONG value
+	)
+	{
+
+	}
+	void EventManager::setBool(
+			const char *key,
+			bool value
+	)
+	{
+
+	}
+	void EventManager::setFloat(
+			const char *key,
+			float value
+	)
+	{
+
+	}
+	void EventManager::setDouble(
+			const char *key,
+			double value
+	)
+	{
+
+	}
+
+	void EventManager::clear(const char *key)
+	{
+
+	}
+
+
+
 EventManager::~EventManager()
 {
 	int i = 0;

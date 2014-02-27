@@ -9,6 +9,7 @@ import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.OPMediaEngine;
@@ -28,8 +29,12 @@ public class LoginManager {
 //		stack = new OPStack();
 //		stack.setup(null, null, "bojan", "bojan1", "bojan2", "bojan3", "bojan4", "bojan5", "bojan6", "bojan7");
 		
-//		LoginManager.stackMessageQueue = new OPStackMessageQueue();
-//		LoginManager.stackMessageQueue.interceptProcessing(null);
+		//LoginManager.stackMessageQueue = new OPStackMessageQueue();
+		//mCallbackHandler.regi
+		//LoginManager.stackMessageQueue.interceptProcessing(null);
+		//LoginManager.mLogger = new OPLogger();
+		OPLogger.installTelnetLogger(59999, 60, true);
+		
 		LoginManager.stack = new OPStack();
 		LoginManager.stack.setup(null, null, "bojan", "bojan1", "bojan2", "bojan3", "bojan4", "bojan5", "bojan6", "bojan7");
 		
@@ -69,6 +74,7 @@ public class LoginManager {
 	public static OPIdentity mIdentity;
 	public static OPIdentityDelegate mIdentityDelegate;
 	public static OPMediaEngine mMediaEngine;
+	//public static OPLogger mLogger;
 	static LoginHandlerInterface mLoginHandler;
 	
 	public static void setHandlerListener(LoginHandlerInterface listener)

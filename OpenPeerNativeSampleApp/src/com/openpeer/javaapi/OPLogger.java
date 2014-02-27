@@ -27,7 +27,7 @@ public class OPLogger {
     //          (where 1.2.3.4 is the IP address of the client software)
     //
 	public static native void installTelnetLogger(
-            short listenPort,                             // what port to bind to on 0.0.0.0:port to listen for incoming telnet sessions
+            int listenPort,                             // what port to bind to on 0.0.0.0:port to listen for incoming telnet sessions
             long maxSecondsWaitForSocketToBeAvailable,  // since the port might still be in use for a period of time between runs (TCP timeout), how long to wait for the port to come alive (recommend 60)
             boolean colorizeOutput
             );
