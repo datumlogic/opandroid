@@ -8,7 +8,7 @@ public abstract class OPSettingsDelegate {
 	//http://jessicarbrown.com/resources/unsignedtojava.html
 	public abstract long getUInt(String key);
 
-	public abstract Boolean getBool(String key);
+	public abstract boolean getBool(String key);
 	public abstract float getFloat(String key);
 	public abstract double getDouble(String key);
 
@@ -28,7 +28,7 @@ public abstract class OPSettingsDelegate {
 			);
 	public abstract void setBool(
 			String key,
-			Boolean value
+			boolean value
 			);
 	public abstract void setFloat(
 			String key,

@@ -1,5 +1,7 @@
 #include <jni.h>
 #include "EventManager.h"
+#include "CacheDelegateWrapper.h"
+#include "SettingsDelegateWrapper.h"
 
 #ifndef _ANDROID_OPENPEER_GLOBALS_H_
 #define _ANDROID_OPENPEER_GLOBALS_H_
@@ -18,5 +20,7 @@ extern IStackPtr stackPtr;
 extern IStackMessageQueuePtr queuePtr;
 extern IIdentityPtr identityPtr;
 extern IMediaEnginePtr mediaEnginePtr;
+extern SettingsDelegateWrapperPtr settingsDelegatePtr;
+extern CacheDelegateWrapperPtr cacheDelegatePtr;
 
 #endif

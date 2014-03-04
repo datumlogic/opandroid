@@ -10,6 +10,7 @@ import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
+import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OutputAudioRoutes;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
@@ -518,7 +519,7 @@ public class CallbackHandler{
 	}
 
 	//Media engine delegate register/unregister methods
-	public boolean registerCallDelegate(OPMediaEngine mediaEngine, OPMediaEngineDelegate delegate)
+	public boolean registerMediaEngineDelegate(OPMediaEngine mediaEngine, OPMediaEngineDelegate delegate)
 	{
 		if (mediaEngine == null || delegate == null)
 		{
@@ -536,10 +537,153 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterCallDelegate(OPMediaEngineDelegate delegate)
+	public void unregisterMediaEngineDelegate(OPMediaEngineDelegate delegate)
 	{
 		mMediaEngine = null;
 		this.mediaEngineDelegates.remove(delegate);
+
+	}
+	
+	
+	/////////////////////////////////////////////////////////////////////
+	// CACHE DELEGATE GLUE
+	/////////////////////////////////////////////////////////////////////
+	//OPCacheDelegate support
+	//private OPCache mCache;
+	ArrayList<OPSettingsDelegate> settingsDelegates = new ArrayList<OPSettingsDelegate> ();
+
+//	public String getString(String key) {
+//
+//		for (OPSettingsDelegate delegate : settingsDelegates)
+//		{
+//			if (delegate != null)
+//			{
+//				delegate.getString(key);
+//			}
+//		}
+//	}
+//
+//	public long getInt(String key) {
+//		//TODO: Fix time
+//		for (OPSettingsDelegate delegate : settingsDelegates)
+//		{
+//			if (delegate != null)
+//			{
+//				delegate.getInt(key);
+//			}
+//		}
+//	}
+//
+//	public long getUInt(String key) {
+//
+//		for (OPSettingsDelegate delegate : settingsDelegates)
+//		{
+//			if (delegate != null)
+//			{
+//				delegate.getUInt(key);
+//			}
+//		}
+//	}
+	public void setString(
+			String key,
+			String value
+			) {
+
+		for (OPSettingsDelegate delegate : settingsDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.setString(key, value);
+			}
+		}
+	}
+
+	public void setInt(String key,
+			long value
+			) {
+		//TODO: Fix time
+		for (OPSettingsDelegate delegate : settingsDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.setInt(key, value);
+			}
+		}
+	}
+
+	public void setUInt(String key,
+			long value
+			) {
+
+		for (OPSettingsDelegate delegate : settingsDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.setUInt(key, value);
+			}
+		}
+	}
+	public void setBool(
+			String key,
+			boolean value
+			) {
+
+		for (OPSettingsDelegate delegate : settingsDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.setBool(key, value);
+			}
+		}
+	}
+
+	public void setFloat(
+			String key,
+			float value
+			) {
+		//TODO: Fix time
+		for (OPSettingsDelegate delegate : settingsDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.setFloat(key, value);
+			}
+		}
+	}
+
+	public void setDouble(
+			String key,
+			double value
+			) {
+
+		for (OPSettingsDelegate delegate : settingsDelegates)
+		{
+			if (delegate != null)
+			{
+				delegate.setDouble(key, value);
+			}
+		}
+	}
+	
+	
+
+	//Settings delegate register/unregister methods
+	public boolean registerSettingsDelegate(OPSettingsDelegate delegate)
+	{
+		if (delegate == null)
+		{
+			return false;
+		}
+
+		// Store the delegate object
+		this.settingsDelegates.add(delegate);
+
+		return true;
+	}
+
+	public void unregisterSettingsDelegate(OPSettingsDelegate delegate)
+	{
+		this.settingsDelegates.remove(delegate);
 
 	}
 	////

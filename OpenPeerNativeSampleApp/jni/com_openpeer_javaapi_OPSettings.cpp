@@ -16,7 +16,7 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setup
   (JNIEnv *, jclass, jobject)
 {
-	ISettings::setup(globalEventManager);
+	ISettings::setup(settingsDelegatePtr);
 }
 
 /*
