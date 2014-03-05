@@ -26,10 +26,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installFileLogger
 /*
  * Class:     com_openpeer_javaapi_OPLogger
  * Method:    installTelnetLogger
- * Signature: (SJZ)V
+ * Signature: (IJZ)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installTelnetLogger
-  (JNIEnv *, jclass, jint port, jlong maxSecondsWaitForSocketToBeAvailable, jboolean colorizeOutput);
+  (JNIEnv *, jclass, jint, jlong, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPLogger

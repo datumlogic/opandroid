@@ -93,6 +93,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	
 	static {
 		try {
+			System.loadLibrary("z_shared");
 			System.loadLibrary("openpeer");
 		} catch (UnsatisfiedLinkError use) {
 			Log.e("JNI", "WARNING: Could not load libopenpeer.so");
