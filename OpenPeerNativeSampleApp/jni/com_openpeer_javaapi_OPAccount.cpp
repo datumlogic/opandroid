@@ -8,6 +8,7 @@
 #include "com_openpeer_javaapi_OPAccount.h"
 #include "openpeer/core/IAccount.h"
 #include "openpeer/core/IIdentity.h"
+#include "openpeer/core/IHelper.h"
 
 #include "globals.h"
 
@@ -23,7 +24,7 @@ extern "C" {
  * Signature: (Lcom/openpeer/javaapi/AccountStates;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_toString
-  (JNIEnv *, jclass, jobject)
+(JNIEnv *, jclass, jobject)
 {
 
 }
@@ -31,10 +32,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_toString
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    toDebugString
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/lang/Boolean;)Ljava/lang/String;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Z)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_toDebugString
-  (JNIEnv *, jclass, jobject, jobject)
+(JNIEnv *, jclass, jobject, jboolean)
 {
 
 }
@@ -42,49 +43,111 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_toDebugString
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    login
- * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)Lcom/openpeer/javaapi/OPAccount;
+ * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/openpeer/javaapi/OPAccount
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
-  (JNIEnv *, jclass, jobject, jobject, jobject, jstring, jstring, jstring, jstring, jstring, jobject)
+(JNIEnv *env, jclass, jobject, jobject, jobject,
+		jstring namespaceGrantOuterFrameURLUponReload,
+		jstring grantID,
+		jstring lockboxServiceDomain,
+		jboolean forceCreateNewLockboxAccount)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
-	accountPtr = IAccount::login(globalEventManager,
-			globalEventManager,
-			globalEventManager,
-			"grantFinished",
-			"Id",
-			"idprovider-javascript.hookflash.me");
+	const char *namespaceGrantOuterFrameURLUponReloadStr;
+	namespaceGrantOuterFrameURLUponReloadStr = env->GetStringUTFChars(namespaceGrantOuterFrameURLUponReload, NULL);
+	if (namespaceGrantOuterFrameURLUponReloadStr == NULL) {
+		return object;
+	}
 
+	const char *grantIDStr;
+	grantIDStr = env->GetStringUTFChars(grantID, NULL);
+	if (grantIDStr == NULL) {
+		return object;
+	}
 
-	int i = 0;
-	i++;
+	const char *lockboxServiceDomainStr;
+	lockboxServiceDomainStr = env->GetStringUTFChars(lockboxServiceDomain, NULL);
+	if (lockboxServiceDomainStr == NULL) {
+		return object;
+	}
 
+	accountPtr = IAccount::login(globalEventManager, globalEventManager, globalEventManager,
+			namespaceGrantOuterFrameURLUponReloadStr, grantIDStr, lockboxServiceDomainStr, forceCreateNewLockboxAccount);
 
-//	IIdentityPtr identity = IIdentity::login(accountPtr,
-//			globalEventManager,
-//			"idprovider-javascript.hookflash.me",
-//			"identity://idprovider-javascript.hookflash.me/",
-//			"https://app-javascript.hookflash.me/outer.html?reload=true");
+	if (accountPtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/OPAccount");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+
+		}
+
+	}
+	return object;
+
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    relogin
- * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Lcom/openpeer/javaapi/OPElement;)Lcom/openpeer/javaapi/OPAccount;
+ * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPAccount;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
-  (JNIEnv *, jclass, jobject, jobject, jobject, jstring, jobject)
+(JNIEnv *env, jclass, jobject, jobject, jobject,
+		jstring namespaceGrantOuterFrameURLUponReload,
+		jstring reloginInformation)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	const char *namespaceGrantOuterFrameURLUponReloadStr;
+	namespaceGrantOuterFrameURLUponReloadStr = env->GetStringUTFChars(namespaceGrantOuterFrameURLUponReload, NULL);
+	if (namespaceGrantOuterFrameURLUponReloadStr == NULL) {
+		return object;
+	}
+
+	const char *reloginInformationStr;
+	reloginInformationStr = env->GetStringUTFChars(reloginInformation, NULL);
+	if (reloginInformationStr == NULL) {
+		return object;
+	}
+
+
+	ElementPtr reloginElement = IHelper::createElement(reloginInformationStr);
+	accountPtr = IAccount::relogin(globalEventManager, globalEventManager, globalEventManager,
+			namespaceGrantOuterFrameURLUponReloadStr, reloginElement);
+
+	if (accountPtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/OPAccount");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+
+		}
+
+	}
+	return object;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPAccount
- * Method:    getID
- * Signature: ()J
+ * Method:    getStableID
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getID
-  (JNIEnv *, jobject)
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
+(JNIEnv *, jobject)
 {
 
 }
@@ -95,7 +158,7 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getID
  * Signature: (ILjava/lang/String;)Lcom/openpeer/javaapi/AccountStates;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
-  (JNIEnv *, jobject, jint, jstring)
+(JNIEnv *, jobject, jint, jstring)
 {
 
 }
@@ -103,10 +166,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    getReloginInformation
- * Signature: ()Lcom/openpeer/javaapi/OPElement;
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformation
-  (JNIEnv *, jobject)
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformation
+(JNIEnv *, jobject)
 {
 
 }
@@ -117,7 +180,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformat
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getLocationID
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -128,18 +191,29 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getLocationID
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_shutdown
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPAccount
- * Method:    savePeerFilePrivate
- * Signature: ()Lcom/openpeer/javaapi/OPElement;
+ * Method:    getPeerFilePrivate
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_savePeerFilePrivate
-  (JNIEnv *, jobject)
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivate
+(JNIEnv *, jobject)
+{
+
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPAccount
+ * Method:    getPeerFilePrivateSecret
+ * Signature: ()[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivateSecret
+(JNIEnv *, jobject)
 {
 
 }
@@ -150,7 +224,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_savePeerFilePrivat
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdentities
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -161,7 +235,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
  * Signature: (Ljava/util/List;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
-  (JNIEnv *, jobject, jobject)
+(JNIEnv *, jobject, jobject)
 {
 
 }
@@ -172,7 +246,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWindowFrameURL
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -183,7 +257,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWin
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVisible
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -194,7 +268,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVi
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowClosed
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -202,10 +276,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowCl
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    getNextMessageForInnerBrowerWindowFrame
- * Signature: ()Lcom/openpeer/javaapi/OPElement;
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForInnerBrowerWindowFrame
-  (JNIEnv *, jobject)
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForInnerBrowerWindowFrame
+(JNIEnv *, jobject)
 {
 
 }
@@ -213,10 +287,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForI
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    handleMessageFromInnerBrowserWindowFrame
- * Signature: (Lcom/openpeer/javaapi/OPElement;)V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_handleMessageFromInnerBrowserWindowFrame
-  (JNIEnv *, jobject, jobject)
+(JNIEnv *, jobject, jstring)
 {
 
 }
