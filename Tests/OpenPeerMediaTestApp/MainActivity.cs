@@ -5,6 +5,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Util;
 using Com.Openpeer.Javaapi;
 using Org.Webrtc.Videoengine;
 
@@ -33,10 +34,13 @@ namespace OpenPeerMediaTestApp
 
 			localView = ViERenderer.CreateLocalRenderer(this);
 			layout.AddView (localView);
+
+			OPMediaEngine.Init (Android.App.Application.Context);
 			
 			button.Click += delegate {
+				Log.Debug("MainActivity", "button.Click");
 				Java.Lang.Boolean ecEnabled = new Java.Lang.Boolean (false);
-				mediaEngine = OPMediaEngine.Singleton ();
+				mediaEngine = OPMediaEngine.Instance;
 				mediaEngine.SetEcEnabled (ecEnabled);
 				mediaEngine.StartVideoCapture ();
 				button.Text = string.Format ("Video Capture Started");

@@ -1,6 +1,9 @@
 package com.openpeer.openpeernativesampleapp;
 
+import org.webrtc.videoengine.ViERenderer;
+
 import com.openpeer.openpeernativesampleapp.R;
+import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.openpeernativesampleapp.LoginManager;
@@ -10,16 +13,19 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.SurfaceView;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
 public class LoginScreen extends Activity implements LoginHandlerInterface{
 
 	//LoginHandlerInterface loginHandler;
 	WebView myWebView;
+	SurfaceView myLocalSurface = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		
 		setupFacebookButton();
 		setupWebView();
+		setupVideo();
 	}
 
 	private void setupFacebookButton() {
@@ -41,8 +48,10 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				//LoginManager loginManager = new LoginManager();
 				
 				//
-				new CoreLogin().execute();
+				//new CoreLogin().execute();
 				//stack.setup(stackDelegate, mediaEngineDelegate, appID, appName, appImageURL, appURL, userAgent, deviceID, os, system)
+				OPMediaEngine.init(getApplicationContext());
+				OPMediaEngine.getInstance().startVideoCapture();
 			}
 		});
 	}
@@ -62,6 +71,18 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		//
 	}
 	
+	private void setupVideo()
+	{
+		myLocalSurface = ViERenderer.CreateLocalRenderer(this);
+		RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
+		//RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+		//layoutParams.addRule(RelativeLayout.BELOW, R.id.btnFacebookLogin);
+		//myLocalSurface.setLayoutParams(layoutParams);
+		relativeLayout.addView(myLocalSurface);
+		Button facebookButton = (Button) findViewById(R.id.btnFacebookLogin);
+		facebookButton.bringToFront();
+	}
+
 	private class CoreLogin extends AsyncTask<Void, Void, Void> {
 
         @Override

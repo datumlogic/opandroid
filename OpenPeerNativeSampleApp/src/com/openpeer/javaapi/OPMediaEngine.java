@@ -9,6 +9,8 @@ public class OPMediaEngine {
     {
 
     }
+    
+	public static native void init(Object context);
 
     public static OPMediaEngine getInstance()
     {

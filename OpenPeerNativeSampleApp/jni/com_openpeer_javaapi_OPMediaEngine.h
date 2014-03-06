@@ -7,6 +7,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    init
+ * Signature: (Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_init
+  (JNIEnv *, jclass, jobject context);
+
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    singleton

@@ -2,6 +2,9 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
+#include <android/log.h>
+#include <voe_base.h>
+#include <vie_base.h>
 
 #include "globals.h"
 
@@ -10,6 +13,24 @@ using namespace openpeer::core;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    init
+ * Signature: (Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_init
+  (JNIEnv *, jclass, jobject context)
+{
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		webrtc::VoiceEngine::SetAndroidObjects(android_jvm, jni_env, context);
+		webrtc::VideoEngine::SetAndroidObjects(android_jvm, context);
+	}
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
@@ -581,6 +602,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCameraType
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture
   (JNIEnv *, jobject)
 {
+    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
+                        "Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture");
 
 	if (mediaEnginePtr)
 	{
