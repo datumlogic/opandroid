@@ -23,7 +23,7 @@ namespace HopSampleApp
 	namespace Activities
 	{
 		[LoggerSubsystem("hop_sample_app")]
-		[Activity (Label = "Open Peer Sample App - Contact List", MainLauncher = true)]			
+		[Activity (Label = "Open Peer Sample App - Contact List",Icon="@drawable/op" /*,MainLauncher = true*/)]			
 		public class ContactsActivity : ListActivity
 		{
 			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();

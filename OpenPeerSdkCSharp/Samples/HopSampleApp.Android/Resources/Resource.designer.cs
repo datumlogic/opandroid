@@ -76,6 +76,9 @@ namespace HopSampleApp
 			global::PullToRefresharp.Resource.Styleable.PullToRefresharpWrapper_releaseToRefreshText = global::HopSampleApp.Resource.Styleable.PullToRefresharpWrapper_releaseToRefreshText;
 			global::PullToRefresharp.Resource.Styleable.PullToRefresharpWrapper_snapbackDuration = global::HopSampleApp.Resource.Styleable.PullToRefresharpWrapper_snapbackDuration;
 			global::OpenPeerSdkCSharp.Resource.String.library_name = global::HopSampleApp.Resource.String.library_name;
+			global::ZXing.Mobile.Resource.Id.contentFrame = global::HopSampleApp.Resource.Id.contentFrame;
+			global::ZXing.Mobile.Resource.Layout.zxingscanneractivitylayout = global::HopSampleApp.Resource.Layout.zxingscanneractivitylayout;
+			global::ZXing.Mobile.Resource.Layout.zxingscannerfragmentlayout = global::HopSampleApp.Resource.Layout.zxingscannerfragmentlayout;
 		}
 		
 		public partial class Animation
@@ -246,22 +249,28 @@ namespace HopSampleApp
 			public const int Icon = 2130837511;
 			
 			// aapt resource value: 0x7f020008
-			public const int progress_medium_holo = 2130837512;
+			public const int monoandroidsplash = 2130837512;
 			
 			// aapt resource value: 0x7f020009
-			public const int ptrsharp_serious_business_gradient = 2130837513;
+			public const int op = 2130837513;
 			
 			// aapt resource value: 0x7f02000a
-			public const int serious_business_arrow = 2130837514;
+			public const int progress_medium_holo = 2130837514;
 			
 			// aapt resource value: 0x7f02000b
-			public const int serious_business_arrow2 = 2130837515;
+			public const int ptrsharp_serious_business_gradient = 2130837515;
 			
 			// aapt resource value: 0x7f02000c
-			public const int spinner_20_inner_holo = 2130837516;
+			public const int serious_business_arrow = 2130837516;
 			
 			// aapt resource value: 0x7f02000d
-			public const int spinner_20_outer_holo = 2130837517;
+			public const int serious_business_arrow2 = 2130837517;
+			
+			// aapt resource value: 0x7f02000e
+			public const int spinner_20_inner_holo = 2130837518;
+			
+			// aapt resource value: 0x7f02000f
+			public const int spinner_20_outer_holo = 2130837519;
 			
 			static Drawable()
 			{
@@ -275,6 +284,12 @@ namespace HopSampleApp
 		
 		public partial class Id
 		{
+			
+			// aapt resource value: 0x7f0b0028
+			public const int QRButton1 = 2131427368;
+			
+			// aapt resource value: 0x7f0b0029
+			public const int SkipButton1 = 2131427369;
 			
 			// aapt resource value: 0x7f0b0005
 			public const int avatarImageView = 2131427333;
@@ -297,6 +312,9 @@ namespace HopSampleApp
 			// aapt resource value: 0x7f0b0008
 			public const int bubbleTextView = 2131427336;
 			
+			// aapt resource value: 0x7f0b0020
+			public const int buttonZxingFlash = 2131427360;
+			
 			// aapt resource value: 0x7f0b000e
 			public const int chatIcon = 2131427342;
 			
@@ -305,6 +323,9 @@ namespace HopSampleApp
 			
 			// aapt resource value: 0x7f0b000a
 			public const int contactItemRelativeLayout = 2131427338;
+			
+			// aapt resource value: 0x7f0b002a
+			public const int contentFrame = 2131427370;
 			
 			// aapt resource value: 0x7f0b000b
 			public const int detailsRelativeLayout = 2131427339;
@@ -321,17 +342,23 @@ namespace HopSampleApp
 			// aapt resource value: 0x7f0b0019
 			public const int icon = 2131427353;
 			
-			// aapt resource value: 0x7f0b001d
-			public const int labelTextView = 2131427357;
+			// aapt resource value: 0x7f0b0023
+			public const int labelTextView = 2131427363;
 			
 			// aapt resource value: 0x7f0b0015
 			public const int linearLayout = 2131427349;
 			
+			// aapt resource value: 0x7f0b001b
+			public const int linearLayout1 = 2131427355;
+			
+			// aapt resource value: 0x7f0b001e
+			public const int linearLayout2 = 2131427358;
+			
 			// aapt resource value: 0x7f0b0013
 			public const int loginWebView = 2131427347;
 			
-			// aapt resource value: 0x7f0b0023
-			public const int logoutMenuItem = 2131427363;
+			// aapt resource value: 0x7f0b002c
+			public const int logoutMenuItem = 2131427372;
 			
 			// aapt resource value: 0x7f0b0003
 			public const int nameTextView = 2131427331;
@@ -342,8 +369,8 @@ namespace HopSampleApp
 			// aapt resource value: 0x7f0b0018
 			public const int pullDownProgressIndicator = 2131427352;
 			
-			// aapt resource value: 0x7f0b001c
-			public const int relativeLayout = 2131427356;
+			// aapt resource value: 0x7f0b0022
+			public const int relativeLayout = 2131427362;
 			
 			// aapt resource value: 0x7f0b0001
 			public const int sendButton = 2131427329;
@@ -351,17 +378,17 @@ namespace HopSampleApp
 			// aapt resource value: 0x7f0b0000
 			public const int sendRelativeLayout = 2131427328;
 			
-			// aapt resource value: 0x7f0b0022
-			public const int settingsMenuItem = 2131427362;
+			// aapt resource value: 0x7f0b002b
+			public const int settingsMenuItem = 2131427371;
 			
-			// aapt resource value: 0x7f0b001b
-			public const int settingsSpinnerListItem = 2131427355;
+			// aapt resource value: 0x7f0b0021
+			public const int settingsSpinnerListItem = 2131427361;
 			
-			// aapt resource value: 0x7f0b001f
-			public const int settingsTextEditListItem = 2131427359;
+			// aapt resource value: 0x7f0b0025
+			public const int settingsTextEditListItem = 2131427365;
 			
-			// aapt resource value: 0x7f0b0020
-			public const int settingsToggleListItem = 2131427360;
+			// aapt resource value: 0x7f0b0026
+			public const int settingsToggleListItem = 2131427366;
 			
 			// aapt resource value: 0x7f0b0014
 			public const int tabHost = 2131427348;
@@ -372,17 +399,26 @@ namespace HopSampleApp
 			// aapt resource value: 0x7f0b000c
 			public const int textAreaLinearLayout = 2131427340;
 			
+			// aapt resource value: 0x7f0b001c
+			public const int textView1 = 2131427356;
+			
+			// aapt resource value: 0x7f0b001d
+			public const int textView2 = 2131427357;
+			
+			// aapt resource value: 0x7f0b001f
+			public const int textView3 = 2131427359;
+			
 			// aapt resource value: 0x7f0b0004
 			public const int timeTextView = 2131427332;
 			
-			// aapt resource value: 0x7f0b0021
-			public const int toggleButton = 2131427361;
+			// aapt resource value: 0x7f0b0027
+			public const int toggleButton = 2131427367;
 			
 			// aapt resource value: 0x7f0b000d
 			public const int usernameTextView = 2131427341;
 			
-			// aapt resource value: 0x7f0b001e
-			public const int valueSpinner = 2131427358;
+			// aapt resource value: 0x7f0b0024
+			public const int valueSpinner = 2131427364;
 			
 			static Id()
 			{
@@ -434,19 +470,28 @@ namespace HopSampleApp
 			public const int ptrsharp_header = 2130903051;
 			
 			// aapt resource value: 0x7f03000c
-			public const int Settings = 2130903052;
+			public const int QROverlay = 2130903052;
 			
 			// aapt resource value: 0x7f03000d
-			public const int SettingsSpinnerListItem = 2130903053;
+			public const int Settings = 2130903053;
 			
 			// aapt resource value: 0x7f03000e
-			public const int SettingsTextEditListItem = 2130903054;
+			public const int SettingsSpinnerListItem = 2130903054;
 			
 			// aapt resource value: 0x7f03000f
-			public const int SettingsToggleListItem = 2130903055;
+			public const int SettingsTextEditListItem = 2130903055;
 			
 			// aapt resource value: 0x7f030010
-			public const int Splash = 2130903056;
+			public const int SettingsToggleListItem = 2130903056;
+			
+			// aapt resource value: 0x7f030011
+			public const int Splash = 2130903057;
+			
+			// aapt resource value: 0x7f030012
+			public const int zxingscanneractivitylayout = 2130903058;
+			
+			// aapt resource value: 0x7f030013
+			public const int zxingscannerfragmentlayout = 2130903059;
 			
 			static Layout()
 			{
@@ -478,7 +523,13 @@ namespace HopSampleApp
 		{
 			
 			// aapt resource value: 0x7f050005
-			public const int app_name = 2131034117;
+			public const int QRcodeButton = 2131034117;
+			
+			// aapt resource value: 0x7f050006
+			public const int SkipButton = 2131034118;
+			
+			// aapt resource value: 0x7f050007
+			public const int app_name = 2131034119;
 			
 			// aapt resource value: 0x7f050004
 			public const int hello = 2131034116;
@@ -486,11 +537,11 @@ namespace HopSampleApp
 			// aapt resource value: 0x7f050000
 			public const int library_name = 2131034112;
 			
-			// aapt resource value: 0x7f050007
-			public const int outgoing_telnet_logger = 2131034119;
+			// aapt resource value: 0x7f050009
+			public const int outgoing_telnet_logger = 2131034121;
 			
-			// aapt resource value: 0x7f050008
-			public const int outgoing_telnet_logger_server_prompt = 2131034120;
+			// aapt resource value: 0x7f05000a
+			public const int outgoing_telnet_logger_server_prompt = 2131034122;
 			
 			// aapt resource value: 0x7f050001
 			public const int ptrsharp_pull_to_refresh = 2131034113;
@@ -501,14 +552,14 @@ namespace HopSampleApp
 			// aapt resource value: 0x7f050002
 			public const int ptrsharp_release_to_refresh = 2131034114;
 			
-			// aapt resource value: 0x7f050006
-			public const int standard_out_logger = 2131034118;
+			// aapt resource value: 0x7f050008
+			public const int standard_out_logger = 2131034120;
 			
-			// aapt resource value: 0x7f050009
-			public const int telnet_logger = 2131034121;
+			// aapt resource value: 0x7f05000b
+			public const int telnet_logger = 2131034123;
 			
-			// aapt resource value: 0x7f05000a
-			public const int telnet_logger_port_prompt = 2131034122;
+			// aapt resource value: 0x7f05000c
+			public const int telnet_logger_port_prompt = 2131034124;
 			
 			static String()
 			{
@@ -525,6 +576,12 @@ namespace HopSampleApp
 			
 			// aapt resource value: 0x7f080000
 			public const int HoloProgressMedium = 2131230720;
+			
+			// aapt resource value: 0x7f080002
+			public const int Mono_Android_Theme_Splash = 2131230722;
+			
+			// aapt resource value: 0x7f080001
+			public const int Theme_Splash = 2131230721;
 			
 			static Style()
 			{

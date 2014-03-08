@@ -55,7 +55,9 @@
     <Compile Include="Source\Activities\ChatActivity.cs" />
     <Compile Include="Source\Activities\ChatAdapter.cs" />
     <Compile Include="Source\Activities\LoginActivity.cs" />
-    <Compile Include="Source\Activities\MainActivity.cs" />
+    <Compile Include="Source\Activities\MainActivity.cs">
+      <DependentUpon>ChatAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source\Activities\SettingsActivity.cs" />
     <Compile Include="Source\Activities\SettingsAdapter.cs" />
     <Compile Include="Source\Services\ServiceHelpers.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Source\Activities\ContactsActivity.cs" />
     <Compile Include="Source\Activities\ContactAdapter.cs" />
     <Compile Include="Source\Services\ImageCachingService.cs" />
+    <Compile Include="Source\Activities\SplashActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -106,6 +109,9 @@
     <AndroidResource Include="Resources\anim\SlideInLeft.xml" />
     <AndroidResource Include="Resources\anim\SlideOutLeft.xml" />
     <AndroidResource Include="Resources\drawable\avatar.png" />
+    <AndroidResource Include="Resources\layout\QROverlay.axml" />
+    <AndroidResource Include="Resources\drawable\op.png" />
+    <AndroidResource Include="Resources\values\style.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -130,6 +136,14 @@
     <ProjectReference Include="..\..\OpenPeerSdkCSharp.csproj">
       <Project>{8E4FFF81-A605-4848-8633-FDC8CF6B77E5}</Project>
       <Name>OpenPeerSdkCSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">
+      <Project>{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}</Project>
+      <Name>ZXing.Net.Mobile.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net\zxing.monoandroid.csproj">
+      <Project>{8971B59D-78F1-49BA-808D-CBADB37F571F}</Project>
+      <Name>zxing.monoandroid</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
