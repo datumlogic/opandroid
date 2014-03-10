@@ -58,7 +58,7 @@ public class OPAccount {
                                String reloginInformation
                                );
 
-    public native String getStableID();
+    public native long getStableID();
 
     public native AccountStates getState(
                                    int outErrorCode,

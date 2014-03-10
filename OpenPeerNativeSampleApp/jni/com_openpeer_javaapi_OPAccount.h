@@ -42,9 +42,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    getStableID
- * Signature: ()Ljava/lang/String;
+ * Signature: ()J;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
   (JNIEnv *, jobject);
 
 /*

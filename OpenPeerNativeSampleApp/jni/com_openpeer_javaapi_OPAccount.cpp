@@ -144,11 +144,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 /*
  * Class:     com_openpeer_javaapi_OPAccount
  * Method:    getStableID
- * Signature: ()Ljava/lang/String;
+ * Signature: ()J;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
 (JNIEnv *, jobject)
 {
+	jlong pid = 0;
+
+	if (accountPtr)
+	{
+		pid = accountPtr->getID();
+	}
+
+	return pid;
 
 }
 
@@ -160,7 +168,30 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
 (JNIEnv *, jobject, jint, jstring)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	int state = 0;
+	unsigned short int outErrorCode;
+	String outErrorReason;
 
+	if (accountPtr)
+	{
+		state = (int) accountPtr->getState(&outErrorCode, &outErrorReason);
+
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/AccountStates");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, state);
+
+		}
+	}
+
+
+	return object;
 }
 
 /*
@@ -169,9 +200,20 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformation
-(JNIEnv *, jobject)
+(JNIEnv *env , jobject)
 {
+	ElementPtr reloginInfoElement;
+	jstring reloginInfo;
 
+
+	if (accountPtr)
+	{
+		reloginInfoElement = accountPtr->getReloginInformation();
+
+		reloginInfo =  env->NewStringUTF(IHelper::convertToString(reloginInfoElement).c_str());
+	}
+
+	return reloginInfo;
 }
 
 /*
@@ -180,9 +222,18 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformat
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getLocationID
-(JNIEnv *, jobject)
+(JNIEnv *env , jobject)
 {
+	jstring locationID;
 
+
+	if (accountPtr)
+	{
+
+		locationID =  env->NewStringUTF(accountPtr->getLocationID().c_str());
+	}
+
+	return locationID;
 }
 
 /*
@@ -202,9 +253,20 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_shutdown
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivate
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject)
 {
+	ElementPtr peerFilePrivateElement;
+	jstring peerFilePrivate;
 
+
+	if (accountPtr)
+	{
+		peerFilePrivateElement = accountPtr->getReloginInformation();
+
+		peerFilePrivate =  env->NewStringUTF(IHelper::convertToString(peerFilePrivateElement).c_str());
+	}
+
+	return peerFilePrivate;
 }
 
 /*
@@ -213,8 +275,22 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivate
  * Signature: ()[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivateSecret
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject)
 {
+	jbyte* bufferPtr;
+	jbyteArray returnArr;
+
+	if (accountPtr)
+	{
+		SecureByteBlockPtr sec = accountPtr->getPeerFilePrivateSecret();
+		//;
+		returnArr = env->NewByteArray(sec->SizeInBytes());
+		env->SetByteArrayRegion(returnArr, (int)0, (int)sec->SizeInBytes(), (const signed char *)sec->data());
+
+		//bufferPtr = env->GetByteArrayElements(sec->BytePtr(), 0);
+	}
+
+	return returnArr;
 
 }
 
@@ -226,6 +302,16 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdentities
 (JNIEnv *, jobject)
 {
+	IdentityListPtr coreIdentities;
+	if (accountPtr)
+	{
+		coreIdentities = accountPtr->getAssociatedIdentities();
+
+		for (IdentityList::iterator it = coreIdentities->begin(); it != coreIdentities->end();it++)
+		{
+			//todo fill core list to java list
+		}
+	}
 
 }
 
@@ -237,7 +323,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
 (JNIEnv *, jobject, jobject)
 {
-
+	//TODO FILL JAVA LIST TO CORE LIST
 }
 
 /*
