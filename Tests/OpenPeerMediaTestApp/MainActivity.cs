@@ -7,6 +7,7 @@ using Android.Widget;
 using Android.OS;
 using Android.Util;
 using Com.Openpeer.Javaapi;
+using Com.Openpeer.Javaapi.Test;
 using Org.Webrtc.Videoengine;
 
 namespace OpenPeerMediaTestApp
@@ -14,8 +15,9 @@ namespace OpenPeerMediaTestApp
 	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true)]
 	public class MainActivity : Activity
 	{
-		OPMediaEngine mediaEngine = null;
+		OPTestMediaEngine mediaEngine = null;
 		SurfaceView localView = null;
+		int mediaEngineStatus = 0;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -36,14 +38,40 @@ namespace OpenPeerMediaTestApp
 			layout.AddView (localView);
 
 			OPMediaEngine.Init (Android.App.Application.Context);
+
+			button.Text = string.Format ("Start Video Capture");
 			
 			button.Click += delegate {
 				Log.Debug("MainActivity", "button.Click");
-				Java.Lang.Boolean ecEnabled = new Java.Lang.Boolean (false);
-				mediaEngine = OPMediaEngine.Instance;
-				mediaEngine.SetEcEnabled (ecEnabled);
-				mediaEngine.StartVideoCapture ();
-				button.Text = string.Format ("Video Capture Started");
+				mediaEngine = (OPTestMediaEngine)OPTestMediaEngine.Instance;
+				switch (mediaEngineStatus) {
+				case 0:
+					Java.Lang.Boolean ecEnabled = new Java.Lang.Boolean (false);
+					mediaEngine.SetEcEnabled (ecEnabled);
+					mediaEngine.StartVideoCapture ();
+					button.Text = string.Format ("Start Audio/Video Channel");
+					mediaEngineStatus++;
+					break;
+				case 1:
+					mediaEngine.StartVoice ();
+					mediaEngine.StartVideoChannel ();
+					button.Text = string.Format ("Stop Audio/Video Channel");
+					mediaEngineStatus++;
+					break;
+				case 2:
+					mediaEngine.StopVoice ();
+					mediaEngine.StopVideoChannel ();
+					button.Text = string.Format ("Stop Video Capture");
+					mediaEngineStatus++;
+					break;
+				case 3:
+					mediaEngine.StopVideoCapture ();
+					button.Text = string.Format ("Start Video Capture");
+					mediaEngineStatus = 0;
+					break;
+				default:
+					break;
+				}
 			};
 		}
 	}

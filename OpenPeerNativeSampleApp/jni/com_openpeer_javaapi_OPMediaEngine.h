@@ -256,6 +256,54 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVideoTransport
 JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceTransportStatistics
   (JNIEnv *, jobject, jobject);
 
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    startVoice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoice
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    stopVoice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoice
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    startVideoChannel
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVideoChannel
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    stopVideoChannel
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVideoChannel
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    setReceiverAddress
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    getReceiverAddress
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_getReceiverAddress
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

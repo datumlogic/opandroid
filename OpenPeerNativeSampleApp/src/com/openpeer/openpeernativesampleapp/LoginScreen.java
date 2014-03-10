@@ -6,6 +6,7 @@ import com.openpeer.openpeernativesampleapp.R;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
+import com.openpeer.javaapi.test.OPTestMediaEngine;
 import com.openpeer.openpeernativesampleapp.LoginManager;
 
 import android.os.AsyncTask;
@@ -26,6 +27,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	//LoginHandlerInterface loginHandler;
 	WebView myWebView;
 	SurfaceView myLocalSurface = null;
+	int webrtcStatus = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,8 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	}
 
 	private void setupFacebookButton() {
-		Button facebookButton = (Button) findViewById(R.id.btnFacebookLogin);
+		final Button facebookButton = (Button) findViewById(R.id.btnFacebookLogin);
+		facebookButton.setText("Start Video Capture");
 		
 		facebookButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -50,8 +53,33 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				//
 				//new CoreLogin().execute();
 				//stack.setup(stackDelegate, mediaEngineDelegate, appID, appName, appImageURL, appURL, userAgent, deviceID, os, system)
-				OPMediaEngine.init(getApplicationContext());
-				OPMediaEngine.getInstance().startVideoCapture();
+				switch (webrtcStatus) {
+				case 0:
+					OPMediaEngine.init(getApplicationContext());
+					OPMediaEngine.getInstance().startVideoCapture();
+					facebookButton.setText("Start Audio/Video Channel");
+					webrtcStatus++;
+					break;
+				case 1:
+					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVoice();
+					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVideoChannel();
+					facebookButton.setText("Stop Audio/Video Channel");
+					webrtcStatus++;
+					break;
+				case 2:
+					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVoice();
+					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVideoChannel();
+					facebookButton.setText("Stop Video Capture");
+					webrtcStatus++;
+					break;
+				case 3:
+					OPMediaEngine.getInstance().stopVideoCapture();
+					facebookButton.setText("Start Video Capture");
+					webrtcStatus = 0;
+					break;
+				default:
+					break;
+				}
 			}
 		});
 	}

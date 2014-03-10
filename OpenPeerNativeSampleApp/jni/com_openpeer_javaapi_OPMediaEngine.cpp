@@ -2,6 +2,8 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
+#include "openpeer/core/internal/core_MediaEngine.h"
+#include "openpeer/core/test/TestMediaEngine.h"
 #include <android/log.h>
 #include <voe_base.h>
 #include <vie_base.h>
@@ -51,6 +53,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
 		cls = findClass("com/openpeer/javaapi/OPMediaEngine");
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
+
+	    openpeer::core::test::TestMediaEngineFactoryPtr overrideFactory(new openpeer::core::test::TestMediaEngineFactory);
+
+	    openpeer::core::internal::Factory::override(overrideFactory);
 
 		mediaEnginePtr = IMediaEngine::singleton();
 
@@ -670,6 +676,131 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceTransport
   (JNIEnv *, jobject, jobject)
 {
 
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    startVoice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoice
+  (JNIEnv *, jobject)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
+                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoice");
+
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVoice();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    stopVoice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoice
+  (JNIEnv *, jobject)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
+                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoice");
+
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVoice();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    startVideoChannel
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVideoChannel
+  (JNIEnv *, jobject)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
+                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVideoChannel");
+
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVideoChannel();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    stopVideoChannel
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVideoChannel
+  (JNIEnv *, jobject)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
+                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVideoChannel");
+
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVideoChannel();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    setReceiverAddress
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress
+  (JNIEnv *, jobject, jstring receiver_address)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
+                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress");
+
+	if (mediaEnginePtr)
+	{
+		JNIEnv *jni_env = getEnv();
+	    const char* receiver_address_utf8;
+	    receiver_address_utf8 = jni_env->GetStringUTFChars(receiver_address, NULL);
+	    if (receiver_address_utf8 == NULL) {
+	    	return;
+	    }
+
+	    openpeer::core::test::TestMediaEnginePtr testMediaEngine =
+	        boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
+	    testMediaEngine->setReceiverAddress(receiver_address_utf8);
+
+	    jni_env->ReleaseStringUTFChars(receiver_address, receiver_address_utf8);
+	}
+
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    getReceiverAddress
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_getReceiverAddress
+  (JNIEnv *, jobject)
+{
+    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
+                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress");
+
+    jstring receiver_address;
+
+	if (mediaEnginePtr)
+	{
+		JNIEnv *jni_env = getEnv();
+		const char* receiver_address_utf8;
+
+	    openpeer::core::test::TestMediaEnginePtr testMediaEngine =
+	        boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
+	    receiver_address_utf8 = testMediaEngine->getReceiverAddress().c_str();
+
+	    receiver_address = jni_env->NewStringUTF((const char*)receiver_address_utf8);
+	}
+
+	return receiver_address;
 }
 
 #ifdef __cplusplus
