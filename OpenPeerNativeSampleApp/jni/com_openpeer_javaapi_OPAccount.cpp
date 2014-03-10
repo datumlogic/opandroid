@@ -283,7 +283,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
 	if (accountPtr)
 	{
 		SecureByteBlockPtr sec = accountPtr->getPeerFilePrivateSecret();
-		//;
 		returnArr = env->NewByteArray(sec->SizeInBytes());
 		env->SetByteArrayRegion(returnArr, (int)0, (int)sec->SizeInBytes(), (const signed char *)sec->data());
 
@@ -332,9 +331,20 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWindowFrameURL
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject)
 {
+	String innerBrowserWindowFrameURLString;
+	jstring innerBrowserWindowFrameURL;
 
+
+	if (accountPtr)
+	{
+		innerBrowserWindowFrameURLString = accountPtr->getInnerBrowserWindowFrameURL();
+
+		innerBrowserWindowFrameURL =  env->NewStringUTF(innerBrowserWindowFrameURLString.c_str());
+	}
+
+	return innerBrowserWindowFrameURL;
 }
 
 /*
@@ -345,7 +355,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWin
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVisible
 (JNIEnv *, jobject)
 {
-
+	if (accountPtr)
+	{
+		accountPtr->notifyBrowserWindowVisible();
+	}
 }
 
 /*
@@ -356,7 +369,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVi
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowClosed
 (JNIEnv *, jobject)
 {
-
+	if (accountPtr)
+	{
+		accountPtr->notifyBrowserWindowClosed();
+	}
 }
 
 /*
@@ -365,9 +381,20 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowCl
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForInnerBrowerWindowFrame
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject)
 {
+	ElementPtr nextMessageForInnerBrowerWindowFrameElement;
+	jstring nextMessageForInnerBrowerWindowFrame;
 
+
+	if (accountPtr)
+	{
+		nextMessageForInnerBrowerWindowFrameElement = accountPtr->getNextMessageForInnerBrowerWindowFrame();
+
+		nextMessageForInnerBrowerWindowFrame =  env->NewStringUTF(IHelper::convertToString(nextMessageForInnerBrowerWindowFrameElement).c_str());
+	}
+
+	return nextMessageForInnerBrowerWindowFrame;
 }
 
 /*
@@ -376,9 +403,18 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForI
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_handleMessageFromInnerBrowserWindowFrame
-(JNIEnv *, jobject, jstring)
+(JNIEnv *env, jobject, jstring unparsedMessage)
 {
+	String unparsedMessageString;
+	unparsedMessageString = env->GetStringUTFChars(unparsedMessage, NULL);
+	if (unparsedMessageString == NULL) {
+		return;
+	}
 
+	if (accountPtr)
+	{
+		accountPtr->handleMessageFromInnerBrowserWindowFrame(IHelper::createElement(unparsedMessageString));
+	}
 }
 
 #ifdef __cplusplus
