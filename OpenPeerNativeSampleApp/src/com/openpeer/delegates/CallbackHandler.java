@@ -496,6 +496,28 @@ public class CallbackHandler{
 		}
 	}
 	
+	public void onMediaEngineAudioSessionInterruptionBegan() {
+
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
+		{
+			if (mMediaEngine != null && delegate != null)
+			{
+				delegate.onMediaEngineAudioSessionInterruptionBegan();
+			}
+		}
+	}
+	
+	public void onMediaEngineAudioSessionInterruptionEnded() {
+
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
+		{
+			if (mMediaEngine != null && delegate != null)
+			{
+				delegate.onMediaEngineAudioSessionInterruptionEnded();
+			}
+		}
+	}
+	
 	public void onMediaEngineFaceDetected() {
 
 		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)

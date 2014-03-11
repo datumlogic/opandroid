@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_openpeer_javaapi_OPStack
  * Method:    setup
- * Signature: (Lcom/openpeer/javaapi/OPStackDelegate;Lcom/openpeer/javaapi/OPMediaEngineDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPStackDelegate;Lcom/openpeer/javaapi/OPMediaEngineDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
-  (JNIEnv *, jobject, jobject, jobject, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPStack

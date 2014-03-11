@@ -76,6 +76,51 @@ void EventManager::onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::
 	android_jvm->DetachCurrentThread();
 
 }
+void EventManager::onMediaEngineAudioSessionInterruptionBegan()
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onMediaEngineAudioSessionInterruptionBegan", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
+}
+void EventManager::onMediaEngineAudioSessionInterruptionEnded()
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
+	method = jni_env->GetMethodID(gCallbackClass, "onMediaEngineAudioSessionInterruptionEnded", "()V");
+	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
+}
+
 void EventManager::onMediaEngineFaceDetected()
 {
 

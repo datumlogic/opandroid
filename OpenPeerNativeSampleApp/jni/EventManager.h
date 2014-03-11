@@ -33,6 +33,8 @@ public:
 
 	//IMediaEngineDelegate implementation
 	virtual void onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute);
+	virtual void onMediaEngineAudioSessionInterruptionBegan();
+	virtual void onMediaEngineAudioSessionInterruptionEnded();
 	virtual void onMediaEngineFaceDetected();
 	virtual void onMediaEngineVideoCaptureRecordStopped();
 
