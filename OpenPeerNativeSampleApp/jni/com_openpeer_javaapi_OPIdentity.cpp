@@ -2,6 +2,7 @@
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
 #include "openpeer/core/IHelper.h"
+#include <android/log.h>
 
 #include "globals.h"
 
@@ -503,9 +504,27 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInn
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_startRolodexDownload
-  (JNIEnv *, jobject, jstring)
+(JNIEnv *env, jobject, jstring inLastDownloadedVersion)
 {
+	if (identityPtr)
+	{
+		String inLastDownloadedVersionString;
+		inLastDownloadedVersionString = env->GetStringUTFChars(inLastDownloadedVersion, NULL);
+		if (inLastDownloadedVersionString == NULL) {
 
+			identityPtr->startRolodexDownload();
+
+		}
+		else
+		{
+
+			identityPtr->startRolodexDownload(inLastDownloadedVersionString);
+		}
+	}
+	else
+	{
+		__android_log_write(ANDROID_LOG_ERROR, "com.openpeer.jni", "IdentityPtr is NULL");
+	}
 }
 
 /*
@@ -514,18 +533,26 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_startRolodexDownload
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_refreshRolodexContacts
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
+	if (identityPtr)
+	{
+		identityPtr->refreshRolodexContacts();
+	}
+	else
+	{
+		__android_log_write(ANDROID_LOG_ERROR, "com.openpeer.jni", "IdentityPtr is NULL");
+	}
 
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    getDownloadedRolodexContacts
- * Signature: (Ljava/lang/Boolean;Ljava/lang/String;Ljava/util/List;)Ljava/lang/Boolean;
+ * Signature: (ZLjava/lang/String;Ljava/util/List;)Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolodexContacts
-  (JNIEnv *, jobject, jobject, jstring, jobject)
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolodexContacts
+(JNIEnv *, jobject, jboolean, jstring, jobject)
 {
 
 }

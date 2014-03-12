@@ -460,6 +460,8 @@ LOCAL_SRC_FILES := \
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a
+LOCAL_LDLIBS += -llog \
+
 
 LOCAL_STATIC_LIBRARIES := \
 $(VOICELIB) \

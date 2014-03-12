@@ -162,10 +162,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_refreshRolodexContac
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    getDownloadedRolodexContacts
- * Signature: (Ljava/lang/Boolean;Ljava/lang/String;Ljava/util/List;)Ljava/lang/Boolean;
+ * Signature: (Z;Ljava/lang/String;Ljava/util/List;)Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolodexContacts
-  (JNIEnv *, jobject, jobject, jstring, jobject);
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolodexContacts
+  (JNIEnv *, jobject, jboolean, jstring, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
