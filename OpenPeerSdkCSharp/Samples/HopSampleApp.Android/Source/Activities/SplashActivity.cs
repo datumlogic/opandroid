@@ -43,7 +43,7 @@ namespace HopSampleApp
 			QRScannerButton.Click += async delegate {
 				try
 				{
-					//this.Theme="";
+
 					scanner.UseCustomOverlay=true;//Options TRUE or FALSE
 					zxingOverlay=LayoutInflater.FromContext(this).Inflate(Resource.Layout.QROverlay,null);//Start QRScanner Overlay
 
@@ -74,12 +74,20 @@ namespace HopSampleApp
 		public void HandleScanResult(ZXing.Result result)
 		{
 			//The logic for settings goes hire ,i make it now
+
+			/*
 			string msg = "";
 			if (result != null && !string.IsNullOrEmpty (result.Text))
 				msg = "QR Code Scanned: " + result.Text;
 			else
 				msg="Scanning Canceled!";
 			this.RunOnUiThread (()=>Toast.MakeText(this,msg,ToastLength.Short).Show());
+			*/
+			/*  JUST EXAMPLE  */
+
+
+			//parser (result.Text);
+
 		}
 	
 
