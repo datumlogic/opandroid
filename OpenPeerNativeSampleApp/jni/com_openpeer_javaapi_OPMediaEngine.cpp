@@ -50,7 +50,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
 	jni_env = getEnv();
 	if(jni_env)
 	{
-		cls = findClass("com/openpeer/javaapi/OPMediaEngine");
+		cls = findClass("com/openpeer/javaapi/test/OPTestMediaEngine");
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
 
@@ -200,14 +200,25 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderV
 
 }
 
+jobject g_glSurface;
+
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setChannelRenderView
  * Signature: (Ljava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderView
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject glSurface)
 {
+	JNIEnv *jni_env = 0;
+
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		g_glSurface = jni_env->NewGlobalRef(glSurface);
+		mediaEnginePtr->setChannelRenderView(g_glSurface);
+	}
 
 }
 

@@ -16,10 +16,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class LoginScreen extends Activity implements LoginHandlerInterface{
@@ -27,8 +29,8 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	//LoginHandlerInterface loginHandler;
 	WebView myWebView;
 	SurfaceView myLocalSurface = null;
-	int webrtcStatus = 0;
-	
+	SurfaceView myRemoteSurface = null;
+	int mediaEngineStatus = 0;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,7 +42,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	}
 
 	private void setupFacebookButton() {
-		final Button facebookButton = (Button) findViewById(R.id.btnFacebookLogin);
+		final Button facebookButton = (Button) findViewById(R.id.buttonMedia);
 		facebookButton.setText("Start Video Capture");
 		
 		facebookButton.setOnClickListener(new View.OnClickListener() {
@@ -53,29 +55,31 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				//
 				//new CoreLogin().execute();
 				//stack.setup(stackDelegate, mediaEngineDelegate, appID, appName, appImageURL, appURL, userAgent, deviceID, os, system)
-				switch (webrtcStatus) {
+				switch (mediaEngineStatus) {
 				case 0:
 					OPMediaEngine.init(getApplicationContext());
 					OPMediaEngine.getInstance().startVideoCapture();
 					facebookButton.setText("Start Audio/Video Channel");
-					webrtcStatus++;
+					mediaEngineStatus++;
 					break;
 				case 1:
+					OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+					((OPTestMediaEngine) OPMediaEngine.getInstance()).setReceiverAddress("127.0.0.1");
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVoice();
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVideoChannel();
 					facebookButton.setText("Stop Audio/Video Channel");
-					webrtcStatus++;
+					mediaEngineStatus++;
 					break;
 				case 2:
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVoice();
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVideoChannel();
 					facebookButton.setText("Stop Video Capture");
-					webrtcStatus++;
+					mediaEngineStatus++;
 					break;
 				case 3:
 					OPMediaEngine.getInstance().stopVideoCapture();
 					facebookButton.setText("Start Video Capture");
-					webrtcStatus = 0;
+					mediaEngineStatus = 0;
 					break;
 				default:
 					break;
@@ -86,29 +90,18 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	
 	private void setupWebView()
 	{
-		myWebView = (WebView) findViewById(R.id.webViewLogin);
-		WebSettings webSettings = myWebView.getSettings();
-		webSettings.setJavaScriptEnabled(true);
-		LoginManager.setHandlerListener(this);
-		myWebView.setWebViewClient(new WebViewClient() {
-			@Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			          view.loadUrl(url);
-			          return true;
-			           }});
-		//
 	}
 	
 	private void setupVideo()
 	{
 		myLocalSurface = ViERenderer.CreateLocalRenderer(this);
-		RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
-		//RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-		//layoutParams.addRule(RelativeLayout.BELOW, R.id.btnFacebookLogin);
-		//myLocalSurface.setLayoutParams(layoutParams);
-		relativeLayout.addView(myLocalSurface);
-		Button facebookButton = (Button) findViewById(R.id.btnFacebookLogin);
-		facebookButton.bringToFront();
+		myRemoteSurface = ViERenderer.CreateRenderer(this, true);
+		LinearLayout localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
+		LinearLayout remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
+		localViewLinearLayout.addView(myLocalSurface);
+		remoteViewLinearLayout.addView(myRemoteSurface);
+		//Button facebookButton = (Button) findViewById(R.id.buttonMedia);
+		//facebookButton.bringToFront();
 	}
 
 	private class CoreLogin extends AsyncTask<Void, Void, Void> {

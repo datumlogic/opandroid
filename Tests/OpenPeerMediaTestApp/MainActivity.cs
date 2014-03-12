@@ -17,6 +17,7 @@ namespace OpenPeerMediaTestApp
 	{
 		OPTestMediaEngine mediaEngine = null;
 		SurfaceView localView = null;
+		SurfaceView remoteView = null;
 		int mediaEngineStatus = 0;
 
 		protected override void OnCreate (Bundle bundle)
@@ -31,11 +32,15 @@ namespace OpenPeerMediaTestApp
 
 			// Get our button from the layout resource,
 			// and attach an event to it
-			LinearLayout layout = FindViewById<LinearLayout> (Resource.Id.myLinearLayout);
+			LinearLayout localViewLayout = FindViewById<LinearLayout> (Resource.Id.myLocalViewLinearLayout);
+			LinearLayout remoteViewLayout = FindViewById<LinearLayout> (Resource.Id.myRemoteViewLinearLayout);
 			Button button = FindViewById<Button> (Resource.Id.myButton);
 
 			localView = ViERenderer.CreateLocalRenderer(this);
-			layout.AddView (localView);
+			localViewLayout.AddView (localView);
+
+			remoteView = ViERenderer.CreateRenderer(this, true);
+			remoteViewLayout.AddView (remoteView);
 
 			OPMediaEngine.Init (Android.App.Application.Context);
 
@@ -43,7 +48,7 @@ namespace OpenPeerMediaTestApp
 			
 			button.Click += delegate {
 				Log.Debug("MainActivity", "button.Click");
-				mediaEngine = (OPTestMediaEngine)OPTestMediaEngine.Instance;
+				mediaEngine = OPTestMediaEngine.TestInstance;
 				switch (mediaEngineStatus) {
 				case 0:
 					Java.Lang.Boolean ecEnabled = new Java.Lang.Boolean (false);
@@ -53,6 +58,8 @@ namespace OpenPeerMediaTestApp
 					mediaEngineStatus++;
 					break;
 				case 1:
+					mediaEngine.SetChannelRenderView (remoteView);
+					mediaEngine.ReceiverAddress = "127.0.0.1";
 					mediaEngine.StartVoice ();
 					mediaEngine.StartVideoChannel ();
 					button.Text = string.Format ("Stop Audio/Video Channel");

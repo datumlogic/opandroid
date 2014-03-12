@@ -21,7 +21,7 @@ public class OPMediaEngine {
         return _instance;
     }
 
-	private static native OPMediaEngine singleton();
+	protected static native OPMediaEngine singleton();
 
 	public native void setDefaultVideoOrientation(VideoOrientations orientation);
 	public native VideoOrientations getDefaultVideoOrientation();
