@@ -11,27 +11,27 @@ public class OPIdentity {
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
 
-	public OPIdentity login(
-            OPAccount account,
-            OPIdentityDelegate delegate,
-            String outerFrameURLUponReload,
-            String identityURI_or_identityBaseURI,
-            String identityProviderDomain // used when identity URI is of legacy or oauth-type
-            )
-	{
-		return OPIdentity.coreLogin(account, 
-				delegate, 
-				outerFrameURLUponReload, 
-				identityURI_or_identityBaseURI, 
-				identityProviderDomain);
-	}
+//	public OPIdentity login(
+//            OPAccount account,
+//            OPIdentityDelegate delegate,
+//            String outerFrameURLUponReload,
+//            String identityURI_or_identityBaseURI,
+//            String identityProviderDomain // used when identity URI is of legacy or oauth-type
+//            )
+//	{
+//		return OPIdentity.coreLogin(account, 
+//				delegate, 
+//				outerFrameURLUponReload, 
+//				identityURI_or_identityBaseURI, 
+//				identityProviderDomain);
+//	}
 	
-	private static native OPIdentity coreLogin(
+	private static native OPIdentity login(
                               OPAccount account,
                               OPIdentityDelegate delegate,
-                              String outerFrameURLUponReload,
+                              String identityProviderDomain, // used when identity URI is of legacy or oauth-type
                               String identityURI_or_identityBaseURI,
-                              String identityProviderDomain // used when identity URI is of legacy or oauth-type
+                              String outerFrameURLUponReload
                               );
 	
 	public static native OPIdentity loginWithIdentityPreauthorized(

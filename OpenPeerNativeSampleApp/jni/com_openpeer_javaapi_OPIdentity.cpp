@@ -15,7 +15,7 @@ extern "C" {
  * Signature: (Lcom/openpeer/javaapi/IdentityStates;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toString
-  (JNIEnv *, jclass, jobject)
+(JNIEnv *, jclass, jobject)
 {
 
 }
@@ -26,7 +26,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toString
  * Signature: (Lcom/openpeer/javaapi/OPIdentity;Ljava/lang/Boolean;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
-  (JNIEnv *, jclass, jobject, jobject)
+(JNIEnv *, jclass, jobject, jobject)
 {
 
 }
@@ -36,35 +36,37 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
  * Method:    login
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentity;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_coreLogin
-  (JNIEnv *env, jclass, jobject, jobject, jstring identityProviderDomain, jstring identityURI_or_identityBaseURI, jstring outerFrameURLUponReload)
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
+(JNIEnv *env, jclass, jobject, jobject, jstring identityProviderDomain, jstring identityURI_or_identityBaseURI, jstring outerFrameURLUponReload)
 {
-		jclass cls;
-		jmethodID method;
-		jobject object;
-		JNIEnv *jni_env = 0;
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
-		const char *identityProviderDomainStr;
-		identityProviderDomainStr = env->GetStringUTFChars(identityProviderDomain, NULL);
-		if (identityProviderDomainStr == NULL) {
-			return object;
-		}
+	const char *identityProviderDomainStr;
+	identityProviderDomainStr = env->GetStringUTFChars(identityProviderDomain, NULL);
+	if (identityProviderDomainStr == NULL) {
+		return object;
+	}
 
-		const char *identityURIStr;
-		identityURIStr = env->GetStringUTFChars(identityURI_or_identityBaseURI, NULL);
-		if (identityURIStr == NULL) {
-			return object;
-		}
+	const char *identityURIStr;
+	identityURIStr = env->GetStringUTFChars(identityURI_or_identityBaseURI, NULL);
+	if (identityURIStr == NULL) {
+		return object;
+	}
 
-		const char *outerFrameURLUponReloadStr;
-		outerFrameURLUponReloadStr = env->GetStringUTFChars(outerFrameURLUponReload, NULL);
-		if (outerFrameURLUponReloadStr == NULL) {
-			return object;
-		}
+	const char *outerFrameURLUponReloadStr;
+	outerFrameURLUponReloadStr = env->GetStringUTFChars(outerFrameURLUponReload, NULL);
+	if (outerFrameURLUponReloadStr == NULL) {
+		return object;
+	}
 
-		identityPtr = IIdentity::login(accountPtr, globalEventManager, (char const *)identityProviderDomainStr,
-					(char const *)identityURIStr, (char const *)outerFrameURLUponReloadStr);
+	identityPtr = IIdentity::login(accountPtr, globalEventManager, (char const *)identityProviderDomainStr,
+			(char const *)identityURIStr, (char const *)outerFrameURLUponReloadStr);
 
+	if(identityPtr)
+	{
 		jni_env = getEnv();
 		if(jni_env)
 		{
@@ -73,7 +75,84 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_coreLogin
 			object = jni_env->NewObject(cls, method);
 
 		}
+	}
+	return object;
+
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    loginWithIdentityPreauthorized
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Lcom/openpeer/javaapi/OPIdentity;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentityPreauthorized
+(JNIEnv *env, jclass, jobject, jobject,
+		jstring identityProviderDomain,
+		jstring identityURI,
+		jstring identityAccessToken,
+		jstring identityAccessSecret,
+		jobject identityAccessSecretExpires)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	const char *identityProviderDomainStr;
+	identityProviderDomainStr = env->GetStringUTFChars(identityProviderDomain, NULL);
+	if (identityProviderDomainStr == NULL) {
 		return object;
+	}
+
+	const char *identityURIStr;
+	identityURIStr = env->GetStringUTFChars(identityURI, NULL);
+	if (identityURIStr == NULL) {
+		return object;
+	}
+
+	const char *identityAccessTokenStr;
+	identityAccessTokenStr = env->GetStringUTFChars(identityAccessToken, NULL);
+	if (identityAccessTokenStr == NULL) {
+		return object;
+	}
+
+	const char *identityAccessSecretStr;
+	identityAccessSecretStr = env->GetStringUTFChars(identityAccessSecret, NULL);
+	if (identityAccessSecretStr == NULL) {
+		return object;
+	}
+
+	//todo fix time
+	Time t;
+	jni_env = getEnv();
+
+	cls = findClass("android/text/format/Time");
+	if(jni_env->IsInstanceOf(identityAccessSecretExpires, cls) == JNI_TRUE)
+	{
+		jmethodID timeMethodID   = jni_env->GetMethodID(cls, "toMillis", "(B)J");
+		long longValue = (long) jni_env->CallIntMethod(identityAccessSecretExpires, timeMethodID, false);
+		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
+	}
+
+	identityPtr = IIdentity::loginWithIdentityPreauthorized(accountPtr,
+			globalEventManager,
+			(char const *)identityProviderDomainStr,
+			(char const *)identityURIStr,
+			(char const *)identityAccessTokenStr,
+			(char const *)identityAccessSecretStr,
+			t);
+
+	if(identityPtr)
+	{
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/OPIdentity");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+
+		}
+	}
+	return object;
 
 }
 
@@ -83,7 +162,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_coreLogin
  * Signature: (ILjava/lang/String;)Lcom/openpeer/javaapi/IdentityStates;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
-  (JNIEnv *, jobject, jint, jstring)
+(JNIEnv *, jobject, jint, jstring)
 {
 
 }
@@ -94,7 +173,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getID
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -105,7 +184,7 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getID
  * Signature: ()Ljava/lang/Boolean;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttached
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -116,7 +195,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttache
  * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
-  (JNIEnv *, jobject, jobject, jstring)
+(JNIEnv *, jobject, jobject, jstring)
 {
 
 }
@@ -127,7 +206,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityURI
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -138,7 +217,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityURI
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityProviderDomain
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -149,7 +228,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityProvid
  * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSignedIdentityBundle
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -160,7 +239,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSignedIdentity
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getInnerBrowserWindowFrameURL
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -171,7 +250,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getInnerBrowserWi
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowVisible
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -182,7 +261,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowV
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowClosed
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
@@ -192,8 +271,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowC
  * Method:    getNextMessageForInnerBrowerWindowFrame
  * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageForInnerBrowerWindowFrame
-  (JNIEnv *, jobject)
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageForInnerBrowerWindowFrame
+(JNIEnv *, jobject)
 {
 
 }
@@ -204,7 +283,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageFor
  * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInnerBrowserWindowFrame
-  (JNIEnv *, jobject, jobject)
+(JNIEnv *, jobject, jstring)
 {
 
 }
@@ -215,7 +294,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInn
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_cancel
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 
 }
