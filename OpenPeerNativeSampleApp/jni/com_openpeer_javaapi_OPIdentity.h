@@ -50,17 +50,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    getStableID
- * Signature: ()Ljava/lang/String;
+ * Signature: ()J
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getStableID
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getStableID
   (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    isDelegateAttached
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttached
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttached
   (JNIEnv *, jobject);
 
 /*

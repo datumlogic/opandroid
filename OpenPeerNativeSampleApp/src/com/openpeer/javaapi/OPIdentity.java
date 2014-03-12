@@ -49,9 +49,9 @@ public class OPIdentity {
                                    String outLastErrorReason
                                    );
 
-	public native String getStableID();
+	public native long getStableID();
 
-	public native Boolean isDelegateAttached();
+	public native boolean isDelegateAttached();
 	public native void attachDelegate(
                                 OPIdentityDelegate delegate,
                                 String outerFrameURLUponReload
