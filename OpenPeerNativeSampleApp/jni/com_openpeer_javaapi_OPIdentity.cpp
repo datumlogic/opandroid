@@ -1,6 +1,7 @@
 #include "com_openpeer_javaapi_OPIdentity.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
+#include "openpeer/core/IHelper.h"
 
 #include "globals.h"
 
@@ -239,9 +240,20 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSignedIdentity
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getInnerBrowserWindowFrameURL
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject)
 {
+	String innerBrowserWindowFrameURLString;
+	jstring innerBrowserWindowFrameURL;
 
+
+	if (identityPtr)
+	{
+		innerBrowserWindowFrameURLString = identityPtr->getInnerBrowserWindowFrameURL();
+
+		innerBrowserWindowFrameURL =  env->NewStringUTF(innerBrowserWindowFrameURLString.c_str());
+	}
+
+	return innerBrowserWindowFrameURL;
 }
 
 /*
@@ -252,7 +264,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getInnerBrowserWi
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowVisible
 (JNIEnv *, jobject)
 {
-
+	if (identityPtr)
+	{
+		identityPtr->notifyBrowserWindowVisible();
+	}
 }
 
 /*
@@ -263,7 +278,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowV
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowClosed
 (JNIEnv *, jobject)
 {
-
+	if (identityPtr)
+	{
+		identityPtr->notifyBrowserWindowClosed();
+	}
 }
 
 /*
@@ -272,9 +290,20 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowC
  * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageForInnerBrowerWindowFrame
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject)
 {
+	ElementPtr nextMessageForInnerBrowerWindowFrameElement;
+	jstring nextMessageForInnerBrowerWindowFrame;
 
+
+	if (identityPtr)
+	{
+		nextMessageForInnerBrowerWindowFrameElement = identityPtr->getNextMessageForInnerBrowerWindowFrame();
+
+		nextMessageForInnerBrowerWindowFrame =  env->NewStringUTF(IHelper::convertToString(nextMessageForInnerBrowerWindowFrameElement).c_str());
+	}
+
+	return nextMessageForInnerBrowerWindowFrame;
 }
 
 /*
@@ -283,9 +312,18 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageFor
  * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInnerBrowserWindowFrame
-(JNIEnv *, jobject, jstring)
+(JNIEnv *env, jobject, jstring unparsedMessage)
 {
+	String unparsedMessageString;
+	unparsedMessageString = env->GetStringUTFChars(unparsedMessage, NULL);
+	if (unparsedMessageString == NULL) {
+		return;
+	}
 
+	if (identityPtr)
+	{
+		identityPtr->handleMessageFromInnerBrowserWindowFrame(IHelper::createElement(unparsedMessageString));
+	}
 }
 
 /*
