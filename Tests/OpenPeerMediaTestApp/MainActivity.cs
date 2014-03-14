@@ -12,7 +12,7 @@ using Org.Webrtc.Videoengine;
 
 namespace OpenPeerMediaTestApp
 {
-	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true)]
+	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
 	public class MainActivity : Activity
 	{
 		OPTestMediaEngine mediaEngine = null;
