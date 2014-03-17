@@ -27,7 +27,9 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		setContentView(R.layout.activity_login_screen);
 		
 		setupFacebookButton();
+		setupAccountButton();
 		setupWebView();
+		initializeCore();
 	}
 
 	private void setupFacebookButton() {
@@ -45,6 +47,28 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				//stack.setup(stackDelegate, mediaEngineDelegate, appID, appName, appImageURL, appURL, userAgent, deviceID, os, system)
 			}
 		});
+	}
+	
+	private void setupAccountButton() {
+		Button accountButton = (Button) findViewById(R.id.buttonAccountLogin);
+		
+		accountButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) { 
+				//OPStack stack = new OPStack();
+				//LoginManager loginManager = new LoginManager();
+				
+				//
+				new AccountLogin().execute();
+				//stack.setup(stackDelegate, mediaEngineDelegate, appID, appName, appImageURL, appURL, userAgent, deviceID, os, system)
+			}
+		});
+	}
+	
+	private void initializeCore()
+	{
+		LoginManager.initializeContext(getApplicationContext());
 	}
 	
 	private void setupWebView()
@@ -69,6 +93,35 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
                 
                     try {
                     	LoginManager.LoginWithFacebook();
+                    } catch (Exception e) { //TO DO: LBOJAN fix this code
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                //TextView txt = (TextView) findViewById(R.id.output);
+                //txt.setText("Executed");
+                return null;
+        }        
+
+        @Override
+        protected void onPostExecute(Void result) {             
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+    }
+	
+	private class AccountLogin extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+                
+                    try {
+                    	LoginManager.AccountLogin();
                     } catch (Exception e) { //TO DO: LBOJAN fix this code
                         // TODO Auto-generated catch block
                         e.printStackTrace();

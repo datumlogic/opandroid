@@ -36,11 +36,11 @@ public class CallbackHandler{
 	// ACCOUNT DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPAccountDelegate support
-	private OPAccount mAccount;
-	ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate> ();
+	private static OPAccount mAccount;
+	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate> ();
 
 	//Account Delegate glue methods
-	public void onAccountStateChanged(int state) {
+	public static void onAccountStateChanged(int state) {
 		for (OPAccountDelegate delegate : accountDelegates)
 		{
 			if (mAccount != null && delegate != null)
@@ -50,7 +50,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onAccountAssociatedIdentitiesChanged() {
+	public static void onAccountAssociatedIdentitiesChanged() {
 
 		for (OPAccountDelegate delegate : accountDelegates)
 		{
@@ -568,7 +568,7 @@ public class CallbackHandler{
 	
 	
 	/////////////////////////////////////////////////////////////////////
-	// CACHE DELEGATE GLUE
+	// SETTINGS DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPCacheDelegate support
 	//private OPCache mCache;
