@@ -19,6 +19,7 @@ namespace OpenPeerMediaTestApp
 		SurfaceView localView = null;
 		SurfaceView remoteView = null;
 		int mediaEngineStatus = 0;
+		bool speakerphoneEnabled = false;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -34,7 +35,8 @@ namespace OpenPeerMediaTestApp
 			// and attach an event to it
 			LinearLayout localViewLayout = FindViewById<LinearLayout> (Resource.Id.myLocalViewLinearLayout);
 			LinearLayout remoteViewLayout = FindViewById<LinearLayout> (Resource.Id.myRemoteViewLinearLayout);
-			Button button = FindViewById<Button> (Resource.Id.myButton);
+			Button mediaControlButton = FindViewById<Button> (Resource.Id.myMediaControlButton);
+			Button audioOutputButton = FindViewById<Button> (Resource.Id.myAudioOutputButton);
 
 			localView = ViERenderer.CreateLocalRenderer(this);
 			localViewLayout.AddView (localView);
@@ -43,42 +45,53 @@ namespace OpenPeerMediaTestApp
 			remoteViewLayout.AddView (remoteView);
 
 			OPMediaEngine.Init (Android.App.Application.Context);
+			mediaEngine = OPTestMediaEngine.TestInstance;
+			mediaEngine.SetEcEnabled (Java.Lang.Boolean.True);
+			mediaEngine.SetAgcEnabled (Java.Lang.Boolean.True);
+			mediaEngine.SetChannelRenderView (remoteView);
+			mediaEngine.ReceiverAddress = "127.0.0.1";
 
-			button.Text = string.Format ("Start Video Capture");
-			
-			button.Click += delegate {
-				Log.Debug("MainActivity", "button.Click");
-				mediaEngine = OPTestMediaEngine.TestInstance;
+			mediaControlButton.Text = string.Format ("Start Video Capture");
+			audioOutputButton.Text = string.Format ("Speakerphone");
+
+			mediaControlButton.Click += delegate {
 				switch (mediaEngineStatus) {
 				case 0:
-					Java.Lang.Boolean ecEnabled = new Java.Lang.Boolean (false);
-					mediaEngine.SetEcEnabled (ecEnabled);
 					mediaEngine.StartVideoCapture ();
-					button.Text = string.Format ("Start Audio/Video Channel");
+					mediaControlButton.Text = string.Format ("Start Media Channel");
 					mediaEngineStatus++;
 					break;
 				case 1:
-					mediaEngine.SetChannelRenderView (remoteView);
-					mediaEngine.ReceiverAddress = "127.0.0.1";
 					mediaEngine.StartVoice ();
 					mediaEngine.StartVideoChannel ();
-					button.Text = string.Format ("Stop Audio/Video Channel");
+					mediaControlButton.Text = string.Format ("Stop Media Channel");
 					mediaEngineStatus++;
 					break;
 				case 2:
 					mediaEngine.StopVoice ();
 					mediaEngine.StopVideoChannel ();
-					button.Text = string.Format ("Stop Video Capture");
+					mediaControlButton.Text = string.Format ("Stop Video Capture");
 					mediaEngineStatus++;
 					break;
 				case 3:
 					mediaEngine.StopVideoCapture ();
-					button.Text = string.Format ("Start Video Capture");
+					mediaControlButton.Text = string.Format ("Start Video Capture");
 					mediaEngineStatus = 0;
 					break;
 				default:
 					break;
 				}
+			};
+
+			audioOutputButton.Click += delegate {
+				if (speakerphoneEnabled) {
+					mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.False;
+					audioOutputButton.Text = string.Format ("Speakerphone");
+				} else {
+					mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.True;
+					audioOutputButton.Text = string.Format ("Ear Speaker");
+				}
+				speakerphoneEnabled = !speakerphoneEnabled;
 			};
 		}
 	}

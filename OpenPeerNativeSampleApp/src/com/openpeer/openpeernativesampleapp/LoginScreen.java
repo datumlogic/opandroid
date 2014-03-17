@@ -31,12 +31,14 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	SurfaceView myLocalSurface = null;
 	SurfaceView myRemoteSurface = null;
 	int mediaEngineStatus = 0;
+	boolean speakerphoneEnabled = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login_screen);
 		
 		setupFacebookButton();
+		setupAudioOutputButton();
 		setupWebView();
 		setupVideo();
 	}
@@ -84,6 +86,26 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				default:
 					break;
 				}
+			}
+		});
+	}
+
+	private void setupAudioOutputButton() {
+		final Button audioOutputButton = (Button) findViewById(R.id.buttonAudioOutput);
+		audioOutputButton.setText("Speakerphone");
+		
+		audioOutputButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (speakerphoneEnabled) {
+					OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
+					audioOutputButton.setText("Speakerphone");
+				} else {
+					OPMediaEngine.getInstance().setLoudspeakerEnabled(true);
+					audioOutputButton.setText("Ear Speaker");
+				}
+				speakerphoneEnabled = !speakerphoneEnabled;
 			}
 		});
 	}
