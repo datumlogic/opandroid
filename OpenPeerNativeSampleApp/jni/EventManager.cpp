@@ -237,9 +237,9 @@ void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "onAccountAssociatedIdentitiesChanged", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+	cls = findClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "onAccountAssociatedIdentitiesChanged", "()V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -260,9 +260,9 @@ void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "onAccountPendingMessageForInnerBrowserWindowFrame", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+	cls = findClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "onAccountPendingMessageForInnerBrowserWindowFrame", "()V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -463,9 +463,9 @@ void EventManager::onIdentityStateChanged(
 		return;
 	}
 
-	//jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(gCallbackClass, "onIdentityStateChanged", "(I)V");
-	gEnv->CallStaticVoidMethod(gCallbackClass, method, (jint) state);
+	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
+	method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged", "(I)V");
+	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
 
 	if (gEnv->ExceptionCheck()) {
 		gEnv->ExceptionDescribe();
@@ -485,9 +485,9 @@ void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityP
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "onIdentityPendingMessageForInnerBrowserWindowFrame", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+	cls = findClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "onIdentityPendingMessageForInnerBrowserWindowFrame", "()V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();

@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="btnFacebookLoginText">Login with Facebook</string>
     <string name="accountLoginButtonText">Account Login</string>
+    <string name="identityLoginButtonText">Identity Login</string>
 
 </resources>

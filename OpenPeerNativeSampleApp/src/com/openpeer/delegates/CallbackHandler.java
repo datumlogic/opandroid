@@ -62,7 +62,7 @@ public class CallbackHandler{
 		
 	}
 
-	public void onAccountPendingMessageForInnerBrowserWindowFrame() {
+	public static void onAccountPendingMessageForInnerBrowserWindowFrame() {
 
 		for (OPAccountDelegate delegate : accountDelegates)
 		{
@@ -143,10 +143,10 @@ public class CallbackHandler{
 	// IDENTITY DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPIdentityDelegate support
-	private OPIdentity mIdentity;
-	ArrayList<OPIdentityDelegate> identityDelegates = new ArrayList<OPIdentityDelegate> ();
+	private static OPIdentity mIdentity;
+	static ArrayList<OPIdentityDelegate> identityDelegates = new ArrayList<OPIdentityDelegate> ();
 	
-	public void onIdentityStateChanged(int state) {
+	public static void onIdentityStateChanged(int state) {
 		
 		for (OPIdentityDelegate delegate : identityDelegates)
 		{
@@ -157,7 +157,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onIdentityPendingMessageForInnerBrowserWindowFrame() {
+	public static void onIdentityPendingMessageForInnerBrowserWindowFrame() {
 		for (OPIdentityDelegate delegate : identityDelegates)
 		{
 			if (mIdentity != null && delegate != null)
@@ -168,7 +168,7 @@ public class CallbackHandler{
 		
 	}
 	
-	public void onIdentityRolodexContactsDownloaded() {
+	public static void onIdentityRolodexContactsDownloaded() {
 		for (OPIdentityDelegate delegate : identityDelegates)
 		{
 			if (mIdentity != null && delegate != null)

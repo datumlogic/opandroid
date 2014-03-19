@@ -9,10 +9,11 @@
     tools:context=".LoginScreen" >
 
     <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
-    
+
     <Button
         android:id="@+id/btnFacebookLogin"
         android:layout_width="wrap_content"
@@ -36,5 +37,13 @@
         android:layout_above="@+id/btnFacebookLogin"
         android:layout_centerHorizontal="true"
         android:text="@string/accountLoginButtonText" />
+
+    <Button
+        android:id="@+id/buttonIdentityLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:text="@string/identityLoginButtonText" />
 
 </RelativeLayout>

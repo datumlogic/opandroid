@@ -37,43 +37,15 @@ public class LoginManager {
 		//OPSettings.setup(null);
 		OPSettings.applyDefaults();
 		
+		String httpSettings = createHttpSettings();
+		OPSettings.apply(httpSettings);
+		
 		String appSettings = createFakeApplicationSettings();
 		OPSettings.apply(appSettings);
 		
 		//TODO: After interception is done, we can call setup
 		stack = new OPStack();
 		stack.setup(null, null);
-//		
-//		//LoginManager.stackMessageQueue = new OPStackMessageQueue();
-//		//mCallbackHandler.regi
-//		//LoginManager.stackMessageQueue.interceptProcessing(null);
-//		//LoginManager.mLogger = new OPLogger();
-//		//OPLogger.setLogLevel(OPLogLevel.Trace);
-//		
-//		
-//		//LoginManager.stack = new OPStack();
-//		//LoginManager.stack.setup(null, null, "bojan", "bojan1", "bojan2", "bojan3", "bojan4", "bojan5", "bojan6", "bojan7");
-//		
-//		//prepare account delegate
-		
-//		//register delegates and class for callback from native code
-//		mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
-//		
-//		mIdentityDelegate = new OPIdentityDelegateImplementation();
-//		mIdentity = new OPIdentity();
-//		mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
-//		//TODO: Now we can start login procedure
-//		//OPAccount.login(null, null, null, null, null, null, null);//delegate, conversationThreadDelegate, callDelegate, namespaceGrantOuterFrameURLUponReload, namespaceGrantServiceDomain, grantID, grantSecret, lockboxServiceDomain, forceCreateNewLockboxAccount)
-//		
-//		//OPIdentity.login(mAccount, mIdentityDelegate, "idprovider-javascript.hookflash.me", "identity://idprovider-javascript.hookflash.me/", "https://app-javascript.hookflash.me/outer.html?reload=true");
-//		
-//		//mMediaEngine = new OPMediaEngine();
-//		//OPMediaEngine.singleton().setEcEnabled(true);
-//		mMediaEngine = OPMediaEngine.getInstance();
-//		mMediaEngine.setEcEnabled(true);
-		
-		//Time t = new Time();
-		//t.
 	}
 	
 	
@@ -105,8 +77,27 @@ public class LoginManager {
 		
 		   
 		   
-      //if(mLoginHandler!=null)
-    	  //mLoginHandler.onLoadOuterFrameHandle(null);
+		if(mLoginHandler!=null)
+	    	  mLoginHandler.onLoadOuterFrameHandle(null);
+		
+	}
+	
+	public static void initInnerFrame()
+	{
+		mLoginHandler.onInnerFrameInitialized(mIdentity.getInnerBrowserWindowFrameURL());
+	}
+	
+	public static void pendingMessageForInnerFrame()
+	{
+		String msg = mIdentity.getNextMessageForInnerBrowerWindowFrame();
+		mLoginHandler.passMessageToJS(msg);
+		
+	}
+	
+	public static void pendingMessageForNamespaceGrantInnerFrame()
+	{
+		String msg = mAccount.getNextMessageForInnerBrowerWindowFrame();
+		mLoginHandler.passMessageToJS(msg);
 		
 	}
 	
@@ -114,10 +105,32 @@ public class LoginManager {
 		// TODO Auto-generated method stub
 		
 		   
+	  mIdentityDelegate = new OPIdentityDelegateImplementation();
+	  mIdentity = new OPIdentity();
+	  mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
 		   
-      if(mLoginHandler!=null)
-    	  mLoginHandler.onLoadOuterFrameHandle(null);
+      mIdentity = OPIdentity.login(mAccount, null,
+    		  "identity-v1-beta-1-i.hcs.io", 
+    		  "identity://identity-v1-beta-1-i.hcs.io/",
+    		  "http://jsouter-v1-beta-1-i.hcs.io/identity.html?view=choose&federated=false?reload=true");
 		
+	}
+	
+	public static String createHttpSettings()
+	{
+		try {
+            JSONObject parent = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", "true");
+            jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", "true");
+            parent.put("root", jsonObject);
+            Log.d("output", parent.toString(2));
+            return parent.toString(2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
 	}
 	
 	public static String createFakeApplicationSettings()
@@ -183,8 +196,26 @@ public class LoginManager {
 		mAccount = new OPAccount();
 		mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
 		
-		OPAccount.login(null, null, null, "http://jsouter-v1-beta-1-i.hcs.io/grant.html", "bojanGrantID", "lockbox-v1-beta-1-i.hcs.io", false);
+		mAccount = OPAccount.login(null, null, null, 
+				"http://jsouter-v1-beta-1-i.hcs.io/grant.html", 
+				"bojanGrantID", 
+				"identity-v1-beta-1-i.hcs.io", false);
 		
+	}
+
+
+
+	public static void startAccountLogin() {
+		// TODO Auto-generated method stub
+		if(mLoginHandler!=null)
+	    	  mLoginHandler.onLoadOuterFrameHandle("http://jsouter-v1-beta-1-i.hcs.io/grant.html");
+	}
+
+
+
+	public static void initNamespaceGrantInnerFrame() {
+		// TODO Auto-generated method stub
+		mLoginHandler.onNamespaceGrantInnerFrameInitialized(mAccount.getInnerBrowserWindowFrameURL());
 	}
 	
 }

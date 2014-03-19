@@ -13,6 +13,16 @@ public class OPIdentityDelegateImplementation extends OPIdentityDelegate{
 		switch (state){
 		case IdentityState_WaitingForBrowserWindowToBeLoaded:
 			LoginManager.loadOuterFrame();
+			break;
+		case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
+			LoginManager.mIdentity.notifyBrowserWindowVisible();
+			break;
+		case IdentityState_WaitingForBrowserWindowToClose:
+			LoginManager.mIdentity.notifyBrowserWindowClosed();
+			break;
+		case IdentityState_Ready:
+			//LoginManager.mIdentity.;
+			break;
 		}
 		
 	}
@@ -21,6 +31,7 @@ public class OPIdentityDelegateImplementation extends OPIdentityDelegate{
 	public void onIdentityPendingMessageForInnerBrowserWindowFrame(
 			OPIdentity identity) {
 		// TODO Auto-generated method stub
+		LoginManager.pendingMessageForInnerFrame();
 		
 	}
 
