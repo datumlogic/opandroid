@@ -20,6 +20,7 @@ extern IStackPtr stackPtr;
 extern IStackMessageQueuePtr queuePtr;
 extern IIdentityPtr identityPtr;
 extern IMediaEnginePtr mediaEnginePtr;
+extern ICachePtr cachePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
 

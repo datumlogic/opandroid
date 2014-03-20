@@ -377,9 +377,9 @@ public class CallbackHandler{
 	/////////////////////////////////////////////////////////////////////
 	//OPCacheDelegate support
 	//private OPCache mCache;
-	ArrayList<OPCacheDelegate> cacheDelegates = new ArrayList<OPCacheDelegate> ();
+	static ArrayList<OPCacheDelegate> cacheDelegates = new ArrayList<OPCacheDelegate> ();
 	
-	public void fetch(String cookieNamePath) {
+	public static void fetch(String cookieNamePath) {
 
 		for (OPCacheDelegate delegate : cacheDelegates)
 		{
@@ -390,7 +390,7 @@ public class CallbackHandler{
 		}
 	}
 	
-	public void store(String cookieNamePath, int time, String dataToStore) {
+	public static void store(String cookieNamePath, int time, String dataToStore) {
 		//TODO: Fix time
 		for (OPCacheDelegate delegate : cacheDelegates)
 		{
@@ -402,7 +402,7 @@ public class CallbackHandler{
 		}
 	}
 	
-	public void clear(String cookieNamePath) {
+	public static void clear(String cookieNamePath) {
 
 		for (OPCacheDelegate delegate : cacheDelegates)
 		{

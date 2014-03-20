@@ -14,6 +14,7 @@ import com.openpeer.delegates.OPAccountDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
+import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPLogger;
@@ -34,6 +35,8 @@ public class LoginManager {
 		//stackMessageQueue = new OPStackMessageQueue();
 		//stackMessageQueue.interceptProcessing(null);
 		OPLogger.installTelnetLogger(59999, 60, true);
+		//OPCache.setup(null);
+		
 		//OPSettings.setup(null);
 		OPSettings.applyDefaults();
 		
