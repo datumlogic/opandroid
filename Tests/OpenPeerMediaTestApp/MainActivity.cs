@@ -46,8 +46,17 @@ namespace OpenPeerMediaTestApp
 
 			OPMediaEngine.Init (Android.App.Application.Context);
 			mediaEngine = OPTestMediaEngine.TestInstance;
+			mediaEngine.CameraType = CameraTypes.CameraTypeFront;
 			mediaEngine.SetEcEnabled (Java.Lang.Boolean.True);
 			mediaEngine.SetAgcEnabled (Java.Lang.Boolean.True);
+			mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
+			mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
+			mediaEngine.MuteEnabled = Java.Lang.Boolean.False;
+			mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.False;
+			mediaEngine.ContinuousVideoCapture = Java.Lang.Boolean.True;
+			mediaEngine.DefaultVideoOrientation = VideoOrientations.VideoOrientationPortrait;
+			mediaEngine.RecordVideoOrientation = VideoOrientations.VideoOrientationLandscapeRight;
+			mediaEngine.FaceDetection = Java.Lang.Boolean.False;
 			mediaEngine.SetChannelRenderView (remoteView);
 			mediaEngine.ReceiverAddress = "127.0.0.1";
 

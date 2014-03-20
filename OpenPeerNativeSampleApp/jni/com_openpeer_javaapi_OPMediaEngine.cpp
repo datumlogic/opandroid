@@ -16,6 +16,8 @@ using namespace openpeer::core;
 extern "C" {
 #endif
 
+jobject g_glChannelSurface;
+
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    init
@@ -200,8 +202,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderV
 
 }
 
-jobject g_glSurface;
-
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setChannelRenderView
@@ -216,8 +216,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderV
 	{
 		jni_env = getEnv();
 
-		g_glSurface = jni_env->NewGlobalRef(glSurface);
-		mediaEnginePtr->setChannelRenderView(g_glSurface);
+		g_glChannelSurface = jni_env->NewGlobalRef(glSurface);
+		mediaEnginePtr->setChannelRenderView(g_glChannelSurface);
 	}
 
 }
@@ -619,8 +619,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCameraType
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture
   (JNIEnv *, jobject)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
-                        "Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture");
 
 	if (mediaEnginePtr)
 	{
@@ -697,9 +695,6 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceTransport
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoice
   (JNIEnv *, jobject)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
-                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoice");
-
 	if (mediaEnginePtr)
 	{
 	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVoice();
@@ -714,9 +709,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoi
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoice
   (JNIEnv *, jobject)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
-                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoice");
-
 	if (mediaEnginePtr)
 	{
 	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVoice();
@@ -731,9 +723,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoic
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVideoChannel
   (JNIEnv *, jobject)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
-                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVideoChannel");
-
 	if (mediaEnginePtr)
 	{
 	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVideoChannel();
@@ -748,9 +737,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVid
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVideoChannel
   (JNIEnv *, jobject)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
-                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVideoChannel");
-
 	if (mediaEnginePtr)
 	{
 	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVideoChannel();
@@ -765,9 +751,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVide
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress
   (JNIEnv *, jobject, jstring receiver_address)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
-                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress");
-
 	if (mediaEnginePtr)
 	{
 		JNIEnv *jni_env = getEnv();
@@ -794,9 +777,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setRecei
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_getReceiverAddress
   (JNIEnv *, jobject)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, "WEBRTC",
-                        "Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress");
-
     jstring receiver_address;
 
 	if (mediaEnginePtr)

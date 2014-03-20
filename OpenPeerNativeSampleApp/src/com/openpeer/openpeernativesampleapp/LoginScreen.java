@@ -1,12 +1,8 @@
 package com.openpeer.openpeernativesampleapp;
 
-import org.webrtc.videoengine.ViERenderer;
-
 import com.openpeer.openpeernativesampleapp.R;
-import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
-import com.openpeer.javaapi.test.OPTestMediaEngine;
 import com.openpeer.openpeernativesampleapp.LoginManager;
 
 import android.os.AsyncTask;
@@ -14,38 +10,28 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 public class LoginScreen extends Activity implements LoginHandlerInterface{
 
 	//LoginHandlerInterface loginHandler;
 	WebView myWebView;
-	SurfaceView myLocalSurface = null;
-	SurfaceView myRemoteSurface = null;
-	int mediaEngineStatus = 0;
-	boolean speakerphoneEnabled = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login_screen);
 		
 		setupFacebookButton();
-		setupAudioOutputButton();
 		setupWebView();
-		setupVideo();
 	}
 
 	private void setupFacebookButton() {
-		final Button facebookButton = (Button) findViewById(R.id.buttonMedia);
-		facebookButton.setText("Start Video Capture");
+		Button facebookButton = (Button) findViewById(R.id.btnFacebookLogin);
 		
 		facebookButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -55,77 +41,27 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				//LoginManager loginManager = new LoginManager();
 				
 				//
-				//new CoreLogin().execute();
+				new CoreLogin().execute();
 				//stack.setup(stackDelegate, mediaEngineDelegate, appID, appName, appImageURL, appURL, userAgent, deviceID, os, system)
-				switch (mediaEngineStatus) {
-				case 0:
-					OPMediaEngine.init(getApplicationContext());
-					OPMediaEngine.getInstance().startVideoCapture();
-					facebookButton.setText("Start Audio/Video Channel");
-					mediaEngineStatus++;
-					break;
-				case 1:
-					OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
-					((OPTestMediaEngine) OPMediaEngine.getInstance()).setReceiverAddress("127.0.0.1");
-					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVoice();
-					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVideoChannel();
-					facebookButton.setText("Stop Audio/Video Channel");
-					mediaEngineStatus++;
-					break;
-				case 2:
-					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVoice();
-					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVideoChannel();
-					facebookButton.setText("Stop Video Capture");
-					mediaEngineStatus++;
-					break;
-				case 3:
-					OPMediaEngine.getInstance().stopVideoCapture();
-					facebookButton.setText("Start Video Capture");
-					mediaEngineStatus = 0;
-					break;
-				default:
-					break;
-				}
-			}
-		});
-	}
-
-	private void setupAudioOutputButton() {
-		final Button audioOutputButton = (Button) findViewById(R.id.buttonAudioOutput);
-		audioOutputButton.setText("Speakerphone");
-		
-		audioOutputButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if (speakerphoneEnabled) {
-					OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
-					audioOutputButton.setText("Speakerphone");
-				} else {
-					OPMediaEngine.getInstance().setLoudspeakerEnabled(true);
-					audioOutputButton.setText("Ear Speaker");
-				}
-				speakerphoneEnabled = !speakerphoneEnabled;
 			}
 		});
 	}
 	
 	private void setupWebView()
 	{
+		myWebView = (WebView) findViewById(R.id.webViewLogin);
+		WebSettings webSettings = myWebView.getSettings();
+		webSettings.setJavaScriptEnabled(true);
+		LoginManager.setHandlerListener(this);
+		myWebView.setWebViewClient(new WebViewClient() {
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			          view.loadUrl(url);
+			          return true;
+			           }});
+		//
 	}
 	
-	private void setupVideo()
-	{
-		myLocalSurface = ViERenderer.CreateLocalRenderer(this);
-		myRemoteSurface = ViERenderer.CreateRenderer(this, true);
-		LinearLayout localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
-		LinearLayout remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
-		localViewLinearLayout.addView(myLocalSurface);
-		remoteViewLinearLayout.addView(myRemoteSurface);
-		//Button facebookButton = (Button) findViewById(R.id.buttonMedia);
-		//facebookButton.bringToFront();
-	}
-
 	private class CoreLogin extends AsyncTask<Void, Void, Void> {
 
         @Override
