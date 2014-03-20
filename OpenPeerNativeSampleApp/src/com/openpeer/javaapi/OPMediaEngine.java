@@ -3,12 +3,14 @@ package com.openpeer.javaapi;
 
 public class OPMediaEngine {
 	
-	private static OPMediaEngine   _instance;
+	protected static OPMediaEngine   _instance;
 
-    private OPMediaEngine()
+    protected OPMediaEngine()
     {
 
     }
+    
+	public static native void init(Object context);
 
     public static OPMediaEngine getInstance()
     {
@@ -19,7 +21,7 @@ public class OPMediaEngine {
         return _instance;
     }
 
-	private static native OPMediaEngine singleton();
+	protected static native OPMediaEngine singleton();
 
 	public native void setDefaultVideoOrientation(VideoOrientations orientation);
 	public native VideoOrientations getDefaultVideoOrientation();

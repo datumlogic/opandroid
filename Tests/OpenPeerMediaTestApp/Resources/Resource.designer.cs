@@ -60,11 +60,23 @@ namespace OpenPeerMediaTestApp
 		public partial class Id
 		{
 			
+			// aapt resource value: 0x7f050003
+			public const int myAudioOutputButton = 2131034115;
+			
 			// aapt resource value: 0x7f050001
-			public const int myButton = 2131034113;
+			public const int myButtonBarLinearLayout = 2131034113;
+			
+			// aapt resource value: 0x7f050004
+			public const int myLocalViewLinearLayout = 2131034116;
 			
 			// aapt resource value: 0x7f050000
-			public const int myLinearLayout = 2131034112;
+			public const int myMainLinearLayout = 2131034112;
+			
+			// aapt resource value: 0x7f050002
+			public const int myMediaControlButton = 2131034114;
+			
+			// aapt resource value: 0x7f050005
+			public const int myRemoteViewLinearLayout = 2131034117;
 			
 			static Id()
 			{
@@ -95,11 +107,14 @@ namespace OpenPeerMediaTestApp
 		public partial class String
 		{
 			
+			// aapt resource value: 0x7f040002
+			public const int app_name = 2130968578;
+			
 			// aapt resource value: 0x7f040001
-			public const int app_name = 2130968577;
+			public const int audio_output_button_text = 2130968577;
 			
 			// aapt resource value: 0x7f040000
-			public const int button_text = 2130968576;
+			public const int media_control_button_text = 2130968576;
 			
 			static String()
 			{

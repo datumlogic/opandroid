@@ -2,6 +2,11 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
+#include "openpeer/core/internal/core_MediaEngine.h"
+#include "openpeer/core/test/TestMediaEngine.h"
+#include <android/log.h>
+#include <voe_base.h>
+#include <vie_base.h>
 
 #include "globals.h"
 
@@ -10,6 +15,26 @@ using namespace openpeer::core;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+jobject g_glChannelSurface;
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    init
+ * Signature: (Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_init
+  (JNIEnv *, jclass, jobject context)
+{
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		webrtc::VoiceEngine::SetAndroidObjects(android_jvm, jni_env, context);
+		webrtc::VideoEngine::SetAndroidObjects(android_jvm, context);
+	}
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
@@ -27,9 +52,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
 	jni_env = getEnv();
 	if(jni_env)
 	{
-		cls = findClass("com/openpeer/javaapi/OPMediaEngine");
+		cls = findClass("com/openpeer/javaapi/test/OPTestMediaEngine");
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
+
+	    openpeer::core::test::TestMediaEngineFactoryPtr overrideFactory(new openpeer::core::test::TestMediaEngineFactory);
+
+	    openpeer::core::internal::Factory::override(overrideFactory);
 
 		mediaEnginePtr = IMediaEngine::singleton();
 
@@ -179,8 +208,17 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderV
  * Signature: (Ljava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderView
-  (JNIEnv *, jobject, jobject)
+  (JNIEnv *, jobject, jobject glSurface)
 {
+	JNIEnv *jni_env = 0;
+
+	if (mediaEnginePtr)
+	{
+		jni_env = getEnv();
+
+		g_glChannelSurface = jni_env->NewGlobalRef(glSurface);
+		mediaEnginePtr->setChannelRenderView(g_glChannelSurface);
+	}
 
 }
 
@@ -647,6 +685,113 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceTransport
   (JNIEnv *, jobject, jobject)
 {
 
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    startVoice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoice
+  (JNIEnv *, jobject)
+{
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVoice();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    stopVoice
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoice
+  (JNIEnv *, jobject)
+{
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVoice();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    startVideoChannel
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVideoChannel
+  (JNIEnv *, jobject)
+{
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVideoChannel();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    stopVideoChannel
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVideoChannel
+  (JNIEnv *, jobject)
+{
+	if (mediaEnginePtr)
+	{
+	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVideoChannel();
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    setReceiverAddress
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress
+  (JNIEnv *, jobject, jstring receiver_address)
+{
+	if (mediaEnginePtr)
+	{
+		JNIEnv *jni_env = getEnv();
+	    const char* receiver_address_utf8;
+	    receiver_address_utf8 = jni_env->GetStringUTFChars(receiver_address, NULL);
+	    if (receiver_address_utf8 == NULL) {
+	    	return;
+	    }
+
+	    openpeer::core::test::TestMediaEnginePtr testMediaEngine =
+	        boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
+	    testMediaEngine->setReceiverAddress(receiver_address_utf8);
+
+	    jni_env->ReleaseStringUTFChars(receiver_address, receiver_address_utf8);
+	}
+
+}
+
+/*
+ * Class:     com_openpeer_javaapi_test_OPTestMediaEngine
+ * Method:    getReceiverAddress
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_getReceiverAddress
+  (JNIEnv *, jobject)
+{
+    jstring receiver_address;
+
+	if (mediaEnginePtr)
+	{
+		JNIEnv *jni_env = getEnv();
+		const char* receiver_address_utf8;
+
+	    openpeer::core::test::TestMediaEnginePtr testMediaEngine =
+	        boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
+	    receiver_address_utf8 = testMediaEngine->getReceiverAddress().c_str();
+
+	    receiver_address = jni_env->NewStringUTF((const char*)receiver_address_utf8);
+	}
+
+	return receiver_address;
 }
 
 #ifdef __cplusplus
