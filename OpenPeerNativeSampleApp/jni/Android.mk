@@ -493,6 +493,7 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPMediaEngine.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPLogger.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPSettings.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCache.cpp \
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a

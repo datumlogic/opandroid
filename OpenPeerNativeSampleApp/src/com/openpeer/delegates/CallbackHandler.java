@@ -36,11 +36,11 @@ public class CallbackHandler{
 	// ACCOUNT DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPAccountDelegate support
-	private OPAccount mAccount;
-	ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate> ();
+	private static OPAccount mAccount;
+	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate> ();
 
 	//Account Delegate glue methods
-	public void onAccountStateChanged(int state) {
+	public static void onAccountStateChanged(int state) {
 		for (OPAccountDelegate delegate : accountDelegates)
 		{
 			if (mAccount != null && delegate != null)
@@ -50,7 +50,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onAccountAssociatedIdentitiesChanged() {
+	public static void onAccountAssociatedIdentitiesChanged() {
 
 		for (OPAccountDelegate delegate : accountDelegates)
 		{
@@ -62,7 +62,7 @@ public class CallbackHandler{
 		
 	}
 
-	public void onAccountPendingMessageForInnerBrowserWindowFrame() {
+	public static void onAccountPendingMessageForInnerBrowserWindowFrame() {
 
 		for (OPAccountDelegate delegate : accountDelegates)
 		{
@@ -143,10 +143,10 @@ public class CallbackHandler{
 	// IDENTITY DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPIdentityDelegate support
-	private OPIdentity mIdentity;
-	ArrayList<OPIdentityDelegate> identityDelegates = new ArrayList<OPIdentityDelegate> ();
+	private static OPIdentity mIdentity;
+	static ArrayList<OPIdentityDelegate> identityDelegates = new ArrayList<OPIdentityDelegate> ();
 	
-	public void onIdentityStateChanged(int state) {
+	public static void onIdentityStateChanged(int state) {
 		
 		for (OPIdentityDelegate delegate : identityDelegates)
 		{
@@ -157,7 +157,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onIdentityPendingMessageForInnerBrowserWindowFrame() {
+	public static void onIdentityPendingMessageForInnerBrowserWindowFrame() {
 		for (OPIdentityDelegate delegate : identityDelegates)
 		{
 			if (mIdentity != null && delegate != null)
@@ -168,7 +168,7 @@ public class CallbackHandler{
 		
 	}
 	
-	public void onIdentityRolodexContactsDownloaded() {
+	public static void onIdentityRolodexContactsDownloaded() {
 		for (OPIdentityDelegate delegate : identityDelegates)
 		{
 			if (mIdentity != null && delegate != null)
@@ -377,9 +377,9 @@ public class CallbackHandler{
 	/////////////////////////////////////////////////////////////////////
 	//OPCacheDelegate support
 	//private OPCache mCache;
-	ArrayList<OPCacheDelegate> cacheDelegates = new ArrayList<OPCacheDelegate> ();
+	static ArrayList<OPCacheDelegate> cacheDelegates = new ArrayList<OPCacheDelegate> ();
 	
-	public void fetch(String cookieNamePath) {
+	public static void fetch(String cookieNamePath) {
 
 		for (OPCacheDelegate delegate : cacheDelegates)
 		{
@@ -390,7 +390,7 @@ public class CallbackHandler{
 		}
 	}
 	
-	public void store(String cookieNamePath, int time, String dataToStore) {
+	public static void store(String cookieNamePath, int time, String dataToStore) {
 		//TODO: Fix time
 		for (OPCacheDelegate delegate : cacheDelegates)
 		{
@@ -402,7 +402,7 @@ public class CallbackHandler{
 		}
 	}
 	
-	public void clear(String cookieNamePath) {
+	public static void clear(String cookieNamePath) {
 
 		for (OPCacheDelegate delegate : cacheDelegates)
 		{
@@ -568,7 +568,7 @@ public class CallbackHandler{
 	
 	
 	/////////////////////////////////////////////////////////////////////
-	// CACHE DELEGATE GLUE
+	// SETTINGS DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPCacheDelegate support
 	//private OPCache mCache;
