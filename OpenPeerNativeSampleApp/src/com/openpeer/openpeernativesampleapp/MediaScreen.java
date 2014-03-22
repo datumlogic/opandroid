@@ -32,6 +32,7 @@ public class MediaScreen extends Activity {
 	SurfaceView myRemoteSurface = null;
 	int mediaEngineStatus = 0;
 	boolean speakerphoneEnabled = false;
+	boolean useFrontCamera = true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,7 +46,10 @@ public class MediaScreen extends Activity {
 		remoteViewLinearLayout.addView(myRemoteSurface);
 		
 		OPMediaEngine.init(getApplicationContext());
-		OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
+		if (useFrontCamera)
+			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
+		else
+			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
 		OPMediaEngine.getInstance().setEcEnabled(true);
 		OPMediaEngine.getInstance().setAgcEnabled(true);
 		OPMediaEngine.getInstance().setNsEnabled(false);

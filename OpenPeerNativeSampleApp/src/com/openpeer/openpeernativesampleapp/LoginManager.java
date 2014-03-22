@@ -36,7 +36,7 @@ public class LoginManager {
 		OPLogger.installTelnetLogger(59999, 60, true);
 		
 		LoginManager.stack = new OPStack();
-		LoginManager.stack.setup(null, null, "bojan", "bojan1", "bojan2", "bojan3", "bojan4", "bojan5", "bojan6", "bojan7");
+		//LoginManager.stack.setup(null, null, "bojan", "bojan1", "bojan2", "bojan3", "bojan4", "bojan5", "bojan6", "bojan7");
 		
 		//prepare account delegate
 		mAccountDelegate = new OPAccountDelegateImplementation();

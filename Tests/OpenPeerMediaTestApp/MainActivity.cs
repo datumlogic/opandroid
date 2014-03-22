@@ -20,6 +20,7 @@ namespace OpenPeerMediaTestApp
 		SurfaceView remoteView = null;
 		int mediaEngineStatus = 0;
 		bool speakerphoneEnabled = false;
+		bool useFrontCamera = true;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -46,7 +47,10 @@ namespace OpenPeerMediaTestApp
 
 			OPMediaEngine.Init (Android.App.Application.Context);
 			mediaEngine = OPTestMediaEngine.TestInstance;
-			mediaEngine.CameraType = CameraTypes.CameraTypeFront;
+			if (useFrontCamera)
+				mediaEngine.CameraType = CameraTypes.CameraTypeFront;
+			else
+				mediaEngine.CameraType = CameraTypes.CameraTypeBack;
 			mediaEngine.SetEcEnabled (Java.Lang.Boolean.True);
 			mediaEngine.SetAgcEnabled (Java.Lang.Boolean.True);
 			mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
