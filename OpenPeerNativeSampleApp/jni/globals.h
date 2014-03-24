@@ -12,6 +12,10 @@ extern jobject jni_object;
 static jobject gClassLoader;
 static jmethodID gFindClassMethod;
 
+static std::map<jobject, ICallPtr> callMap;
+static std::map<jobject, IConversationThreadPtr> conversationThreadMap;
+static std::map<jobject, IContactPtr> contactMap;
+
 static jclass gCallbackClass;
 
 extern EventManagerPtr globalEventManager;

@@ -1,7 +1,7 @@
 package com.openpeer.javaapi;
 
-
 import android.text.format.Time;
+
 
 
 public class OPCall {
@@ -10,16 +10,16 @@ public class OPCall {
 	
 	public static native String toString(CallClosedReasons reason);
 
-    public static native String toDebugString(OPCall call, Boolean includeCommaPrefix);
+    public static native String toDebugString(OPCall call, boolean includeCommaPrefix);
 
     public static native OPCall placeCall(
                               OPConversationThread conversationThread,
                               OPContact toContact,
-                              Boolean includeAudio,
-                              Boolean includeVideo
+                              boolean includeAudio,
+                              boolean includeVideo
                               );
 
-    public native String getStableID();
+    public native long getStableID();
 
     public native String getCallID();
 
@@ -29,8 +29,8 @@ public class OPCall {
     
     public native OPContact getCallee();
 
-    public native Boolean hasAudio();
-    public native Boolean hasVideo();
+    public native boolean hasAudio();
+    public native boolean hasVideo();
 
     public native CallStates getState();  // state is always relative to "this" location, be is caller or callee
     
@@ -48,7 +48,7 @@ public class OPCall {
     
     public native void answer();        // answer the call
     
-    public native void hold(Boolean hold); // place the call on hold (or remove from hold)
+    public native void hold(boolean hold); // place the call on hold (or remove from hold)
     
     public native void hangup(CallClosedReasons reason);        // end the call
 

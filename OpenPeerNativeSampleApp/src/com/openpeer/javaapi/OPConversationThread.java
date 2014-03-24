@@ -9,7 +9,7 @@ public class OPConversationThread {
 	public static native String toString(MessageDeliveryStates state);
 	public static native String toString(ContactStates state);
 
-	public static native String toDebugString(OPConversationThread thread, Boolean includeCommaPrefix);
+	public static native String toDebugString(OPConversationThread thread, boolean includeCommaPrefix);
 	
 	public static native OPConversationThread create(
                                          OPAccount account,
@@ -22,11 +22,11 @@ public class OPConversationThread {
                                                             OPAccount account,
                                                             String threadID
                                                             );
-	public native String getStableID();
+	public native long getStableID();
 
 	public native String getThreadID();
 
-	public native Boolean amIHost();
+	public native boolean amIHost();
 	
 	public native OPAccount getAssociatedAccount();
 
@@ -48,7 +48,7 @@ public class OPConversationThread {
                              );
 
     // returns false if the message ID is not known
-	public native Boolean getMessage(
+	public native boolean getMessage(
 							String messageID,
                             OPContact outFrom,
                             String outMessageType,
@@ -57,7 +57,7 @@ public class OPConversationThread {
                             );
 
     // returns false if the message ID is not known
-	public native Boolean getMessageDeliveryState(
+	public native boolean getMessageDeliveryState(
 										 String messageID,
                                          MessageDeliveryStates outDeliveryState
                                          );
