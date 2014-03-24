@@ -56,8 +56,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 	JNIEnv *jni_env = 0;
 	ICallPtr callPtr;
 
-	IConversationThreadPtr convThread = conversationThreadMap.find(conversationThread);
-	IContactPtr contact = contactMap.find(toContact);
+	IConversationThreadPtr convThread = (conversationThreadMap.find(conversationThread))->second;
+	IContactPtr contact = contactMap.find(toContact)->second;
 
 	if(convThread && contact)
 	{
@@ -121,8 +121,24 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_getCallID
  * Signature: ()Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
+	jobject ret;
+	IConversationThreadPtr convThread;
+	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
+	if (it!= callMap.end())
+	{
+		convThread = it->second->getConversationThread();
+		for(std::map<jobject, IConversationThreadPtr>::iterator iter = conversationThreadMap.begin(); iter != conversationThreadMap.end(); ++iter)
+		{
+			if (iter->second == convThread)
+			{
+				ret = iter->first;
+				break;
+			}
+		}
+	}
+	return ret;
 
 }
 
@@ -132,9 +148,24 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread
  * Signature: ()Lcom/openpeer/javaapi/OPContact;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-
+	jobject ret;
+	IContactPtr contact;
+	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
+	if (it!= callMap.end())
+	{
+		contact = it->second->getCaller();
+		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
+		{
+			if (iter->second == contact)
+			{
+				ret = iter->first;
+				break;
+			}
+		}
+	}
+	return ret;
 }
 
 /*
@@ -143,9 +174,24 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller
  * Signature: ()Lcom/openpeer/javaapi/OPContact;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-
+	jobject ret;
+	IContactPtr contact;
+	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
+	if (it!= callMap.end())
+	{
+		contact = it->second->getCallee();
+		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
+		{
+			if (iter->second == contact)
+			{
+				ret = iter->first;
+				break;
+			}
+		}
+	}
+	return ret;
 }
 
 /*
@@ -154,9 +200,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasAudio
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-
+	jboolean ret;
+	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
+	if (it!= callMap.end())
+	{
+		ret = it->second->hasAudio();
+	}
+	return ret;
 }
 
 /*
@@ -165,9 +217,15 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasAudio
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasVideo
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-
+	jboolean ret;
+	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
+	if (it!= callMap.end())
+	{
+		ret = it->second->hasVideo();
+	}
+	return ret;
 }
 
 /*
@@ -176,9 +234,30 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasVideo
  * Signature: ()Lcom/openpeer/javaapi/CallStates;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	int state = 0;
 
+	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
+	if (it!= callMap.end())
+	{
+		state = (int) it->second->getState();
+
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/CallStates");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, state);
+
+		}
+	}
+
+	return object;
 }
 
 /*
@@ -187,9 +266,30 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
  * Signature: ()Lcom/openpeer/javaapi/CallClosedReasons;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	int state = 0;
 
+	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
+	if (it!= callMap.end())
+	{
+		state = (int) it->second->getClosedReason();
+
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/CallClosedReason");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, state);
+
+		}
+	}
+
+	return object;
 }
 
 /*
