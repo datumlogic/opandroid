@@ -141,7 +141,16 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPConversationThread_getStableID
-(JNIEnv *, jobject);
+(JNIEnv *, jobject owner)
+{
+	jlong ret = 0;
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		ret = it->second->getID();
+	}
+	return ret;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -149,7 +158,16 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPConversationThread_getStable
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getThreadID
-(JNIEnv *, jobject);
+(JNIEnv *env, jobject owner)
+{
+	jstring ret;
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		ret = env->NewStringUTF(it->second->getThreadID().c_str());
+	}
+	return ret;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -157,7 +175,16 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getThre
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_amIHost
-(JNIEnv *, jobject);
+(JNIEnv *, jobject owner)
+{
+	jboolean ret;
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		ret = it->second->amIHost();
+	}
+	return ret;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -165,7 +192,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_amIHos
  * Signature: ()Lcom/openpeer/javaapi/OPAccount;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getAssociatedAccount
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	return globalAccount;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -173,7 +203,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getAsso
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContacts
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	//todo implement along with list methods
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -181,7 +214,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
  * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getProfileBundle
-(JNIEnv *, jobject, jobject);
+(JNIEnv *env, jobject owner, jobject contact)
+{
+	jstring ret;
+	std::map<jobject, IContactPtr>::iterator contactIterator = contactMap.find(contact);
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (contactIterator!= contactMap.end() && it != conversationThreadMap.end())
+	{
+		ElementPtr profileBundleElement = it->second->getProfileBundle(contactIterator->second);
+		ret = env->NewStringUTF(IHelper::convertToString(profileBundleElement).c_str());
+	}
+	return ret;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -189,7 +233,30 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getProf
  * Signature: (Lcom/openpeer/javaapi/OPContact;)Lcom/openpeer/javaapi/ContactStates;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactState
-(JNIEnv *, jobject, jobject);
+(JNIEnv *, jobject owner, jobject contact)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	int state = 0;
+
+	std::map<jobject, IContactPtr>::iterator contactIterator = contactMap.find(contact);
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (contactIterator!= contactMap.end() && it != conversationThreadMap.end())
+	{
+		state = (int) it->second->getContactState(contactIterator->second);
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/ContactStates");
+			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+			object = jni_env->NewObject(cls, method, state);
+
+		}
+	}
+	return object;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -213,7 +280,32 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessage
-(JNIEnv *, jobject, jstring, jstring, jstring);
+(JNIEnv *env, jobject owner, jstring messageID, jstring messageType, jstring message)
+{
+	const char *messageIDStr;
+	messageIDStr = env->GetStringUTFChars(messageID, NULL);
+	if (messageIDStr == NULL) {
+		return;
+	}
+
+	const char *messageTypeStr;
+	messageTypeStr = env->GetStringUTFChars(messageType, NULL);
+	if (messageTypeStr == NULL) {
+		return;
+	}
+
+	const char *messageStr;
+	messageStr = env->GetStringUTFChars(message, NULL);
+	if (messageStr == NULL) {
+		return;
+	}
+
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		it->second->sendMessage(messageIDStr, messageTypeStr, messageStr);
+	}
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -221,7 +313,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessag
  * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/OPContact;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessage
-(JNIEnv *, jobject, jstring, jobject, jstring, jstring, jobject);
+(JNIEnv *, jobject, jstring, jobject, jstring, jstring, jobject)
+{
+
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -229,7 +324,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMes
  * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/MessageDeliveryStates;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
-(JNIEnv *, jobject, jstring, jobject);
+(JNIEnv *, jobject, jstring, jobject)
+{
+
+}
 
 #ifdef __cplusplus
 }
