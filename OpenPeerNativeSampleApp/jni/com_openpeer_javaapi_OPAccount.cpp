@@ -86,6 +86,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 			cls = findClass("com/openpeer/javaapi/OPAccount");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
+			globalAccount = object;
 
 		}
 
@@ -134,6 +135,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 			cls = findClass("com/openpeer/javaapi/OPAccount");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
+			globalAccount = object;
 
 		}
 

@@ -513,6 +513,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
 
 			ICall::CallClosedReasons reason = (ICall::CallClosedReasons)intValue;
 			it->second->hangup(reason);
+			it->second.reset();
+			callMap.erase(it);
 		}
 	}
 }
