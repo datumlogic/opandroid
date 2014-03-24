@@ -16,7 +16,10 @@ extern "C" {
  * Signature: (Lcom/openpeer/javaapi/OPContact;Z)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_toDebugString
-(JNIEnv *, jclass, jobject, jboolean);
+(JNIEnv *, jclass, jobject, jboolean)
+{
+
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPContact
