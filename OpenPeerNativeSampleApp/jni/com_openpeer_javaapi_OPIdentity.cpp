@@ -359,7 +359,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		jstring stableID =  jni_env->NewStringUTF(coreContact.mStableID.c_str());
 		jni_env->CallVoidMethod(cls, method, stableID);
 
-		//set Publi Peer File to OPIdentityContact
+		//set Public Peer File to OPIdentityContact
 		//TODO export peer file public to ElementPtr and then convert to String
 		jclass peerFileCls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
 		jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");

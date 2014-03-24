@@ -1,5 +1,6 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IContact.h"
+#include "openpeer/core/IHelper.h"
 #include "openpeer/core/ILogger.h"
 
 #include "globals.h"
@@ -23,7 +24,40 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/lang/String;)Lcom/openpeer/javaapi/OPContact;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFilePublic
-(JNIEnv *, jclass, jobject, jstring);
+(JNIEnv *env, jclass, jobject account, jstring peerFilePublic)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	IContactPtr contactPtr;
+
+	const char *peerFilePublicStr;
+	peerFilePublicStr = env->GetStringUTFChars(peerFilePublic, NULL);
+	if (peerFilePublicStr == NULL) {
+		return object;
+	}
+
+	if(accountPtr)
+	{
+		ElementPtr peerFileElement = IHelper::createElement(peerFilePublicStr);
+		contactPtr = IContact::createFromPeerFilePublic(accountPtr, IHelper::createPeerFilePublic(peerFileElement));
+	}
+
+	if(contactPtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/OPContact");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+			contactMap.insert(std::pair<jobject, IContactPtr>(object, contactPtr));
+
+		}
+	}
+	return object;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPContact
@@ -31,7 +65,33 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFile
  * Signature: (Lcom/openpeer/javaapi/OPAccount;)Lcom/openpeer/javaapi/OPContact;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
-(JNIEnv *, jclass, jobject);
+(JNIEnv *, jclass, jobject)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	IContactPtr contactPtr;
+
+	if(accountPtr)
+	{
+		contactPtr = IContact::getForSelf(accountPtr);
+	}
+
+	if(contactPtr)
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/OPContact");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+			contactMap.insert(std::pair<jobject, IContactPtr>(object, contactPtr));
+
+		}
+	}
+	return object;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPContact
@@ -92,11 +152,25 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerURI
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerFilePublic
 (JNIEnv *env, jobject owner)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 	jstring ret;
 	std::map<jobject, IContactPtr>::iterator it = contactMap.find(owner);
 	if (it!= contactMap.end())
 	{
-		ret = env->NewStringUTF(IHelper::convertToString(it->second->getPeerFilePublic()).c_str());
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			ElementPtr peerFilePublic = IHelper::convertToElement(it->second->getPeerFilePublic());
+			ret = env->NewStringUTF(IHelper::convertToString(peerFilePublic).c_str());
+
+			//TODO export peer file public to ElementPtr and then convert to String
+			jclass peerFileCls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
+			jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
+			jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
+		}
 	}
 	return ret;
 }
