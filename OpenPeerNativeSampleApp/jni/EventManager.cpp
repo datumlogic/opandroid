@@ -430,17 +430,17 @@ void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
+	if (attach_result < 0 || gEnv == 0)
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "onCallStateChanged", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
+	method = gEnv->GetStaticMethodID(callbackClass, "onCallStateChanged", "(I)V");
+	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
 
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
+	if (gEnv->ExceptionCheck()) {
+		gEnv->ExceptionDescribe();
 	}
 
 	android_jvm->DetachCurrentThread();

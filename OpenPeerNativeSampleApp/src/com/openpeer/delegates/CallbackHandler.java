@@ -209,10 +209,10 @@ public class CallbackHandler{
 	// CALL DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPCallDelegate support
-	private OPCall mCall;
-	ArrayList<OPCallDelegate> callDelegates = new ArrayList<OPCallDelegate> ();
+	private static OPCall mCall;
+	static ArrayList<OPCallDelegate> callDelegates = new ArrayList<OPCallDelegate> ();
 
-	public void onCallStateChanged(int state) {
+	public static void onCallStateChanged(int state) {
 
 		for (OPCallDelegate delegate : callDelegates)
 		{
