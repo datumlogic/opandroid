@@ -301,18 +301,93 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdentities
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject owner)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	//Core identity list
 	IdentityListPtr coreIdentities;
+
+
+	//take associated identities from core
 	if (accountPtr)
 	{
 		coreIdentities = accountPtr->getAssociatedIdentities();
-
-		for (IdentityList::iterator it = coreIdentities->begin(); it != coreIdentities->end();it++)
-		{
-			//todo fill core list to java list
-		}
 	}
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		jobject returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		if(identityMap.size() < 1 || identityMap.size() != coreIdentities->size())
+		{
+			//fill/update map
+			for(IdentityList::iterator coreListIter = coreIdentities->begin();
+					coreListIter != coreIdentities->end(); coreListIter++)
+			{
+				//fetch List item object / OPIdentity
+				jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
+				jmethodID identityConstructorMethodID = jni_env->GetMethodID(identityClass, "<init>", "()V");
+				jobject identityObject = jni_env->NewObject(identityClass, identityConstructorMethodID);
+
+				//add to map for future calls
+				identityMap.insert(std::pair<jobject, IIdentityPtr>(identityObject, *coreListIter));
+				//identityMap[identityObject] = *coreListIter;
+
+				//add to return List
+				jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , identityObject);
+
+			}
+		}
+		else
+		{
+			//return known identities from map
+			for (std::map<jobject, IIdentityPtr>::iterator it = identityMap.begin();
+					it != identityMap.end(); it++)
+			{
+				jni_env->CallBooleanMethod(returnListObject,listAddMethodID , it->first);
+
+			}
+		}
+		return returnListObject;
+	}
+
+
+	//	if (accountPtr)
+	//	{
+	//		coreIdentities = accountPtr->getAssociatedIdentities();
+	//
+	//		for (IdentityList::iterator coreListIter = coreIdentities->begin(); coreListIter != coreIdentities->end();coreListIter++)
+	//		{
+	//			//todo fill core list to java list
+	//			std::map<jobject, IIdentityPtr>::iterator it = identityMap.find(owner);
+	//			if (it!= identityMap.end())
+	//			{
+	//				for(std::map<jobject, IIdentityPtr>::iterator iter = identityMap.begin(); iter != identityMap.end(); ++iter)
+	//				{
+	//					if (iter->second == coreListIter)
+	//					{
+	//						ret = iter->first;
+	//						break;
+	//					}
+	//				}
+	//
+	//			}
+	//			contactMap.insert(std::pair<jobject, IContactPtr>(object, contactPtr));
+	//		}
+	//	}
 
 }
 
@@ -324,7 +399,24 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
 (JNIEnv *, jobject, jobject)
 {
-	//TODO FILL JAVA LIST TO CORE LIST
+	//	jclass cls;
+	//	jmethodID method;
+	//	jobject object;
+	//	JNIEnv *jni_env = 0;
+	//
+	//	IdentityList identityList;
+	//	if(identityPtr)
+	//	{
+	//		identityPtr->getDownloadedRolodexContacts(&identityList);
+	//
+	//	}
+	//	jni_env = getEnv();
+	//	if(jni_env)
+	//	{
+	//		cls = findClass("com/openpeer/javaapi/OPIdentityContact");
+	//		method = jni_env->GetMethodID(cls, "<init>", "()V");
+	//		object = jni_env->NewObject(cls, method);
+	//	}
 }
 
 /*
