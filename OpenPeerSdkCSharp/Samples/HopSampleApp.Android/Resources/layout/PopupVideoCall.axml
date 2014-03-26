@@ -1,8 +1,92 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-</LinearLayout>
-
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:id="@+id/LinearLayout03"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bgcontactlist">
+        <TextView
+            android:id="@+id/VideoCallerIDTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="18dp"
+            android:text="@string/VideoCallerIDTop"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:padding="18dip"
+            android:textColor="#000000" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/videocallInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textSize="18dp"
+            android:text="Incoming video call from"
+            android:padding="18dip"
+            android:textColor="#FFFFFF" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:id="@+id/ImageVideoCallAvatar"
+            android:src="@drawable/avatar"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside" />
+    <!-- User name -->
+        <TextView
+            android:id="@+id/CallerVideoIDCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textSize="24dp"
+            android:text="@string/CallerVideoIDCenter"
+            android:padding="18dip"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:background="@drawable/bgcontactlist"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/btnAnswerVideoCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/camera"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/MyButtons2"
+            android:textSize="15dp"
+            android:minHeight="45dp"
+            android:textColor="#FFFFFF"
+            android:text="@string/btnAnswerVideoCall" />
+        <Button
+            android:id="@+id/btnDeclineVideoCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/decline"
+            android:text="@string/btnDeclineVideoCall"
+            android:textSize="15dp"
+            android:minHeight="45dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/MyButtons" />
+    </LinearLayout>
+</RelativeLayout>
