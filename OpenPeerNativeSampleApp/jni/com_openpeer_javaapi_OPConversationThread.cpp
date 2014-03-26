@@ -203,9 +203,56 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getAsso
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContacts
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-	//todo implement along with list methods
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	//Core Contact list
+	ContactListPtr coreContacts;
+
+
+	//take contacts from core conversation thread
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		coreContacts = it->second->getContacts();
+	}
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//fill/update map
+		for(ContactList::iterator coreListIter = coreContacts->begin();
+				coreListIter != coreContacts->end(); coreListIter++)
+		{
+			//fetch List item object / OPContact
+			jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+			jmethodID contactConstructorMethodID = jni_env->GetMethodID(contactClass, "<init>", "()V");
+			jobject contactObject = jni_env->NewObject(contactClass, contactConstructorMethodID);
+
+			//add to map for future calls
+			//identityMap.insert(std::pair<jobject, IIdentityPtr>(identityObject, *coreListIter));
+			//identityMap[identityObject] = *coreListIter;
+
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , contactObject);
+
+		}
+	}
+	return returnListObject;
 }
 
 /*
@@ -264,7 +311,68 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
  * Signature: (Ljava/util/List;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_addContacts
-(JNIEnv *, jobject, jobject);
+(JNIEnv *, jobject owner, jobject contactProfileInfos)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	//Core contact profile list
+	ContactProfileInfoList coreContactProfilesToAdd;
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass arrayListClass = findClass("java/util/ArrayList");
+		if(jni_env->IsInstanceOf(contactProfileInfos, arrayListClass) != JNI_TRUE)
+		{
+			return;
+		}
+		// Fetch "java.util.List.get(int location)" MethodID
+		jmethodID listGetMethodID = jni_env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+		// Fetch "int java.util.List.size()" MethodID
+		jmethodID sizeMethodID = jni_env->GetMethodID( arrayListClass, "size", "()I" );
+
+		// Call "int java.util.List.size()" method and get count of items in the list.
+		int listItemsCount = (int)jni_env->CallIntMethod( contactProfileInfos, sizeMethodID );
+
+		for( int i=0; i<listItemsCount; ++i )
+		{
+			// Call "java.util.List.get" method and get Contact object by index.
+			jobject contactProfileInfoObject = jni_env->CallObjectMethod( contactProfileInfos, listGetMethodID, i - 1 );
+			if( contactProfileInfoObject != NULL )
+			{
+				//Fetch OPContactProfileInfo class
+				jclass contactProfileInfoClass = findClass("com/openpeer/javaapi/OPContactProfileInfo");
+				//Fetch getContact method from OPContactProfileInfo class
+				jmethodID getContactMethodID = jni_env->GetMethodID( contactProfileInfoClass, "getContact", "()Lcom/openpeer/javaapi/OPContact;" );
+
+				// Call "getContact method to fetch contact from Contact profile info
+				jobject contactObject = jni_env->CallObjectMethod( contactProfileInfoClass, getContactMethodID );
+
+				IContactPtr contact = contactMap.find(contactObject)->second;
+
+				ContactProfileInfo contactProfileInfo;
+				contactProfileInfo.mContact = contact;
+				//todo add profile bundle to contact profile info
+
+				//contactProfileInfo.mProfileBundleEl = contact->
+				//add core contacts to list for removal
+				coreContactProfilesToAdd.push_front(contactProfileInfo);
+
+			}
+		}
+	}
+	//remove contacts from conversation thread
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it != conversationThreadMap.end())
+	{
+		it->second->addContacts(coreContactProfilesToAdd);
+	}
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -272,7 +380,55 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_addContact
  * Signature: (Ljava/util/List;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeContacts
-(JNIEnv *, jobject, jobject);
+(JNIEnv *, jobject owner, jobject contactsToRemove)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	//Core contact list
+	ContactList coreContactsToRemove;
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass arrayListClass = findClass("java/util/ArrayList");
+		if(jni_env->IsInstanceOf(contactsToRemove, arrayListClass) != JNI_TRUE)
+		{
+			return;
+		}
+		// Fetch "java.util.List.get(int location)" MethodID
+		jmethodID listGetMethodID = jni_env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+		// Fetch "int java.util.List.size()" MethodID
+		jmethodID sizeMethodID = jni_env->GetMethodID( arrayListClass, "size", "()I" );
+
+		// Call "int java.util.List.size()" method and get count of items in the list.
+		int listItemsCount = (int)jni_env->CallIntMethod( contactsToRemove, sizeMethodID );
+
+		for( int i=0; i<listItemsCount; ++i )
+		{
+			// Call "java.util.List.get" method and get Contact object by index.
+			jobject contactObject = jni_env->CallObjectMethod( contactsToRemove, listGetMethodID, i - 1 );
+			if( contactObject != NULL )
+			{
+				IContactPtr contact = contactMap.find(contactObject)->second;
+				//add core contacts to list for removal
+				coreContactsToRemove.push_front(contact);
+				//remove contact entry from jni contact map
+				contactMap.erase(contactObject);
+			}
+		}
+	}
+	//remove contacts from conversation thread
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it != conversationThreadMap.end())
+	{
+		it->second->removeContacts(coreContactsToRemove);
+	}
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
