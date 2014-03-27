@@ -3,7 +3,7 @@ package com.openpeer.javaapi;
 
 public class OPContact {
 
-	public static native String toDebugString(OPContact contact, Boolean includeCommaPrefix);
+	public static native String toDebugString(OPContact contact, boolean includeCommaPrefix);
 
     public static native OPContact createFromPeerFilePublic(
                                                 OPAccount account,
@@ -12,9 +12,9 @@ public class OPContact {
 
     public static native OPContact getForSelf(OPAccount account);
 
-    public native String getStableID();
+    public native long getStableID();
 
-    public native Boolean isSelf();
+    public native boolean isSelf();
     public native String getPeerURI();
     
     public native String getPeerFilePublic();

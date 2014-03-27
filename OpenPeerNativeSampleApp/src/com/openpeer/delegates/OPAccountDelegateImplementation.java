@@ -1,8 +1,13 @@
 package com.openpeer.delegates;
 
+import java.util.List;
+
+import android.util.Log;
+
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
+import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.openpeernativesampleapp.LoginManager;
 
 public class OPAccountDelegateImplementation extends OPAccountDelegate {
@@ -12,7 +17,22 @@ public class OPAccountDelegateImplementation extends OPAccountDelegate {
 		// TODO Auto-generated method stub
 		switch (state){
 		case AccountState_WaitingForAssociationToIdentity:
-			LoginManager.loadOuterFrame();
+			break;
+		case AccountState_WaitingForBrowserWindowToBeLoaded:
+			LoginManager.startAccountLogin();
+			break;
+		case AccountState_WaitingForBrowserWindowToBeMadeVisible:
+			LoginManager.mAccount.notifyBrowserWindowVisible();
+			break;
+		case AccountState_WaitingForBrowserWindowToClose:
+			LoginManager.mAccount.notifyBrowserWindowClosed();
+			break;
+		case AccountState_Ready:
+			Log.w("JNI", "READY !!!!!!!!!!!!");
+			List<OPIdentity> identityList = account.getAssociatedIdentities();
+			Log.w("JNI", identityList.toString());
+			break;
+			//LoginManager.loadOuterFrame();
 		}
 			
 	}
@@ -27,7 +47,7 @@ public class OPAccountDelegateImplementation extends OPAccountDelegate {
 	public void onAccountPendingMessageForInnerBrowserWindowFrame(
 			OPAccount account) {
 		// TODO Auto-generated method stub
-		
+		LoginManager.pendingMessageForNamespaceGrantInnerFrame();
 	}
 
 }

@@ -86,6 +86,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 			cls = findClass("com/openpeer/javaapi/OPAccount");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
+			globalAccount = object;
 
 		}
 
@@ -134,6 +135,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 			cls = findClass("com/openpeer/javaapi/OPAccount");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
+			globalAccount = object;
 
 		}
 
@@ -299,19 +301,68 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdentities
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject owner)
 {
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	//Core identity list
 	IdentityListPtr coreIdentities;
+
+
+	//take associated identities from core
 	if (accountPtr)
 	{
 		coreIdentities = accountPtr->getAssociatedIdentities();
-
-		for (IdentityList::iterator it = coreIdentities->begin(); it != coreIdentities->end();it++)
-		{
-			//todo fill core list to java list
-		}
 	}
 
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		if(identityMap.size() < 1 || identityMap.size() != coreIdentities->size())
+		{
+			//fill/update map
+			for(IdentityList::iterator coreListIter = coreIdentities->begin();
+					coreListIter != coreIdentities->end(); coreListIter++)
+			{
+				//fetch List item object / OPIdentity
+				jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
+				jmethodID identityConstructorMethodID = jni_env->GetMethodID(identityClass, "<init>", "()V");
+				jobject identityObject = jni_env->NewObject(identityClass, identityConstructorMethodID);
+
+				//add to map for future calls
+				identityMap.insert(std::pair<jobject, IIdentityPtr>(identityObject, *coreListIter));
+				//identityMap[identityObject] = *coreListIter;
+
+				//add to return List
+				jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , identityObject);
+
+			}
+		}
+		else
+		{
+			//return known identities from map
+			for (std::map<jobject, IIdentityPtr>::iterator it = identityMap.begin();
+					it != identityMap.end(); it++)
+			{
+				jni_env->CallBooleanMethod(returnListObject,listAddMethodID , it->first);
+
+			}
+		}
+	}
+	return returnListObject;
 }
 
 /*
@@ -320,9 +371,53 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
  * Signature: (Ljava/util/List;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
-(JNIEnv *, jobject, jobject)
+(JNIEnv *, jobject owner, jobject identitiesToRemove)
 {
-	//TODO FILL JAVA LIST TO CORE LIST
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	//Core identity list
+	IdentityList coreIdentitiesToRemove;
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass arrayListClass = findClass("java/util/ArrayList");
+		if(jni_env->IsInstanceOf(identitiesToRemove, arrayListClass) != JNI_TRUE)
+		{
+			return;
+		}
+		// Fetch "java.util.List.get(int location)" MethodID
+		jmethodID listGetMethodID = jni_env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+		// Fetch "int java.util.List.size()" MethodID
+		jmethodID sizeMethodID = jni_env->GetMethodID( arrayListClass, "size", "()I" );
+
+		// Call "int java.util.List.size()" method and get count of items in the list.
+		int listItemsCount = (int)jni_env->CallIntMethod( identitiesToRemove, sizeMethodID );
+
+		for( int i=0; i<listItemsCount; ++i )
+		{
+			// Call "java.util.List.get" method and get IdentParams object by index.
+			jobject identityObject = jni_env->CallObjectMethod( identitiesToRemove, listGetMethodID, i - 1 );
+			if( identityObject != NULL )
+			{
+				IIdentityPtr identity = identityMap.find(identityObject)->second;
+				//add core identities to list for removal
+				coreIdentitiesToRemove.push_front(identity);
+				//remove identity entry from jni identity map
+				identityMap.erase(identityObject);
+			}
+		}
+	}
+	//remove associated identities from core
+	if (accountPtr)
+	{
+		accountPtr->removeIdentities(coreIdentitiesToRemove);
+	}
 }
 
 /*

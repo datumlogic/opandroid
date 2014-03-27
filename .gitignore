@@ -7,3 +7,12 @@ Tests/OpenPeerMediaTestApp/Libs
 Tests/OpenPeerMediaTestApp/OpenPeerAndroidSDK/bin
 Tests/OpenPeerMediaTestApp/OpenPeerAndroidSDK/obj
 Tests/OpenPeerMediaTestApp/OpenPeerAndroidSDK/Jars
+OpenPeerNativeSampleApp/bin
+OpenPeerNativeSampleApp/gen
+OpenPeerNativeSampleApp/obj
+OpenPeerNativeSampleApp/libs/armeabi
+OpenPeerNativeSampleApp/libs/armeabi-v7a
+OpenPeerNativeSampleApp/libs/x86
+openpeer-android-sdk/bin
+openpeer-android-sdk/gen
+openpeer-android-sdk/obj

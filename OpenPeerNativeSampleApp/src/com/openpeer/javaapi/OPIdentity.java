@@ -26,7 +26,7 @@ public class OPIdentity {
 //				identityProviderDomain);
 //	}
 	
-	private static native OPIdentity login(
+	public static native OPIdentity login(
                               OPAccount account,
                               OPIdentityDelegate delegate,
                               String identityProviderDomain, // used when identity URI is of legacy or oauth-type
