@@ -66,7 +66,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 	if(accountPtr)
 	{
 		ElementPtr profileBundleElement = IHelper::createElement(profileBundleStr);
-		conversationThreadPtr = IConversationThread::create(accountPtr, profileBundleElement);
+		//conversationThreadPtr = IConversationThread::create(accountPtr, profileBundleElement);
 	}
 
 	if(conversationThreadPtr)
@@ -260,19 +260,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
  * Method:    getProfileBundle
  * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getProfileBundle
-(JNIEnv *env, jobject owner, jobject contact)
-{
-	jstring ret;
-	std::map<jobject, IContactPtr>::iterator contactIterator = contactMap.find(contact);
-	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
-	if (contactIterator!= contactMap.end() && it != conversationThreadMap.end())
-	{
-		ElementPtr profileBundleElement = it->second->getProfileBundle(contactIterator->second);
-		ret = env->NewStringUTF(IHelper::convertToString(profileBundleElement).c_str());
-	}
-	return ret;
-}
+//JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getProfileBundle
+//(JNIEnv *env, jobject owner, jobject contact)
+//{
+//	jstring ret;
+//	std::map<jobject, IContactPtr>::iterator contactIterator = contactMap.find(contact);
+//	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+//	if (contactIterator!= contactMap.end() && it != conversationThreadMap.end())
+//	{
+//		ElementPtr profileBundleElement = it->second->getProfileBundle(contactIterator->second);
+//		ret = env->NewStringUTF(IHelper::convertToString(profileBundleElement).c_str());
+//	}
+//	return ret;
+//}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -459,7 +459,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessag
 	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
 	if (it!= conversationThreadMap.end())
 	{
-		it->second->sendMessage(messageIDStr, messageTypeStr, messageStr);
+		it->second->sendMessage(messageIDStr, messageTypeStr, messageStr, true);
 	}
 }
 

@@ -13,7 +13,7 @@ public class OPConversationThread {
 	
 	public static native OPConversationThread create(
                                          OPAccount account,
-                                         String profileBundleEl
+                                         List<OPIdentityContact> identityContacts
                                          );
 
 	public static native List<OPConversationThread> getConversationThreads(OPAccount account);
@@ -32,7 +32,7 @@ public class OPConversationThread {
 
 	public native List<OPContact> getContacts();
 
-	public native String getProfileBundle(OPContact contact);
+	public native List<OPIdentityContact> getIdentityContactList(OPContact contact);
 	
 	public native ContactStates getContactState(OPContact contact);
 
@@ -44,7 +44,8 @@ public class OPConversationThread {
 	public native void sendMessage(
                              String messageID,
                              String messageType,
-                             String message
+                             String message,
+                             boolean signMessage
                              );
 
     // returns false if the message ID is not known

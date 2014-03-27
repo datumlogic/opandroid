@@ -17,7 +17,7 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_setup
 (JNIEnv *, jclass, jobject)
 {
-	cachePtr = ICache::singleton();
+	//cachePtr = ICache::singleton();
 	ICache::setup(cacheDelegatePtr);
 }
 
@@ -41,7 +41,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCache_singleton
 		method = env->GetMethodID(cls, "<init>", "()V");
 		object = env->NewObject(cls, method);
 
-		cachePtr = ICache::singleton();
+		//cachePtr = ICache::singleton();
 
 	}
 	return object;
