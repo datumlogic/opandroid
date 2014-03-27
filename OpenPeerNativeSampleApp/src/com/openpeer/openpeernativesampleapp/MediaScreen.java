@@ -14,6 +14,7 @@ import com.openpeer.openpeernativesampleapp.LoginManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.sax.TextElementListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
@@ -23,6 +24,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -60,7 +62,6 @@ public class MediaScreen extends Activity {
 		OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
 		OPMediaEngine.getInstance().setFaceDetection(false);
 		OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
-		((OPTestMediaEngine) OPMediaEngine.getInstance()).setReceiverAddress("127.0.0.1");
 		
 		setupMediaControlButton();
 		setupAudioOutputButton();
@@ -68,6 +69,7 @@ public class MediaScreen extends Activity {
 
 	private void setupMediaControlButton() {
 		final Button mediaControlButton = (Button) findViewById(R.id.buttonMedia);
+		final EditText remoteIPAddressEditText = (EditText) findViewById(R.id.remoteIPAddressEditText);
 		mediaControlButton.setText("Start Video Capture");
 		
 		mediaControlButton.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +83,7 @@ public class MediaScreen extends Activity {
 					mediaEngineStatus++;
 					break;
 				case 1:
+					((OPTestMediaEngine) OPMediaEngine.getInstance()).setReceiverAddress(remoteIPAddressEditText.getText().toString());
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVoice();
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVideoChannel();
 					mediaControlButton.setText("Stop Media Channel");

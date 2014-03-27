@@ -12,7 +12,7 @@ using Org.Webrtc.Videoengine;
 
 namespace OpenPeerMediaTestApp
 {
-	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
+	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, Theme = "@android:style/Theme.NoTitleBar")]
 	public class MainActivity : Activity
 	{
 		OPTestMediaEngine mediaEngine = null;
@@ -38,6 +38,7 @@ namespace OpenPeerMediaTestApp
 			LinearLayout remoteViewLayout = FindViewById<LinearLayout> (Resource.Id.myRemoteViewLinearLayout);
 			Button mediaControlButton = FindViewById<Button> (Resource.Id.myMediaControlButton);
 			Button audioOutputButton = FindViewById<Button> (Resource.Id.myAudioOutputButton);
+			EditText remoteIPAddressEditText = FindViewById<EditText> (Resource.Id.myRemoteIPAddressEditText);
 
 			localView = ViERenderer.CreateLocalRenderer(this);
 			localViewLayout.AddView (localView);
@@ -62,7 +63,6 @@ namespace OpenPeerMediaTestApp
 			mediaEngine.RecordVideoOrientation = VideoOrientations.VideoOrientationLandscapeRight;
 			mediaEngine.FaceDetection = Java.Lang.Boolean.False;
 			mediaEngine.SetChannelRenderView (remoteView);
-			mediaEngine.ReceiverAddress = "127.0.0.1";
 
 			mediaControlButton.Text = string.Format ("Start Video Capture");
 			audioOutputButton.Text = string.Format ("Speakerphone");
@@ -75,6 +75,7 @@ namespace OpenPeerMediaTestApp
 					mediaEngineStatus++;
 					break;
 				case 1:
+					mediaEngine.ReceiverAddress = remoteIPAddressEditText.Text;
 					mediaEngine.StartVoice ();
 					mediaEngine.StartVideoChannel ();
 					mediaControlButton.Text = string.Format ("Stop Media Channel");
