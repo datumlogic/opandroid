@@ -122,7 +122,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	jlong pid = 0;
+
+	if (identityLookupPtr)
+	{
+		pid = identityLookupPtr->getID();
+	}
+
+	return pid;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentityLookup
@@ -130,7 +140,17 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	jboolean ret = 0;
+
+	if (identityLookupPtr)
+	{
+		ret = identityLookupPtr->isComplete();
+	}
+
+	return ret;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentityLookup
@@ -138,7 +158,21 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
  * Signature: (ILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccessful
-(JNIEnv *, jobject, jint, jstring);
+(JNIEnv *env, jobject, jint outErrorCode, jstring outErrorReason)
+{
+	jboolean ret = 0;
+	String outReasonCore;
+	WORD ourCodeCore;
+
+	if (identityLookupPtr)
+	{
+		ret = identityLookupPtr->wasSuccessful(&ourCodeCore, &outReasonCore);
+		outErrorCode = ourCodeCore;
+		outErrorReason = env->NewStringUTF(outReasonCore);
+	}
+
+	return ret;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentityLookup
@@ -146,7 +180,13 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	if (identityLookupPtr)
+	{
+		identityLookupPtr->cancel();
+	}
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentityLookup
