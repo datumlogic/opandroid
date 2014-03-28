@@ -23,8 +23,8 @@ namespace HopSampleApp
 			// Create your application here
 			SetContentView (Resource.Layout.VideoCall);
 
-			LinearLayout localViewLayout = FindViewById<LinearLayout> (Resource.Id.myLocalViewLinearLayout);//Local cam view
-			LinearLayout remoteViewLayout = FindViewById<LinearLayout> (Resource.Id.myRemoteViewLinearLayout);//Remote cam view
+			RelativeLayout localViewLayout = FindViewById<RelativeLayout> (Resource.Id.myLocalViewLinearLayout);//Local cam view
+			RelativeLayout remoteViewLayout = FindViewById<RelativeLayout> (Resource.Id.myRemoteViewLinearLayout);//Remote cam view
 
 			ImageButton SwichCam = FindViewById<ImageButton> (Resource.Id.ButtonSwitchCam);//SwichCam button
 			ImageButton MuteMic = FindViewById<ImageButton> (Resource.Id.ButtonMuteMic);//Mute mic button
