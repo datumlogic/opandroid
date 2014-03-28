@@ -17,34 +17,7 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_setup
 (JNIEnv *, jclass, jobject)
 {
-	//cachePtr = ICache::singleton();
 	ICache::setup(cacheDelegatePtr);
-}
-
-/*
- * Class:     com_openpeer_javaapi_OPCache
- * Method:    singleton
- * Signature: ()Lcom/openpeer/javaapi/OPCache;
- */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCache_singleton
-(JNIEnv *env, jclass)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jni_env = getEnv();
-	if(jni_env)
-	{
-		cls = findClass("com/openpeer/javaapi/OPCache");
-		method = env->GetMethodID(cls, "<init>", "()V");
-		object = env->NewObject(cls, method);
-
-		//cachePtr = ICache::singleton();
-
-	}
-	return object;
 }
 
 /*
@@ -62,12 +35,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCache_fetch
 		return ret;
 	}
 
-	if (cachePtr)
-	{
-
-		ret =  env->NewStringUTF(cachePtr->fetch(cookieNamePathString).c_str());
-	}
-
+	ret =  env->NewStringUTF(ICache::fetch(cookieNamePathString).c_str());
 	return ret;
 }
 
@@ -107,11 +75,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_store
 		return;
 	}
 
-	if (cachePtr)
-	{
-
-		cachePtr->store(cookieNamePathString, t, strString);
-	}
+	ICache::store(cookieNamePathString, t, strString);
 }
 
 /*
@@ -127,11 +91,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_clear
 	if (cookieNamePathString == NULL) {
 		return;
 	}
-	if (cachePtr)
-	{
 
-		cachePtr->clear(cookieNamePathString);
-	}
+	ICache::clear(cookieNamePathString);
 }
 #ifdef __cplusplus
 }

@@ -15,9 +15,9 @@ void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+	cls = jni_env->FindClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread", "()V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -41,9 +41,12 @@ void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
 	{
 		return;
 	}
+	cls = jni_env->FindClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "onStackShutdown", "()V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
-	method = jni_env->GetMethodID(gCallbackClass, "onStackShutdown", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+	stackPair.second.reset();
+	//delete stackPair;
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -192,36 +195,6 @@ void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountS
 	}
 
 	android_jvm->DetachCurrentThread();
-	/*
-	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0)
-	{
-	   return;
-	}
-
-	// get the callback handler class
-	  //javaCallbackHandlerFields.callbackHandlerClass = (jclass) env->NewGlobalRef(env->FindClass(_kClassPathCallbackHandler));
-
-
-	cls = (jclass)gEnv->NewGlobalRef(gEnv->FindClass("com/openpeer/javaapi/OPAccountDelegate"));
-
-	  if (!cls) {
-	    //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "Register: failed to get class for: %s", _kClassPathCallbackHandler);
-	    return;
-	  }
-	jmethodID constr = gEnv->GetMethodID(cls,
-		      "<init>","()V");
-	jobject delegate = gEnv->NewObject(
-			cls,
-			constr);
-
-
-	method = gEnv->GetMethodID(cls, "onAccountStateChanged", "(Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/AccountStates;)V");
-	gEnv->CallVoidMethod(delegate, method, NULL, NULL);
-
-	//IStackMessageQueue::singleton()->notifyProcessMessageFromCustomThread();
-	 */
-
 
 }
 void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)

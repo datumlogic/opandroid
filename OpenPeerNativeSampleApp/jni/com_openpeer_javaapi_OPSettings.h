@@ -17,6 +17,62 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setup
 
 /*
  * Class:     com_openpeer_javaapi_OPSettings
+ * Method:    setString
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setString
+  (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPSettings
+ * Method:    setInt
+ * Signature: (Ljava/lang/String;J)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setInt
+  (JNIEnv *, jclass, jstring, jlong);
+
+/*
+ * Class:     com_openpeer_javaapi_OPSettings
+ * Method:    setUInt
+ * Signature: (Ljava/lang/String;J)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setUInt
+  (JNIEnv *, jclass, jstring, jlong);
+
+/*
+ * Class:     com_openpeer_javaapi_OPSettings
+ * Method:    setBool
+ * Signature: (Ljava/lang/String;Z)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setBool
+  (JNIEnv *, jclass, jstring, jboolean);
+
+/*
+ * Class:     com_openpeer_javaapi_OPSettings
+ * Method:    setFloat
+ * Signature: (Ljava/lang/String;F)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setFloat
+  (JNIEnv *, jclass, jstring, jfloat);
+
+/*
+ * Class:     com_openpeer_javaapi_OPSettings
+ * Method:    setDouble
+ * Signature: (Ljava/lang/String;D)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setDouble
+  (JNIEnv *, jclass, jstring, jdouble);
+
+/*
+ * Class:     com_openpeer_javaapi_OPSettings
+ * Method:    clear
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_clear
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPSettings
  * Method:    apply
  * Signature: (Ljava/lang/String;)Z
  */

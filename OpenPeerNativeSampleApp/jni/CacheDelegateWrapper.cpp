@@ -2,7 +2,6 @@
 #include "globals.h"
 #include "CacheDelegateWrapper.h"
 
-
 //ICacheDelegate implementation
 zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 {
@@ -28,9 +27,6 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	if(jni_env->IsInstanceOf(object, cls) == JNI_TRUE)
 	{
 		fetchedStr = jni_env->GetStringUTFChars((jstring)object, NULL);
-//		if (cookieNamePathStr == NULL) {
-//			return cookieNamePathStr;
-//		}
 
 	}
 
@@ -39,7 +35,6 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	}
 
 	android_jvm->DetachCurrentThread();
-
 	return fetchedStr;
 }
 void CacheDelegateWrapper::store(const char *cookieNamePath,

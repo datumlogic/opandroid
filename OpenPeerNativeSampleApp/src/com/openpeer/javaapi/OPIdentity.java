@@ -10,21 +10,6 @@ public class OPIdentity {
 	public static native String toString(IdentityStates state);
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
-
-//	public OPIdentity login(
-//            OPAccount account,
-//            OPIdentityDelegate delegate,
-//            String outerFrameURLUponReload,
-//            String identityURI_or_identityBaseURI,
-//            String identityProviderDomain // used when identity URI is of legacy or oauth-type
-//            )
-//	{
-//		return OPIdentity.coreLogin(account, 
-//				delegate, 
-//				outerFrameURLUponReload, 
-//				identityURI_or_identityBaseURI, 
-//				identityProviderDomain);
-//	}
 	
 	public static native OPIdentity login(
                               OPAccount account,

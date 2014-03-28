@@ -17,19 +17,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_setup
 
 /*
  * Class:     com_openpeer_javaapi_OPCache
- * Method:    singleton
- * Signature: ()Lcom/openpeer/javaapi/OPCache;
- */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCache_singleton
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_openpeer_javaapi_OPCache
  * Method:    fetch
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCache_fetch
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     com_openpeer_javaapi_OPCache
@@ -37,7 +29,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCache_fetch
  * Signature: (Ljava/lang/String;Landroid/text/format/Time;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_store
-  (JNIEnv *, jobject, jstring, jobject, jstring);
+  (JNIEnv *, jclass, jstring, jobject, jstring);
 
 /*
  * Class:     com_openpeer_javaapi_OPCache
@@ -45,7 +37,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_store
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_clear
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jclass, jstring);
 
 #ifdef __cplusplus
 }

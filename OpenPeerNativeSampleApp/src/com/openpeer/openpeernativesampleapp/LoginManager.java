@@ -35,6 +35,8 @@ public class LoginManager {
 		//stackMessageQueue = new OPStackMessageQueue();
 		//stackMessageQueue.interceptProcessing(null);
 		OPLogger.installTelnetLogger(59999, 60, true);
+		stack = OPStack.singleton();
+		
 		//OPCache.setup(null);
 		
 		//OPSettings.setup(null);
@@ -47,7 +49,7 @@ public class LoginManager {
 		OPSettings.apply(appSettings);
 		
 		//TODO: After interception is done, we can call setup
-		stack = new OPStack();
+		
 		stack.setup(null, null);
 	}
 	
