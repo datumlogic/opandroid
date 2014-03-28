@@ -34,10 +34,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    create
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/lang/String;)Lcom/openpeer/javaapi/OPConversationThread;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
-  (JNIEnv *, jclass, jobject, jstring);
+  (JNIEnv *, jclass, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -97,10 +97,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getProfileBundle
- * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/lang/String;
+ * Method:    getIdentityContactList
+ * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/util/List;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getProfileBundle
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getIdentityContactList
   (JNIEnv *, jobject, jobject);
 
 /*
@@ -130,10 +130,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    sendMessage
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessage
-  (JNIEnv *, jobject, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jstring, jstring, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread

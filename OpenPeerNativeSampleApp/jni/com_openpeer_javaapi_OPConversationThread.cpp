@@ -46,10 +46,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    create
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/lang/String;)Lcom/openpeer/javaapi/OPConversationThread;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
-(JNIEnv *env, jclass, jobject, jstring profileBundle)
+(JNIEnv *, jclass, jobject, jobject identityContacts)
 {
 	jclass cls;
 	jmethodID method;
@@ -57,17 +57,123 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 	JNIEnv *jni_env = 0;
 	IConversationThreadPtr conversationThreadPtr;
 
-	const char *profileBundleStr;
-	profileBundleStr = env->GetStringUTFChars(profileBundle, NULL);
-	if (profileBundleStr == NULL) {
+	//Core contact profile list
+	IdentityContactList coreIdentityContacts;
+
+	//check if account is existing
+	if(accountPtr)
+	{
 		return object;
 	}
 
-	if(accountPtr)
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
 	{
-		ElementPtr profileBundleElement = IHelper::createElement(profileBundleStr);
-		//conversationThreadPtr = IConversationThread::create(accountPtr, profileBundleElement);
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass arrayListClass = findClass("java/util/ArrayList");
+		if(jni_env->IsInstanceOf(identityContacts, arrayListClass) != JNI_TRUE)
+		{
+			return object;
+		}
+		// Fetch "java.util.List.get(int location)" MethodID
+		jmethodID listGetMethodID = jni_env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+		// Fetch "int java.util.List.size()" MethodID
+		jmethodID sizeMethodID = jni_env->GetMethodID( arrayListClass, "size", "()I" );
+
+		// Call "int java.util.List.size()" method and get count of items in the list.
+		int listItemsCount = (int)jni_env->CallIntMethod( identityContacts, sizeMethodID );
+
+
+		//Fetch OPIdentityContact class
+		jclass identityContactClass = findClass("com/openpeer/javaapi/OPIdentityContact");
+
+		//FETCH METHODS TO GET INFO FROM JAVA
+		//Fetch getStableID method from OPIdentityContact class
+		jmethodID getStableIDMethodID = jni_env->GetMethodID( identityContactClass, "getStableID", "()Ljava/lang/String;" );
+		//Fetch getPeerFilePublic method from OPIdentityContact class
+		jmethodID getPeerFilePublicMethodID = jni_env->GetMethodID( identityContactClass, "getPeerFilePublic", "()Lcom/openpeer/javaapi/OPPeerFilePublic;" );
+		//Fetch getIdentityProofBundle method from OPIdentityContact class
+		jmethodID getIdentityProofBundleMethodID = jni_env->GetMethodID( identityContactClass, "getIdentityProofBundle", "()Ljava/lang/String;" );
+		//Fetch getPriority method from OPIdentityContact class
+		jmethodID getPriorityMethodID = jni_env->GetMethodID( identityContactClass, "getPriority", "()I" );
+		//Fetch getWeight method from OPIdentityContact class
+		jmethodID getWeightMethodID = jni_env->GetMethodID( identityContactClass, "getWeight", "()I" );
+		//Fetch getLastUpdated method from OPIdentityContact class
+		jmethodID getLastUpdatedMethodID = jni_env->GetMethodID( identityContactClass, "getLastUpdated", "()Landroid/text/format/Time;" );
+		//Fetch getExpires method from OPIdentityContact class
+		jmethodID getExpiresMethodID = jni_env->GetMethodID( identityContactClass, "getExpires", "()Landroid/text/format/Time;" );
+
+
+		for( int i=0; i<listItemsCount; ++i )
+		{
+			// Call "java.util.List.get" method and get IdentityContact object by index.
+			jobject identityContactObject = jni_env->CallObjectMethod( identityContacts, listGetMethodID, i - 1 );
+
+			if( identityContactObject != NULL )
+			{
+				//CALL METHODS TO FETCH INFO FROM JAVA
+				// Call getStableID method to fetch stable ID from OPIdentityContact
+				jstring stableID = (jstring)jni_env->CallObjectMethod( identityContactObject, getStableIDMethodID );
+
+				// Call getPeerFilePublic method to fetch peer file public from OPIdentityContact
+				jobject peerFilePublic = jni_env->CallObjectMethod( identityContactObject, getPeerFilePublicMethodID );
+
+				// Call getIdentityProofBundle method to fetch identity proof bundle from OPIdentityContact
+				jstring identityProofBundle = (jstring)jni_env->CallObjectMethod( identityContactObject, getIdentityProofBundleMethodID );
+
+				// Call getPriority method to fetch priority from OPIdentityContact
+				jint priority = jni_env->CallIntMethod( identityContactObject, getPriorityMethodID );
+
+				// Call getWeight method to fetch priority from OPIdentityContact
+				jint weight = jni_env->CallIntMethod( identityContactObject, getWeightMethodID );
+
+				// Call getLastUpdated method to fetch last updated from OPIdentityContact
+				jobject lastUpdated = jni_env->CallObjectMethod( identityContactObject, getLastUpdatedMethodID );
+
+				// Call getExpires method to fetch expires from OPIdentityContact
+				jobject expires = jni_env->CallObjectMethod( identityContactObject, getExpiresMethodID );
+
+				//FILL IN CORE IDENTITY CONTACT STRUCTURE WITH DATA FROM JAVA
+				IdentityContact coreIdentityContact;
+				//Add stableID to IdentityContact structure
+				coreIdentityContact.mStableID = jni_env->GetStringUTFChars(stableID, NULL);
+
+				//Add peerFilePublic to IdentityContact structure
+				//TODO will not implement now
+
+				//Add identityProofBundle to IdentityContact structure
+				String identityProofBundleString = jni_env->GetStringUTFChars(identityProofBundle, NULL);
+				coreIdentityContact.mIdentityProofBundleEl = IHelper::createElement(identityProofBundleString);
+
+				//Add priority to IdentityContact structure
+				coreIdentityContact.mPriority = priority;
+
+				//Add weight to IdentityContact structure
+				coreIdentityContact.mWeight = weight;
+
+				//Add last updated to IdentityContact structure
+				jclass timeCls = findClass("android/text/format/Time");
+				jmethodID timeMethodID   = jni_env->GetMethodID(timeCls, "toMillis", "(Z)J");
+				long longValue = (long) jni_env->CallIntMethod(lastUpdated, timeMethodID, false);
+				Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
+				coreIdentityContact.mLastUpdated = t;
+
+				//Add expires to IdentityContact structure
+				//jclass timeCls = findClass("android/text/format/Time");
+				//jmethodID timeMethodID   = jni_env->GetMethodID(timeCls, "toMillis", "(Z)J");
+				longValue = (long) jni_env->CallIntMethod(expires, timeMethodID, false);
+				t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
+				coreIdentityContact.mExpires = t;
+
+				//add core identity contacts to list
+				coreIdentityContacts.push_front(coreIdentityContact);
+
+			}
+		}
 	}
+
+	conversationThreadPtr = IConversationThread::create(accountPtr, coreIdentityContacts);
 
 	if(conversationThreadPtr)
 	{
@@ -92,7 +198,53 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConversationThreads
 (JNIEnv *, jclass, jobject)
 {
-	//TODO fix along with list methods
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	//Core identity list
+	ConversationThreadListPtr coreConversationThreads;
+
+
+	//take associated identities from core
+	if(accountPtr)
+	{
+		coreConversationThreads = IConversationThread::getConversationThreads(accountPtr);
+	}
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//fill/update map
+		for(ConversationThreadList::iterator coreListIter = coreConversationThreads->begin();
+				coreListIter != coreConversationThreads->end(); coreListIter++)
+		{
+			//fetch List item object / OPConversationThread
+			jclass conversationThreadClass = findClass("com/openpeer/javaapi/OPConversationThread");
+			jmethodID conversationThreadConstructorMethodID = jni_env->GetMethodID(conversationThreadClass, "<init>", "()V");
+			jobject conversationThreadObject = jni_env->NewObject(conversationThreadClass, conversationThreadConstructorMethodID);
+
+			//add to map for future calls
+			conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(conversationThreadObject, *coreListIter));
+
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , conversationThreadObject);
+
+		}
+
+	}
+	return returnListObject;
 }
 
 /*
@@ -257,22 +409,105 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getProfileBundle
- * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/lang/String;
+ * Method:    getIdentityContactList
+ * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/util/List;
  */
-//JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getProfileBundle
-//(JNIEnv *env, jobject owner, jobject contact)
-//{
-//	jstring ret;
-//	std::map<jobject, IContactPtr>::iterator contactIterator = contactMap.find(contact);
-//	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
-//	if (contactIterator!= contactMap.end() && it != conversationThreadMap.end())
-//	{
-//		ElementPtr profileBundleElement = it->second->getProfileBundle(contactIterator->second);
-//		ret = env->NewStringUTF(IHelper::convertToString(profileBundleElement).c_str());
-//	}
-//	return ret;
-//}
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getIdentityContactList
+(JNIEnv *, jobject owner, jobject contact)
+{
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	IContactPtr contactPtr = contactMap.find(contact)->second;
+	IdentityContact coreContact;
+	IdentityContactListPtr coreContactList;
+
+	//take contacts from core conversation thread
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		coreContactList = it->second->getIdentityContactList(contactPtr);
+
+	}
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		for(IdentityContactList::iterator iter = coreContactList->begin(); iter != coreContactList->end(); iter ++)
+		{
+			coreContact = *iter;
+
+			cls = findClass("com/openpeer/javaapi/OPIdentityContact");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+
+			//set Stable ID to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setStableID", "(Ljava/lang/String;)V");
+			jstring stableID =  jni_env->NewStringUTF(coreContact.mStableID.c_str());
+			jni_env->CallVoidMethod(object, method, stableID);
+
+			//set Public Peer File to OPIdentityContact
+			//TODO export peer file public to ElementPtr and then convert to String
+			jclass peerFileCls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
+			jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
+			jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
+			method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic)V");
+			jni_env->CallVoidMethod(object, method, peerFileObject);
+
+			//set IdentityProofBundle to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setIdentityProofBundleEl", "(Ljava/lang/String;)V");
+			jstring identityProofBundle =  jni_env->NewStringUTF(IHelper::convertToString(coreContact.mIdentityProofBundleEl).c_str());
+			jni_env->CallVoidMethod(object, method, identityProofBundle);
+
+			//set Priority to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setPriority", "(I)V");
+			jni_env->CallVoidMethod(object, method, (int)coreContact.mPriority);
+
+			//set Weight to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setWeight", "(I)V");
+			jni_env->CallVoidMethod(object, method, (int)coreContact.mWeight);
+
+			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+			jclass timeCls = findClass("android/text/format/Time");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+
+			//calculate and set Last Updated
+			zsLib::Duration lastUpdated = coreContact.mLastUpdated - time_t_epoch;
+			jobject timeLastUpdatedObject = jni_env->NewObject(timeCls, timeMethodID);
+			jni_env->CallVoidMethod(timeLastUpdatedObject, timeSetMillisMethodID, lastUpdated.total_milliseconds());
+			//Time has been converted, now call OPIdentityContact setter
+			method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
+			jni_env->CallVoidMethod(object, method, timeLastUpdatedObject);
+
+			//calculate and set Expires
+			zsLib::Duration expires = coreContact.mExpires - time_t_epoch;
+			jobject timeExpiresObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
+			jni_env->CallVoidMethod(timeExpiresObject, timeSetMillisMethodID, expires.total_milliseconds());
+			//Time has been converted, now call OPIdentityContact setter
+			method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
+			jni_env->CallVoidMethod(object, method, timeExpiresObject);
+
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , object);
+
+		}
+
+	}
+	return returnListObject;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
