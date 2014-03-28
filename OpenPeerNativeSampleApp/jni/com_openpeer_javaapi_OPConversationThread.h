@@ -138,18 +138,18 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessag
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    getMessage
- * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/OPContact;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Z
+ * Signature: (Ljava/lang/String;)Lcom/openpeer/javaapi/OPMessage;
  */
-JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessage
-  (JNIEnv *, jobject, jstring, jobject, jstring, jstring, jobject);
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessage
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    getMessageDeliveryState
- * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/MessageDeliveryStates;)Z
+ * Signature: (Ljava/lang/String;)Lcom/openpeer/javaapi/MessageDeliveryStates;
  */
-JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
-  (JNIEnv *, jobject, jstring, jobject);
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
+  (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus
 }

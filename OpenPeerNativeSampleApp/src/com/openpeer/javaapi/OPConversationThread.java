@@ -49,17 +49,12 @@ public class OPConversationThread {
                              );
 
     // returns false if the message ID is not known
-	public native boolean getMessage(
-							String messageID,
-                            OPContact outFrom,
-                            String outMessageType,
-                            String outMessage,
-                            Time outTime
+	public native OPMessage getMessage(
+							String messageID
                             );
 
     // returns false if the message ID is not known
-	public native boolean getMessageDeliveryState(
-										 String messageID,
-                                         MessageDeliveryStates outDeliveryState
+	public native MessageDeliveryStates getMessageDeliveryState(
+										 String messageID
                                          );
 }

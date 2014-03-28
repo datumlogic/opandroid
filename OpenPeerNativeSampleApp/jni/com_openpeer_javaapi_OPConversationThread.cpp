@@ -701,23 +701,133 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessag
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    getMessage
- * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/OPContact;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Z
+ * Signature: (Ljava/lang/String;)Lcom/openpeer/javaapi/OPMessage;
  */
-JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessage
-(JNIEnv *, jobject, jstring, jobject, jstring, jstring, jobject)
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessage
+(JNIEnv *env, jobject owner, jstring messageID)
 {
+	jclass cls;
+	jmethodID method;
+	jobject messageObject;
+	JNIEnv *jni_env = 0;
 
+	const char *messageIDStr;
+	messageIDStr = env->GetStringUTFChars(messageID, NULL);
+	if (messageIDStr == NULL) {
+		return NULL;
+	}
+
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			IContactPtr outFrom;
+			String outMessageType;
+			String outMessage;
+			Time outTime;
+
+			jboolean exists = it->second->getMessage(messageIDStr, outFrom, outMessageType, outMessage, outTime);
+			if (exists)
+			{
+				//Convert out parameters from c++ to return object for java
+				//Create OPMessage object
+				jclass messageClass = findClass("com/openpeer/javaapi/OPMessage");
+				jmethodID messageConstructorMethodID = jni_env->GetMethodID(messageClass, "<init>", "()V");
+				messageObject = jni_env->NewObject(messageClass, messageConstructorMethodID);
+
+				//FETCH METHODS TO GET INFO FROM JAVA
+				//Fetch setFrom method from OPMessage class
+				jmethodID setFromMethodID = jni_env->GetMethodID( messageClass, "setFrom", "(Lcom/openpeer/javaapi/OPPeerFilePublic;)V" );
+				//Fetch setMessageType method from OPMessage class
+				jmethodID setMessageTypeMethodID = jni_env->GetMethodID( messageClass, "setMessageType", "(Ljava/lang/String;)V" );
+				//Fetch setMessage method from OPMessage class
+				jmethodID setMessageMethodID = jni_env->GetMethodID( messageClass, "setMessage", "(Ljava/lang/String;)V" );
+				//Fetch setTime method from OPMessage class
+				jmethodID setTimeMethodID = jni_env->GetMethodID( messageClass, "setTime", "(Landroid/text/format/Time;)V" );
+
+				//Convert parameter and call setFrom method on return object
+				jobject from;
+				for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
+				{
+					if (iter->second == outFrom)
+					{
+						from = iter->first;
+						break;
+					}
+				}
+				jni_env->CallVoidMethod( messageObject, setFromMethodID, from );
+
+				//Convert parameter and call setMessageType method on return object
+				jstring messageType = jni_env->NewStringUTF(outMessageType.c_str());
+				jni_env->CallVoidMethod( messageObject, setMessageTypeMethodID, messageType );
+
+				//Convert parameter and call setMessage method on return object
+				jstring message = jni_env->NewStringUTF(outMessage.c_str());
+				jni_env->CallVoidMethod( messageObject, setMessageMethodID, message );
+
+
+				//Convert parameter and call setTime method on return object
+				//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+				Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+				jclass timeCls = findClass("android/text/format/Time");
+				jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+				jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+
+				//calculate and set time
+				zsLib::Duration timeDuration = outTime - time_t_epoch;
+				jobject timeObject = jni_env->NewObject(timeCls, timeMethodID);
+				jni_env->CallVoidMethod(timeObject, timeSetMillisMethodID, timeDuration.total_milliseconds());
+
+				//set time to OPMessage
+				jni_env->CallVoidMethod( messageObject, setTimeMethodID, timeObject );
+			}
+		}
+	}
+	return messageObject;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    getMessageDeliveryState
- * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/MessageDeliveryStates;)Z
+ * Signature: (Ljava/lang/String;)Lcom/openpeer/javaapi/MessageDeliveryStates;
  */
-JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
-(JNIEnv *, jobject, jstring, jobject)
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
+(JNIEnv *env, jobject owner, jstring messageID)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	const char *messageIDStr;
+	messageIDStr = env->GetStringUTFChars(messageID, NULL);
+	if (messageIDStr == NULL) {
+		return NULL;
+	}
+
+	std::map<jobject, IConversationThreadPtr>::iterator it = conversationThreadMap.find(owner);
+	if (it!= conversationThreadMap.end())
+	{
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			IConversationThread::MessageDeliveryStates stateValue;
+			jboolean exists = it->second->getMessageDeliveryState(messageIDStr, stateValue);
+			if (exists)
+			{
+				cls = findClass("com/openpeer/javaapi/OPMessageDeliveryStates");
+				method = jni_env->GetMethodID(cls, "<init>", "(I)V");
+				object = jni_env->NewObject(cls, method, (int)stateValue);
+			}
+			else
+			{
+				return NULL;
+			}
+		}
+	}
+	return object;
 }
 
 #ifdef __cplusplus
