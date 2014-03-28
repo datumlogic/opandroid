@@ -1,6 +1,7 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IIdentityLookup.h"
 #include "openpeer/core/ILogger.h"
+#include "openpeer/core/IHelper.h"
 #include <android/log.h>
 
 #include "globals.h"
@@ -75,10 +76,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 				jmethodID getLastUpdatedMethodID = jni_env->GetMethodID( identityLookupInfoClass, "getLastUpdated", "()Landroid/text/format/Time;" );
 
 				// Call "getIdentityURI method to fetch contact from Identity lookup info
-				jstring identityURI = (jstring)jni_env->CallObjectMethod( identityLookupInfoClass, getIdentityURIMethodID );
+				jstring identityURI = (jstring)jni_env->CallObjectMethod( identityLookupInfoObject, getIdentityURIMethodID );
 
 				// Call "getIdentityURI method to fetch contact from Identity lookup info
-				jobject lastUpdated = jni_env->CallObjectMethod( identityLookupInfoClass, getLastUpdatedMethodID );
+				jobject lastUpdated = jni_env->CallObjectMethod( identityLookupInfoObject, getLastUpdatedMethodID );
 
 				//Add identity URI to IdentityLookupInfo structure
 				IIdentityLookup::IdentityLookupInfo identityLookupInfo;
@@ -194,7 +195,97 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedIdentities
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	IdentityContact coreContact;
+	IdentityContactListPtr coreContactList;
+	if(identityLookupPtr)
+	{
+		coreContactList = identityLookupPtr->getUpdatedIdentities();
+
+	}
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		for(IdentityContactList::iterator iter = coreContactList->begin(); iter != coreContactList->end(); iter ++)
+		{
+			coreContact = *iter;
+
+			cls = findClass("com/openpeer/javaapi/OPIdentityContact");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+
+			//set Stable ID to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setStableID", "(Ljava/lang/String;)V");
+			jstring stableID =  jni_env->NewStringUTF(coreContact.mStableID.c_str());
+			jni_env->CallVoidMethod(object, method, stableID);
+
+			//set Public Peer File to OPIdentityContact
+			//TODO export peer file public to ElementPtr and then convert to String
+			jclass peerFileCls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
+			jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
+			jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
+			method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic)V");
+			jni_env->CallVoidMethod(object, method, peerFileObject);
+
+			//set IdentityProofBundle to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setIdentityProofBundleEl", "(Ljava/lang/String;)V");
+			jstring identityProofBundle =  jni_env->NewStringUTF(IHelper::convertToString(coreContact.mIdentityProofBundleEl).c_str());
+			jni_env->CallVoidMethod(object, method, identityProofBundle);
+
+			//set Priority to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setPriority", "(I)V");
+			jni_env->CallVoidMethod(object, method, (int)coreContact.mPriority);
+
+			//set Weight to OPIdentityContact
+			method = jni_env->GetMethodID(cls, "setWeight", "(I)V");
+			jni_env->CallVoidMethod(object, method, (int)coreContact.mWeight);
+
+			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+			jclass timeCls = findClass("android/text/format/Time");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+
+			//calculate and set Last Updated
+			zsLib::Duration lastUpdated = coreContact.mLastUpdated - time_t_epoch;
+			jobject timeLastUpdatedObject = jni_env->NewObject(timeCls, timeMethodID);
+			jni_env->CallVoidMethod(timeLastUpdatedObject, timeSetMillisMethodID, lastUpdated.total_milliseconds());
+			//Time has been converted, now call OPIdentityContact setter
+			method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
+			jni_env->CallVoidMethod(object, method, timeLastUpdatedObject);
+
+			//calculate and set Expires
+			zsLib::Duration expires = coreContact.mExpires - time_t_epoch;
+			jobject timeExpiresObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
+			jni_env->CallVoidMethod(timeExpiresObject, timeSetMillisMethodID, expires.total_milliseconds());
+			//Time has been converted, now call OPIdentityContact setter
+			method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
+			jni_env->CallVoidMethod(object, method, timeExpiresObject);
+
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , object);
+
+		}
+
+	}
+	return returnListObject;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentityLookup
@@ -202,7 +293,73 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchangedIdentities
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	//Core Identity lookup info list
+	IIdentityLookup::IdentityLookupInfoListPtr coreIdentityLookupInfoList;
+
+
+	//take list from core identity lookup
+	if (identityLookupPtr)
+	{
+		coreIdentityLookupInfoList = identityLookupPtr->getUnchangedIdentities();
+	}
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//fill/update map
+		for(IIdentityLookup::IdentityLookupInfoList::iterator coreListIter = coreIdentityLookupInfoList->begin();
+				coreListIter != coreIdentityLookupInfoList->end(); coreListIter++)
+		{
+			//fetch List item object / OPIdentityLookupInfo
+			jclass identityLookupInfoClass = findClass("com/openpeer/javaapi/OPIdentityLookupInfo");
+			jmethodID identityLookupInfoConstructorMethodID = jni_env->GetMethodID(identityLookupInfoClass, "<init>", "()V");
+			jobject identityLookupInfoObject = jni_env->NewObject(identityLookupInfoClass, identityLookupInfoConstructorMethodID);
+
+			//Fetch setIdentityURI method from OPIdentityLookupInfo class
+			jmethodID setIdentityURIMethodID = jni_env->GetMethodID( identityLookupInfoClass, "setIdentityURI", "(Ljava/lang/String;)V" );
+			//Fetch setLastUpdated method from OPIdentityLookupInfo class
+			jmethodID setLastUpdatedMethodID = jni_env->GetMethodID( identityLookupInfoClass, "setLastUpdated", "(Landroid/text/format/Time;)V" );
+
+			// Call "setIdentityURI method to fetch contact from Identity lookup info
+			jstring identityURI = jni_env->NewStringUTF(coreListIter->mIdentityURI.c_str());
+			jni_env->CallObjectMethod( identityLookupInfoObject, setIdentityURIMethodID, identityURI );
+
+			// Call "setLastUpdated method to fetch contact from Identity lookup info
+			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+			jclass timeCls = findClass("android/text/format/Time");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+			//calculate and set Ring time
+			zsLib::Duration creationTimeDuration = coreListIter->mLastUpdated - time_t_epoch;
+			jobject lastUpdatedObject = jni_env->NewObject(timeCls, timeMethodID);
+			jni_env->CallVoidMethod(lastUpdatedObject, timeSetMillisMethodID, creationTimeDuration.total_milliseconds());
+			jni_env->CallObjectMethod( identityLookupInfoObject, setLastUpdatedMethodID, lastUpdatedObject);
+
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , identityLookupInfoObject);
+
+		}
+	}
+	return returnListObject;
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentityLookup
@@ -210,7 +367,73 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidIdentities
-(JNIEnv *, jobject);
+(JNIEnv *, jobject)
+{
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	//Core Identity lookup info list
+	IIdentityLookup::IdentityLookupInfoListPtr coreIdentityLookupInfoList;
+
+
+	//take list from core identity lookup
+	if (identityLookupPtr)
+	{
+		coreIdentityLookupInfoList = identityLookupPtr->getInvalidIdentities();
+	}
+
+	//fetch JNI env
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//fill/update map
+		for(IIdentityLookup::IdentityLookupInfoList::iterator coreListIter = coreIdentityLookupInfoList->begin();
+				coreListIter != coreIdentityLookupInfoList->end(); coreListIter++)
+		{
+			//fetch List item object / OPIdentityLookupInfo
+			jclass identityLookupInfoClass = findClass("com/openpeer/javaapi/OPIdentityLookupInfo");
+			jmethodID identityLookupInfoConstructorMethodID = jni_env->GetMethodID(identityLookupInfoClass, "<init>", "()V");
+			jobject identityLookupInfoObject = jni_env->NewObject(identityLookupInfoClass, identityLookupInfoConstructorMethodID);
+
+			//Fetch setIdentityURI method from OPIdentityLookupInfo class
+			jmethodID setIdentityURIMethodID = jni_env->GetMethodID( identityLookupInfoClass, "setIdentityURI", "(Ljava/lang/String;)V" );
+			//Fetch setLastUpdated method from OPIdentityLookupInfo class
+			jmethodID setLastUpdatedMethodID = jni_env->GetMethodID( identityLookupInfoClass, "setLastUpdated", "(Landroid/text/format/Time;)V" );
+
+			// Call "setIdentityURI method to fetch contact from Identity lookup info
+			jstring identityURI = jni_env->NewStringUTF(coreListIter->mIdentityURI.c_str());
+			jni_env->CallObjectMethod( identityLookupInfoObject, setIdentityURIMethodID, identityURI );
+
+			// Call "setLastUpdated method to fetch contact from Identity lookup info
+			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+			jclass timeCls = findClass("android/text/format/Time");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+			//calculate and set Ring time
+			zsLib::Duration creationTimeDuration = coreListIter->mLastUpdated - time_t_epoch;
+			jobject lastUpdatedObject = jni_env->NewObject(timeCls, timeMethodID);
+			jni_env->CallVoidMethod(lastUpdatedObject, timeSetMillisMethodID, creationTimeDuration.total_milliseconds());
+			jni_env->CallObjectMethod( identityLookupInfoObject, setLastUpdatedMethodID, lastUpdatedObject);
+
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , identityLookupInfoObject);
+
+		}
+	}
+	return returnListObject;
+}
 
 #ifdef __cplusplus
 }

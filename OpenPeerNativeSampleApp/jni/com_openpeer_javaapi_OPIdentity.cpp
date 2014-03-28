@@ -357,7 +357,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		//set Stable ID to OPIdentityContact
 		method = jni_env->GetMethodID(cls, "setStableID", "(Ljava/lang/String;)V");
 		jstring stableID =  jni_env->NewStringUTF(coreContact.mStableID.c_str());
-		jni_env->CallVoidMethod(cls, method, stableID);
+		jni_env->CallVoidMethod(object, method, stableID);
 
 		//set Public Peer File to OPIdentityContact
 		//TODO export peer file public to ElementPtr and then convert to String
@@ -365,20 +365,20 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
 		jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
 		method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic)V");
-		jni_env->CallVoidMethod(cls, method, peerFileObject);
+		jni_env->CallVoidMethod(object, method, peerFileObject);
 
 		//set IdentityProofBundle to OPIdentityContact
 		method = jni_env->GetMethodID(cls, "setIdentityProofBundleEl", "(Ljava/lang/String;)V");
 		jstring identityProofBundle =  jni_env->NewStringUTF(IHelper::convertToString(coreContact.mIdentityProofBundleEl).c_str());
-		jni_env->CallVoidMethod(cls, method, identityProofBundle);
+		jni_env->CallVoidMethod(object, method, identityProofBundle);
 
 		//set Priority to OPIdentityContact
 		method = jni_env->GetMethodID(cls, "setPriority", "(I)V");
-		jni_env->CallVoidMethod(cls, method, (int)coreContact.mPriority);
+		jni_env->CallVoidMethod(object, method, (int)coreContact.mPriority);
 
 		//set Weight to OPIdentityContact
 		method = jni_env->GetMethodID(cls, "setWeight", "(I)V");
-		jni_env->CallVoidMethod(cls, method, (int)coreContact.mWeight);
+		jni_env->CallVoidMethod(object, method, (int)coreContact.mWeight);
 
 		//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
 		Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
@@ -392,7 +392,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		jni_env->CallVoidMethod(timeLastUpdatedObject, timeSetMillisMethodID, lastUpdated.total_milliseconds());
 		//Time has been converted, now call OPIdentityContact setter
 		method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
-		jni_env->CallVoidMethod(cls, method, timeLastUpdatedObject);
+		jni_env->CallVoidMethod(object, method, timeLastUpdatedObject);
 
 		//calculate and set Expires
 		zsLib::Duration expires = coreContact.mExpires - time_t_epoch;
@@ -400,7 +400,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		jni_env->CallVoidMethod(timeExpiresObject, timeSetMillisMethodID, expires.total_milliseconds());
 		//Time has been converted, now call OPIdentityContact setter
 		method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
-		jni_env->CallVoidMethod(cls, method, timeExpiresObject);
+		jni_env->CallVoidMethod(object, method, timeExpiresObject);
 
 	}
 	return object;
