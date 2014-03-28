@@ -11,4 +11,5 @@ IAccountPtr accountPtr;
 IStackPtr stackPtr;
 IStackMessageQueuePtr queuePtr;
 IIdentityPtr identityPtr;
+IIdentityLookupPtr identityLookupPtr;
 IMediaEnginePtr mediaEnginePtr;

@@ -28,6 +28,7 @@ extern IAccountPtr accountPtr;
 extern IStackPtr stackPtr;
 extern IStackMessageQueuePtr queuePtr;
 extern IIdentityPtr identityPtr;
+extern IIdentityLookupPtr identityLookupPtr;
 extern IMediaEnginePtr mediaEnginePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
