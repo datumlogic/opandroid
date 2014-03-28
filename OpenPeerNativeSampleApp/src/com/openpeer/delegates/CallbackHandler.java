@@ -253,7 +253,7 @@ public class CallbackHandler{
 	// CONVERSATION THREAD DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPConversationThreadDelegate support
-	private static OPConversationThread mConversationThread;
+	//private static OPConversationThread mConversationThread;
 	static ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate> ();
 
 	public static void onConversationThreadNew(OPConversationThread convThread) {
@@ -262,8 +262,8 @@ public class CallbackHandler{
 		{
 			if (convThread != null && delegate != null)
 			{
-				mConversationThread = convThread;
-				delegate.onConversationThreadNew(mConversationThread);
+				//mConversationThread = convThread;
+				delegate.onConversationThreadNew(convThread);
 			}
 			else
 			{
@@ -272,12 +272,12 @@ public class CallbackHandler{
 		}
 	}
 
-	public static void onConversationThreadContactsChanged() { 
+	public static void onConversationThreadContactsChanged(OPConversationThread convThread) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
-			if (mConversationThread != null && delegate != null)
+			if (convThread != null && delegate != null)
 			{
-				delegate.onConversationThreadContactsChanged(mConversationThread);
+				delegate.onConversationThreadContactsChanged(convThread);
 			}
 			else
 			{
@@ -286,12 +286,12 @@ public class CallbackHandler{
 		}
 	}
 
-	public static void onConversationThreadContactStateChanged(OPContact contact, int state) { 
+	public static void onConversationThreadContactStateChanged(OPConversationThread convThread, OPContact contact, int state) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
-			if (mConversationThread != null && delegate != null)
+			if (convThread != null && delegate != null)
 			{
-				delegate.onConversationThreadContactStateChanged(mConversationThread, contact, ContactStates.values()[state]);
+				delegate.onConversationThreadContactStateChanged(convThread, contact, ContactStates.values()[state]);
 			}
 			else
 			{
@@ -300,12 +300,12 @@ public class CallbackHandler{
 		}
 	}
 
-	public static void onConversationThreadMessage(String messageID) { 
+	public static void onConversationThreadMessage(OPConversationThread convThread, String messageID) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
-			if (mConversationThread != null && delegate != null)
+			if (convThread != null && delegate != null)
 			{
-				delegate.onConversationThreadMessage(mConversationThread, messageID);
+				delegate.onConversationThreadMessage(convThread, messageID);
 			}
 			else
 			{
@@ -314,12 +314,12 @@ public class CallbackHandler{
 		}
 	}
 
-	public static void onConversationThreadMessageDeliveryStateChanged(String messageID, int state) { 
+	public static void onConversationThreadMessageDeliveryStateChanged(OPConversationThread convThread, String messageID, int state) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
-			if (mConversationThread != null && delegate != null)
+			if (convThread != null && delegate != null)
 			{
-				delegate.onConversationThreadMessageDeliveryStateChanged(mConversationThread, messageID, MessageDeliveryStates.values()[state]);
+				delegate.onConversationThreadMessageDeliveryStateChanged(convThread, messageID, MessageDeliveryStates.values()[state]);
 			}
 			else
 			{
@@ -328,12 +328,12 @@ public class CallbackHandler{
 		}
 	}
 
-	public static void onConversationThreadPushMessage(String messageID, OPContact contact) { 
+	public static void onConversationThreadPushMessage(OPConversationThread convThread, String messageID, OPContact contact) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
-			if (mConversationThread != null && delegate != null)
+			if (convThread != null && delegate != null)
 			{
-				delegate.onConversationThreadPushMessage(mConversationThread, messageID, contact);
+				delegate.onConversationThreadPushMessage(convThread, messageID, contact);
 			}
 			else
 			{
@@ -343,16 +343,11 @@ public class CallbackHandler{
 	}
 
 	//Conversation Thread delegate register/unregister methods
-	public boolean registerConversationThreadDelegate(OPConversationThread conversationThread, OPConversationThreadDelegate delegate)
+	public boolean registerConversationThreadDelegate(OPConversationThreadDelegate delegate)
 	{
-		if (conversationThread == null || delegate == null)
+		if (delegate == null)
 		{
 			return false;
-		}
-
-		if (mConversationThread == null)
-		{
-			mConversationThread = conversationThread;
 		}
 
 		// Store the delegate object
@@ -363,7 +358,6 @@ public class CallbackHandler{
 
 	public void unregisterConversationThreadDelegate(OPCallDelegate delegate)
 	{
-		mConversationThread = null;
 		this.conversationThreadDelegates.remove(delegate);
 
 	}
