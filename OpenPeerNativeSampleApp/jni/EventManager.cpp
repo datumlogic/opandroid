@@ -257,9 +257,15 @@ void EventManager::onConversationThreadNew(IConversationThreadPtr conversationTh
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "onConversationThreadNew", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+	conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThread));
+
+	cls = jni_env->FindClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "onConversationThreadNew", "(Lcom/openpeer/javaapi/OPConversationThread;)V");
+	jni_env->CallStaticVoidMethod(cls, method, object);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();

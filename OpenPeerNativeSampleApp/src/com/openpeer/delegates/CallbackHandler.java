@@ -253,20 +253,16 @@ public class CallbackHandler{
 	// CONVERSATION THREAD DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPConversationThreadDelegate support
-	private OPConversationThread mConversationThread;
-	ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate> ();
+	private static OPConversationThread mConversationThread;
+	static ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate> ();
 
-	public void onConversationThreadNew() {
+	public static void onConversationThreadNew(OPConversationThread convThread) {
 		//TODO: Fix for creating new conversation thread object 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
-			if (mConversationThread == null && delegate != null)
+			if (convThread != null && delegate != null)
 			{
-				mConversationThread = new OPConversationThread();
-				delegate.onConversationThreadNew(mConversationThread);
-			}
-			else if (mConversationThread != null && delegate != null)
-			{
+				mConversationThread = convThread;
 				delegate.onConversationThreadNew(mConversationThread);
 			}
 			else
@@ -276,7 +272,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onConversationThreadContactsChanged() { 
+	public static void onConversationThreadContactsChanged() { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
 			if (mConversationThread != null && delegate != null)
@@ -290,7 +286,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onConversationThreadContactStateChanged(OPContact contact, int state) { 
+	public static void onConversationThreadContactStateChanged(OPContact contact, int state) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
 			if (mConversationThread != null && delegate != null)
@@ -304,7 +300,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onConversationThreadMessage(String messageID) { 
+	public static void onConversationThreadMessage(String messageID) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
 			if (mConversationThread != null && delegate != null)
@@ -318,7 +314,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onConversationThreadMessageDeliveryStateChanged(String messageID, int state) { 
+	public static void onConversationThreadMessageDeliveryStateChanged(String messageID, int state) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
 			if (mConversationThread != null && delegate != null)
@@ -332,7 +328,7 @@ public class CallbackHandler{
 		}
 	}
 
-	public void onConversationThreadPushMessage(String messageID, OPContact contact) { 
+	public static void onConversationThreadPushMessage(String messageID, OPContact contact) { 
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
 		{
 			if (mConversationThread != null && delegate != null)
