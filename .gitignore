@@ -16,3 +16,6 @@ OpenPeerNativeSampleApp/libs/x86
 openpeer-android-sdk/bin
 openpeer-android-sdk/gen
 openpeer-android-sdk/obj
+openpeer-android-sdk/libs/armeabi
+openpeer-android-sdk/libs/armeabi-v7a
+openpeer-android-sdk/libs/x86
