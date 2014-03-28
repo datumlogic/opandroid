@@ -549,12 +549,185 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_refreshRolodexContac
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    getDownloadedRolodexContacts
- * Signature: (ZLjava/lang/String;Ljava/util/List;)Z;
+ * Signature: ()Lcom/openpeer/javaapi/OPDownloadedRolodexContacts;
  */
-JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolodexContacts
-(JNIEnv *, jobject, jboolean, jstring, jobject)
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolodexContacts
+(JNIEnv *, jobject)
 {
+	jclass cls;
+	jmethodID method;
+	jobject returnObject;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	RolodexContact coreRolodexContact;
+
+	bool outSuccess;
+	bool outFlushAllRolodexContacts;
+	String outVersionDownloaded;
+	RolodexContactListPtr outRolodexContacts;
+
+	//take contacts from core conversation thread
+	if (identityPtr)
+	{
+		outSuccess = identityPtr->getDownloadedRolodexContacts(outFlushAllRolodexContacts,
+				outVersionDownloaded,
+				outRolodexContacts);
+
+	}
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		//create return structure - OPDownloadedRolodexContacts
+		jclass returnObjectClass = findClass("com/openpeer/javaapi/OPDownloadedRolodexContacts");
+		jmethodID returnObjectConstructorMethodID = jni_env->GetMethodID(returnObjectClass, "<init>", "()V");
+		returnObject = jni_env->NewObject(returnObjectClass, returnObjectConstructorMethodID);
+
+		//create return object list- java/util/List is interface, ArrayList is implementation
+		jclass rolodexListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(rolodexListClass, "<init>", "()V");
+		jobject rolodexListObject = jni_env->NewObject(rolodexListClass, listConstructorMethodID);
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(rolodexListClass, "add", "(Ljava/lang/Object;)Z");
+
+		///////////////////////////////////////////////////////////////
+		//FETCH DOWNLOADED ROLODEX CONTACTS METHODS TO SET INFO TO JAVA
+		///////////////////////////////////////////////////////////////
+
+		//Fetch setIsSuccess method from OPDownloadedRolodexContacts class
+		jmethodID setIsSuccessMethodID = jni_env->GetMethodID( returnObjectClass, "setIsSuccess", "(Z)V" );
+		//Fetch setFlushAllRolodexContacts method from OPDownloadedRolodexContacts class
+		jmethodID setFlushAllRolodexContactsMethodID = jni_env->GetMethodID( returnObjectClass, "setFlushAllRolodexContacts", "(Z)V" );
+		//Fetch setVersionDownloaded method from OPDownloadedRolodexContacts class
+		jmethodID setVersionDownloadedMethodID = jni_env->GetMethodID( returnObjectClass, "setVersionDownloaded", "(Ljava/lang/String;)V" );
+		//Fetch setRolodexContacts method from OPDownloadedRolodexContacts class
+		jmethodID setRolodexContactsMethodID = jni_env->GetMethodID( returnObjectClass, "setRolodexContacts", "(Ljava/util/List;)V" );
+
+		///////////////////////////////////////////////////////////////
+		//CALL DOWNLOADED ROLODEX CONTACTS METHODS TO SET INFO TO JAVA
+		///////////////////////////////////////////////////////////////
+
+		// Call setIsSuccess method to set to OPDownloadedRolodexContacts
+		jni_env->CallVoidMethod( returnObject, setIsSuccessMethodID, outSuccess);
+
+		// Call setFlushAllRolodexContacts method to set to OPDownloadedRolodexContacts
+		jni_env->CallVoidMethod( returnObject, setFlushAllRolodexContactsMethodID, outFlushAllRolodexContacts);
+
+		// Call setVersionDownloaded method to set to OPDownloadedRolodexContacts
+		jstring versionStr = jni_env->NewStringUTF(outVersionDownloaded.c_str());
+		jni_env->CallVoidMethod( returnObject, setVersionDownloadedMethodID, versionStr);
+
+		///////////////////////////////////////////////////////////////
+		//FETCH ROLODEX CONTACT METHODS TO SET INFO TO JAVA
+		///////////////////////////////////////////////////////////////
+
+		//fetch OPRolodexContact class and constructor
+		jclass rolodexContactClass = findClass("com/openpeer/javaapi/OPRolodexContact");
+		jmethodID rolodexContactConstructorMethodID = jni_env->GetMethodID(rolodexContactClass, "<init>", "()V");
+
+		//Fetch setDisposition method from OPDownloadedRolodexContacts class
+		jclass dispositionClass = findClass("com/openpeer/javaapi/OPRolodexContact$Dispositions");
+		jmethodID dispositionConstructorMethodID = jni_env->GetMethodID(cls, "<init>", "(I)V");
+		jmethodID setDispositionMethodID = jni_env->GetMethodID( rolodexContactClass, "setDisposition", "(Lcom/openpeer/javaapi/OPRolodexContact$Dispositions;)V" );
+		//Fetch setIdentityURI method from OPDownloadedRolodexContacts class
+		jmethodID setIdentityURIMethodID = jni_env->GetMethodID( rolodexContactClass, "setIdentityURI", "(Ljava/lang/String;)V" );
+		//Fetch setIdentityProvider method from OPDownloadedRolodexContacts class
+		jmethodID setIdentityProviderMethodID = jni_env->GetMethodID( rolodexContactClass, "setIdentityProvider", "(Ljava/lang/String;)V" );
+		//Fetch setName method from OPDownloadedRolodexContacts class
+		jmethodID setNameMethodID = jni_env->GetMethodID( rolodexContactClass, "setName", "(Ljava/lang/String;)V" );
+		//Fetch setProfileURL method from OPDownloadedRolodexContacts class
+		jmethodID setProfileURLMethodID = jni_env->GetMethodID( rolodexContactClass, "setProfileURL", "(Ljava/lang/String;)V" );
+		//Fetch setVProfileURL method from OPDownloadedRolodexContacts class
+		jmethodID setVProfileURLMethodID = jni_env->GetMethodID( rolodexContactClass, "setVProfileURL", "(Ljava/lang/String;)V" );
+		//Fetch setAvatars method from OPDownloadedRolodexContacts class
+		jmethodID setAvatarsMethodID = jni_env->GetMethodID( rolodexContactClass, "setAvatars", "(Ljava/util/List;)V");
+
+		//avatar list fetch
+		jclass avatarListClass = findClass("java/util/ArrayList");
+		jmethodID avatarListConstructorMethodID = jni_env->GetMethodID(avatarListClass, "<init>", "()V");
+		jobject avatarListObject = jni_env->NewObject(avatarListClass, avatarListConstructorMethodID);
+		jmethodID avatarListAddMethodID = jni_env->GetMethodID(avatarListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//OPAvatar class and methods fetch
+		jclass avatarClass = findClass("com/openpeer/javaapi/OPRolodexContact$OPAvatar");
+		jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "()V");
+		jmethodID setAvatarNameMethodID = jni_env->GetMethodID(avatarClass, "setName", "(Ljava/lang/String;)V");
+		jmethodID setAvatarURLMethodID = jni_env->GetMethodID(avatarClass, "setURL", "(Ljava/lang/String;)V");
+		jmethodID setAvatarWidthMethodID = jni_env->GetMethodID(avatarClass, "setWidth", "(I)V");
+		jmethodID setAvatarHeightMethodID = jni_env->GetMethodID(avatarClass, "setHeight", "(I)V");
+
+		//Fill in Rolodex list with list from core
+		for(RolodexContactList::iterator iter = outRolodexContacts->begin(); iter != outRolodexContacts->end(); iter ++)
+		{
+			coreRolodexContact = *iter;
+
+			//create OPRolodexContact object
+			jobject rolodexContactObject = jni_env->NewObject(rolodexContactClass, rolodexContactConstructorMethodID);
+
+			//set Disposition to OPRolodexContact
+			jobject dispositionObject = jni_env->NewObject(dispositionClass, dispositionConstructorMethodID, (jint)coreRolodexContact.mDisposition);
+			jni_env->CallVoidMethod(rolodexContactObject, setDispositionMethodID, dispositionObject);
+
+			//set identity URI to OPRolodexContact
+			jstring identityUriStr = jni_env->NewStringUTF(coreRolodexContact.mIdentityURI.c_str());
+			jni_env->CallVoidMethod(rolodexContactObject, setIdentityURIMethodID, identityUriStr);
+
+			//set identity provider to OPRolodexContact
+			jstring identityProviderStr = jni_env->NewStringUTF(coreRolodexContact.mIdentityProvider.c_str());
+			jni_env->CallVoidMethod(rolodexContactObject, setIdentityProviderMethodID, identityProviderStr);
+
+			//set name to OPRolodexContact
+			jstring nameStr = jni_env->NewStringUTF(coreRolodexContact.mName.c_str());
+			jni_env->CallVoidMethod(rolodexContactObject, setNameMethodID, nameStr);
+
+			//set profile URL to OPRolodexContact
+			jstring profileURLStr = jni_env->NewStringUTF(coreRolodexContact.mProfileURL.c_str());
+			jni_env->CallVoidMethod(rolodexContactObject, setProfileURLMethodID, profileURLStr);
+
+			//set v profile URL to OPRolodexContact
+			jstring vProfileURLStr = jni_env->NewStringUTF(coreRolodexContact.mVProfileURL.c_str());
+			jni_env->CallVoidMethod(rolodexContactObject, setVProfileURLMethodID, vProfileURLStr);
+
+			//set avatars to OPAvatarList
+			for (RolodexContact::AvatarList::iterator avatarIter = coreRolodexContact.mAvatars.begin();
+					avatarIter != coreRolodexContact.mAvatars.end(); avatarIter++)
+			{
+				RolodexContact::Avatar coreAvatar = *avatarIter;
+				//create OPAvatar object
+				jobject avatarObject = jni_env->NewObject(avatarClass, avatarConstructorMethodID);
+
+				//set avatar name to OPRolodexContact::OPAvatar
+				jstring avatarNameStr = jni_env->NewStringUTF(coreAvatar.mName.c_str());
+				jni_env->CallVoidMethod(avatarObject, setAvatarNameMethodID, avatarNameStr);
+
+				//set avatar URL to OPRolodexContact::OPAvatar
+				jstring avatarURLStr = jni_env->NewStringUTF(coreAvatar.mURL.c_str());
+				jni_env->CallVoidMethod(avatarObject, setAvatarURLMethodID, avatarURLStr);
+
+				//set avatar width to OPRolodexContact::OPAvatar
+				jni_env->CallVoidMethod(avatarObject, setAvatarWidthMethodID, (jint)coreAvatar.mWidth);
+
+				//set avatar height to OPRolodexContact::OPAvatar
+				jni_env->CallVoidMethod(avatarObject, setAvatarHeightMethodID, (jint)coreAvatar.mHeight);
+
+				//add avatar object to avatar list
+				jboolean success = jni_env->CallBooleanMethod(avatarListObject, avatarListAddMethodID , avatarObject);
+			}
+
+			//add avatar list to OPRolodexContact
+			jni_env->CallVoidMethod(rolodexContactObject, setAvatarsMethodID, avatarListObject);
+
+			// Call set method to set to OPDownloadedRolodexContacts
+			jni_env->CallVoidMethod( rolodexListObject, listAddMethodID, rolodexContactObject);
+
+		}
+
+		//add rolodex contact list to return object
+		jni_env->CallVoidMethod(returnObject, setRolodexContactsMethodID, rolodexListObject);
+
+	}
+	return returnObject;
 }
 
 /*
