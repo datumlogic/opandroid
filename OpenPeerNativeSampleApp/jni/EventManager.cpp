@@ -507,9 +507,9 @@ void EventManager::onIdentityLookupCompleted(
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "onIdentityLookupCompleted", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+	cls = jni_env->FindClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "onIdentityLookupCompleted", "()V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();

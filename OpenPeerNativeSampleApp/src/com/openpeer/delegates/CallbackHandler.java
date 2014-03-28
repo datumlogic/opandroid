@@ -428,18 +428,16 @@ public class CallbackHandler{
 	// IDENTITY LOOKUP DELEGATE GLUE
 	/////////////////////////////////////////////////////////////////////
 	//OPIdentityLookupDelegate support
-	private OPIdentityLookup mIdentityLookup;
-	ArrayList<OPIdentityLookupDelegate> identityLookupDelegates = new ArrayList<OPIdentityLookupDelegate> ();
+	private static OPIdentityLookup mIdentityLookup;
+	static OPIdentityLookupDelegate identityLookupDelegate;
 
-	public void onIdentityLookupCompleted() {
+	public static void onIdentityLookupCompleted() {
 
-		for (OPIdentityLookupDelegate delegate : identityLookupDelegates)
+		if (mIdentityLookup != null && identityLookupDelegate != null)
 		{
-			if (mIdentityLookup != null && delegate != null)
-			{
-				delegate.onIdentityLookupCompleted(mIdentityLookup );
-			}
+			identityLookupDelegate.onIdentityLookupCompleted(mIdentityLookup );
 		}
+
 	}
 
 	//Identity lookup delegate register/unregister methods
@@ -454,9 +452,7 @@ public class CallbackHandler{
 		{
 			mIdentityLookup = identityLookup;
 		}
-
-		// Store the delegate object
-		this.identityLookupDelegates.add(delegate);
+		identityLookupDelegate = delegate;
 
 		return true;
 	}
@@ -464,7 +460,7 @@ public class CallbackHandler{
 	public void unregisterCallDelegate(OPIdentityLookupDelegate delegate)
 	{
 		mIdentityLookup = null;
-		this.identityLookupDelegates.remove(delegate);
+		identityLookupDelegate = null;
 
 	}
 
