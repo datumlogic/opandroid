@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.openpeer.openpeernativesampleapp.R;
+import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.openpeernativesampleapp.LoginManager;
@@ -38,6 +39,8 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login_screen);
+		
+		OPMediaEngine.init(getApplicationContext());
 
 		setupFacebookButton();
 		setupAccountButton();
