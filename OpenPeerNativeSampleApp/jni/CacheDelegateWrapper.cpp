@@ -20,8 +20,9 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	}
 
 	cookieJavaString =  jni_env->NewStringUTF(cookieNamePath);
-	method = jni_env->GetMethodID(gCallbackClass, "fetch", "(Ljava/lang/String;)Ljava/lang/String");
-	object = jni_env->CallObjectMethod(gCallbackClass, method, cookieJavaString);
+	cls = findClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "fetch", "(Ljava/lang/String;)V");
+	object = jni_env->CallStaticObjectMethod(cls, method, cookieJavaString);
 
 	cls = findClass("java/lang/String");
 	if(jni_env->IsInstanceOf(object, cls) == JNI_TRUE)
@@ -55,9 +56,10 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "store", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	cls = findClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "store", "(Ljava/lang/String;ILjava/lang/String;)V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -77,9 +79,10 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	{
 		return;
 	}
-	//cls = jni_env->FindClass("com/openpeer/delegates/OPStackMessageQueueDelegate");
-	method = jni_env->GetMethodID(gCallbackClass, "clear", "()V");
-	jni_env->CallVoidMethod(gCallbackClass, method);
+
+	cls = findClass("com/openpeer/delegates/CallbackHandler");
+	method = jni_env->GetStaticMethodID(cls, "clear", "(Ljava/lang/String;)V");
+	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();

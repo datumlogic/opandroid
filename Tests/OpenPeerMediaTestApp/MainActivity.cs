@@ -5,16 +5,22 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Util;
 using Com.Openpeer.Javaapi;
+using Com.Openpeer.Javaapi.Test;
 using Org.Webrtc.Videoengine;
 
 namespace OpenPeerMediaTestApp
 {
-	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true)]
+	[Activity (Label = "OpenPeerMediaTestApp", MainLauncher = true, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, Theme = "@android:style/Theme.NoTitleBar")]
 	public class MainActivity : Activity
 	{
-		OPMediaEngine mediaEngine = null;
+		OPTestMediaEngine mediaEngine = null;
 		SurfaceView localView = null;
+		SurfaceView remoteView = null;
+		int mediaEngineStatus = 0;
+		bool speakerphoneEnabled = false;
+		bool useFrontCamera = true;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -28,18 +34,78 @@ namespace OpenPeerMediaTestApp
 
 			// Get our button from the layout resource,
 			// and attach an event to it
-			LinearLayout layout = FindViewById<LinearLayout> (Resource.Id.myLinearLayout);
-			Button button = FindViewById<Button> (Resource.Id.myButton);
+			LinearLayout localViewLayout = FindViewById<LinearLayout> (Resource.Id.myLocalViewLinearLayout);
+			LinearLayout remoteViewLayout = FindViewById<LinearLayout> (Resource.Id.myRemoteViewLinearLayout);
+			Button mediaControlButton = FindViewById<Button> (Resource.Id.myMediaControlButton);
+			Button audioOutputButton = FindViewById<Button> (Resource.Id.myAudioOutputButton);
+			EditText remoteIPAddressEditText = FindViewById<EditText> (Resource.Id.myRemoteIPAddressEditText);
 
 			localView = ViERenderer.CreateLocalRenderer(this);
-			layout.AddView (localView);
-			
-			button.Click += delegate {
-				Java.Lang.Boolean ecEnabled = new Java.Lang.Boolean (false);
-				mediaEngine = OPMediaEngine.Singleton ();
-				mediaEngine.SetEcEnabled (ecEnabled);
-				mediaEngine.StartVideoCapture ();
-				button.Text = string.Format ("Video Capture Started");
+			localViewLayout.AddView (localView);
+
+			remoteView = ViERenderer.CreateRenderer(this, true);
+			remoteViewLayout.AddView (remoteView);
+
+			OPMediaEngine.Init (Android.App.Application.Context);
+			mediaEngine = OPTestMediaEngine.TestInstance;
+			if (useFrontCamera)
+				mediaEngine.CameraType = CameraTypes.CameraTypeFront;
+			else
+				mediaEngine.CameraType = CameraTypes.CameraTypeBack;
+			mediaEngine.SetEcEnabled (Java.Lang.Boolean.True);
+			mediaEngine.SetAgcEnabled (Java.Lang.Boolean.True);
+			mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
+			mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
+			mediaEngine.MuteEnabled = Java.Lang.Boolean.False;
+			mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.False;
+			mediaEngine.ContinuousVideoCapture = Java.Lang.Boolean.True;
+			mediaEngine.DefaultVideoOrientation = VideoOrientations.VideoOrientationPortrait;
+			mediaEngine.RecordVideoOrientation = VideoOrientations.VideoOrientationLandscapeRight;
+			mediaEngine.FaceDetection = Java.Lang.Boolean.False;
+			mediaEngine.SetChannelRenderView (remoteView);
+
+			mediaControlButton.Text = string.Format ("Start Video Capture");
+			audioOutputButton.Text = string.Format ("Speakerphone");
+
+			mediaControlButton.Click += delegate {
+				switch (mediaEngineStatus) {
+				case 0:
+					mediaEngine.StartVideoCapture ();
+					mediaControlButton.Text = string.Format ("Start Media Channel");
+					mediaEngineStatus++;
+					break;
+				case 1:
+					mediaEngine.ReceiverAddress = remoteIPAddressEditText.Text;
+					mediaEngine.StartVoice ();
+					mediaEngine.StartVideoChannel ();
+					mediaControlButton.Text = string.Format ("Stop Media Channel");
+					mediaEngineStatus++;
+					break;
+				case 2:
+					mediaEngine.StopVoice ();
+					mediaEngine.StopVideoChannel ();
+					mediaControlButton.Text = string.Format ("Stop Video Capture");
+					mediaEngineStatus++;
+					break;
+				case 3:
+					mediaEngine.StopVideoCapture ();
+					mediaControlButton.Text = string.Format ("Start Video Capture");
+					mediaEngineStatus = 0;
+					break;
+				default:
+					break;
+				}
+			};
+
+			audioOutputButton.Click += delegate {
+				if (speakerphoneEnabled) {
+					mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.False;
+					audioOutputButton.Text = string.Format ("Speakerphone");
+				} else {
+					mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.True;
+					audioOutputButton.Text = string.Format ("Ear Speaker");
+				}
+				speakerphoneEnabled = !speakerphoneEnabled;
 			};
 		}
 	}

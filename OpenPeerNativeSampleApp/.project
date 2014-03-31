@@ -94,4 +94,21 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>audio_device</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/audio_device/android</locationURI>
+		</link>
+		<link>
+			<name>video_capture</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_capture/android/java</locationURI>
+		</link>
+		<link>
+			<name>video_render</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_render/android/java</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

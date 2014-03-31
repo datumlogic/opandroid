@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="button_text">Start</string>
-	<string name="app_name">OpenPeerMediaTestApp</string>
+	<string name="media_control_button_text">Start Media</string>
+	<string name="audio_output_button_text">Audio Output</string>
+	<string name="app_name">Media Test</string>
 </resources>

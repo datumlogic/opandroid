@@ -12,3 +12,4 @@ IStackPtr stackPtr;
 IStackMessageQueuePtr queuePtr;
 IIdentityPtr identityPtr;
 IMediaEnginePtr mediaEnginePtr;
+ICachePtr cachePtr;
