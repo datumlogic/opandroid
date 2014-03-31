@@ -10,13 +10,13 @@ public class OPIdentity {
 	public static native String toString(IdentityStates state);
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
-
-	public static native void login(
+	
+	public static native OPIdentity login(
                               OPAccount account,
                               OPIdentityDelegate delegate,
-                              String outerFrameURLUponReload,
+                              String identityProviderDomain, // used when identity URI is of legacy or oauth-type
                               String identityURI_or_identityBaseURI,
-                              String identityProviderDomain // used when identity URI is of legacy or oauth-type
+                              String outerFrameURLUponReload
                               );
 	
 	public static native OPIdentity loginWithIdentityPreauthorized(
@@ -34,9 +34,9 @@ public class OPIdentity {
                                    String outLastErrorReason
                                    );
 
-	public native String getStableID();
+	public native long getStableID();
 
-	public native Boolean isDelegateAttached();
+	public native boolean isDelegateAttached();
 	public native void attachDelegate(
                                 OPIdentityDelegate delegate,
                                 String outerFrameURLUponReload
@@ -66,11 +66,7 @@ public class OPIdentity {
 	
 	public native void startRolodexDownload(String inLastDownloadedVersion);  // if a previous version of the rolodex was downloaded/stored, pass in the version of the last information downloaded to prevent redownloading infomration again
 	public native void refreshRolodexContacts();                                          // force a refresh of the contact list
-	public native Boolean getDownloadedRolodexContacts(                                          // returns "true" if rolodex contacts were obtained, otherwise returns "false"
-                                              Boolean outFlushAllRolodexContacts,         // if true, all rolodex contacts for this identity must be flushed out entirely
-                                              String outVersionDownloaded,             // returns version information of downloaded rolodex contacts
-                                              List<OPRolodexContact> outRolodexContacts // output list of contacts of rolodex contacts
-                                              );
-
+	public native OPDownloadedRolodexContacts getDownloadedRolodexContacts();
+	
 	public native void cancel();
 }

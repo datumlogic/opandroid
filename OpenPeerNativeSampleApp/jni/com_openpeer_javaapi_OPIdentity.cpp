@@ -459,7 +459,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowC
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    getNextMessageForInnerBrowerWindowFrame
- * Signature: ()Lcom/openpeer/javaapi/OPElement;
+ * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageForInnerBrowerWindowFrame
 (JNIEnv *env, jobject)
@@ -481,7 +481,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageFor
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    handleMessageFromInnerBrowserWindowFrame
- * Signature: (Lcom/openpeer/javaapi/OPElement;)V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInnerBrowserWindowFrame
 (JNIEnv *env, jobject, jstring unparsedMessage)

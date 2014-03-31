@@ -33,6 +33,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_notifyProce
 
 jclass findClass(const char* name);
 
+JNIEnv* getEnv();
+
 #ifdef __cplusplus
 }
 #endif

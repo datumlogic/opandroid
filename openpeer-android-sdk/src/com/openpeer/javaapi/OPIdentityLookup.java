@@ -5,20 +5,20 @@ import java.util.List;
 
 public class OPIdentityLookup {
 
-	public static native String toDebugString(OPIdentityLookup lookup, Boolean includeCommaPrefix);
+	public static native String toDebugString(OPIdentityLookup lookup, boolean includeCommaPrefix);
 
 	public static native OPIdentityLookup create(
                                      OPAccount account,
                                      OPIdentityLookupDelegate delegate,
-                                     List<OPIdentityLookupInfo> identityURIs,
+                                     List<OPIdentityLookupInfo> identityLookupInfos,
                                      String identityServiceDomain
                                      );
 
-	public native String getStableID();
+	public native long getStableID();
 
-	public native Boolean isComplete();
+	public native boolean isComplete();
 	
-	public native Boolean wasSuccessful(
+	public native boolean wasSuccessful(
                                int outErrorCode,
                                String outErrorReason
                                );

@@ -44,7 +44,6 @@ extern "C" JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_
 JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     android_jvm = vm;
-    //JNIEnv* env;// = getEnv();
 
     int getEnvStat = android_jvm->GetEnv((void **)&gEnv, JNI_VERSION_1_6);
 	if (getEnvStat == JNI_EDETACHED) {
@@ -69,11 +68,6 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
 
 	gFindClassMethod = gEnv->GetMethodID(classLoaderClass, "findClass",
 									"(Ljava/lang/String;)Ljava/lang/Class;");
-
-
-
-    //jclass tmp = gEnv->FindClass("com/openpeer/delegates/CallbackHandler");
-    //gCallbackClass = (jclass)gEnv->NewGlobalRef(tmp);
 
     return JNI_VERSION_1_6;
 }

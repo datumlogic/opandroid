@@ -9,11 +9,11 @@ public class OPConversationThread {
 	public static native String toString(MessageDeliveryStates state);
 	public static native String toString(ContactStates state);
 
-	public static native String toDebugString(OPConversationThread thread, Boolean includeCommaPrefix);
+	public static native String toDebugString(OPConversationThread thread, boolean includeCommaPrefix);
 	
 	public static native OPConversationThread create(
                                          OPAccount account,
-                                         String profileBundleEl
+                                         List<OPIdentityContact> identityContacts
                                          );
 
 	public static native List<OPConversationThread> getConversationThreads(OPAccount account);
@@ -22,17 +22,17 @@ public class OPConversationThread {
                                                             OPAccount account,
                                                             String threadID
                                                             );
-	public native String getStableID();
+	public native long getStableID();
 
 	public native String getThreadID();
 
-	public native Boolean amIHost();
+	public native boolean amIHost();
 	
 	public native OPAccount getAssociatedAccount();
 
 	public native List<OPContact> getContacts();
 
-	public native String getProfileBundle(OPContact contact);
+	public native List<OPIdentityContact> getIdentityContactList(OPContact contact);
 	
 	public native ContactStates getContactState(OPContact contact);
 
@@ -44,21 +44,17 @@ public class OPConversationThread {
 	public native void sendMessage(
                              String messageID,
                              String messageType,
-                             String message
+                             String message,
+                             boolean signMessage
                              );
 
     // returns false if the message ID is not known
-	public native Boolean getMessage(
-							String messageID,
-                            OPContact outFrom,
-                            String outMessageType,
-                            String outMessage,
-                            Time outTime
+	public native OPMessage getMessage(
+							String messageID
                             );
 
     // returns false if the message ID is not known
-	public native Boolean getMessageDeliveryState(
-										 String messageID,
-                                         MessageDeliveryStates outDeliveryState
+	public native MessageDeliveryStates getMessageDeliveryState(
+										 String messageID
                                          );
 }

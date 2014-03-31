@@ -49,6 +49,12 @@ LOCAL_SRC_FILES := \
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := libcpu_features_android
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libcpu_features_android.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := libaudio_device
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libaudio_device.a
@@ -91,6 +97,30 @@ LOCAL_SRC_FILES := \
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := libvad
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libvad.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libresampler
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libresampler.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libresampler_neon
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libresampler_neon.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libsignal_processing
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libsignal_processing.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := libcommon_video
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libcommon_video.a
@@ -130,6 +160,12 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libiSACFix
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libiSACFix.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libsignal_processing_neon
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libsignal_processing_neon.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -448,26 +484,41 @@ $(ANDROIDNDK_PATH)/platforms/android-9/arch-arm/usr/include \
 LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/globals.cpp \
 		OpenPeerNativeSampleApp/jni/EventManager.cpp \
+		OpenPeerNativeSampleApp/jni/CacheDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/SettingsDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStackMessageQueue.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStack.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPAccount.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPIdentity.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPIdentityLookup.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPMediaEngine.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPLogger.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPSettings.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCache.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCall.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPContact.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPConversationThread.cpp \
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a
+LOCAL_LDLIBS += -llog -lGLESv2 \
 
-LOCAL_STATIC_LIBRARIES := \
+LOCAL_WHOLE_STATIC_LIBRARIES := \
 $(VOICELIB) \
 libaudio_conference_mixer \
 libaudio_processing_neon \
 libaudio_processing \
 libaudio_coding_module \
+libcpu_features_android \
 libaudio_device \
 libbitrate_controller \
 libchannel_transport \
 libCNG \
 libcommon_audio \
+libvad \
+libresampler \
+libresampler_neon \
+libsignal_processing \
 libcommon_video \
 libG711 \
 libG722 \
@@ -475,6 +526,7 @@ libiLBC \
 libisac_neon \
 libiSAC \
 libiSACFix \
+libsignal_processing_neon \
 libjpeg_turbo \
 libmedia_file \
 libNetEq \
@@ -499,8 +551,6 @@ libwebrtc_video_coding \
 libwebrtc_vp8 \
 libyuv \
 libortc_android \
-
-LOCAL_WHOLE_STATIC_LIBRARIES := \
 libcryptopp \
 libudns_android \
 libboost_atomic-gcc-mt-1_53 \
