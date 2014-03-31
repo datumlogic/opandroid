@@ -1,8 +1,140 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-</LinearLayout>
-
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:id="@+id/LinearLayout03"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bgcontactlist">
+        <TextView
+            android:id="@+id/CallerIDTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="18dp"
+            android:text="@string/CallerIDTop"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:padding="18dip"
+            android:textColor="#000000" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/DurationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textSize="18dp"
+            android:text="Duration:00:00:05"
+            android:padding="18dip"
+            android:textColor="#FFFFFF" />
+        <TableLayout
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:background="@drawable/grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:gravity="center_horizontal">
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/topLeft">
+                    <ImageButton
+                        android:id="@+id/MicButton"
+                        android:scaleType="fitCenter"
+                        android:background="?android:selectableItemBackground"
+                        android:layout_marginTop="35dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginBottom="20dp"
+                        android:src="@drawable/mic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <ImageButton
+                        android:scaleType="fitCenter"
+                        android:background="?android:selectableItemBackground"
+                        android:layout_marginTop="35dp"
+                        android:layout_marginLeft="65dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginBottom="20dp"
+                        android:id="@+id/SpikerButton"
+                        android:src="@drawable/spiker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </TableRow>
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:gravity="center_horizontal">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/topLeft">
+                    <ImageButton
+                        android:scaleType="fitCenter"
+                        android:background="?android:selectableItemBackground"
+                        android:layout_marginTop="45dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:id="@+id/AddButton"
+                        android:src="@drawable/add"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <ImageButton
+                        android:scaleType="fitCenter"
+                        android:background="?android:selectableItemBackground"
+                        android:layout_marginTop="45dp"
+                        android:layout_marginLeft="65dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:id="@+id/RecordButton"
+                        android:src="@drawable/record"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </TableRow>
+        </TableLayout>
+    <!-- <ImageView
+            android:layout_width="wrap_content"
+            android:id="@+id/ImageCallAvatar"
+            android:src="@drawable/avatar"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside" />-->
+    <!-- User name -->
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:background="@drawable/bgcontactlist"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/btnEndCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btnEndCall"
+            android:textSize="19dp"
+            android:minHeight="45dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/MyButtons" />
+    </LinearLayout>
+</RelativeLayout>
