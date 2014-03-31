@@ -28,8 +28,16 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
  * Method:    login
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentity;
  */
-JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_login
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
   (JNIEnv *, jclass, jobject, jobject, jstring, jstring, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    loginWithIdentityPreauthorized
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Lcom/openpeer/javaapi/OPIdentity;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentityPreauthorized
+  (JNIEnv *, jclass, jobject, jobject, jstring, jstring, jstring, jstring, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
@@ -41,18 +49,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
- * Method:    getID
+ * Method:    getStableID
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getID
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getStableID
   (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    isDelegateAttached
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttached
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttached
   (JNIEnv *, jobject);
 
 /*
@@ -62,6 +70,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttache
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
   (JNIEnv *, jobject, jobject, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    attachDelegateAndPreauthorizedLogin
+ * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPreauthorizedLogin
+  (JNIEnv *, jobject, jobject, jstring, jstring, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
@@ -81,10 +97,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityProvid
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
- * Method:    getSignedIdentityBundle
- * Signature: ()Lcom/openpeer/javaapi/OPElement;
+ * Method:    getSelfIdentityContact
+ * Signature: ()Lcom/openpeer/javaapi/OPContact;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSignedIdentityBundle
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityContact
   (JNIEnv *, jobject);
 
 /*
@@ -114,18 +130,42 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowC
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    getNextMessageForInnerBrowerWindowFrame
- * Signature: ()Lcom/openpeer/javaapi/OPElement;
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageForInnerBrowerWindowFrame
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageForInnerBrowerWindowFrame
   (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    handleMessageFromInnerBrowserWindowFrame
- * Signature: (Lcom/openpeer/javaapi/OPElement;)V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInnerBrowserWindowFrame
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    startRolodexDownload
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_startRolodexDownload
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    refreshRolodexContacts
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_refreshRolodexContacts
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    getDownloadedRolodexContacts
+ * Signature: ()Lcom/openpeer/javaapi/OPDownloadedRolodexContacts;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolodexContacts
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity

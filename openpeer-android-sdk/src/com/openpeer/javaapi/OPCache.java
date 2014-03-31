@@ -7,15 +7,13 @@ public class OPCache {
 
 	public static native void setup(OPCacheDelegate delegate);
 
-	public static native OPCache singleton();
-
-	public native String fetch(String cookieNamePath);
+	public static native String fetch(String cookieNamePath);
 	
-	public native void store(
+	public static native void store(
 					   String  cookieNamePath,
                        Time expires,
                        String str
                        );
 	
-	public native void clear(String cookieNamePath);
+	public static native void clear(String cookieNamePath);
 }

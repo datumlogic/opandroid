@@ -1,6 +1,7 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
+#include <android/log.h>
 
 #include "globals.h"
 
@@ -11,15 +12,49 @@ extern "C" {
 #endif
 /*
  * Class:     com_openpeer_javaapi_OPStack
+ * Method:    singleton
+ * Signature: ()Lcom/openpeer/javaapi/OPStack;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
+(JNIEnv *, jclass owner)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		cls = findClass("com/openpeer/javaapi/OPStack");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		IStackPtr stack = IStack::singleton();
+		stackPair = std::pair<jobject, IStackPtr>(object, stack);
+	}
+	return object;
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPStack
  * Method:    setup
  * Signature: (Lcom/openpeer/javaapi/OPStackDelegate;Lcom/openpeer/javaapi/OPMediaEngineDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
-(JNIEnv *env, jobject, jobject, jobject)
+(JNIEnv *env, jobject owner, jobject, jobject)
 {
 
-	stackPtr = IStack::singleton();
-	stackPtr->setup(globalEventManager, globalEventManager);
+	if (stackPair.first == owner)
+	{
+		stackPair.second->setup(globalEventManager, globalEventManager);
+	}
+	else
+	{
+		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not initialized. It will be auto initialized.");
+		IStack::singleton()->setup(globalEventManager, globalEventManager);
+		stackPair = std::pair<jobject, IStackPtr>(owner, IStack::singleton());
+	}
 }
 
 /*
@@ -28,13 +63,17 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-	if (stackPtr)
+	if (stackPair.first == owner)
 	{
-		stackPtr->shutdown();
+		stackPair.second->shutdown();
 	}
-
+	else
+	{
+		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not initialized. It will be auto initialized.");
+		IStack::singleton()->shutdown();
+	}
 }
 
 /*
@@ -80,9 +119,37 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPStack_createAuthorizedAppl
  * Signature: (Ljava/lang/String;Landroid/text/format/Time;)Landroid/text/format/Time;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_getAuthorizedApplicationIDExpiry
-(JNIEnv *, jclass, jstring, jobject)
+(JNIEnv *env, jclass, jstring authorizedApplicationID, jobject ignoreThis)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	String authorizedApplicationIDString;
+	authorizedApplicationIDString = env->GetStringUTFChars(authorizedApplicationID, NULL);
+	if (authorizedApplicationIDString == NULL) {
+		return object;
+	}
+
+	Time expiryTime = IStack::getAuthorizedApplicationIDExpiry(authorizedApplicationIDString);
+
+	jni_env = getEnv();
+
+	if (jni_env)
+	{
+		//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+		Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+		jclass timeCls = findClass("android/text/format/Time");
+		jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+
+		//calculate and set expiry time
+		zsLib::Duration expiryTimeDuration = expiryTime - time_t_epoch;
+		object = jni_env->NewObject(timeCls, timeMethodID);
+		jni_env->CallVoidMethod(object, timeSetMillisMethodID, expiryTimeDuration.total_milliseconds());
+	}
+	return object;
 }
 
 /*
@@ -91,9 +158,23 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_getAuthorizedApplica
  * Signature: (Ljava/lang/String;Landroid/text/format/Time;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPStack_isAuthorizedApplicationIDExpiryWindowStillValid
-(JNIEnv *, jclass, jstring, jobject)
+(JNIEnv *env, jclass, jstring authorizedApplicationID, jobject ignoreThis)
 {
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	jboolean ret;
+	JNIEnv *jni_env = 0;
 
+	String authorizedApplicationIDString;
+	authorizedApplicationIDString = env->GetStringUTFChars(authorizedApplicationID, NULL);
+	if (authorizedApplicationIDString == NULL) {
+		return ret;
+	}
+
+	Duration duration = Seconds(1);
+
+	ret = IStack::isAuthorizedApplicationIDExpiryWindowStillValid(authorizedApplicationIDString, duration);
 }
 
 #ifdef __cplusplus

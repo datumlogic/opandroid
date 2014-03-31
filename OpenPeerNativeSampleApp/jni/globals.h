@@ -17,6 +17,9 @@ static std::map<jobject, ICallPtr> callMap;
 static std::map<jobject, IConversationThreadPtr> conversationThreadMap;
 static std::map<jobject, IContactPtr> contactMap;
 
+//single instance objects in pairs
+static std::pair<jobject, IStackPtr> stackPair;
+
 static jclass gCallbackClass;
 static jobject globalAccount;
 
@@ -25,8 +28,8 @@ extern IAccountPtr accountPtr;
 extern IStackPtr stackPtr;
 extern IStackMessageQueuePtr queuePtr;
 extern IIdentityPtr identityPtr;
+extern IIdentityLookupPtr identityLookupPtr;
 extern IMediaEnginePtr mediaEnginePtr;
-extern ICachePtr cachePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
 

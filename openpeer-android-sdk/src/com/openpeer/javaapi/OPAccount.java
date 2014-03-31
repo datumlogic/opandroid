@@ -38,16 +38,16 @@ public class OPAccount {
 
 	public static native String toString(AccountStates state);
 
-	public static native String toDebugString(OPAccount account, Boolean includeCommaPrefix);
+	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
 
-    public static native void login(
+    public static native OPAccount login(
                              OPAccountDelegate delegate,
                              OPConversationThreadDelegate conversationThreadDelegate,
                              OPCallDelegate callDelegate,
                              String namespaceGrantOuterFrameURLUponReload,
                              String grantID,
                              String lockboxServiceDomain,
-                             Boolean forceCreateNewLockboxAccount
+                             boolean forceCreateNewLockboxAccount
                              );
 
     public static native OPAccount relogin(
@@ -55,17 +55,17 @@ public class OPAccount {
     						   OPConversationThreadDelegate conversationThreadDelegate,
     						   OPCallDelegate callDelegate,
     						   String namespaceGrantOuterFrameURLUponReload,
-                               OPElement reloginInformation
+                               String reloginInformation
                                );
 
-    public native String getStableID();
+    public native long getStableID();
 
     public native AccountStates getState(
                                    int outErrorCode,
                                    String outErrorReason
                                    );
 
-    public native OPElement getReloginInformation();   // NOTE: will return ElementPtr() is relogin information is not available yet
+    public native String getReloginInformation();   // NOTE: will return ElementPtr() is relogin information is not available yet
     
     public native String getLocationID();
 

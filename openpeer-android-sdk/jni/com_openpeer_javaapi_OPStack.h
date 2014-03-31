@@ -9,11 +9,19 @@ extern "C" {
 #endif
 /*
  * Class:     com_openpeer_javaapi_OPStack
+ * Method:    singleton
+ * Signature: ()Lcom/openpeer/javaapi/OPStack;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_openpeer_javaapi_OPStack
  * Method:    setup
- * Signature: (Lcom/openpeer/javaapi/OPStackDelegate;Lcom/openpeer/javaapi/OPMediaEngineDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPStackDelegate;Lcom/openpeer/javaapi/OPMediaEngineDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
-  (JNIEnv *, jobject, jobject, jobject, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPStack
@@ -22,6 +30,30 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
   (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPStack
+ * Method:    createAuthorizedApplicationID
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPStack_createAuthorizedApplicationID
+  (JNIEnv *, jclass, jstring, jstring, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPStack
+ * Method:    getAuthorizedApplicationIDExpiry
+ * Signature: (Ljava/lang/String;Landroid/text/format/Time;)Landroid/text/format/Time;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_getAuthorizedApplicationIDExpiry
+  (JNIEnv *, jclass, jstring, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPStack
+ * Method:    isAuthorizedApplicationIDExpiryWindowStillValid
+ * Signature: (Ljava/lang/String;Landroid/text/format/Time;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPStack_isAuthorizedApplicationIDExpiryWindowStillValid
+  (JNIEnv *, jclass, jstring, jobject);
 
 #ifdef __cplusplus
 }

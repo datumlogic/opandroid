@@ -7,8 +7,7 @@ public class OPStackMessageQueueDelegateImplementation extends OPStackMessageQue
 	@Override
 	public void onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread() {
 		// TODO Auto-generated method stub
-		int i = 1;
-		i++;
+
 	}
 
 }
