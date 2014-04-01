@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/myRemoteViewLinearLayout"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:background="@drawable/remote"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:id="@+id/myLocalViewLinearLayout"
+            android:orientation="vertical"
+            android:layout_width="280px"
+            android:layout_gravity="bottom"
+            android:background="@drawable/robin"
+            android:layout_marginTop="410dip"
+            android:layout_marginLeft="30dip"
+            android:layout_marginBottom="20dip"
+            android:layout_height="340px" />
+        <LinearLayout
+            android:id="@+id/LinearLayout02"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:gravity="center_horizontal"
+            android:background="@drawable/videobg"
+            android:layout_alignParentBottom="true">
+            <ImageButton
+                android:id="@+id/ButtonSwitchCam"
+                android:src="@drawable/scam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dip"
+                android:background="?android:selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:maxHeight="28px"
+                android:maxWidth="28px"
+                android:minHeight="28px"
+                android:minWidth="20px"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/LoggerButton" />
+            <ImageButton
+                android:id="@+id/ButtonMuteMic"
+                android:src="@drawable/mic"
+                android:background="?android:selectableItemBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="38.5dp"
+                android:scaleType="fitCenter"
+                android:paddingRight="5dip"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:maxHeight="32px"
+                android:maxWidth="32px"
+                android:minHeight="32px"
+                android:minWidth="32px" />
+            <ImageButton
+                android:id="@+id/ButtonStartChat"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ch3"
+                android:background="?android:selectableItemBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dip"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:maxHeight="32px"
+                android:maxWidth="32px"
+                android:minHeight="32px"
+                android:minWidth="32px" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

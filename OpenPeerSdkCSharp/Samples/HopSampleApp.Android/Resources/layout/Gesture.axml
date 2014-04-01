@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:minWidth="25px"
+    android:windowNoTitle="true"
+    android:background="#40426A"
+    android:minHeight="25px">
+<!-- <FrameLayout
+   android:layout_width="80dp"
+   android:layout_height="80dp"
+   android:layout_marginTop="15dp"
+   android:layout_gravity="center_vertical|center_horizontal"
+   android:scaleType="center" 
+   android:background="#FEFEFE"> -->
+    <ImageButton
+        android:id="@+id/LoggingButton"
+        android:src="@drawable/log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="9dp"
+        android:layout_marginRight="9dp"
+        android:text="@string/LoggerButton" />
+    <ImageView
+        android:src="@drawable/op"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerInside"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="9dp"
+        android:layout_marginRight="9dp"
+        android:layout_marginBottom="15dp"
+        android:adjustViewBounds="true"
+        android:layout_gravity="center_vertical|center_horizontal" />
+<!-- </FrameLayout> -->
+    <Button
+        android:id="@+id/QRButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginBottom="9dp"
+        android:text="@string/QRcodeButton" />
+    <Button
+        android:id="@+id/SkipButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginBottom="9dp"
+        android:text="@string/SkipButton"
+        android:onClick="onClick" />
+</LinearLayout>

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<AllSettings>
+ <settings>
+  <id>1</id>
+  <applicationQRScannerShownAtStart>True</applicationQRScannerShownAtStart>
+    <outerFrameURL>http://jsouter-v1-beta-1-i.hcs.io/identity.html?view=choose&amp;federated=false</outerFrameURL>
+    <identityProviderDomain>identity-v1-beta-1-i.hcs.io</identityProviderDomain>
+    <identityFederateBaseURI>identity://identity-v1-beta-1-i.hcs.io/</identityFederateBaseURI>
+    <namespaceGrantServiceURL>http://jsouter-v1-beta-1-i.hcs.io/grant.html</namespaceGrantServiceURL>
+    <lockBoxServiceDomain>lockbox-v1-beta-1-i.hcs.io</lockBoxServiceDomain>
+    <defaultOutgoingTelnetServer>tcp-logger-v1-beta-1-i.hcs.io:8055</defaultOutgoingTelnetServer>
+    <localTelnetLoggerPort>59999</localTelnetLoggerPort>
+    <openpeer/core/core-thread-priority>normal</penpeer/core/core-thread-priority>
+    <openpeer_core_media_thread_priority>real-time</openpeer_core_media_thread_priority>
+	<openpeer-core-authorized-application-id-split-char>-</openpeer-core-authorized-application-id-split-char>
+	<openpeer-stack-stack-thread-priority>normal</openpeer-stack-stack-thread-priority>
+	<openpeer-stack-key-generation-thread-priority>low</openpeer-stack-key-generation-thread-priority>
+	<openpeer-stack-bootstrapper-force-well-known-over-insecure-http>true</openpeer-stack-bootstrapper-force-well-known-over-insecure-http>
+	<openpeer-stack-bootstrapper-force-well-known-using-post>true</openpeer-stack-bootstrapper-force-well-known-using-post>
+	<openpeer-stack-finder-max-client-session-keep-alive-in-seconds>300</openpeer-stack-finder-max-client-session-keep-alive-in-seconds>
+	<openpeer-stack-finder-connection-send-ping-keep-alive-after-in-seconds>0</openpeer-stack-finder-connection-send-ping-keep-alive-after-in-seconds>
+	<openpeer-stack-debug-force-p2p-messages-over-finder-relay>false</openpeer-stack-debug-force-p2p-messages-over-finder-relay>
+	<openpeer-services-services-thread-priority>high</openpeer-services-services-thread-priority>
+	<openpeer-services-logger-thread-priority>normal</openpeer-services-logger-thread-priority>
+	<openpeer-services-socket-monitor-thread-priority>real-time</openpeer-services-socket-monitor-thread-priority>
+	<openpeer-services-timer-monitor-thread-priority>normal</openpeer-services-timer-monitor-thread-priority>
+	<openpeer-services-http-thread-priority>normal</openpeer-services-http-thread-priority>
+	<openpeer-services-turn-candidates-must-remain-alive-after-ice-wake-up-in-seconds>600</openpeer-services-turn-candidates-must-remain-alive-after-ice-wake-up-in-seconds>
+	<openpeer-services-interface-name-order>lo;en;pdp_ip;stf;gif;bbptp;p2p</openpeer-services-interface-name-order>
+	<openpeer-services-support-ipv6>false</openpeer-services-support-ipv6>
+	<openpeer-services-debug-force-packets-over-turn>false</openpeer-services-debug-force-packets-over-turn>
+	<openpeer-services-debug-force-turn-to-use-tcp>false</openpeer-services-debug-force-turn-to-use-tcp>
+	<openpeer-services-debug-force-turn-to-use-udp>false</openpeer-services-debug-force-turn-to-use-udp>
+	<openpeer-services-debug-only-allow-data-sent-to-specific-ips></openpeer-services-debug-only-allow-data-sent-to-specific-ips>
+	<openpeer-services-debug-only-allow-turn-to-relay-data-sent-to-specific-ips></openpeer-services-debug-only-allow-turn-to-relay-data-sent-to-specific-ips>
+
+ </settings>
+</AllSettings>

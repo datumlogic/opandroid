@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="hello">Hello World, Click Me!</string>
+	<string name="loading">loading...</string>
 	<string name="QRcodeButton">QR Scanner</string>
+	<string name="VideoCallerIDTop">Petar Srdanovic</string>
+	<string name="CallerVideoIDCenter">Petar Srdanovic</string>
+	<string name="btnDeclineVideoCall">Answer</string>
+	<string name="btnAnswerVideoCall">Decline</string>
+	<string name="btnAnswer">Answer</string>
+	<string name="btnDecline">Decline</string>
+	<string name="CallerIDCenter">Petar Srdanovic</string>
+	<string name="CallerIDTop">Petar Srdanovic</string>
+	<string name="LoggerButton">Logger</string>
 	<string name="SkipButton">Skip</string>
 	<string name="app_name">Open Peer Sample App</string>
+	<string name="applicationQRScannerShownAtStart">Start QR Scanner on start:</string>
 	<string name="standard_out_logger">Standard Out Logger</string>
 	<string name="outgoing_telnet_logger">Outgoing Telnet Logger</string>
 	<string name="outgoing_telnet_logger_server_prompt">Server:</string>
