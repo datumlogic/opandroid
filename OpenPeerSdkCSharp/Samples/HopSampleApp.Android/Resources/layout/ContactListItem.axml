@@ -2,14 +2,16 @@
 <LinearLayout xmlns:p1="http://schemas.android.com/apk/res/android"
     p1:minWidth="25px"
     p1:minHeight="25px"
+    p1:drawable="@drawable/bgcontactlist"
     p1:layout_width="match_parent"
     p1:layout_height="wrap_content"
     p1:id="@+id/contactItemLinearLayout"
     p1:descendantFocusability="blocksDescendants">
     <RelativeLayout
+        p1:background="@drawable/bgcontactlist"
         p1:minWidth="25px"
         p1:minHeight="25px"
-        p1:layout_width="match_parent"
+        p1:layout_width="wrap_content"
         p1:layout_height="wrap_content"
         p1:id="@+id/contactItemRelativeLayout">
         <RelativeLayout
@@ -20,6 +22,7 @@
             p1:id="@+id/detailsRelativeLayout"
             p1:padding="5dp">
             <ImageView
+                p1:background="@drawable/imageshape"
                 p1:src="@drawable/avatar"
                 p1:id="@+id/avatarImageView"
                 p1:layout_width="60dp"
@@ -43,6 +46,9 @@
                     p1:layout_height="wrap_content"
                     p1:id="@+id/nameTextView"
                     p1:textSize="22sp"
+                    p1:textColor="#040404"
+                    p1:typeface="sans"
+                    p1:textStyle="bold"
                     p1:inputType="none"
                     p1:text="Name"
                     p1:focusable="false"
@@ -53,6 +59,8 @@
                     p1:layout_width="match_parent"
                     p1:layout_height="wrap_content"
                     p1:id="@+id/usernameTextView"
+                    p1:textColor="#040404"
+                    p1:typeface="sans"
                     p1:textSize="14sp"
                     p1:inputType="none"
                     p1:focusable="false"

@@ -23,79 +23,42 @@ namespace HopSampleApp
 		//private static int SWIPE_MIN_DISTANCE = 120;
 		//private static int SWIPE_THRESHOLD_VELOCITY = 200;
 
-
-		public bool OnDown(MotionEvent e)
-		{
-			Console.WriteLine ("DOWN");
-			return false;
-		}
+		public bool OnDown(MotionEvent e){ Console.WriteLine ("OnDown");return false;}
 
 		public bool OnFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
 		{
-			try
-			{
-
-			}
-			catch 
-			{
-				// nothing
-			}
-			return false;
+			try{ } catch {/* catch error */}return false;
 		}
 
-		public void OnLongPress(MotionEvent e) { Console.WriteLine ("long");} 
+		public void OnLongPress(MotionEvent e) { Console.WriteLine ("OnLongPress");} 
 
-		public bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
-		{
-			return true;
-		}
+		public bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){	return false; }
 
-		public void OnShowPress(MotionEvent e)
-		{
-		}
+		public void OnShowPress(MotionEvent e){ Console.WriteLine ("OnShowPress"); }
 
-		public bool OnSingleTapUp(MotionEvent e)
-		{
-			Console.WriteLine ("single");
-			return true;
-		}
-		public GestureListener()
-		{
+		public bool OnSingleTapUp(MotionEvent e){ Console.WriteLine ("OnSingleTapUp");return true;	}
 
-		}
+		public bool onDoubleTapEvent(MotionEvent e)	{ Console.WriteLine ("OnDoubleTapEvent"); return false;}
+
+		public bool onSingleTapConfirmed(MotionEvent e) { Console.WriteLine ("OnSingleTapConfirmed"); return false;}
+
+		public GestureListener(){ }
 
 		public bool OnDoubleTap(MotionEvent e)
 		{
 			 
-			bool options =Convert.ToBoolean( Resource.String.applicationQRScannerShownAtStart);
-			//JSONParserProperty.GestureOption = options;
-			//JSONParserProperty.GestureOption = options;
-			if (JSONParserProperty.GestureOption != true) {
-				Console.WriteLine ("Gesture is on"); 
-				JSONParserProperty.GestureOption=true;
-			} else if(JSONParserProperty.GestureOption !=false)
-			{
-				JSONParserProperty.GestureOption=false;
+			if (JSONParserProperty.GestureOption != true) {	
+				Console.WriteLine ("Gesture is on");
+				JSONParserProperty.GestureOption = true;
+			} else if (JSONParserProperty.GestureOption != false) {
+				JSONParserProperty.GestureOption = false;
 
-				Console.WriteLine("Gesture is off");
-			}       
+				Console.WriteLine ("Gesture is off");
+			}    
 			Console.WriteLine ("Starting Gesture Layout.");
 
 			return  true;
 		}
-
-		public bool onDoubleTapEvent(MotionEvent e)
-		{
-			           
-			return false;
-		}
-
-		public bool onSingleTapConfirmed(MotionEvent e)
-		{
-			           
-			return false;
-		}
-
 
 
 	}
