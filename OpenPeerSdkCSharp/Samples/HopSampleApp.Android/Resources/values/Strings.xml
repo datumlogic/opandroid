@@ -9,6 +9,7 @@
 	<string name="btnAnswerVideoCall">Decline</string>
 	<string name="btnAnswer">Answer</string>
 	<string name="btnDecline">Decline</string>
+	<string name="btnEndCall">End Call</string>
 	<string name="CallerIDCenter">Petar Srdanovic</string>
 	<string name="CallerIDTop">Petar Srdanovic</string>
 	<string name="LoggerButton">Logger</string>
