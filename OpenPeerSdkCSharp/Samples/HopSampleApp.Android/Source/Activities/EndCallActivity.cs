@@ -25,7 +25,7 @@ namespace HopSampleApp
 			ImageButton SpikerButton = FindViewById<ImageButton> (Resource.Id.SpikerButton);
 			ImageButton AddButton = FindViewById<ImageButton> (Resource.Id.AddButton);
 			ImageButton RecordingButton = FindViewById<ImageButton> (Resource.Id.RecordButton);
-
+			Button EndCall = FindViewById<Button> (Resource.Id.btnEndCall);
 			string time="00:00:05";
 			DurationCall.Text = String.Format ("Duracion:{0}",time);
 
@@ -44,6 +44,10 @@ namespace HopSampleApp
 			RecordingButton.Click += delegate {
 			
 				Console.WriteLine("Recording button");
+			};
+			EndCall.Click += delegate {
+			
+				Console.WriteLine("End Call");
 			};
 		}
 	}

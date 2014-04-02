@@ -10,11 +10,12 @@
         android:orientation="vertical"
         android:background="@drawable/bgcontactlist">
         <TextView
+            android:id="@+id/CallerIDTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textSize="18dp"
-            android:text="Petar Srdanovic"
+            android:text="@string/CallerIDTop"
             android:layout_gravity="center_vertical|center_horizontal"
             android:padding="18dip"
             android:textColor="#000000" />
@@ -25,6 +26,7 @@
         android:layout_centerInParent="true"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/callInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
@@ -34,18 +36,19 @@
             android:textColor="#FFFFFF" />
         <ImageView
             android:layout_width="wrap_content"
-            android:id="@+id/imageView1"
+            android:id="@+id/ImageCallAvatar"
             android:src="@drawable/avatar"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_height="wrap_content"
             android:scaleType="centerInside" />
     <!-- User name -->
         <TextView
+            android:id="@+id/CallerIDCenter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
             android:textSize="24dp"
-            android:text="Petar Srdanovic"
+            android:text="@string/CallerIDCenter"
             android:padding="18dip"
             android:textColor="#FFFFFF" />
     </LinearLayout>
@@ -56,7 +59,7 @@
         android:background="@drawable/bgcontactlist"
         android:layout_alignParentBottom="true">
         <Button
-            android:id="@+id/Button02"
+            android:id="@+id/btnAnswer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -69,14 +72,14 @@
             android:textSize="15dp"
             android:minHeight="45dp"
             android:textColor="#FFFFFF"
-            android:text="Answer" />
+            android:text="@string/btnAnswer" />
         <Button
-            android:id="@+id/Button03"
+            android:id="@+id/btnDecline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableLeft="@drawable/decline"
-            android:text="Decline"
+            android:text="@string/btnDecline"
             android:textSize="15dp"
             android:minHeight="45dp"
             android:layout_marginTop="5dp"

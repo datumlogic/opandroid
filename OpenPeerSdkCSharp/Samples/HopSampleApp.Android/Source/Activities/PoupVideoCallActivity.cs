@@ -17,12 +17,13 @@ using Java.Net;
 using System.Threading.Tasks;
 using Android.Net;
 
-
 namespace HopSampleApp
 {
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]			
 	public class PoupVideoCallActivity : Activity
 	{
+
+
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);

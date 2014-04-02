@@ -5,13 +5,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-
 using System.Net;
 using System.IO;
 using System.Text;
-
-
-
 using OpenPeerSdk.Helpers;
 
 namespace HopSampleApp

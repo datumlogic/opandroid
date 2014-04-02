@@ -62,6 +62,12 @@ namespace HopSampleApp
 
 				}
 			};
+			//Logger button
+			ImageButton LoggerButton = (ImageButton)FindViewById (Resource.Id.LoggingButton);
+			LoggerButton.Click += delegate {
+				Console.WriteLine("Logger button");
+				//Logic for looger
+			};
 			//Skip Button listener
 			Button SKIPButton = (Button)FindViewById (Resource.Id.SkipButton1);
 			SKIPButton.Click += delegate {
@@ -74,7 +80,7 @@ namespace HopSampleApp
 		public void HandleScanResult(ZXing.Result result)
 		{
 			//The logic for settings
-
+			//http://profiles.hookflash.com/itunes-appstore/config.json
 
 			string msg = "";
 			if (result != null && !string.IsNullOrEmpty (result.Text)) {
@@ -92,13 +98,6 @@ namespace HopSampleApp
 			this.RunOnUiThread (()=>Toast.MakeText(this,msg,ToastLength.Short).Show());
 
 
-
-
-
-
-
-
-			//http://profiles.hookflash.com/itunes-appstore/config.json
 		}
 	}
 }

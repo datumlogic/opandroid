@@ -14,10 +14,10 @@
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
     <AssemblyName>HopSampleApp</AssemblyName>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,9 +55,6 @@
     <Compile Include="Source\Activities\ChatActivity.cs" />
     <Compile Include="Source\Activities\ChatAdapter.cs" />
     <Compile Include="Source\Activities\LoginActivity.cs" />
-    <Compile Include="Source\Activities\MainActivity.cs">
-      <DependentUpon>ChatAdapter.cs</DependentUpon>
-    </Compile>
     <Compile Include="Source\Activities\SettingsActivity.cs" />
     <Compile Include="Source\Activities\SettingsAdapter.cs" />
     <Compile Include="Source\Services\ServiceHelpers.cs" />
@@ -66,11 +63,38 @@
     <Compile Include="Source\Activities\ContactAdapter.cs" />
     <Compile Include="Source\Services\ImageCachingService.cs" />
     <Compile Include="Source\Activities\SplashActivity.cs" />
+    <Compile Include="Source\Services\JSONParser.cs" />
+    <Compile Include="Source\Services\JSONParserProperty.cs" />
+    <Compile Include="Source\Services\GestureListener.cs" />
+    <Compile Include="Source\Activities\GestureActivity.cs" />
+    <Compile Include="Source\Activities\PopupCallActivity.cs" />
+    <Compile Include="Source\Activities\PoupVideoCallActivity.cs" />
+    <Compile Include="Source\Activities\VideoCallActivity.cs" />
+    <Compile Include="Source\Activities\EndCallActivity.cs" />
+    <Compile Include="Source\Helpers\Helper.cs" />
+    <Compile Include="Source\Helpers\Logger.cs" />
+    <Compile Include="Source\Helpers\LoggerSubsystemAttribute.cs" />
+    <Compile Include="Source\Helpers\OptionalOut.cs" />
+    <Compile Include="Source\Helpers\WeakReference.cs" />
+    <Compile Include="Source\Helpers\Internal\Logger.cs" />
+    <Compile Include="Source\Helpers\Internal\LoggerSubsystemAttribute.cs" />
+    <Compile Include="Source\Database\ChatMessage.cs" />
+    <Compile Include="Source\Database\ChatMessageDatabase.cs" />
+    <Compile Include="Source\Database\Common.cs" />
+    <Compile Include="Source\Database\Contact.cs" />
+    <Compile Include="Source\Database\ContactDatabase.cs" />
+    <Compile Include="Source\Database\Conversation.cs" />
+    <Compile Include="Source\Database\ConversationDatabase.cs" />
+    <Compile Include="Source\Database\ConversationParticipant.cs" />
+    <Compile Include="Source\Database\ConversationParticipantRecord.cs" />
+    <Compile Include="Source\Database\SQLite.cs" />
+    <Compile Include="Source\Activities\MainActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Assets\DefaultSettings.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />
@@ -112,6 +136,38 @@
     <AndroidResource Include="Resources\layout\QROverlay.axml" />
     <AndroidResource Include="Resources\drawable\op.png" />
     <AndroidResource Include="Resources\values\style.xml" />
+    <AndroidResource Include="Resources\layout\Gesture.axml" />
+    <AndroidResource Include="Resources\drawable\log.png" />
+    <AndroidResource Include="Resources\drawable\bgcontactlist.xml" />
+    <AndroidResource Include="Resources\drawable\imageshape.xml" />
+    <AndroidResource Include="Resources\layout\PopupCall.axml" />
+    <AndroidResource Include="Resources\drawable\acept.png" />
+    <AndroidResource Include="Resources\drawable\decline.png" />
+    <AndroidResource Include="Resources\drawable\person.png" />
+    <AndroidResource Include="Resources\drawable\MyButtons.xml" />
+    <AndroidResource Include="Resources\drawable\MyButtons2.xml" />
+    <AndroidResource Include="Resources\layout\PopupVideoCall.axml" />
+    <AndroidResource Include="Resources\drawable\cam.png" />
+    <AndroidResource Include="Resources\drawable\camera.png" />
+    <AndroidResource Include="Resources\layout\VideoCall.xml" />
+    <AndroidResource Include="Resources\drawable\scam.png" />
+    <AndroidResource Include="Resources\drawable\cb.png" />
+    <AndroidResource Include="Resources\drawable\cb1.png" />
+    <AndroidResource Include="Resources\drawable\ch.png" />
+    <AndroidResource Include="Resources\drawable\mic1.png" />
+    <AndroidResource Include="Resources\drawable\ch3.png" />
+    <AndroidResource Include="Resources\drawable\radio.png" />
+    <AndroidResource Include="Resources\drawable\radio1.png" />
+    <AndroidResource Include="Resources\drawable\mic.png" />
+    <AndroidResource Include="Resources\drawable\videobg.xml" />
+    <AndroidResource Include="Resources\drawable\remote.jpg" />
+    <AndroidResource Include="Resources\drawable\robin.png" />
+    <AndroidResource Include="Resources\drawable\lokalvideoborder.xml" />
+    <AndroidResource Include="Resources\layout\EndCall.axml" />
+    <AndroidResource Include="Resources\drawable\grid.png" />
+    <AndroidResource Include="Resources\drawable\spiker.png" />
+    <AndroidResource Include="Resources\drawable\add.png" />
+    <AndroidResource Include="Resources\drawable\record.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -125,8 +181,9 @@
     <Folder Include="Source\Activities\" />
     <Folder Include="Source\Services\" />
     <Folder Include="Source\Views\" />
-    <Folder Include="Source\Database\" />
+    <Folder Include="Libs\" />
     <Folder Include="Source\Helpers\" />
+    <Folder Include="Source\Database\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
@@ -145,5 +202,27 @@
       <Project>{8971B59D-78F1-49BA-808D-CBADB37F571F}</Project>
       <Name>zxing.monoandroid</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\libs\Newtonsoft-3.Json-master\Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj">
+      <Project>{E6C3413C-919B-486D-8B6C-225CBD921B98}</Project>
+      <Name>Newtonsoft.Json.MonoDroid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OpenPeerAndroidSDK\OpenPeerAndroidSDK.csproj">
+      <Project>{DF7C4BF6-3FBB-4387-B2E6-21C22A4E6D9B}</Project>
+      <Name>OpenPeerAndroidSDK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidNativeLibrary Include="Libs\armeabi\libopenpeer.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="Libs\armeabi\libz_shared.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="Libs\armeabi-v7a\libopenpeer.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="Libs\armeabi-v7a\libz_shared.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidNativeLibrary>
   </ItemGroup>
 </Project>

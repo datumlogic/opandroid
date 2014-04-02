@@ -10,7 +10,6 @@ using Android.Views;
 using Android.Widget;
 using Android.Views.InputMethods;
 using Android.Text.Method;
-
 using HopSampleApp.Services;
 using OpenPeerSdk.Helpers;
 

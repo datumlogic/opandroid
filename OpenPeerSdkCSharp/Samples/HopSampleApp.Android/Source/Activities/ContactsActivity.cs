@@ -1,7 +1,5 @@
-
 using System;
 using System.Collections.Generic;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -9,13 +7,9 @@ using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-
 using OpenPeerSdk.Helpers;
-
 using PullToRefresharp.Android.Views;
-
 using HopSampleApp.Services;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 
 namespace HopSampleApp
@@ -29,7 +23,6 @@ namespace HopSampleApp
 			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
 			private IPullToRefresharpView refreshListView;
 			private ServiceConnection<ImageCachingService> imageCachingServiceConnection;
-
 			private DateTime lastRefresh;
 			private static TimeSpan redownloadIfRefreshWithin = TimeSpan.FromSeconds (15);
 			private static TimeSpan redownloadOlderThan = TimeSpan.FromMinutes (5);
@@ -48,6 +41,8 @@ namespace HopSampleApp
 				}
 
 				this.ListAdapter = new ContactsAdapter (this, downloader);
+
+
 			}
 
 			protected override void OnDestroy ()

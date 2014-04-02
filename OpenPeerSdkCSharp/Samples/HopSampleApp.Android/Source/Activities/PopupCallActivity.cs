@@ -17,9 +17,6 @@ using Java.Net;
 using System.Threading.Tasks;
 using Android.Net;
 
-
-
-
 namespace HopSampleApp
 {
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]			
@@ -33,7 +30,7 @@ namespace HopSampleApp
 			// Create your application here
 			SetContentView (Resource.Layout.PopupCall);
 
-			var imageBitmap = GetImageBitmapFromUrl("http://xamarin.com/resources/design/home/devices.png");//Download avatar image
+			var imageBitmap = GetImageBitmapFromUrl("http://www.alo.rs/resources/img/10-11-2012/intext_big/138689-aleksandar-vucic-091112-ras-foto-nenad-mihajlovic-005.JPG");//Download avatar image
 
 			ImageView avatar = (ImageView)FindViewById(Resource.Id.ImageCallAvatar);//Avatar image for user
 			avatar.SetImageBitmap(imageBitmap);//Set avatar
@@ -44,7 +41,7 @@ namespace HopSampleApp
 
 			CallInfo.Text = "Incoming call from";//Set call info for incoming and outgoing calls
 			UserIdTop.Text = "Petar Srdanovic";//Set user id top
-			UserIdCenter.Text = "Petar Srdanovic";//Set user id bottom
+			UserIdCenter.Text = "Aleksandar Vucic";//Set user id bottom
 
 			Button AnswerButton = (Button)FindViewById (Resource.Id.btnAnswer);
 			AnswerButton.Click += delegate {

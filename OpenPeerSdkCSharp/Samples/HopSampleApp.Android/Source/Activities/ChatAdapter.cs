@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -13,13 +12,9 @@ using Android.Runtime;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
-
 using OpenPeerSdk.Helpers;
-
 using HopSampleApp.Services;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
-
 using Helpers = OpenPeerSdk.Helpers;
 
 namespace HopSampleApp

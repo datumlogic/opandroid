@@ -8,7 +8,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -17,9 +16,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
 using OpenPeerSdk.Helpers;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 using BitmapWeak = OpenPeerSdk.Helpers.WeakReference<Android.Graphics.Drawables.BitmapDrawable>;
 

@@ -11,7 +11,22 @@ public class OPIdentity {
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
 
-	public static native void login(
+	public OPIdentity login(
+            OPAccount account,
+            OPIdentityDelegate delegate,
+            String outerFrameURLUponReload,
+            String identityURI_or_identityBaseURI,
+            String identityProviderDomain // used when identity URI is of legacy or oauth-type
+            )
+	{
+		return OPIdentity.coreLogin(account, 
+				delegate, 
+				outerFrameURLUponReload, 
+				identityURI_or_identityBaseURI, 
+				identityProviderDomain);
+	}
+	
+	private static native OPIdentity coreLogin(
                               OPAccount account,
                               OPIdentityDelegate delegate,
                               String outerFrameURLUponReload,

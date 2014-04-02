@@ -36,29 +36,45 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
  * Method:    login
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentity;
  */
-JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_login
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_coreLogin
   (JNIEnv *env, jclass, jobject, jobject, jstring identityProviderDomain, jstring identityURI_or_identityBaseURI, jstring outerFrameURLUponReload)
 {
+		jclass cls;
+		jmethodID method;
+		jobject object;
+		JNIEnv *jni_env = 0;
+
 		const char *identityProviderDomainStr;
 		identityProviderDomainStr = env->GetStringUTFChars(identityProviderDomain, NULL);
 		if (identityProviderDomainStr == NULL) {
-			return;
+			return object;
 		}
 
 		const char *identityURIStr;
 		identityURIStr = env->GetStringUTFChars(identityURI_or_identityBaseURI, NULL);
 		if (identityURIStr == NULL) {
-			return;
+			return object;
 		}
 
 		const char *outerFrameURLUponReloadStr;
 		outerFrameURLUponReloadStr = env->GetStringUTFChars(outerFrameURLUponReload, NULL);
 		if (outerFrameURLUponReloadStr == NULL) {
-			return;
+			return object;
 		}
 
 		identityPtr = IIdentity::login(accountPtr, globalEventManager, (char const *)identityProviderDomainStr,
 					(char const *)identityURIStr, (char const *)outerFrameURLUponReloadStr);
+
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/OPIdentity");
+			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = jni_env->NewObject(cls, method);
+
+		}
+		return object;
+
 }
 
 /*

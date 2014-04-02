@@ -10,7 +10,6 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.Text;
-
 using OpenPeerSdk.Helpers;
 
 namespace HopSampleApp
@@ -45,6 +44,7 @@ namespace HopSampleApp
 
 			enum Setting
 			{
+				StartQRScannerOnStart,
 				StandardOutLoggerSwitch,
 				OutgoingTelnetLoggerSwitch,
 				OutgoingTelnetLoggerServer,
@@ -105,6 +105,8 @@ namespace HopSampleApp
 			public override int GetItemViewType (int position)
 			{
 				switch ((Setting)position) {
+				case Setting.StartQRScannerOnStart:
+					return(int)ListItemType.Switch;
 				case Setting.StandardOutLoggerSwitch:		return (int)ListItemType.Switch;
 				case Setting.OutgoingTelnetLoggerSwitch:	return (int)ListItemType.Switch;
 				case Setting.OutgoingTelnetLoggerServer:	return (int)ListItemType.TextEdit;
@@ -197,7 +199,8 @@ namespace HopSampleApp
 
 				switch ((Setting)position) {
 				case Setting.StandardOutLoggerSwitch:
-					holder.LabelTextView.Text = context.Resources.GetString(Resource.String.standard_out_logger);
+					holder.LabelTextView.Text = context.Resources.GetString (Resource.String.standard_out_logger);
+
 					break;
 				case Setting.OutgoingTelnetLoggerSwitch:
 					holder.LabelTextView.Text = context.Resources.GetString(Resource.String.outgoing_telnet_logger);
@@ -212,6 +215,16 @@ namespace HopSampleApp
 				case Setting.TelnetLoggerPort:
 					holder.LabelTextView.Text = context.Resources.GetString(Resource.String.telnet_logger_port_prompt);
 					editHolder.EditText.Text = "59999";
+					break;
+				case Setting.StartQRScannerOnStart:
+					holder.LabelTextView.Text = context.Resources.GetString (Resource.String.applicationQRScannerShownAtStart);
+
+					switchHolder.ToggleButton.Checked = JSONParserProperty.GestureOption;
+
+					//} else {
+					//JSONParserProperty.GestureOption=switchHolder.ToggleButton.Checked;
+
+					//}
 					break;
 				default:
 					SubsystemHolder boxer = (SubsystemHolder)this [position];

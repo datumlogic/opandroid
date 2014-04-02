@@ -85,7 +85,7 @@
     </AndroidNativeLibrary>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="OpenPeerAndroidSDK\OpenPeerAndroidSDK.csproj">
+    <ProjectReference Include="..\..\OpenPeerSdkCSharp\OpenPeerAndroidSDK\OpenPeerAndroidSDK.csproj">
       <Project>{DF7C4BF6-3FBB-4387-B2E6-21C22A4E6D9B}</Project>
       <Name>OpenPeerAndroidSDK</Name>
     </ProjectReference>
