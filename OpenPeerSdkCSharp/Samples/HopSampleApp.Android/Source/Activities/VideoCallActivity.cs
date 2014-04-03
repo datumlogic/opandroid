@@ -8,9 +8,9 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Com.Openpeer.Javaapi;
-using Com.Openpeer.Javaapi.Test;
-using Org.Webrtc.Videoengine;
+//using Com.Openpeer.Javaapi;
+//using Com.Openpeer.Javaapi.Test;
+//using Org.Webrtc.Videoengine;
 
 namespace HopSampleApp
 {
@@ -18,7 +18,7 @@ namespace HopSampleApp
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op",ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]			
 	public class VideoCallActivity : Activity
 	{
-		OPTestMediaEngine mediaEngine = null;
+		//OPTestMediaEngine mediaEngine = null;
 		SurfaceView localView = null;
 		SurfaceView remoteView = null;
 		int MicrophoneMute=0;
@@ -27,8 +27,8 @@ namespace HopSampleApp
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-			Java.Lang.JavaSystem.LoadLibrary("z_shared");
-			Java.Lang.JavaSystem.LoadLibrary("openpeer");
+			//Java.Lang.JavaSystem.LoadLibrary("z_shared");
+			//Java.Lang.JavaSystem.LoadLibrary("openpeer");
 			// Create your application here
 			SetContentView (Resource.Layout.VideoCall);
 
@@ -42,6 +42,7 @@ namespace HopSampleApp
 			#endregion
 
 			#region Media engine
+			/*
 			//Media start           
 			localView = ViERenderer.CreateLocalRenderer(this);
 			localViewLayout.AddView (localView);
@@ -68,6 +69,7 @@ namespace HopSampleApp
 			    mediaEngine.FaceDetection = Java.Lang.Boolean.False;
 			    mediaEngine.SetChannelRenderView (remoteView);
 			//End media
+			*/
 		   #endregion
 
 		   #region Events and Delegates
@@ -77,12 +79,12 @@ namespace HopSampleApp
 				switch(useFrontCamera)
 				{
 				case true:
-					mediaEngine.CameraType = CameraTypes.CameraTypeBack;//Back camera.
+					//mediaEngine.CameraType = CameraTypes.CameraTypeBack;//Back camera.
 					useFrontCamera=false;
 					Console.WriteLine("Swich to Back camera");
 					break;
 				case false:
-					mediaEngine.CameraType = CameraTypes.CameraTypeFront;//Front camera.
+					//mediaEngine.CameraType = CameraTypes.CameraTypeFront;//Front camera.
 					useFrontCamera=true;
 					Console.WriteLine("Swich to Front camera");
 				default:break;
@@ -94,12 +96,12 @@ namespace HopSampleApp
 				switch(MicrophoneMute)
 				{
 				case 0:
-					mediaEngine.MuteEnabled=Java.Lang.Boolean.True;//Disable microphone
+					//mediaEngine.MuteEnabled=Java.Lang.Boolean.True;//Disable microphone
 					MicrophoneMute++;
 					Console.WriteLine("Microphone are now disabled.");
 					break;
 				case 1:
-					mediaEngine.MuteEnabled=Java.Lang.Boolean.False;//Enable microphone
+					//mediaEngine.MuteEnabled=Java.Lang.Boolean.False;//Enable microphone
 					MicrophoneMute=0;
 					Console.WriteLine("Microphone are now enabled.");
 					break;
@@ -112,10 +114,10 @@ namespace HopSampleApp
 
 				Console.WriteLine("Start Chat with user");
 				//This is only for test
-				mediaEngine.StartVideoCapture ();
-				mediaEngine.ReceiverAddress = "127.0.0.1";
-				mediaEngine.StartVoice ();
-				mediaEngine.StartVideoChannel ();
+				//mediaEngine.StartVideoCapture ();
+				//mediaEngine.ReceiverAddress = "127.0.0.1";
+				//mediaEngine.StartVoice ();
+				//mediaEngine.StartVideoChannel ();
 			};
 			#endregion
 
