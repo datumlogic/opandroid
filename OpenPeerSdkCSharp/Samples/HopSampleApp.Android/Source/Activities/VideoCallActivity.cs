@@ -8,9 +8,9 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Com.Openpeer.Javaapi;
-using Com.Openpeer.Javaapi.Test;
-using Org.Webrtc.Videoengine;
+//using Com.Openpeer.Javaapi;
+//using Com.Openpeer.Javaapi.Test;
+//using Org.Webrtc.Videoengine;
 
 
 namespace HopSampleApp
@@ -19,7 +19,7 @@ namespace HopSampleApp
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op",ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]			
 	public class VideoCallActivity : Activity
 	{
-		OPTestMediaEngine mediaEngine = null;
+		//OPTestMediaEngine mediaEngine = null;
 		SurfaceView localView = null;
 		SurfaceView remoteView = null;
 
@@ -38,6 +38,7 @@ namespace HopSampleApp
 			ImageButton MuteMic = FindViewById<ImageButton> (Resource.Id.ButtonMuteMic);//Mute mic button
 			ImageButton StartChat = FindViewById<ImageButton> (Resource.Id.ButtonStartChat);//StartChat button
 
+			/*
 			//Media            
 			localView = ViERenderer.CreateLocalRenderer(this);
 			localViewLayout.AddView (localView);
@@ -61,7 +62,7 @@ namespace HopSampleApp
 			mediaEngine.FaceDetection = Java.Lang.Boolean.False;
 			mediaEngine.SetChannelRenderView (remoteView);
 			//End media
-
+            */
 			//switching from the front to the back camera
 			SwichCam.Click += delegate {
 				Console.WriteLine("Swich camera");

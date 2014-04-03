@@ -95,12 +95,6 @@
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
-    <None Include="Libs\armeabi\gdbserver" />
-    <None Include="Libs\armeabi\libopenpeer.so" />
-    <None Include="Libs\armeabi\libz_shared.so" />
-    <None Include="Libs\armeabi-v7a\gdbserver" />
-    <None Include="Libs\armeabi-v7a\libopenpeer.so" />
-    <None Include="Libs\armeabi-v7a\libz_shared.so" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\menu\main_menu.xml" />
@@ -197,7 +191,6 @@
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\drawable\" />
     <Folder Include="Source\Helpers\Internal\" />
-    <Folder Include="Libs\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
