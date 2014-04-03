@@ -95,12 +95,11 @@
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
-    <None Include="Libs\armeabi\gdbserver" />
-    <None Include="Libs\armeabi\libopenpeer.so" />
-    <None Include="Libs\armeabi\libz_shared.so" />
-    <None Include="Libs\armeabi-v7a\gdbserver" />
-    <None Include="Libs\armeabi-v7a\libopenpeer.so" />
-    <None Include="Libs\armeabi-v7a\libz_shared.so" />
+    <None Include="Libs\.DS_Store" />
+    <None Include="Libs\armeabi\.DS_Store" />
+    <None Include="Libs\armeabi\gdb.setup" />
+    <None Include="Libs\armeabi-v7a\.DS_Store" />
+    <None Include="Libs\armeabi-v7a\gdb.setup" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\menu\main_menu.xml" />
@@ -224,5 +223,15 @@
       <Project>{E6C3413C-919B-486D-8B6C-225CBD921B98}</Project>
       <Name>Newtonsoft.Json.MonoDroid</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidNativeLibrary Include="Libs\armeabi\gdbserver" />
+    <AndroidNativeLibrary Include="Libs\armeabi\libopenpeer.so" />
+    <AndroidNativeLibrary Include="Libs\armeabi\libz_shared.so" />
+    <AndroidNativeLibrary Include="Libs\armeabi-v7a\gdbserver" />
+    <AndroidNativeLibrary Include="Libs\armeabi-v7a\libopenpeer.so" />
+    <AndroidNativeLibrary Include="Libs\armeabi-v7a\libz_shared.so">
+      <DeployService-Deploy>True</DeployService-Deploy>
+    </AndroidNativeLibrary>
   </ItemGroup>
 </Project>

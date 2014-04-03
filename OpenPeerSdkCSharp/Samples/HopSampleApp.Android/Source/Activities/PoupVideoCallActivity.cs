@@ -55,6 +55,7 @@ namespace HopSampleApp
 				Console.WriteLine("Decline button");
 			};
 		}
+
 		private Bitmap GetImageBitmapFromUrl(string url)
 		{
 			Bitmap imageBitmap = null;

@@ -12,7 +12,6 @@ using Com.Openpeer.Javaapi;
 using Com.Openpeer.Javaapi.Test;
 using Org.Webrtc.Videoengine;
 
-
 namespace HopSampleApp
 {
 
@@ -22,6 +21,8 @@ namespace HopSampleApp
 		OPTestMediaEngine mediaEngine = null;
 		SurfaceView localView = null;
 		SurfaceView remoteView = null;
+		int MicrophoneMute=0;
+		bool useFrontCamera = true;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -31,14 +32,17 @@ namespace HopSampleApp
 			// Create your application here
 			SetContentView (Resource.Layout.VideoCall);
 
+			#region Layouts and Controls
 			RelativeLayout localViewLayout = FindViewById<RelativeLayout> (Resource.Id.myLocalViewLinearLayout);//Local cam view
 			RelativeLayout remoteViewLayout = FindViewById<RelativeLayout> (Resource.Id.myRemoteViewLinearLayout);//Remote cam view
 
 			ImageButton SwichCam = FindViewById<ImageButton> (Resource.Id.ButtonSwitchCam);//SwichCam button
 			ImageButton MuteMic = FindViewById<ImageButton> (Resource.Id.ButtonMuteMic);//Mute mic button
 			ImageButton StartChat = FindViewById<ImageButton> (Resource.Id.ButtonStartChat);//StartChat button
+			#endregion
 
-			//Media            
+			#region Media engine
+			//Media start           
 			localView = ViERenderer.CreateLocalRenderer(this);
 			localViewLayout.AddView (localView);
 
@@ -47,29 +51,61 @@ namespace HopSampleApp
 
 			OPMediaEngine.Init (Android.App.Application.Context);
 			mediaEngine = OPTestMediaEngine.TestInstance;
+			if (useFrontCamera)
+				mediaEngine.CameraType = CameraTypes.CameraTypeFront;
+			else
 
-			mediaEngine.CameraType = CameraTypes.CameraTypeBack;
-			mediaEngine.SetEcEnabled (Java.Lang.Boolean.True);
-			mediaEngine.SetAgcEnabled (Java.Lang.Boolean.True);
-			mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
-			mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
-			mediaEngine.MuteEnabled = Java.Lang.Boolean.False;
-			mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.False;
-			mediaEngine.ContinuousVideoCapture = Java.Lang.Boolean.True;
-			mediaEngine.DefaultVideoOrientation = VideoOrientations.VideoOrientationPortrait;
-			mediaEngine.RecordVideoOrientation = VideoOrientations.VideoOrientationLandscapeRight;
-			mediaEngine.FaceDetection = Java.Lang.Boolean.False;
-			mediaEngine.SetChannelRenderView (remoteView);
+			    mediaEngine.CameraType = CameraTypes.CameraTypeBack;
+			    mediaEngine.SetEcEnabled (Java.Lang.Boolean.True);
+			    mediaEngine.SetAgcEnabled (Java.Lang.Boolean.True);
+			    mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
+			    mediaEngine.SetNsEnabled (Java.Lang.Boolean.False);
+			    mediaEngine.MuteEnabled = Java.Lang.Boolean.False;
+			    mediaEngine.LoudspeakerEnabled = Java.Lang.Boolean.False;
+			    mediaEngine.ContinuousVideoCapture = Java.Lang.Boolean.True;
+			    mediaEngine.DefaultVideoOrientation = VideoOrientations.VideoOrientationPortrait;
+			    mediaEngine.RecordVideoOrientation = VideoOrientations.VideoOrientationLandscapeRight;
+			    mediaEngine.FaceDetection = Java.Lang.Boolean.False;
+			    mediaEngine.SetChannelRenderView (remoteView);
 			//End media
+		   #endregion
 
+		   #region Events and Delegates
 			//switching from the front to the back camera
 			SwichCam.Click += delegate {
-				Console.WriteLine("Swich camera");
+
+				switch(useFrontCamera)
+				{
+				case true:
+					mediaEngine.CameraType = CameraTypes.CameraTypeBack;//Back camera.
+					useFrontCamera=false;
+					Console.WriteLine("Swich to Back camera");
+					break;
+				case false:
+					mediaEngine.CameraType = CameraTypes.CameraTypeFront;//Front camera.
+					useFrontCamera=true;
+					Console.WriteLine("Swich to Front camera");
+				default:break;
+				}
 			};
-			//Mute mic
+			//Microphone enable/disable
 			MuteMic.Click += delegate {
 
-				Console.WriteLine("Mute mic");
+				switch(MicrophoneMute)
+				{
+				case 0:
+					mediaEngine.MuteEnabled=Java.Lang.Boolean.True;//Disable microphone
+					MicrophoneMute++;
+					Console.WriteLine("Microphone are now disabled.");
+					break;
+				case 1:
+					mediaEngine.MuteEnabled=Java.Lang.Boolean.False;//Enable microphone
+					MicrophoneMute=0;
+					Console.WriteLine("Microphone are now enabled.");
+					break;
+				default:break;
+				}
+
 			};
 			//Start chat with current user
 			StartChat.Click += delegate {
@@ -81,6 +117,7 @@ namespace HopSampleApp
 				mediaEngine.StartVoice ();
 				mediaEngine.StartVideoChannel ();
 			};
+			#endregion
 
 		}
 	}
