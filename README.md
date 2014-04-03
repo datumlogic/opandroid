@@ -16,7 +16,20 @@ opandroid/openpeer-ios-sdk/src/       - contains the implementation of the Andro
 opandroid/OpenPeerNativeSampleApp/    - contains the sample application which implements some Android SDK functionality
 opandroid/OpenPeerSdkCSharp/          - contains the CSharp wrapper of Java SDK (Xamarin ready)
 
+
 How to build:
+
+0) Prerequisites
+
+a) Android ADT bundle installed
+- Download and install from https://developer.android.com/sdk/index.html
+
+b) Android NDK installed
+- Download and install from https://developer.android.com/tools/sdk/ndk/index.html
+NOTE: openpeer-android-sdk was developed and tested with android-ndk-r8e !!!
+
+c) Setup Eclipse to point to proper NDK
+- Go to ADT->Preferences->Android->NDK and set NDK path
 
 1) Download and build required native 3rd party libraries by running buildall_android.sh script from your terminal:
 
@@ -52,8 +65,8 @@ libs/op/libs/ortc-lib/libs/WebRTC           – android port of the webRTC media
 
 Branches:
 
-Our current activity is being performed on "20140204-federated-android" but this branch is unstable. Individual activity is on other sub-branches from this branch.
-https://github.com/openpeer/opandroid/tree/20140204-federated-android
+Our current activity is being performed on "201404041-dev-stable” but this branch is unstable. Individual activity is on other sub-branches from this branch.
+https://github.com/openpeer/opandroid/tree/20140401-dev-stable
 
 To see all branches go to:
 https://github.com/openpeer/opandroid/branches
