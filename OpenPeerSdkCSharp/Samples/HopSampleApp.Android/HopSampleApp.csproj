@@ -172,6 +172,13 @@
     <AndroidResource Include="Resources\layout\SettingsToggleListItem.axml" />
     <AndroidResource Include="Resources\layout\Splash.axml" />
     <AndroidResource Include="Resources\layout\VideoCall.xml" />
+    <AndroidResource Include="Resources\drawable\chatbg.xml" />
+    <AndroidResource Include="Resources\drawable\emotion.png" />
+    <AndroidResource Include="Resources\drawable\chattxtedit.xml" />
+    <AndroidResource Include="Resources\drawable\send.png" />
+    <AndroidResource Include="Resources\drawable\wpv.png" />
+    <AndroidResource Include="Resources\drawable\wpc.png" />
+    <AndroidResource Include="Resources\drawable\se.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

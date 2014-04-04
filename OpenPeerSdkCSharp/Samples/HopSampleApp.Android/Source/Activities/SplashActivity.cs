@@ -67,7 +67,7 @@ namespace HopSampleApp
 					}else
 					{
 
-						StartActivity(typeof(HopSampleApp.VideoCallActivity));
+						StartActivity(typeof(HopSampleApp.Activities.ChatActivity));
 
 					}
 				});

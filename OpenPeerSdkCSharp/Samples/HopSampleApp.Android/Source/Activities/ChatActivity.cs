@@ -43,7 +43,7 @@ namespace HopSampleApp
 
 				editText = FindViewById<EditText> (Resource.Id.editText);
 
-				Button sendButton = FindViewById<Button> (Resource.Id.sendButton);
+				ImageButton sendButton = FindViewById<ImageButton> (Resource.Id.sendButton);
 
 				listView.Touch += (object sender, View.TouchEventArgs e) => {
 					Logger.Trace ("touch event");
