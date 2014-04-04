@@ -62,7 +62,6 @@
     <Compile Include="Source\Activities\GestureActivity.cs" />
     <Compile Include="Source\Activities\LoginActivity.cs" />
     <Compile Include="Source\Activities\MainActivity.cs" />
-    <Compile Include="Source\Activities\PopupCall.cs" />
     <Compile Include="Source\Activities\PopupCallActivity.cs" />
     <Compile Include="Source\Activities\PoupVideoCallActivity.cs" />
     <Compile Include="Source\Activities\SettingsActivity.cs" />
@@ -208,10 +207,6 @@
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net\zxing.monoandroid.csproj">
       <Project>{8971B59D-78F1-49BA-808D-CBADB37F571F}</Project>
       <Name>zxing.monoandroid</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\OpenPeerAndroidSDK\OpenPeerAndroidSDK.csproj">
-      <Project>{DF7C4BF6-3FBB-4387-B2E6-21C22A4E6D9B}</Project>
-      <Name>OpenPeerAndroidSDK</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\libs\Newtonsoft-3.Json-master\Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj">
       <Project>{E6C3413C-919B-486D-8B6C-225CBD921B98}</Project>
