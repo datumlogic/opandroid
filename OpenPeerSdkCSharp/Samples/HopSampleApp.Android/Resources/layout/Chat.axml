@@ -21,10 +21,10 @@
         android:stackFromBottom="true"
         android:layout_marginBottom="10dp" />
     <RelativeLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
-        android:layout_marginBottom="55dp"
+        android:layout_marginBottom="58dp"
         android:background="#FCFFFF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             android:maxLines="4" />
     </RelativeLayout>
     <LinearLayout
-        android:id="@+id/LinearLayout02"
+        android:id="@+id/Linearcontrols"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:gravity="center_horizontal"
