@@ -87,6 +87,7 @@ namespace HopSampleApp
 					//mediaEngine.CameraType = CameraTypes.CameraTypeFront;//Front camera.
 					useFrontCamera=true;
 					Console.WriteLine("Swich to Front camera");
+					break;
 				default:break;
 				}
 			};
