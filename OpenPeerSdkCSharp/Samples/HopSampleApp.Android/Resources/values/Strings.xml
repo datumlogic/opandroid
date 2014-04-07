@@ -4,6 +4,8 @@
 	<string name="loading">loading...</string>
 	<string name="QRcodeButton">QR Scanner</string>
 	<string name="VideoCallerIDTop">Petar Srdanovic</string>
+	<string name="ButtonCallVideo"></string>
+	<string name="ButtonCallOnly"></string>
 	<string name="CallerVideoIDCenter">Petar Srdanovic</string>
 	<string name="btnDeclineVideoCall">Answer</string>
 	<string name="btnAnswerVideoCall">Decline</string>

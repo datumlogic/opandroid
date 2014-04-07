@@ -55,6 +55,7 @@ namespace HopSampleApp
 
 				intent = new Intent (this, typeof(LoginActivity));
 				StartActivity (intent);
+
 			}
 		}
 	}

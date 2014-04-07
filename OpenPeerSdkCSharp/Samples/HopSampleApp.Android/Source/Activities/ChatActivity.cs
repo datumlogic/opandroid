@@ -10,7 +10,7 @@ using Android.Views;
 using Android.Widget;
 using Android.Views.InputMethods;
 using Android.Text.Method;
-
+using HopSampleApp.Activities;
 using HopSampleApp.Services;
 using OpenPeerSdk.Helpers;
 
@@ -42,6 +42,8 @@ namespace HopSampleApp
 				listView.ItemsCanFocus = true;
 
 				editText = FindViewById<EditText> (Resource.Id.editText);
+				ImageButton StartVideoCall=FindViewById<ImageButton>(Resource.Id.ButtonCallVideo);
+				ImageButton StartCallOnly = FindViewById<ImageButton> (Resource.Id.ButtonCallOnly);
 
 				ImageButton sendButton = FindViewById<ImageButton> (Resource.Id.sendButton);
 
@@ -53,6 +55,23 @@ namespace HopSampleApp
 				sendButton.Click += (object sender, EventArgs e) => {
 					OnSend ();
 				};
+
+				//Event for start video call
+				StartVideoCall.Click += delegate {
+					Console.WriteLine("Start Video Call");
+					StartActivity(typeof(HopSampleApp.PoupVideoCallActivity));
+				
+				};
+
+				//Event for start call only
+				StartCallOnly.Click += delegate {
+				
+					Console.WriteLine("Start Call only");
+					StartActivity(typeof(HopSampleApp.PopupCallActivity));
+				};
+
+
+				//
 
 				editText.SetOnKeyListener (this);
 			}
