@@ -16,13 +16,17 @@ namespace HopSampleApp
 {
 
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op",ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]			
-	public class VideoCallActivity : Activity
+	public class VideoCallActivity : Activity,View.IOnTouchListener
 	{
 		//OPTestMediaEngine mediaEngine = null;
 		SurfaceView localView = null;
 		SurfaceView remoteView = null;
 		int MicrophoneMute=0;
 		bool useFrontCamera = true;
+		RelativeLayout localViewLayout;
+		ImageView imageArrow;
+		float x = 0;
+		float y = 0;
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -33,14 +37,19 @@ namespace HopSampleApp
 			SetContentView (Resource.Layout.VideoCall);
 
 			#region Layouts and Controls
-			RelativeLayout localViewLayout = FindViewById<RelativeLayout> (Resource.Id.myLocalViewLinearLayout);//Local cam view
+			localViewLayout = FindViewById<RelativeLayout> (Resource.Id.myLocalViewLinearLayout);//Local cam view
 			RelativeLayout remoteViewLayout = FindViewById<RelativeLayout> (Resource.Id.myRemoteViewLinearLayout);//Remote cam view
-
+			imageArrow = FindViewById<ImageView>(Resource.Id.arrowimage);//Arrow image
 			ImageButton SwichCam = FindViewById<ImageButton> (Resource.Id.ButtonSwitchCam);//SwichCam button
 			ImageButton MuteMic = FindViewById<ImageButton> (Resource.Id.ButtonMuteMic);//Mute mic button
 			ImageButton StartChat = FindViewById<ImageButton> (Resource.Id.ButtonStartChat);//StartChat button
 			#endregion
 
+			#region Move local view on screen
+
+			localViewLayout.SetOnTouchListener (this);
+			imageArrow.SetOnTouchListener(this);
+			#endregion
 			#region Media engine
 			/*
 			//Media start           
@@ -71,6 +80,8 @@ namespace HopSampleApp
 			//End media
 			*/
 		   #endregion
+          
+		
 
 		   #region Events and Delegates
 			//switching from the front to the back camera
@@ -123,6 +134,39 @@ namespace HopSampleApp
 			#endregion
 
 		}
+		#region OnTouch
+		public bool OnTouch(View v, MotionEvent e)
+		{
+			switch (e.Action) {
+
+			case MotionEventActions.Down:
+				x = e.GetX ();
+				y = e.GetY ();
+				//imageArrow.Visibility = ViewStates.Visible;
+
+				break;
+
+			case MotionEventActions.Move:
+				var left = (int)(e.RawX - x);
+				var right = (left + v.Width);
+				//var top = (int)(e.RawY - y);
+				//var bottom = (top - v.Height);
+				imageArrow.Visibility = ViewStates.Visible;
+				v.Layout (left, v.Top, right, v.Bottom);//move left to right and inversely
+
+				break;
+			case MotionEventActions.Up:
+				imageArrow.Visibility = ViewStates.Invisible;
+				break;
+
+			}
+
+			return true;
+		}
+
+		#endregion
+
 	}
+
 }
 

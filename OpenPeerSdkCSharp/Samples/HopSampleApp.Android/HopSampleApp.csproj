@@ -179,6 +179,8 @@
     <AndroidResource Include="Resources\drawable\wpv.png" />
     <AndroidResource Include="Resources\drawable\wpc.png" />
     <AndroidResource Include="Resources\drawable\se.png" />
+    <AndroidResource Include="Resources\drawable\move.png" />
+    <AndroidResource Include="Resources\drawable\redarrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
