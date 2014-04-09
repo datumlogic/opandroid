@@ -26,8 +26,8 @@ namespace HopSampleApp
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-			Java.Lang.JavaSystem.LoadLibrary("z_shared");
-			Java.Lang.JavaSystem.LoadLibrary("openpeer");
+			//Java.Lang.JavaSystem.LoadLibrary("z_shared");
+			//Java.Lang.JavaSystem.LoadLibrary("openpeer");
 			// Create your application here
 			SetContentView (Resource.Layout.VideoCall);
 
