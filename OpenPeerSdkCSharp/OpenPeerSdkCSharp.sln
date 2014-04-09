@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXing.Net.Mobile.Android", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zxing.monoandroid", "..\libs\ZXing.Net.Mobile\src\ZXing.Net\zxing.monoandroid.csproj", "{8971B59D-78F1-49BA-808D-CBADB37F571F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.MonoDroid", "..\libs\Newtonsoft-3.Json-master\Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj", "{E6C3413C-919B-486D-8B6C-225CBD921B98}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Samples\HopSampleApp.Android\HopSampleApp.csproj
