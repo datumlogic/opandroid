@@ -300,61 +300,58 @@ namespace HopSampleApp
 			public const int mic1 = 2130837528;
 			
 			// aapt resource value: 0x7f020019
-			public const int monoandroidsplash = 2130837529;
+			public const int MyButtons = 2130837529;
 			
 			// aapt resource value: 0x7f02001a
-			public const int MyButtons = 2130837530;
+			public const int MyButtons2 = 2130837530;
 			
 			// aapt resource value: 0x7f02001b
-			public const int MyButtons2 = 2130837531;
+			public const int op = 2130837531;
 			
 			// aapt resource value: 0x7f02001c
-			public const int op = 2130837532;
+			public const int person = 2130837532;
 			
 			// aapt resource value: 0x7f02001d
-			public const int person = 2130837533;
+			public const int progress_medium_holo = 2130837533;
 			
 			// aapt resource value: 0x7f02001e
-			public const int progress_medium_holo = 2130837534;
+			public const int ptrsharp_serious_business_gradient = 2130837534;
 			
 			// aapt resource value: 0x7f02001f
-			public const int ptrsharp_serious_business_gradient = 2130837535;
+			public const int radio = 2130837535;
 			
 			// aapt resource value: 0x7f020020
-			public const int radio = 2130837536;
+			public const int radio1 = 2130837536;
 			
 			// aapt resource value: 0x7f020021
-			public const int radio1 = 2130837537;
+			public const int record = 2130837537;
 			
 			// aapt resource value: 0x7f020022
-			public const int record = 2130837538;
+			public const int remote = 2130837538;
 			
 			// aapt resource value: 0x7f020023
-			public const int remote = 2130837539;
+			public const int robin = 2130837539;
 			
 			// aapt resource value: 0x7f020024
-			public const int robin = 2130837540;
+			public const int scam = 2130837540;
 			
 			// aapt resource value: 0x7f020025
-			public const int scam = 2130837541;
+			public const int serious_business_arrow = 2130837541;
 			
 			// aapt resource value: 0x7f020026
-			public const int serious_business_arrow = 2130837542;
+			public const int serious_business_arrow2 = 2130837542;
 			
 			// aapt resource value: 0x7f020027
-			public const int serious_business_arrow2 = 2130837543;
+			public const int spiker = 2130837543;
 			
 			// aapt resource value: 0x7f020028
-			public const int spiker = 2130837544;
+			public const int spinner_20_inner_holo = 2130837544;
 			
 			// aapt resource value: 0x7f020029
-			public const int spinner_20_inner_holo = 2130837545;
+			public const int spinner_20_outer_holo = 2130837545;
 			
 			// aapt resource value: 0x7f02002a
-			public const int spinner_20_outer_holo = 2130837546;
-			
-			// aapt resource value: 0x7f02002b
-			public const int videobg = 2130837547;
+			public const int videobg = 2130837546;
 			
 			static Drawable()
 			{
@@ -807,9 +804,6 @@ namespace HopSampleApp
 			
 			// aapt resource value: 0x7f080000
 			public const int HoloProgressMedium = 2131230720;
-			
-			// aapt resource value: 0x7f080002
-			public const int Mono_Android_Theme_Splash = 2131230722;
 			
 			// aapt resource value: 0x7f080001
 			public const int Theme_Splash = 2131230721;

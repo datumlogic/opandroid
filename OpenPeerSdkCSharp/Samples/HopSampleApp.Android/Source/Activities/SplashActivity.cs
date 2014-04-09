@@ -15,7 +15,7 @@ using ZXing;
 using ZXing.QrCode;
 using ZXing.Mobile;
 using System.Net;
-using Newtonsoft.Json.Linq;//Need to add this source in project
+//using Newtonsoft.Json.Linq;//Need to add this source in project
 using HopSampleApp.Services;
 using HopSampleApp.Activities;
 using Android.Support.V4.View;

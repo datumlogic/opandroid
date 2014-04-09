@@ -77,10 +77,10 @@ namespace HopSampleApp
 
 				Console.WriteLine("Start Chat with user");
 				//This is only for test
-				mediaEngine.StartVideoCapture ();
-				mediaEngine.ReceiverAddress = "127.0.0.1";
-				mediaEngine.StartVoice ();
-				mediaEngine.StartVideoChannel ();
+				//mediaEngine.StartVideoCapture ();
+				//mediaEngine.ReceiverAddress = "127.0.0.1";
+				//mediaEngine.StartVoice ();
+				//mediaEngine.StartVideoChannel ();
 			};
 
 		}
