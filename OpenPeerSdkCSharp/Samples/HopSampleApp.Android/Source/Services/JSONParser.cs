@@ -9,9 +9,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.Net;
-//using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Serialization;
 using System.IO;
-//using Newtonsoft.Json.Linq;//https://github.com/ayoung/Newtonsoft.Json  commit a77ac5499636ec00c31533eb06df7d3b5336c077
+using Newtonsoft.Json.Linq;//https://github.com/ayoung/Newtonsoft.Json  commit a77ac5499636ec00c31533eb06df7d3b5336c077
 
 namespace HopSampleApp
 {
@@ -22,7 +22,7 @@ namespace HopSampleApp
 		/* Logic for reading string direct from QR Code where image created with JSON file  */
 		public static void ParseData(string data)
 		{
-			/*
+
 			try{
 			var jObj = JObject.Parse(data);
 			var jsondata = jObj.Children ().Cast<JProperty> ().Select (c => new JSONParserProperty
@@ -45,7 +45,7 @@ namespace HopSampleApp
 			{
 				Console.WriteLine (String.Format("QRCodeError:{0}",Error.Message));//Error Message to determine where the error
 			}
-			*/
+
 		}
 		/* Logic for reading json string from QR Code where image created with http link witch contains path to JSON File  */
 		public static void ParseData(string url,string paramether)
@@ -59,7 +59,7 @@ namespace HopSampleApp
 		}
 		public static void ParseDataCompleteURL(string url_complete)
 		{
-			/*
+
 			try
 			{
 			var request = HttpWebRequest.Create (url_complete);
@@ -103,7 +103,7 @@ namespace HopSampleApp
 			{
 				Console.WriteLine("You need internet Connection for this option");
 			}
-			*/
+
 		}
 	}
 

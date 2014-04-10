@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:background="@drawable/wrbggg"
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:id="@+id/RemoteImageCallAvatar"
+            android:src="@drawable/avatar"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside" />
+    <!-- User name -->
+        <TextView
+            android:id="@+id/RemoteCallerIDCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textSize="24dp"
+            android:text="@string/RemoteCallerIDCenter"
+            android:padding="15dip"
+            android:textColor="#1C1919" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:id="@+id/LoadingImage"
+            android:src="@drawable/a1"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:scaleType="centerInside" />
+    <!-- local -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:id="@+id/LocalImageCallAvatar"
+            android:src="@drawable/avatar"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside" />
+    <!-- User name -->
+        <TextView
+            android:id="@+id/LocalCallerIDCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textSize="24dp"
+            android:text="@string/LocalCallerIDCenter"
+            android:padding="15dip"
+            android:textColor="#1C1919" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:background="@drawable/bgcontactlist"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>
