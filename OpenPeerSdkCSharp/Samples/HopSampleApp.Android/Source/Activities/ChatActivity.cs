@@ -10,7 +10,7 @@ using Android.Views;
 using Android.Widget;
 using Android.Views.InputMethods;
 using Android.Text.Method;
-
+using HopSampleApp.Activities;
 using HopSampleApp.Services;
 using OpenPeerSdk.Helpers;
 
@@ -19,7 +19,8 @@ namespace HopSampleApp
 	namespace Activities
 	{
 		[LoggerSubsystem("hop_sample_app")]
-		[Activity (Label = "Open Peer Sample App - Chat", WindowSoftInputMode = SoftInput.AdjustPan)]			
+		[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op",WindowSoftInputMode = SoftInput.AdjustPan)]	
+		//
 		public class ChatActivity : ListActivity,
 									View.IOnKeyListener
 		{
@@ -42,8 +43,10 @@ namespace HopSampleApp
 				listView.ItemsCanFocus = true;
 
 				editText = FindViewById<EditText> (Resource.Id.editText);
+				ImageButton StartVideoCall=FindViewById<ImageButton>(Resource.Id.ButtonCallVideo);
+				ImageButton StartCallOnly = FindViewById<ImageButton> (Resource.Id.ButtonCallOnly);
 
-				Button sendButton = FindViewById<Button> (Resource.Id.sendButton);
+				ImageButton sendButton = FindViewById<ImageButton> (Resource.Id.sendButton);
 
 				listView.Touch += (object sender, View.TouchEventArgs e) => {
 					Logger.Trace ("touch event");
@@ -53,6 +56,23 @@ namespace HopSampleApp
 				sendButton.Click += (object sender, EventArgs e) => {
 					OnSend ();
 				};
+
+				//Event for start video call
+				StartVideoCall.Click += delegate {
+					Console.WriteLine("Start Video Call");
+					StartActivity(typeof(HopSampleApp.PoupVideoCallActivity));
+				
+				};
+
+				//Event for start call only
+				StartCallOnly.Click += delegate {
+				
+					Console.WriteLine("Start Call only");
+					StartActivity(typeof(HopSampleApp.PopupCallActivity));
+				};
+
+
+				//
 
 				editText.SetOnKeyListener (this);
 			}

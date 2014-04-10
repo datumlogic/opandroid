@@ -249,6 +249,7 @@ namespace HopSampleApp
 						break;
 					case 5:
 						person = 1;
+
 						dataHolder.Message.Text = "Wassup?";
 						break;
 

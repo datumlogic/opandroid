@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
+    android:background="#FCFFFF"
     android:minWidth="25px"
     android:minHeight="25px">
     <ListView
@@ -20,31 +21,84 @@
         android:stackFromBottom="true"
         android:layout_marginBottom="10dp" />
     <RelativeLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
+        android:layout_marginBottom="58dp"
+        android:background="#FCFFFF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/sendRelativeLayout"
         android:layout_centerVertical="true"
         android:layout_alignParentBottom="true">
-        <Button
+        <ImageButton
             android:text="Send"
             android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
+            android:layout_width="41.3dp"
+            android:layout_height="28.7dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/se"
+            android:background="?android:selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:paddingLeft="2dip"
+            android:paddingBottom="5dip"
+            android:maxHeight="32px"
+            android:maxWidth="32px"
+            android:minHeight="32px"
+            android:minWidth="32px" />
         <EditText
             android:id="@+id/editText"
             android:text="Hello"
+            android:minHeight="30dip"
+            android:textColor="#03B3EF"
+            android:background="@drawable/chattxtedit"
+            android:drawableRight="@drawable/emotion"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40.7dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/sendButton"
-            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/sendButton"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dip"
+            android:paddingBottom="5dip"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             android:maxLines="4" />
     </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/Linearcontrols"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:gravity="center_horizontal"
+        android:background="@drawable/chatbg"
+        android:layout_alignParentBottom="true">
+        <ImageButton
+            android:id="@+id/ButtonCallVideo"
+            android:src="@drawable/wpv"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="38.5dp"
+            android:scaleType="fitCenter"
+            android:paddingRight="5dip"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:maxHeight="32px"
+            android:maxWidth="32px"
+            android:minHeight="32px"
+            android:minWidth="32px" />
+        <ImageButton
+            android:id="@+id/ButtonCallOnly"
+            android:src="@drawable/wpc"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="38.5dp"
+            android:scaleType="fitCenter"
+            android:paddingRight="5dip"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:maxHeight="32px"
+            android:maxWidth="32px"
+            android:minHeight="32px"
+            android:minWidth="32px" />
+    </LinearLayout>
 </RelativeLayout>

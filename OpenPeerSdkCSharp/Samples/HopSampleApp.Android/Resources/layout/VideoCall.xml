@@ -18,7 +18,15 @@
         android:layout_marginTop="410dip"
         android:layout_marginLeft="30dip"
         android:layout_marginBottom="20dip"
-        android:layout_height="340px" />
+        android:layout_height="340px">
+        <ImageView
+            android:id="@+id/arrowimage"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:src="@drawable/redarrow"
+            android:visibility="gone" />
+    </RelativeLayout>
     <LinearLayout
         android:id="@+id/LinearLayout02"
         android:layout_height="wrap_content"

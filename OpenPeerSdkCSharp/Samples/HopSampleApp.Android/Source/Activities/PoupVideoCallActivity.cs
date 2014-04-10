@@ -28,12 +28,17 @@ namespace HopSampleApp
 			base.OnCreate (bundle);
 
 			// Create your application here
-			SetContentView (Resource.Layout.PopupCall);
+			SetContentView (Resource.Layout.PopupVideoCall);
 
 			var imageBitmap = GetImageBitmapFromUrl("http://xamarin.com/resources/design/home/devices.png");//Download avatar image
 
 			ImageView avatar = (ImageView)FindViewById(Resource.Id.ImageVideoCallAvatar);//Avatar image for user
 			avatar.SetImageBitmap(imageBitmap);//Set avatar
+
+			//var imageBitmap = GetImageBitmapFromUrl("http://xamarin.com/resources/design/home/devices.png");//Download avatar image
+
+			//ImageView avatar = (ImageView)FindViewById(Resource.Id.ImageVideoCallAvatar);//Avatar image for user
+			//avatar.SetImageBitmap(imageBitmap); //Set avatar
 
 			TextView UserIdTop = (TextView)FindViewById (Resource.Id.VideoCallerIDTop);//User name id located at the top
 			TextView UserIdCenter = (TextView)FindViewById (Resource.Id.CallerVideoIDCenter);//User name id located at the bottom
@@ -55,6 +60,7 @@ namespace HopSampleApp
 				Console.WriteLine("Decline button");
 			};
 		}
+
 		private Bitmap GetImageBitmapFromUrl(string url)
 		{
 			Bitmap imageBitmap = null;

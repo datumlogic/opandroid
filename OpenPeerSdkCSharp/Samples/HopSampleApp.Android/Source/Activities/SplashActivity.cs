@@ -67,6 +67,7 @@ namespace HopSampleApp
 					}else
 					{
 
+						//StartActivity(typeof(HopSampleApp.Activities.ChatActivity));
 						StartActivity(typeof(HopSampleApp.WaitingResponseActivity));
 
 					}

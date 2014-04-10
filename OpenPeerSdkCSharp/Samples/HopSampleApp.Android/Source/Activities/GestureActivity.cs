@@ -16,7 +16,7 @@ using ZXing.QrCode;
 using ZXing.Mobile;
 using System.Net;
 
-using Newtonsoft.Json.Linq;
+//using Newtonsoft.Json.Linq;//Need to add this source in project
 using HopSampleApp.Services;
 
 namespace HopSampleApp
