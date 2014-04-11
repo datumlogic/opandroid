@@ -90,6 +90,7 @@
     <Compile Include="Source\Activities\SplashActivity.cs" />
     <Compile Include="Source\Activities\VideoCallActivity.cs" />
     <Compile Include="Source\Activities\WaitingResponseActivity.cs" />
+    <Compile Include="Source\Services\SocialMediaFeature.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
