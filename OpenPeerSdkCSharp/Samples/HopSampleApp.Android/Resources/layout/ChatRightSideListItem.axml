@@ -52,6 +52,22 @@
                 p1:paddingLeft="10dp"
                 p1:textColor="#ff000000"
                 p1:textSize="12sp" />
+            <RelativeLayout
+                p1:minWidth="25px"
+                p1:minHeight="25px"
+                p1:background="#E6F7FE"
+                p1:layout_width="wrap_content"
+                p1:layout_height="wrap_content"
+                p1:id="@+id/youtuberight"
+                p1:layout_below="@id/bubbleTextView"
+                p1:layout_centerVertical="true">
+                <WebView
+                    p1:id="@+id/web"
+                    p1:layout_width="match_parent"
+                    p1:layout_height="wrap_content"
+                    p1:visibility="gone"
+                    p1:layout_alignBottom="@+id/youtuberight" />
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

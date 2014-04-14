@@ -32,16 +32,16 @@ namespace HopSampleApp
 						{
 							splits[1] = Regex.Replace(splits[1], "&feature", "", RegexOptions.IgnoreCase);
 						}
-						returns = "<iframe width='250' height='200' src='http://www.youtube.com/embed/" + splits[1] + "' frameborder='0'></iframe>";
+						returns = "<div style='height: 200px;width:295px; overflow: hidden;'><iframe width='293px' height='200px'  scrolling='no' allowTransparency='true' src='http://www.youtube.com/embed/" + splits[1] + "' frameborder='0'></iframe></div>";
 					}
 				}
 				else if (url.IndexOf("vimeo", 0) > 0)
 				{
 					splits = Regex.Split(url, "com/");
-					returns = "<iframe src='http://player.vimeo.com/video/" + splits[1] + "?title=0&amp;byline=0&amp;portrait=0' width='250' height='200' frameborder='0'></iframe>";
+					returns = "<div style='height: 200px;width:295px; overflow: hidden;'><iframe src='http://player.vimeo.com/video/" + splits[1] + "?title=0&amp;byline=0&amp;portrait=0' width='293px' height='200px' scrolling='no' allowTransparency='true' frameborder='0'></iframe></div>";
 				}
 				//else
-				//    returns = "<iframe src='" + url + "'?title=0&amp;byline=0&amp;portrait=0' width='250' height='200' frameborder='0'></iframe>";
+				  // returns = "<iframe src='" + url + "'?title=0&amp;byline=0&amp;portrait=0' width='250' height='200' frameborder='0'></iframe>";
 			}
 			return returns;
 		}

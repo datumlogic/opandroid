@@ -13,7 +13,7 @@ using Android.Runtime;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
-
+using Android.Webkit;
 using OpenPeerSdk.Helpers;
 
 using HopSampleApp.Services;
@@ -31,7 +31,7 @@ namespace HopSampleApp
 		{
 			Activity context;
 			IImageCachingDownloader downloader;
-
+			SocialMediaFeature sm=new SocialMediaFeature();
 			enum ListItemType
 			{
 				LeftHeader,
@@ -80,7 +80,8 @@ namespace HopSampleApp
 				public TextView Message { get; set; }
 				public ImageView AvatarImageView { get; set; }
 				public Drawable OriginalEmptyAvatarDrawable { get; set; }
-
+				public VideoView video{ get; set;}//Ovo sam dodao
+				public WebView WEB{ get; set;}
 				public AvatarDownloader CurrentDownloader { get; set; }
 			}
 
@@ -167,6 +168,7 @@ namespace HopSampleApp
 							holder = headerHolder = new HeaderViewHolder ();
 							headerHolder.Name = view.FindViewById<TextView> (Resource.Id.nameTextView);
 							headerHolder.Time = view.FindViewById<TextView> (Resource.Id.timeTextView);
+
 							break;
 						case ListItemType.RightHeader:
 							view = context.LayoutInflater.Inflate (Resource.Layout.ChatRightSideHeaderListItem, null);
@@ -179,12 +181,14 @@ namespace HopSampleApp
 							holder = dataHolder = new DataViewHolder ();
 							dataHolder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
 							dataHolder.Message = view.FindViewById<TextView> (Resource.Id.bubbleTextView);
+							dataHolder.WEB = (WebView)view.FindViewById (Resource.Id.web);
 							break;
 						case ListItemType.Right:
 							view = context.LayoutInflater.Inflate (Resource.Layout.ChatRightSideListItem, null);
 							holder = dataHolder = new DataViewHolder ();
 							dataHolder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
 							dataHolder.Message = view.FindViewById<TextView> (Resource.Id.bubbleTextView);
+							dataHolder.WEB = (WebView)view.FindViewById (Resource.Id.web);
 							break;
 						case ListItemType.Margin:
 							view = context.LayoutInflater.Inflate (Resource.Layout.ChatMarginHeaderListItem, null);
@@ -244,6 +248,7 @@ namespace HopSampleApp
 					case 3:
 						person = 1;
 						dataHolder.Message.Text = "Hello!";
+
 						break;
 					case 4:
 						break;
@@ -267,7 +272,26 @@ namespace HopSampleApp
 						break;
 					case 9:
 						person = 1;
-						dataHolder.Message.Text = "Of course";
+						string data_message = dataHolder.Message.Text;
+						data_message = "https://www.youtube.com/watch?v=7II2wAb9CeQ";
+						if (data_message != null)
+						{
+							if (data_message.IndexOf ("youtube",0) > 0 || data_message.IndexOf ("youtu",0) > 0 | data_message.IndexOf ("vimeo",0) > 0) {
+								dataHolder.WEB.Visibility = ViewStates.Visible;
+								dataHolder.WEB.Settings.JavaScriptEnabled = true;
+								dataHolder.WEB.Settings.AllowContentAccess = true;
+								dataHolder.Message.Text=data_message;
+								dataHolder.WEB.SetWebChromeClient (new WebChromeClient ());
+								string data = sm.Expands_URL (data_message);
+								dataHolder.WEB.LoadData (data, "text/html", "utf-8");
+
+							} else
+							{
+								dataHolder.Message.Text=data_message;
+								dataHolder.WEB.Visibility = ViewStates.Invisible;
+							}
+						}
+
 						break;
 					case 10:
 						break;
@@ -281,7 +305,27 @@ namespace HopSampleApp
 						headerHolder.Time.Text = "2014-02-08 11:14 am";
 						break;
 					case 13:
-						dataHolder.Message.Text = "Yes, I am warm and safe. Thanks for asking.";
+
+						string data_message1 = dataHolder.Message.Text;
+						data_message1 = "http://vimeo.com/23229235";
+						if (data_message != null)
+						{
+							if (data_message1.IndexOf ("youtube",0) > 0 || data_message1.IndexOf ("youtu",0) > 0 | data_message1.IndexOf ("vimeo",0) > 0) {
+								dataHolder.WEB.Visibility = ViewStates.Visible;
+								dataHolder.WEB.Settings.JavaScriptEnabled = true;
+								dataHolder.WEB.Settings.AllowContentAccess = true;
+								dataHolder.Message.Text=data_message1;
+								dataHolder.WEB.SetWebChromeClient (new WebChromeClient ());
+								string data = sm.Expands_URL (data_message1);
+								dataHolder.WEB.LoadData (data, "text/html", "utf-8");
+
+							} else
+							{
+								dataHolder.Message.Text=data_message1;
+								dataHolder.WEB.Visibility = ViewStates.Invisible;
+							}
+						}
+
 						break;
 
 					default:
