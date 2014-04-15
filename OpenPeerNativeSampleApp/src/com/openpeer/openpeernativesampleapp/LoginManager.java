@@ -197,14 +197,24 @@ public class LoginManager {
 
 	public static void AccountLogin() {
 		// TODO Auto-generated method stub
+		long stableId = 0;
+		if (mAccount == null)
+		{
 		mAccountDelegate = new OPAccountDelegateImplementation();
 		mAccount = new OPAccount();
 		mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
+		
 		
 		mAccount = OPAccount.login(null, null, null, 
 				"http://jsouter-v1-beta-1-i.hcs.io/grant.html", 
 				"bojanGrantID", 
 				"identity-v1-beta-1-i.hcs.io", false);
+		}
+		else
+		{
+			stableId = mAccount.getStableID();
+			
+		}
 		
 	}
 

@@ -6,6 +6,8 @@ import android.text.format.Time;
 
 public class OPConversationThread {
 
+	private long nativeClassPointer;
+	
 	public static native String toString(MessageDeliveryStates state);
 	public static native String toString(ContactStates state);
 

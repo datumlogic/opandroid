@@ -10,6 +10,8 @@
 #include "openpeer/core/IIdentity.h"
 #include "openpeer/core/IHelper.h"
 
+#include <android/log.h>;
+
 #include "globals.h"
 
 using namespace openpeer::core;
@@ -88,6 +90,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 			object = jni_env->NewObject(cls, method);
 			globalAccount = object;
 
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeAccountPointer", "J");
+			jlong acc = (jlong) accountPtr.get();
+			jni_env->SetLongField(object, fid, acc);
+
+			__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+					"AccountPtr raw = %p, ptr as long = %Lu",accountPtr.get(), acc);
+
 		}
 
 	}
@@ -149,13 +158,24 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
  * Signature: ()J;
  */
 JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject obj)
 {
 	jlong pid = 0;
 
 	if (accountPtr)
 	{
-		pid = accountPtr->getID();
+		jclass cls = findClass("com/openpeer/javaapi/OPAccount");
+		jfieldID fid = env->GetFieldID(cls, "nativeAccountPointer", "J");
+
+
+		jlong acc = env->GetLongField(obj, fid);
+
+		if (acc == (jlong)accountPtr.get())
+		{
+			pid = accountPtr->getID();
+		}
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+							"AccountPtr raw = %p, java ptr as long = %Lu",accountPtr.get(), acc);
 	}
 
 	return pid;

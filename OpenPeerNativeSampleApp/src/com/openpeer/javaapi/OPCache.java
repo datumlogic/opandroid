@@ -5,6 +5,8 @@ import android.text.format.Time;
 
 public class OPCache {
 
+	private long nativeClassPointer;
+	
 	public static native void setup(OPCacheDelegate delegate);
 
 	public static native String fetch(String cookieNamePath);

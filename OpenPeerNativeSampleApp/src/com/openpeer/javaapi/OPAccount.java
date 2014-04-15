@@ -36,6 +36,8 @@ import java.util.List;
 
 public class OPAccount {
 
+	private long nativeClassPointer;
+	
 	public static native String toString(AccountStates state);
 
 	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
