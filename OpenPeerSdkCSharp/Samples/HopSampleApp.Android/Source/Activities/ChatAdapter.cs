@@ -310,7 +310,7 @@ namespace HopSampleApp
 
 							string data_message1 = dataHolder.Message.Text;
 							data_message1 = "http://vimeo.com/23229235";
-							if (data_message != null) {
+							if (data_message1 != null) {
 								if (data_message1.IndexOf ("youtube", 0) > 0 || data_message1.IndexOf ("youtu", 0) > 0 | data_message1.IndexOf ("vimeo", 0) > 0) {
 									dataHolder.WEB.Visibility = ViewStates.Visible;
 									dataHolder.WEB.Settings.JavaScriptEnabled = true;

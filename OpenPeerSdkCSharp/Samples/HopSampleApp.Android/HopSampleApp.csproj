@@ -92,6 +92,8 @@
     <Compile Include="Source\Activities\WaitingResponseActivity.cs" />
     <Compile Include="Source\Services\SocialMediaFeature.cs" />
     <Compile Include="Source\Activities\AlertActivity.cs" />
+    <Compile Include="Source\Activities\SessionActivity.cs" />
+    <Compile Include="Source\Activities\SessionAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -223,6 +225,9 @@
     <AndroidResource Include="Resources\drawable\bgsky2.png" />
     <AndroidResource Include="Resources\drawable\bgsky3.png" />
     <AndroidResource Include="Resources\layout\Alert.axml" />
+    <AndroidResource Include="Resources\layout\Session.axml" />
+    <AndroidResource Include="Resources\layout\SessionItem.axml" />
+    <AndroidResource Include="Resources\layout\PullToRefreshSession.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

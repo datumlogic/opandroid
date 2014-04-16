@@ -68,7 +68,7 @@ namespace HopSampleApp
 					{
 
 						//StartActivity(typeof(HopSampleApp.Activities.ChatActivity));
-						StartActivity(typeof(HopSampleApp.WaitingResponseActivity));
+						StartActivity(typeof(HopSampleApp.SessionActivity));
 
 					}
 				});
