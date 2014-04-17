@@ -16,7 +16,7 @@ using HopSampleApp.Activities;
 namespace HopSampleApp
 {
 	[LoggerSubsystem("hop_sample_app")]
-	[Activity (Label = "Open Peer Sample App - Session List",Icon="@drawable/op" /*,MainLauncher = true*/)]				
+	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]				
 	public class SessionActivity : ListActivity
 	{
 		private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();

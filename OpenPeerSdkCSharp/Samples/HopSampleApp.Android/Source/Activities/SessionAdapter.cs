@@ -64,9 +64,11 @@ namespace HopSampleApp
 				public int AvatarHeight { get; set; }
 				public Drawable OriginalEmptyAvatarDrawable { get; set; }
 				public ImageView AvatarImageView { get; set; }
+				public ImageView AvatarHolder{ get; set;}
 				public BadgeView BadgeView { get; set; }
 				public TextView NameTextView { get; set; }
 				public TextView UsernameTextView { get; set; }
+
 
 				public AvatarDownloader CurrentDownloader { get; set; }
 			}
@@ -119,8 +121,8 @@ namespace HopSampleApp
 
 				if (view == null) { // otherwise create a new one
 					firstTimeResourceLoaded = true;
+					view = context.LayoutInflater.Inflate (HopSampleApp.Resource.Layout.ListItemSession, null);
 
-					view = context.LayoutInflater.Inflate (Resource.Layout.SessionItem, null);
 
 					TextView badgeTextView = view.FindViewById<TextView> (Resource.Id.badgeAnchorTextView);
 
@@ -131,11 +133,13 @@ namespace HopSampleApp
 					holder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
 					holder.OriginalEmptyAvatarDrawable = holder.AvatarImageView.Drawable;
 					holder.BadgeView = badgeView;
+
 					holder.NameTextView = view.FindViewById<TextView> (Resource.Id.nameTextView);
 					holder.UsernameTextView = view.FindViewById<TextView> (Resource.Id.usernameTextView);
 
 					holder.AvatarWidth = holder.AvatarImageView.LayoutParameters.Width;
 					holder.AvatarHeight = holder.AvatarImageView.LayoutParameters.Height;
+
 
 					// if these fail, you'll need to recode the source to delay the fetching of the avatar until after the render figures out the exact dimensions of the image
 					Contract.Assume ( ((holder.AvatarWidth != ViewGroup.LayoutParams.MatchParent) && (holder.AvatarWidth != ViewGroup.LayoutParams.WrapContent)) );

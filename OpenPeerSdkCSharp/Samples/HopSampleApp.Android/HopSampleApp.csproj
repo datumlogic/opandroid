@@ -226,8 +226,11 @@
     <AndroidResource Include="Resources\drawable\bgsky3.png" />
     <AndroidResource Include="Resources\layout\Alert.axml" />
     <AndroidResource Include="Resources\layout\Session.axml" />
-    <AndroidResource Include="Resources\layout\SessionItem.axml" />
     <AndroidResource Include="Resources\layout\PullToRefreshSession.axml" />
+    <AndroidResource Include="Resources\drawable\bgsessionlist.xml" />
+    <AndroidResource Include="Resources\layout\ListItemSession.axml" />
+    <AndroidResource Include="Resources\drawable\imageshapecircle.xml" />
+    <AndroidResource Include="Resources\drawable\imgmaster.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

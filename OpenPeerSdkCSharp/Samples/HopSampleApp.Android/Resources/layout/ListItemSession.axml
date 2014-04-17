@@ -2,13 +2,11 @@
 <LinearLayout xmlns:p1="http://schemas.android.com/apk/res/android"
     p1:minWidth="25px"
     p1:minHeight="25px"
-    p1:drawable="@drawable/bgcontactlist"
     p1:layout_width="match_parent"
     p1:layout_height="wrap_content"
     p1:id="@+id/contactItemLinearLayout"
     p1:descendantFocusability="blocksDescendants">
     <RelativeLayout
-        p1:background="@drawable/bgcontactlist"
         p1:minWidth="25px"
         p1:minHeight="25px"
         p1:layout_width="wrap_content"
@@ -21,17 +19,33 @@
             p1:layout_height="wrap_content"
             p1:id="@+id/detailsRelativeLayout"
             p1:padding="5dp">
-            <ImageView
-                p1:background="@drawable/imageshape"
-                p1:src="@drawable/avatar"
-                p1:id="@+id/avatarImageView"
-                p1:layout_width="60dp"
-                p1:layout_height="60dp"
-                p1:layout_centerVertical="true"
-                p1:focusable="false"
-                p1:focusableInTouchMode="false"
-                p1:clickable="false"
-                p1:layout_marginRight="5dp" />
+            <FrameLayout
+                p1:id="@+id/holder"
+                p1:layout_width="wrap_content"
+                p1:layout_height="wrap_content">
+                <ImageView
+                    p1:src="@drawable/avatar"
+                    p1:id="@+id/avatarImageView"
+                    p1:adjustViewBounds="true"
+                    p1:layout_width="53dp"
+                    p1:layout_height="53dp"
+                    p1:scaleType="fitCenter"
+                    p1:layout_centerInParent="true"
+                    p1:layout_centerVertical="true"
+                    p1:focusable="false"
+                    p1:focusableInTouchMode="false"
+                    p1:clickable="false"
+                    p1:layout_marginLeft="13dp"
+                    p1:layout_marginTop="13dp" />
+                <View
+                    p1:id="@+id/avatarImage"
+                    p1:background="@drawable/imgmaster"
+                    p1:layout_width="80dp"
+                    p1:layout_height="80dp"
+                    p1:layout_alignLeft="@+id/avatarImageView"
+                    p1:layout_alignTop="@+id/avatarImageView"
+                    p1:layout_centerInParent="true" />
+            </FrameLayout>
             <LinearLayout
                 p1:orientation="vertical"
                 p1:minWidth="25px"
@@ -39,7 +53,7 @@
                 p1:layout_width="wrap_content"
                 p1:layout_height="wrap_content"
                 p1:id="@+id/textAreaLinearLayout"
-                p1:layout_toRightOf="@id/avatarImageView"
+                p1:layout_toRightOf="@id/holder"
                 p1:layout_centerVertical="true">
                 <TextView
                     p1:layout_width="match_parent"

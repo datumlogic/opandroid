@@ -4,14 +4,15 @@
     android:id="@+id/ptr_wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bgsky2"
     pullToRefresharpWrapper:pullDownTension="0.5"
     pullToRefresharpWrapper:snapbackDuration="300">
     <pulltorefresharp.android.widget.ListView
         android:id="@android:id/list"
-        android:divider="#575757"
-        android:dividerHeight="1dp"
+        android:dividerHeight="0dp"
+        android:divider="@null"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginRight="2dp"
+        android:layout_marginLeft="2dp" />
 </pulltorefresharp.android.views.ViewWrapper>
