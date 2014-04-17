@@ -10,6 +10,6 @@ CacheDelegateWrapperPtr cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDele
 IAccountPtr accountPtr;
 IStackPtr stackPtr;
 IStackMessageQueuePtr queuePtr;
-IIdentityPtr identityPtr;
+//IIdentityPtr identityPtr;
 IIdentityLookupPtr identityLookupPtr;
 IMediaEnginePtr mediaEnginePtr;
