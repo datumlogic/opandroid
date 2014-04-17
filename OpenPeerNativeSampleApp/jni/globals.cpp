@@ -8,7 +8,7 @@ SettingsDelegateWrapperPtr settingsDelegatePtr = SettingsDelegateWrapperPtr(new 
 CacheDelegateWrapperPtr cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDelegateWrapper());
 
 //IAccountPtr accountPtr;
-IStackPtr stackPtr;
+//IStackPtr stackPtr;
 IStackMessageQueuePtr queuePtr;
 //IIdentityPtr identityPtr;
 //IIdentityLookupPtr identityLookupPtr;

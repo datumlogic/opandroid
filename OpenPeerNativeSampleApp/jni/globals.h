@@ -25,7 +25,7 @@ static jobject globalAccount;
 
 extern EventManagerPtr globalEventManager;
 //extern IAccountPtr accountPtr;
-extern IStackPtr stackPtr;
+//extern IStackPtr stackPtr;
 extern IStackMessageQueuePtr queuePtr;
 //extern IIdentityPtr identityPtr;
 //extern IIdentityLookupPtr identityLookupPtr;
