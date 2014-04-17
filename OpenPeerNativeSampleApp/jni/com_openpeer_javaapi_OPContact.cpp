@@ -47,7 +47,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFile
 	if(OpenPeerCoreManager::accountPtr)
 	{
 		ElementPtr peerFileElement = IHelper::createElement(peerFilePublicStr);
-		contactPtr = IContact::createFromPeerFilePublic(accountPtr, IHelper::createPeerFilePublic(peerFileElement));
+		contactPtr = IContact::createFromPeerFilePublic(OpenPeerCoreManager::accountPtr, IHelper::createPeerFilePublic(peerFileElement));
 	}
 
 	if(contactPtr)

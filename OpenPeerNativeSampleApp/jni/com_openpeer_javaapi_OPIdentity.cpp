@@ -66,7 +66,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
 		return object;
 	}
 
-	IIdentityPtr identityPtr = IIdentity::login(accountPtr, globalEventManager, (char const *)identityProviderDomainStr,
+	IIdentityPtr identityPtr = IIdentity::login(OpenPeerCoreManager::accountPtr, globalEventManager, (char const *)identityProviderDomainStr,
 			(char const *)identityURIStr, (char const *)outerFrameURLUponReloadStr);
 
 	if(identityPtr)

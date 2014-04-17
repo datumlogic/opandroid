@@ -5,6 +5,8 @@ import android.text.format.Time;
 
 public class OPStack {
 
+	private long nativeClassPointer;
+	
 	public static native OPStack singleton();
 	
 	public native void setup(

@@ -2,6 +2,7 @@
 #include "openpeer/core/IIdentityLookup.h"
 #include "openpeer/core/ILogger.h"
 #include "openpeer/core/IHelper.h"
+#include "OpenPeerCoreManager.h"
 #include <android/log.h>
 
 #include "globals.h"
@@ -99,12 +100,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 		}
 	}
 
-	identityLookupPtr = IIdentityLookup::create(accountPtr,
+	OpenPeerCoreManager::identityLookupPtr = IIdentityLookup::create(OpenPeerCoreManager::accountPtr,
 			globalEventManager,
 			identityLookupInfosForCore,
 			identityServiceDomainStr);
 
-	if(identityLookupPtr)
+	if(OpenPeerCoreManager::identityLookupPtr)
 	{
 		jni_env = getEnv();
 		if(jni_env)
@@ -127,9 +128,9 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
 {
 	jlong pid = 0;
 
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		pid = identityLookupPtr->getID();
+		pid = OpenPeerCoreManager::identityLookupPtr->getID();
 	}
 
 	return pid;
@@ -145,9 +146,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
 {
 	jboolean ret = 0;
 
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		ret = identityLookupPtr->isComplete();
+		ret = OpenPeerCoreManager::identityLookupPtr->isComplete();
 	}
 
 	return ret;
@@ -165,9 +166,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
 	String outReasonCore;
 	WORD ourCodeCore;
 
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		ret = identityLookupPtr->wasSuccessful(&ourCodeCore, &outReasonCore);
+		ret = OpenPeerCoreManager::identityLookupPtr->wasSuccessful(&ourCodeCore, &outReasonCore);
 		outErrorCode = ourCodeCore;
 		outErrorReason = env->NewStringUTF(outReasonCore);
 	}
@@ -183,9 +184,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
 (JNIEnv *, jobject)
 {
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		identityLookupPtr->cancel();
+		OpenPeerCoreManager::identityLookupPtr->cancel();
 	}
 }
 
@@ -205,9 +206,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 	IdentityContact coreContact;
 	IdentityContactListPtr coreContactList;
-	if(identityLookupPtr)
+	if(OpenPeerCoreManager::identityLookupPtr)
 	{
-		coreContactList = identityLookupPtr->getUpdatedIdentities();
+		coreContactList = OpenPeerCoreManager::identityLookupPtr->getUpdatedIdentities();
 
 	}
 	jni_env = getEnv();
@@ -305,9 +306,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
 
 
 	//take list from core identity lookup
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		coreIdentityLookupInfoList = identityLookupPtr->getUnchangedIdentities();
+		coreIdentityLookupInfoList = OpenPeerCoreManager::identityLookupPtr->getUnchangedIdentities();
 	}
 
 	//fetch JNI env
@@ -379,9 +380,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidI
 
 
 	//take list from core identity lookup
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		coreIdentityLookupInfoList = identityLookupPtr->getInvalidIdentities();
+		coreIdentityLookupInfoList = OpenPeerCoreManager::identityLookupPtr->getInvalidIdentities();
 	}
 
 	//fetch JNI env

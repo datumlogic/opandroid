@@ -170,7 +170,7 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
 {
 	jlong pid = 0;
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
 		jclass cls = findClass("com/openpeer/javaapi/OPAccount");
 		jfieldID fid = env->GetFieldID(cls, "nativeClassPointer", "J");
