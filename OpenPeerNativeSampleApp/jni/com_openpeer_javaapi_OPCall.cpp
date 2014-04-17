@@ -81,7 +81,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 			jni_env->SetLongField(object, fid, call);
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"AccountPtr raw = %p, ptr as long = %Lu",callPtr.get(), call);
+					"CorePtr raw = %p, ptr as long = %Lu",callPtr.get(), call);
 
 			OpenPeerCoreManager::coreCallList.push_back(callPtr);
 

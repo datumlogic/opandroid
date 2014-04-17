@@ -3,6 +3,14 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include <android/log.h>;
 
+IAccountPtr OpenPeerCoreManager::accountPtr;
+IStackPtr OpenPeerCoreManager::stackPtr;
+IStackMessageQueuePtr OpenPeerCoreManager::queuePtr;
+IIdentityLookupPtr OpenPeerCoreManager::identityLookupPtr;
+IMediaEnginePtr OpenPeerCoreManager::mediaEnginePtr;
+ISettingsPtr OpenPeerCoreManager::settingsPtr;
+ICachePtr OpenPeerCoreManager::cachePtr;
+
 std::vector<IContactPtr> OpenPeerCoreManager::coreContactList;
 std::vector<ICallPtr> OpenPeerCoreManager::coreCallList;
 std::vector<IConversationThreadPtr> OpenPeerCoreManager::coreConversationThreadList;
