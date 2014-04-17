@@ -206,7 +206,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerFilePublic
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getAssociatedAccount
 (JNIEnv *, jobject)
 {
-	return OpenPeerCoreManager::accountPtr;
+	//TODO This should not be native call. Current limitation is single account at the time, so it should return OPaccount object
+	return (jobject) OpenPeerCoreManager::accountPtr.get();
 }
 
 /*
