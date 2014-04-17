@@ -90,11 +90,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 			object = jni_env->NewObject(cls, method);
 			globalAccount = object;
 
-			jfieldID fid = jni_env->GetFieldID(cls, "nativeAccountPointer", "J");
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 			jlong acc = (jlong) accountPtr.get();
 			jni_env->SetLongField(object, fid, acc);
 
-			__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"AccountPtr raw = %p, ptr as long = %Lu",accountPtr.get(), acc);
 
 		}
@@ -146,6 +146,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 			object = jni_env->NewObject(cls, method);
 			globalAccount = object;
 
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong acc = (jlong) accountPtr.get();
+			jni_env->SetLongField(object, fid, acc);
+
+			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
+					"AccountPtr raw = %p, ptr as long = %Lu",accountPtr.get(), acc);
+
 		}
 
 	}
@@ -175,7 +182,7 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
 			pid = accountPtr->getID();
 		}
 		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
-							"AccountPtr raw = %p, java ptr as long = %Lu",accountPtr.get(), acc);
+				"AccountPtr raw = %p, java ptr as long = %Lu",accountPtr.get(), acc);
 	}
 
 	return pid;

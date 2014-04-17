@@ -1,6 +1,8 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/ICall.h"
 #include "openpeer/core/ILogger.h"
+#include "OpenPeerCoreManager.h"
+#include <android/log.h>
 
 #include "globals.h"
 
@@ -73,7 +75,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 			cls = findClass("com/openpeer/javaapi/OPCall");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
-			callMap.insert(std::pair<jobject, ICallPtr>(object, callPtr));
+
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong call = (jlong) callPtr.get();
+			jni_env->SetLongField(object, fid, call);
+
+			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
+					"AccountPtr raw = %p, ptr as long = %Lu",callPtr.get(), call);
+
+			OpenPeerCoreManager::coreCallList.push_back(callPtr);
 
 		}
 	}
@@ -89,10 +99,10 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPCall_getStableID
 (JNIEnv *, jobject owner)
 {
 	jlong ret = 0;
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		ret = it->second->getID();
+		ret = coreCall->getID();
 	}
 	return ret;
 }
@@ -106,10 +116,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_getCallID
 (JNIEnv *env , jobject owner)
 {
 	jstring ret;
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		ret = env->NewStringUTF(it->second->getCallID().c_str());
+		ret = env->NewStringUTF(coreCall->getCallID().c_str());
 	}
 	return ret;
 }
@@ -124,10 +134,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread
 {
 	jobject ret;
 	IConversationThreadPtr convThread;
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		convThread = it->second->getConversationThread();
+		convThread = coreCall->getConversationThread();
 		for(std::map<jobject, IConversationThreadPtr>::iterator iter = conversationThreadMap.begin(); iter != conversationThreadMap.end(); ++iter)
 		{
 			if (iter->second == convThread)
@@ -151,10 +161,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller
 {
 	jobject ret;
 	IContactPtr contact;
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		contact = it->second->getCaller();
+		contact = coreCall->getCaller();
 		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
 		{
 			if (iter->second == contact)
@@ -177,10 +187,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee
 {
 	jobject ret;
 	IContactPtr contact;
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		contact = it->second->getCallee();
+		contact = coreCall->getCallee();
 		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
 		{
 			if (iter->second == contact)
@@ -202,10 +212,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasAudio
 (JNIEnv *, jobject owner)
 {
 	jboolean ret;
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		ret = it->second->hasAudio();
+		ret = coreCall->hasAudio();
 	}
 	return ret;
 }
@@ -219,10 +229,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasVideo
 (JNIEnv *, jobject owner)
 {
 	jboolean ret;
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		ret = it->second->hasVideo();
+		ret = coreCall->hasVideo();
 	}
 	return ret;
 }
@@ -241,10 +251,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
 	JNIEnv *jni_env = 0;
 	int state = 0;
 
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		state = (int) it->second->getState();
+		state = (int) coreCall->getState();
 
 		jni_env = getEnv();
 		if(jni_env)
@@ -273,10 +283,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
 	JNIEnv *jni_env = 0;
 	int state = 0;
 
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		state = (int) it->second->getClosedReason();
+		state = (int) coreCall->getClosedReason();
 
 		jni_env = getEnv();
 		if(jni_env)
@@ -306,10 +316,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCreationTime
 
 	Time creationTime;
 
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		creationTime = it->second->getcreationTime();
+		creationTime = coreCall->getcreationTime();
 
 		jni_env = getEnv();
 		if(jni_env)
@@ -344,10 +354,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getRingTime
 
 	Time ringTime;
 
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		ringTime = it->second->getRingTime();
+		ringTime = coreCall->getRingTime();
 
 		jni_env = getEnv();
 		if(jni_env)
@@ -382,10 +392,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getAnswerTime
 
 	Time answerTime;
 
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		answerTime = it->second->getAnswerTime();
+		answerTime = coreCall->getAnswerTime();
 
 		jni_env = getEnv();
 		if(jni_env)
@@ -420,10 +430,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedTime
 
 	Time closedTime;
 
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		closedTime = it->second->getClosedTime();
+		closedTime = coreCall->getClosedTime();
 
 		jni_env = getEnv();
 		if(jni_env)
@@ -451,10 +461,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedTime
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_ring
 (JNIEnv *, jobject owner)
 {
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{;
-	it->second->ring();
+	coreCall->ring();
 	}
 }
 
@@ -466,10 +476,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_ring
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_answer
 (JNIEnv *, jobject owner)
 {
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		it->second->answer();
+		coreCall->answer();
 	}
 }
 
@@ -481,10 +491,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_answer
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hold
 (JNIEnv *, jobject owner, jboolean hold)
 {
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it!= callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
-		it->second->hold(hold);
+		coreCall->hold(hold);
 	}
 }
 
@@ -499,8 +509,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	std::map<jobject, ICallPtr>::iterator it = callMap.find(owner);
-	if (it != callMap.end())
+	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
+	if (coreCall)
 	{
 		jni_env = getEnv();
 
@@ -511,9 +521,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
 			int intValue = (int) jni_env->CallIntMethod(callClosedReasonObj, callClosedReasonsMID);
 
 			ICall::CallClosedReasons reason = (ICall::CallClosedReasons)intValue;
-			it->second->hangup(reason);
-			it->second.reset();
-			callMap.erase(it);
+			coreCall->hangup(reason);
+			//todo Catch call ended state, and reset and remove call from OpenPeerCoreManager call vector
 		}
 	}
 }
