@@ -45,6 +45,159 @@ namespace HopSampleApp
 			}
 			return returns;
 		}
+
+		/* Social time stamp "less than 5 seconds" */
+
+		public string Time_stamp(DateTime session_time)
+		{
+			DateTime StartTime = DateTime.Now;
+			TimeSpan Time_Span = StartTime.Subtract (session_time);
+			int seconds = Convert.ToInt32 (Time_Span.TotalSeconds);
+			int minutes = seconds / 60;
+			int hours = seconds / 3600;
+			int days = seconds / 86400;
+			int weeks = seconds / 604800;
+			int months = seconds / 2419200;
+			int years = seconds / 29030400;
+
+			if (seconds <= 60)
+			{
+				return seconds + " seconds ago";
+			}
+			else if (minutes <= 60) 
+			{
+				if (minutes == 1)
+				{
+					return "one minute ago";
+				}
+				else
+				{
+					return minutes + " minutes ago";
+				}
+			} 
+			else if (hours <= 24)
+			{
+				if (hours == 1)
+				{
+					return "one hour ago";
+				}
+				else
+				{
+					return hours + " hours ago";
+				}
+			}
+			else if (days <= 7)
+			{
+				if (days == 1)
+				{
+					return "one day ago";
+				}
+				else
+				{
+					return days + " days ago";
+				}
+			}
+			else if (weeks <= 4)
+			{
+				if (weeks == 1)
+				{
+					return "one week ago";
+				}
+				else
+				{
+					return weeks + " weeks ago";
+				}
+			}
+			else if (months <= 12)
+			{
+				if (months == 1)
+				{
+					return "one month ago";
+				}
+				else
+				{
+					return months + " months ago";
+				}
+			}
+			else
+			{
+				if (years == 1) {
+					return "one year ago";
+				} else 
+				{
+					return years + " years ago";
+				}
+			}
+		}
+
+		/* String to link */
+
+		public string StringToLink(string text)
+		{
+			text = " " + text;
+			text = Regex.Replace(text, "(((f|ht){1}tp://)[-a-zA-Z0-9@:%_\\+.~#?&//=]+)", delegate(Match match)
+			                     {
+				string v = match.ToString();
+				return "<a href='" + v + "' target='_blank' rel='nofollow'>" + v + "</a>";
+			});
+
+			text = Regex.Replace(text, "(((f|ht){1}tps://)[-a-zA-Z0-9@:%_\\+.~#?&//=]+)", delegate(Match match)
+			                     {
+				string v = match.ToString();
+				return "<a href='" + v + "' target='_blank' rel='nofollow'>" + v + "</a>";
+			});
+
+			text = Regex.Replace(text, "[^(((f|ht){1}tp://)(((f|ht){1}tps://)](www.[-a-zA-Z0-9@:%_\\+.~#?&//=]+)", delegate(Match match)
+			                     {
+				string v = Regex.Match(match.ToString(), "(www.[-a-zA-Z0-9@:%_\\+.~#?&//=]+)").ToString();
+				return "<a href='http://" + v + "' target='_blank' rel='nofollow'>" + v + "</a>";
+			});
+
+			text = Regex.Replace(text, "([_\\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\\.)+[a-z]{2,4})", delegate(Match match)
+			                     {
+				string v = match.ToString();
+				return "<a href='mailto:" + text + "' target='_blank' rel='nofollow'>" + v + "</a>";
+			});
+			return text;
+		}
+
+		/* Text link */
+
+		public string text_link(string text)
+		{
+			string a = "";
+			if (Regex.IsMatch(text, pattern: "(((f|ht){1}tp://)[-a-zA-Z0-9@:%_\\+.~#?&//=]+)"))
+			{
+				a = Regex.Match(text, "(((f|ht){1}tp://)[-a-zA-Z0-9@:%_\\+.~#?&//=]+)").ToString();
+			}
+			else if (Regex.IsMatch(text, "(((f|ht){1}tps://)[-a-zA-Z0-9@:%_\\+.~#?&//=]+)"))
+			{
+				a = Regex.Match(text, "(((f|ht){1}tps://)[-a-zA-Z0-9@:%_\\+.~#?&//=]+)").ToString();
+			}
+			else
+				a = "";
+			return a;
+
+		}
+
+		/* html code */
+
+		public string html_code(string text)
+		{
+			string[] stvarno = { "<", ">" };
+			string[] zamjenjeno = { "&lt;", "&gt;" };
+			string temp = text;
+			for (int i = 0; i < 2; i++)
+				text = Regex.Replace(text, stvarno[i], zamjenjeno[i]);
+			return text;
+		}
+
+		public string clear(string text)
+		{
+			string Result = System.Text.RegularExpressions.Regex.Replace(text, @"(\\)([\000\010\011\012\015\032\042\047\134\140])", "$2");
+			return Result;
+		}
+
 	}
 }
 
