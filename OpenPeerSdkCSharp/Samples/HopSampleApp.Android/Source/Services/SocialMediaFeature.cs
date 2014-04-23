@@ -163,7 +163,7 @@ namespace HopSampleApp
 
 		/* Text link */
 
-		public string text_link(string text)
+		public string TextLink(string text)
 		{
 			string a = "";
 			if (Regex.IsMatch(text, pattern: "(((f|ht){1}tp://)[-a-zA-Z0-9@:%_\\+.~#?&//=]+)"))
@@ -182,17 +182,17 @@ namespace HopSampleApp
 
 		/* html code */
 
-		public string html_code(string text)
+		public string HtmlCode(string text)
 		{
-			string[] stvarno = { "<", ">" };
-			string[] zamjenjeno = { "&lt;", "&gt;" };
+			string[] real = { "<", ">" };
+			string[] replaced = { "&lt;", "&gt;" };
 			string temp = text;
 			for (int i = 0; i < 2; i++)
-				text = Regex.Replace(text, stvarno[i], zamjenjeno[i]);
+				text = Regex.Replace(text, real[i], replaced[i]);
 			return text;
 		}
 
-		public string clear(string text)
+		public string Clear(string text)
 		{
 			string Result = System.Text.RegularExpressions.Regex.Replace(text, @"(\\)([\000\010\011\012\015\032\042\047\134\140])", "$2");
 			return Result;
