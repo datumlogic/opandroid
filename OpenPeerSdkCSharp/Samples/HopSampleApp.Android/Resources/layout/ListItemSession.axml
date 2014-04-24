@@ -80,6 +80,18 @@
                     p1:focusable="false"
                     p1:focusableInTouchMode="false"
                     p1:clickable="false" />
+                <TextView
+                    p1:text="TimeStamp"
+                    p1:layout_width="match_parent"
+                    p1:layout_height="wrap_content"
+                    p1:id="@+id/TimeStampDate"
+                    p1:textColor="#0066CC"
+                    p1:typeface="sans"
+                    p1:textSize="14sp"
+                    p1:inputType="none"
+                    p1:focusable="false"
+                    p1:focusableInTouchMode="false"
+                    p1:clickable="false" />
             </LinearLayout>
             <ImageView
                 p1:gravity="center"

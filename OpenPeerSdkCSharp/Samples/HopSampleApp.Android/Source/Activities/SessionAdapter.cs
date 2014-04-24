@@ -21,7 +21,7 @@ namespace HopSampleApp
 		{
 			Activity context;
 			IImageCachingDownloader downloader;
-
+			SocialMediaFeature sm=new SocialMediaFeature();
 			class AvatarDownloader
 			{
 				public Helpers.WeakReference<ViewHolder> binding;
@@ -68,6 +68,7 @@ namespace HopSampleApp
 				public BadgeView BadgeView { get; set; }
 				public TextView NameTextView { get; set; }
 				public TextView UsernameTextView { get; set; }
+				public TextView SessionTime{ get; set;}
 
 
 				public AvatarDownloader CurrentDownloader { get; set; }
@@ -133,7 +134,7 @@ namespace HopSampleApp
 					holder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
 					holder.OriginalEmptyAvatarDrawable = holder.AvatarImageView.Drawable;
 					holder.BadgeView = badgeView;
-
+					holder.SessionTime = view.FindViewById<TextView> (Resource.Id.TimeStampDate);
 					holder.NameTextView = view.FindViewById<TextView> (Resource.Id.nameTextView);
 					holder.UsernameTextView = view.FindViewById<TextView> (Resource.Id.usernameTextView);
 
@@ -154,7 +155,7 @@ namespace HopSampleApp
 
 				holder.NameTextView.Text = "My Name " + position.ToString();
 				holder.UsernameTextView.Text = "Username" + position.ToString();
-
+				holder.SessionTime.Text = sm.Time_stamp (new DateTime(2014,4,23));
 				holder.BadgeView.Text = position.ToString();
 				holder.BadgeView.Show ();
 

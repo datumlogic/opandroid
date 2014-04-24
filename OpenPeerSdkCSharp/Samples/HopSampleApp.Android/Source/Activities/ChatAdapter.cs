@@ -239,7 +239,7 @@ namespace HopSampleApp
 						switch (position % (7 * 2)) {
 						case 0:
 							headerHolder.Name.Text = "Alice Apples";
-							headerHolder.Time.Text = "2014-02-08 11:11 am";
+							headerHolder.Time.Text = sm.Time_stamp(new DateTime(2008,1,8));
 							break;
 						case 1:
 							dataHolder.Message.Text = "Hello?";
@@ -247,7 +247,7 @@ namespace HopSampleApp
 
 						case 2:
 							headerHolder.Name.Text = "Bob Baker";
-							headerHolder.Time.Text = "2014-02-08 11:12 am";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime (2008, 1, 9));//"2014-02-08 11:12 am";
 							break;
 						case 3:
 							person = 1;
@@ -264,7 +264,7 @@ namespace HopSampleApp
 
 						case 6:
 							headerHolder.Name.Text = "Alice Apples";
-							headerHolder.Time.Text = "2014-02-08 11:12 am";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime(2014,3,2));//"2014-02-08 11:12 am";
 							break;
 						case 7:
 							dataHolder.Message.Text = "Can you come get me at the steak house? My date turned out to be a real jerk.";
@@ -272,7 +272,7 @@ namespace HopSampleApp
 
 						case 8:
 							headerHolder.Name.Text = "Bob Baker";
-							headerHolder.Time.Text = "2014-02-08 11:13 am";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime(2014,3,2));//"2014-02-08 11:13 am";
 							break;
 						case 9:
 							person = 1;
@@ -304,7 +304,7 @@ namespace HopSampleApp
 
 						case 12:
 							headerHolder.Name.Text = "Alice Apples";
-							headerHolder.Time.Text = "2014-02-08 11:14 am";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime (2014, 4, 20));//"2014-02-08 11:14 am";
 							break;
 						case 13:
 
