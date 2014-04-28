@@ -3,7 +3,7 @@
 	<string name="hello">Hello World, Click Me!</string>
 	<string name="loading">loading...</string>
 	<string name="QRcodeButton">QR Scanner</string>
-	
+	<string name="ProfileID">User Informacion</string>
 	<string name="RemoteCallerIDCenter">Sergej Jovanovic</string>
 	<string name="LocalCallerIDCenter">Petar Sradovic</string>
 	<string name="VideoCallerIDTop">Petar Srdanovic</string>

@@ -62,13 +62,15 @@ namespace HopSampleApp
 
 					if(JSONParserProperty.GestureOption !=false)
 					{
-						StartActivity(typeof(HopSampleApp.GestureActivity));//Skip Splash View and go to ContactsActivity
+						Intent intent = new Intent (this, typeof(HopSampleApp.GestureActivity));
+						StartActivity (intent);
+
 
 					}else
 					{
+						Intent intent = new Intent (this, typeof(HopSampleApp.ProfileActivity));
+						StartActivity (intent);
 
-						//StartActivity(typeof(HopSampleApp.Activities.ChatActivity));
-						StartActivity(typeof(HopSampleApp.SessionActivity));
 
 					}
 				});

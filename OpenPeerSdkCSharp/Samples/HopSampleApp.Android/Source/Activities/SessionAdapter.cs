@@ -153,9 +153,11 @@ namespace HopSampleApp
 
 				object source = this [position];
 
+
+				
 				holder.NameTextView.Text = "My Name " + position.ToString();
 				holder.UsernameTextView.Text = "Username" + position.ToString();
-				holder.SessionTime.Text = sm.Time_stamp (new DateTime(2014,4,23));
+				holder.SessionTime.Text = sm.Time_stamp (new DateTime(2014,4,20));
 				holder.BadgeView.Text = position.ToString();
 				holder.BadgeView.Show ();
 

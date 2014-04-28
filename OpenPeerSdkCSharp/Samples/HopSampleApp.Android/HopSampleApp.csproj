@@ -94,6 +94,7 @@
     <Compile Include="Source\Activities\AlertActivity.cs" />
     <Compile Include="Source\Activities\SessionActivity.cs" />
     <Compile Include="Source\Activities\SessionAdapter.cs" />
+    <Compile Include="Source\Activities\ProfileActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -231,6 +232,8 @@
     <AndroidResource Include="Resources\layout\ListItemSession.axml" />
     <AndroidResource Include="Resources\drawable\imageshapecircle.xml" />
     <AndroidResource Include="Resources\drawable\imgmaster.xml" />
+    <AndroidResource Include="Resources\layout\Profile.xml" />
+    <AndroidResource Include="Resources\drawable\ProfileImg.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

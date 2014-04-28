@@ -60,7 +60,10 @@ namespace HopSampleApp
 				//Event for start video call
 				StartVideoCall.Click += delegate {
 					Console.WriteLine("Start Video Call");
-					StartActivity(typeof(HopSampleApp.PoupVideoCallActivity));
+					Intent intent = new Intent (this, typeof(HopSampleApp.PoupVideoCallActivity));
+					StartActivity (intent);
+
+
 				
 				};
 
@@ -68,7 +71,10 @@ namespace HopSampleApp
 				StartCallOnly.Click += delegate {
 				
 					Console.WriteLine("Start Call only");
-					StartActivity(typeof(HopSampleApp.PopupCallActivity));
+					Intent intent = new Intent (this, typeof(HopSampleApp.PopupCallActivity));
+					StartActivity (intent);
+
+
 				};
 
 
