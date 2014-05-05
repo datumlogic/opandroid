@@ -19,6 +19,8 @@ opandroid/OpenPeerSdkCSharp/          - contains the CSharp wrapper of Java SDK 
 
 How to build:
 
+NOTE: Android build was tested only on Mac OS X Mavericks 64-bit. Other platforms will be supported soon.
+
 0) Prerequisites
 
 a) Android ADT bundle installed
