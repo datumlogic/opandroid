@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Android.App;
 using Android.Graphics;
@@ -9,6 +11,7 @@ using Android.Widget;
 using OpenPeerSdk.Helpers;
 using HopSampleApp.Services;
 using HopSampleApp.Views;
+using System.Linq;
 using Helpers = OpenPeerSdk.Helpers;
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 
@@ -19,6 +22,7 @@ namespace HopSampleApp
 		[LoggerSubsystem("hop_sample_app")]
 		public class SessionAdapter : BaseAdapter<object>
 		{
+			private String section;
 			Activity context;
 			IImageCachingDownloader downloader;
 			SocialMediaFeature sm=new SocialMediaFeature();
@@ -69,6 +73,8 @@ namespace HopSampleApp
 				public TextView NameTextView { get; set; }
 				public TextView UsernameTextView { get; set; }
 				public TextView SessionTime{ get; set;}
+				public LinearLayout Header{ get; set;}
+				public TextView SessionName{ get; set;}
 
 
 				public AvatarDownloader CurrentDownloader { get; set; }
@@ -112,7 +118,22 @@ namespace HopSampleApp
 				"https://lh3.googleusercontent.com/-boHOsb5ui34/AAAAAAAAAAI/AAAAAAAAHjQ/mGPd8FsVMXA/w48-c-h48/photo.jpg",
 				"http://25.media.tumblr.com/avatar_c80a99bd5fd4_128.png"
 			};
+			/* my session update */
+			List<string> sections = new List<string> ();
+			Dictionary<int, string> alphaIndexer = new Dictionary<int, string> ();
+			public int GetSectionForPosition (int position)
+			{
+				return 1;
+			}
 
+
+			public int GetPositionForSection (int section)
+			{
+				var character = sections [section];
+				var position = alphaIndexer.FirstOrDefault (f => f.Value == character);
+				return position.Key;
+			}
+			/* end of my update */
 			public override View GetView(int position, View convertView, ViewGroup parent)
 			{
 				View view = convertView; // re-use an existing view, if one is available
@@ -137,7 +158,8 @@ namespace HopSampleApp
 					holder.SessionTime = view.FindViewById<TextView> (Resource.Id.TimeStampDate);
 					holder.NameTextView = view.FindViewById<TextView> (Resource.Id.nameTextView);
 					holder.UsernameTextView = view.FindViewById<TextView> (Resource.Id.usernameTextView);
-
+					holder.Header = view.FindViewById<LinearLayout> (Resource.Id.header);
+					holder.SessionName = view.FindViewById<TextView> (Resource.Id.SessionName);
 					holder.AvatarWidth = holder.AvatarImageView.LayoutParameters.Width;
 					holder.AvatarHeight = holder.AvatarImageView.LayoutParameters.Height;
 
@@ -152,14 +174,70 @@ namespace HopSampleApp
 				}
 
 				object source = this [position];
+				/* my simulated logic for session  */
+				int curpos = GetSectionForPosition (position);
+				ArrayList SessionType = new ArrayList();
+				SessionType.Add ("Video Call");
+				SessionType.Add ("Voice Call");
+				SessionType.Add ("Chat");
+				SessionType.Add ("Missed Call");
+				SessionType.Add ("Chat");
 
+				foreach (string item in SessionType) {
 
-				
+					switch (item)
+					{
+					case "Video Call":
+						if (GetSectionForPosition (curpos) == position) {
+							holder.Header.Visibility = ViewStates.Visible;
+							holder.SessionName.Text = item;
+						} else {
+							holder.Header.Visibility = ViewStates.Gone;
+						}
+
+						break;
+					case "Chat":
+						if (GetSectionForPosition (curpos) == position) {
+							holder.Header.Visibility = ViewStates.Visible;
+							holder.SessionName.Text = item;
+						} else {
+							holder.Header.Visibility = ViewStates.Gone;
+						}
+
+						break;
+					case "Voice Call":
+						if (GetSectionForPosition (curpos) == position) {
+							holder.Header.Visibility = ViewStates.Visible;
+							holder.SessionName.Text = item;
+						} else {
+							holder.Header.Visibility = ViewStates.Gone;
+						}
+
+						break;
+					case "Missed Call":
+						if (GetSectionForPosition (curpos) == position) {
+							holder.Header.Visibility = ViewStates.Visible;
+							holder.SessionName.Text = item;
+						} else {
+							holder.Header.Visibility = ViewStates.Gone;
+						}
+
+						break;
+					}
+				}
+				/*  end of simulation logic */
+
 				holder.NameTextView.Text = "My Name " + position.ToString();
 				holder.UsernameTextView.Text = "Username" + position.ToString();
 				holder.SessionTime.Text = sm.Time_stamp (new DateTime(2014,4,20));
 				holder.BadgeView.Text = position.ToString();
 				holder.BadgeView.Show ();
+				/*holder.SessionName.Text = "Video Call" + position.ToString ();
+				holder.NameTextView.Text = "My Name " + position.ToString();
+				holder.UsernameTextView.Text = "Username" + position.ToString();
+				holder.SessionTime.Text = sm.Time_stamp (new DateTime(2014,4,20));
+				holder.BadgeView.Text = position.ToString();
+				holder.BadgeView.Show ();*/
 
 				holder.CurrentDownloader = new AvatarDownloader (holder);
 
@@ -170,13 +248,17 @@ namespace HopSampleApp
 					holder.CurrentDownloader.HandleDownloaded
 					);
 
-				if (null != bitmap) {
+				if (null != bitmap)
+				{
 					holder.AvatarImageView.SetImageDrawable (bitmap);
-				} else {
+				}
+				else 
+				{
 					if (!firstTimeResourceLoaded) {
 						holder.AvatarImageView.SetImageDrawable (holder.OriginalEmptyAvatarDrawable);	// reset back to original drawable
 					}
 				}
+
 
 				return view;
 			}

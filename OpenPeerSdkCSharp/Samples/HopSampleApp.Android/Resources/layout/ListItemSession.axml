@@ -12,9 +12,31 @@
         p1:layout_width="wrap_content"
         p1:layout_height="wrap_content"
         p1:id="@+id/contactItemRelativeLayout">
+        <LinearLayout
+            p1:id="@+id/header"
+            p1:orientation="vertical"
+            p1:layout_width="wrap_content"
+            p1:layout_height="25dip"
+            p1:layout_marginBottom="5dp"
+            p1:visibility="gone">
+            <TextView
+                p1:layout_width="wrap_content"
+                p1:layout_height="wrap_content"
+                p1:id="@+id/SessionName"
+                p1:textSize="19sp"
+                p1:textColor="#040404"
+                p1:typeface="sans"
+                p1:textStyle="bold"
+                p1:inputType="none"
+                p1:text="session"
+                p1:focusable="false"
+                p1:focusableInTouchMode="false"
+                p1:clickable="false" />
+        </LinearLayout>
         <RelativeLayout
             p1:minWidth="25px"
             p1:minHeight="25px"
+            p1:layout_below="@id/header"
             p1:layout_width="match_parent"
             p1:layout_height="wrap_content"
             p1:id="@+id/detailsRelativeLayout"
@@ -59,7 +81,7 @@
                     p1:layout_width="match_parent"
                     p1:layout_height="wrap_content"
                     p1:id="@+id/nameTextView"
-                    p1:textSize="22sp"
+                    p1:textSize="19sp"
                     p1:textColor="#040404"
                     p1:typeface="sans"
                     p1:textStyle="bold"
@@ -113,6 +135,7 @@
         <RelativeLayout
             p1:minHeight="25px"
             p1:id="@+id/badgeRelativeLayout"
+            p1:layout_below="@id/header"
             p1:padding="5dp"
             p1:layout_width="match_parent"
             p1:layout_height="wrap_content">
