@@ -12,6 +12,7 @@ using OpenPeerSdk.Helpers;
 using HopSampleApp.Services;
 using HopSampleApp.Views;
 using System.Linq;
+using System.Globalization;
 using Helpers = OpenPeerSdk.Helpers;
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 
@@ -96,7 +97,7 @@ namespace HopSampleApp
 			}
 
 			public override int Count {
-				get { return 5; } //24
+				get { return 7; } //24
 			}
 
 			static string[] bogusUrls = {
@@ -142,21 +143,21 @@ namespace HopSampleApp
 			{
 				//var character = sections [section];
 				//var position = SessionType.FirstOrDefault (f => f.SessionTypeName == section);
-				var position = SessionType.FirstOrDefault (f => f.Id == section);
+				var position = SessionType.Where(uid=>uid.Id==section).FirstOrDefault();
 				return position.Id;
 			}
 
-			public void BindSection(TextView s_value,View con,int position)
+			public void BindSection(TextView s_type,View con,int position)
 			{
-				TextView txt = (TextView)con.FindViewById (Resource.Id.SessionName);
 				LinearLayout header = (LinearLayout)con.FindViewById(Resource.Id.header);
 				int curpos = GetSectionForPosition (position);
-				if (GetPositionForSection(curpos)==position) {
+				if (GetPositionForSection (curpos) == position) {
 					header.Visibility = ViewStates.Visible;
-				} else {
-					header.Visibility = ViewStates.Invisible;
-				}
 
+				} else {
+					header.Visibility = ViewStates.Gone;
+				}
+			
 				   
 
 
@@ -204,21 +205,24 @@ namespace HopSampleApp
 
 				object source = this [position];
 				/* my simulated logic for session  */
+
+
 				SessionType.Add (new SessionData
 					{
-						Id = 1,
-						SessionDate = DateTime.Now,
+						Id = 0,
+						SessionDate = new DateTime(2014,4,20),
 						SessionTypeName = "Video Call",
 						SessionTime = sm.Time_stamp(new DateTime(2014,4,20)),
 						SesisonUserName = "petar-hookflash",
 						SessionMyName = "Petar"
-										
-				});
+
+					});
+
 				SessionType.Add (new SessionData
 					{
-						Id = 2,
-						SessionDate = DateTime.Now,
-						SessionTypeName = "Chat",
+						Id = 1,
+						SessionDate = new DateTime(2014,5,07),
+						SessionTypeName = "Video Call",
 						SessionTime = sm.Time_stamp(new DateTime(2014,5,07)),
 						SesisonUserName = "sergej-hookflash",
 						SessionMyName = "Sergej"
@@ -226,9 +230,9 @@ namespace HopSampleApp
 					});
 				SessionType.Add (new SessionData
 					{
-						Id = 3,
-						SessionDate = DateTime.Now,
-						SessionTypeName = "Video Call",
+						Id = 2,
+						SessionDate = new DateTime(2014,5,06),
+						SessionTypeName = "Voice Call",
 						SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
 						SesisonUserName = "robin-hookflash",
 						SessionMyName = "Robin"
@@ -236,43 +240,55 @@ namespace HopSampleApp
 					});
 				SessionType.Add (new SessionData
 					{
-						Id=4,
-						SessionDate = DateTime.Now,
-						SessionTypeName = "Chat",
+						Id=3,
+						SessionDate = new DateTime(2014,5,06),
+						SessionTypeName = "Voice Call",
 						SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
 						SesisonUserName = "marko-hookflash",
 						SessionMyName = "Marko"
 
 					});
-				//string data="Video Call";
+				SessionType.Add (new SessionData
+					{
+						Id=4,
+						SessionDate = new DateTime(2014,5,06),
+						SessionTypeName = "Chat",
+						SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+						SesisonUserName = "adrijano-hookflash",
+						SessionMyName = "Adrijano"
 
-				var type_data = SessionType.OrderBy (st => st.SessionTypeName == st.SessionTypeName + position.ToString()).ToList();//( from data in SessionType where data.Id == position select data).ToList();//SessionType.Where(data=>data.Id==position).OrderBy (st => st.SessionTypeName).ToList();
-				foreach (var item in type_data) {
-					    
-					//BindSection (holder.SessionName,view, position);
-					holder.SessionName.Text = item.SessionTypeName + position.ToString();
-					holder.UsernameTextView.Text = item.SesisonUserName + position.ToString ();
+					});
+				SessionType.Add (new SessionData
+					{
+						Id=5,
+						SessionDate = new DateTime(2014,3,06),
+						SessionTypeName = "Chat",
+						SessionTime = sm.Time_stamp(new DateTime(2014,3,06)),
+						SesisonUserName = "bojan-hookflash",
+						SessionMyName = "Bojan"
+
+					});
+				SessionType.Add (new SessionData
+					{
+						Id=6,
+						SessionDate = new DateTime(2014,5,06),
+						SessionTypeName = "Voice Call",
+						SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+						SesisonUserName = "eric-hookflash",
+						SessionMyName = "Eric"
+
+					});
+				var type_data = SessionType.Where(uid=>uid.Id==position);
+
+				foreach(var item in type_data)
+				{
+					holder.Header.Visibility = ViewStates.Visible;
+					holder.SessionName.Text = item.SessionTypeName + String.Format("({0})",item.SessionDate.ToString("dddd dd MMMM",CultureInfo.CreateSpecificCulture("en-US")));
+					holder.UsernameTextView.Text = item.SesisonUserName;
 					holder.SessionTime.Text = item.SessionTime;
 					holder.BadgeView.Text = position.ToString ();
 					holder.BadgeView.Show ();
-
-
-				
-					
-
-					//} else {
-					//	holder.Header.Visibility = ViewStates.Gone;
-					//	}
-						
-
-
-					//holder.NameTextView.Text = item.SessionMyName + position.ToString ();
-
 				}
-
-
-			
-
 				/*  end of simulation logic */
 
 				//holder.NameTextView.Text = "My Name " + position.ToString();

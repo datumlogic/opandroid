@@ -40,7 +40,7 @@ namespace HopSampleApp
 				refreshListView.RefreshActivated += pullview_RefreshActivated;
 			}
 
-			this.ListAdapter = new SessionAdapter (this, downloader);
+			this.ListAdapter = new SessionAdapter(this, downloader);
 		}
 
 		protected override void OnDestroy ()

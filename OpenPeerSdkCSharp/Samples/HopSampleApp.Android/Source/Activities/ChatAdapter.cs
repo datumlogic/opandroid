@@ -58,7 +58,7 @@ namespace HopSampleApp
 				{
 					DataViewHolder holder = (DataViewHolder)binding;
 					if (this != holder.CurrentDownloader) {
-						Logger.Trace ("ChatAdapter original view is no longer bound");
+						Helpers.Logger.Trace ("ChatAdapter original view is no longer bound");
 						return;
 					}
 					object temp = bitmap;
