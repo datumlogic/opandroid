@@ -26,6 +26,7 @@ namespace HopSampleApp
 			Activity context;
 			IImageCachingDownloader downloader;
 			SocialMediaFeature sm=new SocialMediaFeature();
+
 			class AvatarDownloader
 			{
 				public Helpers.WeakReference<ViewHolder> binding;
@@ -95,7 +96,7 @@ namespace HopSampleApp
 			}
 
 			public override int Count {
-				get { return 24; }
+				get { return 5; } //24
 			}
 
 			static string[] bogusUrls = {
@@ -119,19 +120,47 @@ namespace HopSampleApp
 				"http://25.media.tumblr.com/avatar_c80a99bd5fd4_128.png"
 			};
 			/* my session update */
-			List<string> sections = new List<string> ();
-			Dictionary<int, string> alphaIndexer = new Dictionary<int, string> ();
+			class SessionData
+			{
+				public int Id{ get; set;}
+				public String SessionTypeName{ get; set;}
+				public String Username{ get; set; }
+				public DateTime SessionDate{ get; set;}
+				public String SessionTime{ get; set;}
+				public String SesisonUserName{ get;set;}
+				public String SessionMyName{ get; set;}
+
+			}
+			List<SessionData> SessionType = new List<SessionData> ();
 			public int GetSectionForPosition (int position)
 			{
+
 				return 1;
 			}
 
-
 			public int GetPositionForSection (int section)
 			{
-				var character = sections [section];
-				var position = alphaIndexer.FirstOrDefault (f => f.Value == character);
-				return position.Key;
+				//var character = sections [section];
+				//var position = SessionType.FirstOrDefault (f => f.SessionTypeName == section);
+				var position = SessionType.FirstOrDefault (f => f.Id == section);
+				return position.Id;
+			}
+
+			public void BindSection(TextView s_value,View con,int position)
+			{
+				TextView txt = (TextView)con.FindViewById (Resource.Id.SessionName);
+				LinearLayout header = (LinearLayout)con.FindViewById(Resource.Id.header);
+				int curpos = GetSectionForPosition (position);
+				if (GetPositionForSection(curpos)==position) {
+					header.Visibility = ViewStates.Visible;
+				} else {
+					header.Visibility = ViewStates.Invisible;
+				}
+
+				   
+
+
+
 			}
 			/* end of my update */
 			public override View GetView(int position, View convertView, ViewGroup parent)
@@ -175,63 +204,82 @@ namespace HopSampleApp
 
 				object source = this [position];
 				/* my simulated logic for session  */
-				int curpos = GetSectionForPosition (position);
-				ArrayList SessionType = new ArrayList();
-				SessionType.Add ("Video Call");
-				SessionType.Add ("Voice Call");
-				SessionType.Add ("Chat");
-				SessionType.Add ("Missed Call");
-				SessionType.Add ("Chat");
-
-				foreach (string item in SessionType) {
-
-					switch (item)
+				SessionType.Add (new SessionData
 					{
-					case "Video Call":
-						if (GetSectionForPosition (curpos) == position) {
-							holder.Header.Visibility = ViewStates.Visible;
-							holder.SessionName.Text = item;
-						} else {
-							holder.Header.Visibility = ViewStates.Gone;
-						}
+						Id = 1,
+						SessionDate = DateTime.Now,
+						SessionTypeName = "Video Call",
+						SessionTime = sm.Time_stamp(new DateTime(2014,4,20)),
+						SesisonUserName = "petar-hookflash",
+						SessionMyName = "Petar"
+										
+				});
+				SessionType.Add (new SessionData
+					{
+						Id = 2,
+						SessionDate = DateTime.Now,
+						SessionTypeName = "Chat",
+						SessionTime = sm.Time_stamp(new DateTime(2014,5,07)),
+						SesisonUserName = "sergej-hookflash",
+						SessionMyName = "Sergej"
 
-						break;
-					case "Chat":
-						if (GetSectionForPosition (curpos) == position) {
-							holder.Header.Visibility = ViewStates.Visible;
-							holder.SessionName.Text = item;
-						} else {
-							holder.Header.Visibility = ViewStates.Gone;
-						}
+					});
+				SessionType.Add (new SessionData
+					{
+						Id = 3,
+						SessionDate = DateTime.Now,
+						SessionTypeName = "Video Call",
+						SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+						SesisonUserName = "robin-hookflash",
+						SessionMyName = "Robin"
 
-						break;
-					case "Voice Call":
-						if (GetSectionForPosition (curpos) == position) {
-							holder.Header.Visibility = ViewStates.Visible;
-							holder.SessionName.Text = item;
-						} else {
-							holder.Header.Visibility = ViewStates.Gone;
-						}
+					});
+				SessionType.Add (new SessionData
+					{
+						Id=4,
+						SessionDate = DateTime.Now,
+						SessionTypeName = "Chat",
+						SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+						SesisonUserName = "marko-hookflash",
+						SessionMyName = "Marko"
 
-						break;
-					case "Missed Call":
-						if (GetSectionForPosition (curpos) == position) {
-							holder.Header.Visibility = ViewStates.Visible;
-							holder.SessionName.Text = item;
-						} else {
-							holder.Header.Visibility = ViewStates.Gone;
-						}
+					});
+				//string data="Video Call";
 
-						break;
-					}
+				var type_data = SessionType.OrderBy (st => st.SessionTypeName == st.SessionTypeName + position.ToString()).ToList();//( from data in SessionType where data.Id == position select data).ToList();//SessionType.Where(data=>data.Id==position).OrderBy (st => st.SessionTypeName).ToList();
+				foreach (var item in type_data) {
+					    
+					//BindSection (holder.SessionName,view, position);
+					holder.SessionName.Text = item.SessionTypeName + position.ToString();
+					holder.UsernameTextView.Text = item.SesisonUserName + position.ToString ();
+					holder.SessionTime.Text = item.SessionTime;
+					holder.BadgeView.Text = position.ToString ();
+					holder.BadgeView.Show ();
+
+
+				
+					
+
+					//} else {
+					//	holder.Header.Visibility = ViewStates.Gone;
+					//	}
+						
+
+
+					//holder.NameTextView.Text = item.SessionMyName + position.ToString ();
+
 				}
+
+
+			
+
 				/*  end of simulation logic */
 
-				holder.NameTextView.Text = "My Name " + position.ToString();
-				holder.UsernameTextView.Text = "Username" + position.ToString();
-				holder.SessionTime.Text = sm.Time_stamp (new DateTime(2014,4,20));
-				holder.BadgeView.Text = position.ToString();
-				holder.BadgeView.Show ();
+				//holder.NameTextView.Text = "My Name " + position.ToString();
+				//holder.UsernameTextView.Text = "Username" + position.ToString();
+				//holder.SessionTime.Text = sm.Time_stamp (new DateTime(2014,4,20));
+				//holder.BadgeView.Text = position.ToString();
+				//holder.BadgeView.Show ();
 				/*holder.SessionName.Text = "Video Call" + position.ToString ();
 				holder.NameTextView.Text = "My Name " + position.ToString();
 				holder.UsernameTextView.Text = "Username" + position.ToString();
@@ -262,6 +310,8 @@ namespace HopSampleApp
 
 				return view;
 			}
+
+
 		}
 	}
 }
