@@ -95,6 +95,9 @@
     <Compile Include="Source\Activities\SessionActivity.cs" />
     <Compile Include="Source\Activities\SessionAdapter.cs" />
     <Compile Include="Source\Activities\ProfileActivity.cs" />
+    <Compile Include="Source\Activities\InviteActivity.cs" />
+    <Compile Include="Source\Activities\InviteAdapter.cs" />
+    <Compile Include="Source\Activities\InviteItemsAcc.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -234,6 +237,15 @@
     <AndroidResource Include="Resources\drawable\imgmaster.xml" />
     <AndroidResource Include="Resources\layout\Profile.xml" />
     <AndroidResource Include="Resources\drawable\ProfileImg.xml" />
+    <AndroidResource Include="Resources\layout\InviteLayout.axml" />
+    <AndroidResource Include="Resources\layout\InviteItem.axml" />
+    <AndroidResource Include="Resources\drawable\linkedin.png" />
+    <AndroidResource Include="Resources\drawable\twiter.png" />
+    <AndroidResource Include="Resources\drawable\facebook.png" />
+    <AndroidResource Include="Resources\drawable\contacts.png" />
+    <AndroidResource Include="Resources\drawable\inviteuser.png" />
+    <AndroidResource Include="Resources\drawable\proid.png" />
+    <AndroidResource Include="Resources\drawable\ses.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
