@@ -54,23 +54,6 @@
     <Compile Include="Source\Services\ServiceHelpers.cs" />
     <Compile Include="Source\Views\BadgeView.cs" />
     <Compile Include="Source\Services\ImageCachingService.cs" />
-    <Compile Include="Source\Database\ChatMessage.cs" />
-    <Compile Include="Source\Database\ChatMessageDatabase.cs" />
-    <Compile Include="Source\Database\Common.cs" />
-    <Compile Include="Source\Database\Contact.cs" />
-    <Compile Include="Source\Database\ContactDatabase.cs" />
-    <Compile Include="Source\Database\Conversation.cs" />
-    <Compile Include="Source\Database\ConversationDatabase.cs" />
-    <Compile Include="Source\Database\ConversationParticipant.cs" />
-    <Compile Include="Source\Database\ConversationParticipantRecord.cs" />
-    <Compile Include="Source\Database\SQLite.cs" />
-    <Compile Include="Source\Helpers\Helper.cs" />
-    <Compile Include="Source\Helpers\Logger.cs" />
-    <Compile Include="Source\Helpers\LoggerSubsystemAttribute.cs" />
-    <Compile Include="Source\Helpers\OptionalOut.cs" />
-    <Compile Include="Source\Helpers\WeakReference.cs" />
-    <Compile Include="Source\Helpers\Internal\Logger.cs" />
-    <Compile Include="Source\Helpers\Internal\LoggerSubsystemAttribute.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Source\Services\GestureListener.cs" />
     <Compile Include="Source\Services\JSONParserProperty.cs" />
@@ -259,21 +242,10 @@
     <Folder Include="Source\Activities\" />
     <Folder Include="Source\Services\" />
     <Folder Include="Source\Views\" />
-    <Folder Include="Source\Database\" />
-    <Folder Include="Source\Helpers\" />
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\drawable\" />
-    <Folder Include="Source\Helpers\Internal\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
-      <Project>{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}</Project>
-      <Name>PullToRefresharp.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\OpenPeerSdkCSharp.csproj">
-      <Project>{8E4FFF81-A605-4848-8633-FDC8CF6B77E5}</Project>
-      <Name>OpenPeerSdkCSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">
       <Project>{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}</Project>
       <Name>ZXing.Net.Mobile.Android</Name>
@@ -285,6 +257,14 @@
     <ProjectReference Include="..\..\..\libs\Newtonsoft.Json\Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj">
       <Project>{E6C3413C-919B-486D-8B6C-225CBD921B98}</Project>
       <Name>Newtonsoft.Json.MonoDroid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OpenPeerSdkCSharp.csproj">
+      <Project>{8E4FFF81-A605-4848-8633-FDC8CF6B77E5}</Project>
+      <Name>OpenPeerSdkCSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
+      <Project>{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}</Project>
+      <Name>PullToRefresharp.Android</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

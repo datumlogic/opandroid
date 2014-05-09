@@ -101,7 +101,7 @@ namespace HopSampleApp
 			}
 			catch(Exception Error)
 			{
-				Console.WriteLine("You need internet Connection for this option");
+				Console.WriteLine(String.Format("You need internet Connection for this option:{0}",Error.Message));
 			}
 
 		}

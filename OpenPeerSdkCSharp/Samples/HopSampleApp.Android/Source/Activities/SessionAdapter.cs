@@ -23,7 +23,7 @@ namespace HopSampleApp
 		[LoggerSubsystem("hop_sample_app")]
 		public class SessionAdapter : BaseAdapter<object>
 		{
-			private String section;
+			//private String section;
 			Activity context;
 			IImageCachingDownloader downloader;
 			SocialMediaFeature sm=new SocialMediaFeature();

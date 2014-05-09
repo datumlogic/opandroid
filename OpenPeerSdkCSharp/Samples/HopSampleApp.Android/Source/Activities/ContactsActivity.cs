@@ -1,7 +1,5 @@
-
 using System;
 using System.Collections.Generic;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -9,13 +7,9 @@ using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-
 using OpenPeerSdk.Helpers;
-
 using PullToRefresharp.Android.Views;
-
 using HopSampleApp.Services;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 
 namespace HopSampleApp
@@ -26,6 +20,7 @@ namespace HopSampleApp
 		[Activity (Label = "Open Peer Sample App - Contact List",Icon="@drawable/op" /*,MainLauncher = true*/)]			
 		public class ContactsActivity : ListActivity
 		{
+
 			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
 			private IPullToRefresharpView refreshListView;
 			private ServiceConnection<ImageCachingService> imageCachingServiceConnection;

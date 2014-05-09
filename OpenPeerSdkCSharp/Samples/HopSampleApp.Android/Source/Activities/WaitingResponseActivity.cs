@@ -12,6 +12,7 @@ using Android.Graphics;
 using System.Drawing;
 using Android.Graphics.Drawables;
 using System.Net;
+
 namespace HopSampleApp
 {
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op",ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]			

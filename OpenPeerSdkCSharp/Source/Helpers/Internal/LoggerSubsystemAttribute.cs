@@ -26,8 +26,8 @@ namespace OpenPeerSdk
 							this.subsystemId = value;
 							return;
 						}
+						#warning should register subsystem and it should be tied to zsLib::createPUID()
 
-						#warning should register subsystem and it should be tied to zsLib::createPUID ()
 
 						this.subsystemId = lastSubsystemId;
 						subsystems [name] = lastSubsystemId;

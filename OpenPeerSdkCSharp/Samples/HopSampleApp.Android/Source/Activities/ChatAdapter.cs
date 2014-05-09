@@ -18,9 +18,7 @@ using OpenPeerSdk.Helpers;
 using Android.Net;
 using HopSampleApp.Activities;
 using HopSampleApp.Services;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
-
 using Helpers = OpenPeerSdk.Helpers;
 
 namespace HopSampleApp
@@ -58,7 +56,7 @@ namespace HopSampleApp
 				{
 					DataViewHolder holder = (DataViewHolder)binding;
 					if (this != holder.CurrentDownloader) {
-						Helpers.Logger.Trace ("ChatAdapter original view is no longer bound");
+						Logger.Trace ("ChatAdapter original view is no longer bound");
 						return;
 					}
 					object temp = bitmap;

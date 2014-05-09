@@ -19,8 +19,8 @@ namespace HopSampleApp
 	public class VideoCallActivity : Activity,View.IOnTouchListener
 	{
 		//OPTestMediaEngine mediaEngine = null;
-		SurfaceView localView = null;
-		SurfaceView remoteView = null;
+		//SurfaceView localView = null;
+		//SurfaceView remoteView = null;
 		int MicrophoneMute=0;
 		bool useFrontCamera = true;
 		RelativeLayout localViewLayout;
