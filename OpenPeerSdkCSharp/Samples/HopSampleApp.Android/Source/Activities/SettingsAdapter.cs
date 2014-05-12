@@ -10,7 +10,6 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.Text;
-
 using OpenPeerSdk.Helpers;
 
 namespace HopSampleApp

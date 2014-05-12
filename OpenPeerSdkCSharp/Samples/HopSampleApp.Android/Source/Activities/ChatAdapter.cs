@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
-
+using Android.Util;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -13,13 +13,12 @@ using Android.Runtime;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
-
+using Android.Webkit;
 using OpenPeerSdk.Helpers;
-
+using Android.Net;
+using HopSampleApp.Activities;
 using HopSampleApp.Services;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
-
 using Helpers = OpenPeerSdk.Helpers;
 
 namespace HopSampleApp
@@ -31,6 +30,7 @@ namespace HopSampleApp
 		{
 			Activity context;
 			IImageCachingDownloader downloader;
+			SocialMediaFeature sm=new SocialMediaFeature();
 
 			enum ListItemType
 			{
@@ -80,7 +80,8 @@ namespace HopSampleApp
 				public TextView Message { get; set; }
 				public ImageView AvatarImageView { get; set; }
 				public Drawable OriginalEmptyAvatarDrawable { get; set; }
-
+				public VideoView video{ get; set;}
+				public WebView WEB{ get; set;}
 				public AvatarDownloader CurrentDownloader { get; set; }
 			}
 
@@ -147,167 +148,216 @@ namespace HopSampleApp
 
 			public override View GetView(int position, View convertView, ViewGroup parent)
 			{
-				View view = convertView; // re-use an existing view, if one is available
+				    
+					View view = convertView; // re-use an existing view, if one is available
+				   	ViewHolder holder = null;
+					HeaderViewHolder headerHolder = null;
+					DataViewHolder dataHolder = null;
+					bool firstTimeResourceLoaded = false;
 
-				ViewHolder holder = null;
-				HeaderViewHolder headerHolder = null;
-				DataViewHolder dataHolder = null;
+					ListItemType @type = (ListItemType)GetItemViewType (position);
+				    ConnectivityManager connManager = (ConnectivityManager)context.GetSystemService (Context.ConnectivityService);
+				if (connManager.GetNetworkInfo (ConnectivityType.Mobile).IsConnected || connManager.GetNetworkInfo (ConnectivityType.Wifi).IsConnected) 
+				{
+					if (view == null) { // otherwise create a new one
+						firstTimeResourceLoaded = true;
 
-				bool firstTimeResourceLoaded = false;
+						{
+							switch (@type) {
+							case ListItemType.LeftHeader:
+								view = context.LayoutInflater.Inflate (Resource.Layout.ChatLeftSideHeaderListItem, null);
+								holder = headerHolder = new HeaderViewHolder ();
+								headerHolder.Name = view.FindViewById<TextView> (Resource.Id.nameTextView);
+								headerHolder.Time = view.FindViewById<TextView> (Resource.Id.timeTextView);
 
-				ListItemType @type = (ListItemType)GetItemViewType (position);
+								break;
+							case ListItemType.RightHeader:
+								view = context.LayoutInflater.Inflate (Resource.Layout.ChatRightSideHeaderListItem, null);
+								holder = headerHolder = new HeaderViewHolder ();
+								headerHolder.Name = view.FindViewById<TextView> (Resource.Id.nameTextView);
+								headerHolder.Time = view.FindViewById<TextView> (Resource.Id.timeTextView);
+								break;
+							case ListItemType.Left:
+								view = context.LayoutInflater.Inflate (Resource.Layout.ChatLeftSideListItem, null);
+								holder = dataHolder = new DataViewHolder ();
+								dataHolder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
+								dataHolder.Message = view.FindViewById<TextView> (Resource.Id.bubbleTextView);
+								dataHolder.WEB = (WebView)view.FindViewById (Resource.Id.web);
+								break;
+							case ListItemType.Right:
+								view = context.LayoutInflater.Inflate (Resource.Layout.ChatRightSideListItem, null);
+								holder = dataHolder = new DataViewHolder ();
+								dataHolder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
+								dataHolder.Message = view.FindViewById<TextView> (Resource.Id.bubbleTextView);
+								dataHolder.WEB = (WebView)view.FindViewById (Resource.Id.web);
+								break;
+							case ListItemType.Margin:
+								view = context.LayoutInflater.Inflate (Resource.Layout.ChatMarginHeaderListItem, null);
+								break;
+							default:
+								throw new NotImplementedException ();
+							}
+						}
 
-				if (view == null) { // otherwise create a new one
-					firstTimeResourceLoaded = true;
+						if (null != dataHolder) {
+							dataHolder.OriginalEmptyAvatarDrawable = dataHolder.AvatarImageView.Drawable;
+							dataHolder.AvatarWidth = dataHolder.AvatarImageView.LayoutParameters.Width;
+							dataHolder.AvatarHeight = dataHolder.AvatarImageView.LayoutParameters.Height;
 
-					{
+							// if these fail, you'll need to recode the source to delay the fetching of the avatar until after the render figures out the exact dimensions of the image
+							Contract.Assume (((dataHolder.AvatarWidth != ViewGroup.LayoutParams.MatchParent) && (dataHolder.AvatarWidth != ViewGroup.LayoutParams.WrapContent)));
+							Contract.Assume (((dataHolder.AvatarHeight != ViewGroup.LayoutParams.MatchParent) && (dataHolder.AvatarHeight != ViewGroup.LayoutParams.WrapContent)));
+						}
+
+						//				holder.LabelTextView = view.FindViewById<TextView> (Resource.Id.labelTextView);
+
+						view.Tag = holder;
+					} else {
+						holder = view.Tag as ViewHolder;
 						switch (@type) {
 						case ListItemType.LeftHeader:
-							view = context.LayoutInflater.Inflate (Resource.Layout.ChatLeftSideHeaderListItem, null);
-							holder = headerHolder = new HeaderViewHolder ();
-							headerHolder.Name = view.FindViewById<TextView> (Resource.Id.nameTextView);
-							headerHolder.Time = view.FindViewById<TextView> (Resource.Id.timeTextView);
-							break;
 						case ListItemType.RightHeader:
-							view = context.LayoutInflater.Inflate (Resource.Layout.ChatRightSideHeaderListItem, null);
-							holder = headerHolder = new HeaderViewHolder ();
-							headerHolder.Name = view.FindViewById<TextView> (Resource.Id.nameTextView);
-							headerHolder.Time = view.FindViewById<TextView> (Resource.Id.timeTextView);
+							holder = headerHolder = (HeaderViewHolder)view.Tag;
 							break;
 						case ListItemType.Left:
-							view = context.LayoutInflater.Inflate (Resource.Layout.ChatLeftSideListItem, null);
-							holder = dataHolder = new DataViewHolder ();
-							dataHolder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
-							dataHolder.Message = view.FindViewById<TextView> (Resource.Id.bubbleTextView);
-							break;
 						case ListItemType.Right:
-							view = context.LayoutInflater.Inflate (Resource.Layout.ChatRightSideListItem, null);
-							holder = dataHolder = new DataViewHolder ();
-							dataHolder.AvatarImageView = view.FindViewById<ImageView> (Resource.Id.avatarImageView);
-							dataHolder.Message = view.FindViewById<TextView> (Resource.Id.bubbleTextView);
+							holder = dataHolder = (DataViewHolder)view.Tag;
 							break;
 						case ListItemType.Margin:
-							view = context.LayoutInflater.Inflate (Resource.Layout.ChatMarginHeaderListItem, null);
 							break;
 						default:
 							throw new NotImplementedException ();
 						}
 					}
 
+					int person = 0;
+
+					{
+
+						switch (position % (7 * 2)) {
+						case 0:
+							headerHolder.Name.Text = "Alice Apples";
+							headerHolder.Time.Text = sm.Time_stamp(new DateTime(2008,1,8));
+							break;
+						case 1:
+							dataHolder.Message.Text = "Hello?";
+							break;
+
+						case 2:
+							headerHolder.Name.Text = "Bob Baker";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime (2008, 1, 9));//"2014-02-08 11:12 am";
+							break;
+						case 3:
+							person = 1;
+							dataHolder.Message.Text = "Hello!";
+
+							break;
+						case 4:
+							break;
+						case 5:
+							person = 1;
+
+							dataHolder.Message.Text = "Wassup?";
+							break;
+
+						case 6:
+							headerHolder.Name.Text = "Alice Apples";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime(2014,3,2));//"2014-02-08 11:12 am";
+							break;
+						case 7:
+							dataHolder.Message.Text = "Can you come get me at the steak house? My date turned out to be a real jerk.";
+							break;
+
+						case 8:
+							headerHolder.Name.Text = "Bob Baker";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime(2014,3,2));//"2014-02-08 11:13 am";
+							break;
+						case 9:
+							person = 1;
+							string data_message = dataHolder.Message.Text;
+							data_message = "https://www.youtube.com/watch?v=7II2wAb9CeQ";
+							if (data_message != null) {
+								if (data_message.IndexOf ("youtube", 0) > 0 || data_message.IndexOf ("youtu", 0) > 0 | data_message.IndexOf ("vimeo", 0) > 0) {
+									dataHolder.WEB.Visibility = ViewStates.Visible;
+									dataHolder.WEB.Settings.JavaScriptEnabled = true;
+									dataHolder.WEB.Settings.AllowContentAccess = true;
+									dataHolder.Message.Text = data_message;
+									dataHolder.WEB.SetWebChromeClient (new WebChromeClient ());
+									string data = sm.Expands_URL (data_message);
+									dataHolder.WEB.LoadData (data, "text/html", "utf-8");
+
+								} else {
+									dataHolder.Message.Text = data_message;
+									dataHolder.WEB.Visibility = ViewStates.Invisible;
+								}
+							}
+
+							break;
+						case 10:
+							break;
+						case 11:
+							person = 1;
+							dataHolder.Message.Text = "Are you somewhere warm? It's sure cold out this time of the year.";
+							break;
+
+						case 12:
+							headerHolder.Name.Text = "Alice Apples";
+							headerHolder.Time.Text = sm.Time_stamp (new DateTime (2014, 4, 20));//"2014-02-08 11:14 am";
+							break;
+						case 13:
+
+							string data_message1 = dataHolder.Message.Text;
+							data_message1 = "http://vimeo.com/23229235";
+							if (data_message1 != null) {
+								if (data_message1.IndexOf ("youtube", 0) > 0 || data_message1.IndexOf ("youtu", 0) > 0 | data_message1.IndexOf ("vimeo", 0) > 0) {
+									dataHolder.WEB.Visibility = ViewStates.Visible;
+									dataHolder.WEB.Settings.JavaScriptEnabled = true;
+									dataHolder.WEB.Settings.AllowContentAccess = true;
+									dataHolder.Message.Text = data_message1;
+									dataHolder.WEB.SetWebChromeClient (new WebChromeClient ());
+									string data = sm.Expands_URL (data_message1);
+									dataHolder.WEB.LoadData (data, "text/html", "utf-8");
+
+								} else {
+									dataHolder.Message.Text = data_message1;
+									dataHolder.WEB.Visibility = ViewStates.Invisible;
+								}
+							}
+
+							break;
+
+						default:
+							break;
+						}
+					
+					}
+
 					if (null != dataHolder) {
-						dataHolder.OriginalEmptyAvatarDrawable = dataHolder.AvatarImageView.Drawable;
-						dataHolder.AvatarWidth = dataHolder.AvatarImageView.LayoutParameters.Width;
-						dataHolder.AvatarHeight = dataHolder.AvatarImageView.LayoutParameters.Height;
+						dataHolder.CurrentDownloader = new AvatarDownloader (dataHolder);
 
-						// if these fail, you'll need to recode the source to delay the fetching of the avatar until after the render figures out the exact dimensions of the image
-						Contract.Assume ( ((dataHolder.AvatarWidth != ViewGroup.LayoutParams.MatchParent) && (dataHolder.AvatarWidth != ViewGroup.LayoutParams.WrapContent)) );
-						Contract.Assume ( ((dataHolder.AvatarHeight != ViewGroup.LayoutParams.MatchParent) && (dataHolder.AvatarHeight != ViewGroup.LayoutParams.WrapContent)) );
-					}
+						BitmapType bitmap = downloader.FetchNowOrAsyncDownload (
+							bogusUrls [person],
+							dataHolder.AvatarWidth,
+							dataHolder.AvatarHeight,
+							dataHolder.CurrentDownloader.HandleDownloaded
+						);
 
-					//				holder.LabelTextView = view.FindViewById<TextView> (Resource.Id.labelTextView);
-
-					view.Tag = holder;
-				} else {
-					holder = view.Tag as ViewHolder;
-					switch (@type) {
-					case ListItemType.LeftHeader:
-					case ListItemType.RightHeader:
-						holder = headerHolder = (HeaderViewHolder)view.Tag;
-						break;
-					case ListItemType.Left:
-					case ListItemType.Right:
-						holder = dataHolder = (DataViewHolder)view.Tag;
-						break;
-					case ListItemType.Margin:
-						break;
-					default:
-						throw new NotImplementedException();
-					}
-				}
-
-				int person = 0;
-
-				{
-					switch (position % (7 * 2)) {
-					case 0:
-						headerHolder.Name.Text = "Alice Apples";
-						headerHolder.Time.Text = "2014-02-08 11:11 am";
-						break;
-					case 1:
-						dataHolder.Message.Text = "Hello?";
-						break;
-
-					case 2:
-						headerHolder.Name.Text = "Bob Baker";
-						headerHolder.Time.Text = "2014-02-08 11:12 am";
-						break;
-					case 3:
-						person = 1;
-						dataHolder.Message.Text = "Hello!";
-						break;
-					case 4:
-						break;
-					case 5:
-						person = 1;
-						dataHolder.Message.Text = "Wassup?";
-						break;
-
-					case 6:
-						headerHolder.Name.Text = "Alice Apples";
-						headerHolder.Time.Text = "2014-02-08 11:12 am";
-						break;
-					case 7:
-						dataHolder.Message.Text = "Can you come get me at the steak house? My date turned out to be a real jerk.";
-						break;
-
-					case 8:
-						headerHolder.Name.Text = "Bob Baker";
-						headerHolder.Time.Text = "2014-02-08 11:13 am";
-						break;
-					case 9:
-						person = 1;
-						dataHolder.Message.Text = "Of course";
-						break;
-					case 10:
-						break;
-					case 11:
-						person = 1;
-						dataHolder.Message.Text = "Are you somewhere warm? It's sure cold out this time of the year.";
-						break;
-
-					case 12:
-						headerHolder.Name.Text = "Alice Apples";
-						headerHolder.Time.Text = "2014-02-08 11:14 am";
-						break;
-					case 13:
-						dataHolder.Message.Text = "Yes, I am warm and safe. Thanks for asking.";
-						break;
-
-					default:
-						break;
-					}
-				}
-
-				if (null != dataHolder) {
-					dataHolder.CurrentDownloader = new AvatarDownloader (dataHolder);
-
-					BitmapType bitmap = downloader.FetchNowOrAsyncDownload (
-						bogusUrls [person],
-						dataHolder.AvatarWidth,
-						dataHolder.AvatarHeight,
-						dataHolder.CurrentDownloader.HandleDownloaded
-					);
-
-					if (null != bitmap) {
-						dataHolder.AvatarImageView.SetImageDrawable (bitmap);
-					} else {
-						if (!firstTimeResourceLoaded) {
-							dataHolder.AvatarImageView.SetImageDrawable (dataHolder.OriginalEmptyAvatarDrawable);	// reset back to original drawable
+						if (null != bitmap) {
+							dataHolder.AvatarImageView.SetImageDrawable (bitmap);
+						} else {
+							if (!firstTimeResourceLoaded) {
+								dataHolder.AvatarImageView.SetImageDrawable (dataHolder.OriginalEmptyAvatarDrawable);	// reset back to original drawable
+							}
 						}
 					}
-				}
 
-				return view;
+					return view;
+				} else {
+
+					return null;
+				}//End
+				
+
 			}
 		}
 	}

@@ -20,11 +20,14 @@ namespace HopSampleApp
 
 			// Create your application here
 			SetContentView (Resource.Layout.EndCall);
+			#region Controls 
 			TextView DurationCall = FindViewById<TextView> (Resource.Id.DurationText);
 			ImageButton MicButton = FindViewById<ImageButton> (Resource.Id.MicButton);
 			ImageButton SpikerButton = FindViewById<ImageButton> (Resource.Id.SpikerButton);
 			ImageButton AddButton = FindViewById<ImageButton> (Resource.Id.AddButton);
 			ImageButton RecordingButton = FindViewById<ImageButton> (Resource.Id.RecordButton);
+			#endregion
+
 
 			string time="00:00:05";
 			DurationCall.Text = String.Format ("Duracion:{0}",time);

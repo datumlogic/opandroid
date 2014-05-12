@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:background="@drawable/bgsky2"
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:id="@+id/LinearLayout03"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bgcontactlist">
+        <TextView
+            android:id="@+id/ProfileID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="18dp"
+            android:text="@string/ProfileID"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:padding="18dip"
+            android:textColor="#000000" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:id="@+id/holder"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ProfileAvatarImage"
+                android:src="@drawable/person"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_height="119dp"
+                android:layout_width="117dp"
+                android:scaleType="fitCenter"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true" />
+            <View
+                android:id="@+id/avatarImage"
+                android:background="@drawable/ProfileImg"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_alignLeft="@+id/avatarImageView"
+                android:layout_alignTop="@+id/avatarImageView"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_centerInParent="true" />
+        </FrameLayout>
+        <TextView
+            android:id="@+id/ProfileUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textSize="18dp"
+            android:text="Petar Srdanovic"
+            android:padding="18dip"
+            android:textColor="#0066CC" />
+        <TextView
+            android:id="@+id/ProfileUserEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:textSize="18dp"
+            android:text="petar.srdanovic88@gmail.com"
+            android:padding="18dip"
+            android:textColor="#0066CC" />
+    </LinearLayout>
+</RelativeLayout>

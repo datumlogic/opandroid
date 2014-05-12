@@ -15,7 +15,7 @@ using ZXing;
 using ZXing.QrCode;
 using ZXing.Mobile;
 using System.Net;
-using Newtonsoft.Json.Linq;//Need to add this source in project
+//using Newtonsoft.Json.Linq;//Need to add this source in project
 using HopSampleApp.Services;
 using HopSampleApp.Activities;
 using Android.Support.V4.View;
@@ -62,12 +62,15 @@ namespace HopSampleApp
 
 					if(JSONParserProperty.GestureOption !=false)
 					{
-						StartActivity(typeof(HopSampleApp.GestureActivity));//Skip Splash View and go to ContactsActivity
+						Intent intent = new Intent (this, typeof(HopSampleApp.GestureActivity));
+						StartActivity (intent);
+
 
 					}else
 					{
+						Intent intent = new Intent (this, typeof(HopSampleApp.SessionActivity));
+						StartActivity (intent);
 
-						StartActivity(typeof(HopSampleApp.VideoCallActivity));
 
 					}
 				});

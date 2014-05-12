@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="vertical">
+        <ListView
+            android:id="@+id/InviteList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="#FFDAFF7F" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        <LinearLayout
+            android:id="@+id/holderbutton"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bgcontactlist"
+            android:layout_width="match_parent">
+            <Button
+                android:id="@+id/ContactsButton"
+                android:layout_marginTop="3dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:text="Contacts"
+                android:drawableTop="@drawable/contacts" />
+            <Button
+                android:id="@+id/InviteButton"
+                android:layout_marginTop="3dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Invite user"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/inviteuser" />
+            <Button
+                android:id="@+id/SessionButton"
+                android:layout_marginTop="3dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Session"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ses" />
+            <Button
+                android:id="@+id/ProfileButton"
+                android:layout_marginTop="3dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Profile"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/proid" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

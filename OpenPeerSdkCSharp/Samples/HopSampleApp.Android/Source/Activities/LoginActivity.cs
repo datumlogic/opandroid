@@ -8,10 +8,8 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
 using Android.Webkit;
 using Java.Interop;
-
 using OpenPeerSdk.Helpers;
 
 namespace HopSampleApp

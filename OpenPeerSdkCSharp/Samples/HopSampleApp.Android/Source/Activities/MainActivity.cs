@@ -5,7 +5,6 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-
 using System.Net;
 using System.IO;
 using System.Text;
@@ -55,6 +54,7 @@ namespace HopSampleApp
 
 				intent = new Intent (this, typeof(LoginActivity));
 				StartActivity (intent);
+
 			}
 		}
 	}

@@ -22,9 +22,10 @@ namespace HopSampleApp
 		/* Logic for reading string direct from QR Code where image created with JSON file  */
 		public static void ParseData(string data)
 		{
+
 			try{
 			var jObj = JObject.Parse(data);
-			var jsondata = jObj.Children ().Cast<JProperty> ().Select (c => new JSONParserProperty/*if u wont to use json property class. */ 
+			var jsondata = jObj.Children ().Cast<JProperty> ().Select (c => new JSONParserProperty
 				{
 
 					outerFrameURL = (string)c.Value ["outerFrameURL"],
@@ -44,6 +45,7 @@ namespace HopSampleApp
 			{
 				Console.WriteLine (String.Format("QRCodeError:{0}",Error.Message));//Error Message to determine where the error
 			}
+
 		}
 		/* Logic for reading json string from QR Code where image created with http link witch contains path to JSON File  */
 		public static void ParseData(string url,string paramether)
@@ -57,6 +59,7 @@ namespace HopSampleApp
 		}
 		public static void ParseDataCompleteURL(string url_complete)
 		{
+
 			try
 			{
 			var request = HttpWebRequest.Create (url_complete);
@@ -74,7 +77,7 @@ namespace HopSampleApp
 					}
 					else {
 						var jObj = JObject.Parse(content);
-						var jsondata = jObj.Children ().Cast<JProperty> ().Select (c => new JSONParserProperty/*if u wont to use json property class. */ 
+						var jsondata = jObj.Children ().Cast<JProperty> ().Select (c => new JSONParserProperty
 							{
 
 								outerFrameURL = (string)c.Value ["outerFrameURL"],
@@ -98,7 +101,7 @@ namespace HopSampleApp
 			}
 			catch(Exception Error)
 			{
-				Console.WriteLine("You need internet Connection for this option");
+				Console.WriteLine(String.Format("You need internet Connection for this option:{0}",Error.Message));
 			}
 
 		}

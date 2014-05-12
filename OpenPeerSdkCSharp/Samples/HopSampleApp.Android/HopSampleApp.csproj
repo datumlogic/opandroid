@@ -54,6 +54,10 @@
     <Compile Include="Source\Services\ServiceHelpers.cs" />
     <Compile Include="Source\Views\BadgeView.cs" />
     <Compile Include="Source\Services\ImageCachingService.cs" />
+    <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="Source\Services\GestureListener.cs" />
+    <Compile Include="Source\Services\JSONParserProperty.cs" />
+    <Compile Include="Source\Services\JSONParser.cs" />
     <Compile Include="Source\Activities\ChatActivity.cs" />
     <Compile Include="Source\Activities\ChatAdapter.cs" />
     <Compile Include="Source\Activities\ContactAdapter.cs" />
@@ -62,34 +66,22 @@
     <Compile Include="Source\Activities\GestureActivity.cs" />
     <Compile Include="Source\Activities\LoginActivity.cs" />
     <Compile Include="Source\Activities\MainActivity.cs" />
-    <Compile Include="Source\Activities\PopupCall.cs" />
     <Compile Include="Source\Activities\PopupCallActivity.cs" />
     <Compile Include="Source\Activities\PoupVideoCallActivity.cs" />
     <Compile Include="Source\Activities\SettingsActivity.cs" />
     <Compile Include="Source\Activities\SettingsAdapter.cs" />
-    <Compile Include="Source\Activities\VideoCallActivity.cs" />
-    <Compile Include="Source\Database\ChatMessage.cs" />
-    <Compile Include="Source\Database\ChatMessageDatabase.cs" />
-    <Compile Include="Source\Database\Common.cs" />
-    <Compile Include="Source\Database\Contact.cs" />
-    <Compile Include="Source\Database\ContactDatabase.cs" />
-    <Compile Include="Source\Database\Conversation.cs" />
-    <Compile Include="Source\Database\ConversationDatabase.cs" />
-    <Compile Include="Source\Database\ConversationParticipant.cs" />
-    <Compile Include="Source\Database\ConversationParticipantRecord.cs" />
-    <Compile Include="Source\Database\SQLite.cs" />
-    <Compile Include="Source\Helpers\Helper.cs" />
-    <Compile Include="Source\Helpers\Logger.cs" />
-    <Compile Include="Source\Helpers\LoggerSubsystemAttribute.cs" />
-    <Compile Include="Source\Helpers\OptionalOut.cs" />
-    <Compile Include="Source\Helpers\WeakReference.cs" />
-    <Compile Include="Source\Helpers\Internal\Logger.cs" />
-    <Compile Include="Source\Helpers\Internal\LoggerSubsystemAttribute.cs" />
-    <Compile Include="Resources\Resource.designer.cs" />
-    <Compile Include="Source\Services\GestureListener.cs" />
-    <Compile Include="Source\Services\JSONParserProperty.cs" />
-    <Compile Include="Source\Services\JSONParser.cs" />
     <Compile Include="Source\Activities\SplashActivity.cs" />
+    <Compile Include="Source\Activities\VideoCallActivity.cs" />
+    <Compile Include="Source\Activities\WaitingResponseActivity.cs" />
+    <Compile Include="Source\Services\SocialMediaFeature.cs" />
+    <Compile Include="Source\Activities\AlertActivity.cs" />
+    <Compile Include="Source\Activities\SessionActivity.cs" />
+    <Compile Include="Source\Activities\SessionAdapter.cs" />
+    <Compile Include="Source\Activities\ProfileActivity.cs" />
+    <Compile Include="Source\Activities\InviteActivity.cs" />
+    <Compile Include="Source\Activities\InviteAdapter.cs" />
+    <Compile Include="Source\Activities\InviteItemsAcc.cs" />
+    <Compile Include="Source\Activities\SessionItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -111,43 +103,8 @@
     <AndroidResource Include="Resources\anim\SlideInLeft.xml" />
     <AndroidResource Include="Resources\anim\SlideOutLeft.xml" />
     <AndroidResource Include="Resources\values\style.xml" />
-    <AndroidResource Include="Resources\drawable\acept.png" />
-    <AndroidResource Include="Resources\drawable\add.png" />
-    <AndroidResource Include="Resources\drawable\avatar.png" />
-    <AndroidResource Include="Resources\drawable\bgcontactlist.xml" />
-    <AndroidResource Include="Resources\drawable\ButtonStyle.xml" />
-    <AndroidResource Include="Resources\drawable\cam.png" />
-    <AndroidResource Include="Resources\drawable\camera.png" />
-    <AndroidResource Include="Resources\drawable\cb.png" />
-    <AndroidResource Include="Resources\drawable\cb1.png" />
-    <AndroidResource Include="Resources\drawable\ch.png" />
-    <AndroidResource Include="Resources\drawable\ch3.png" />
-    <AndroidResource Include="Resources\drawable\chat_alt.png" />
-    <AndroidResource Include="Resources\drawable\chat_bubble_left_source.png" />
-    <AndroidResource Include="Resources\drawable\chat_bubble_right_source.png" />
-    <AndroidResource Include="Resources\drawable\chat.png" />
-    <AndroidResource Include="Resources\drawable\decline.png" />
-    <AndroidResource Include="Resources\drawable\grid.png" />
-    <AndroidResource Include="Resources\drawable\Icon.png" />
-    <AndroidResource Include="Resources\drawable\imageshape.xml" />
-    <AndroidResource Include="Resources\drawable\log.png" />
-    <AndroidResource Include="Resources\drawable\lokalvideoborder.xml" />
-    <AndroidResource Include="Resources\drawable\mic.png" />
-    <AndroidResource Include="Resources\drawable\mic1.png" />
-    <AndroidResource Include="Resources\drawable\MyButtons.xml" />
-    <AndroidResource Include="Resources\drawable\MyButtons2.xml" />
-    <AndroidResource Include="Resources\drawable\op.png" />
-    <AndroidResource Include="Resources\drawable\person.png" />
-    <AndroidResource Include="Resources\drawable\radio.png" />
-    <AndroidResource Include="Resources\drawable\radio1.png" />
-    <AndroidResource Include="Resources\drawable\record.png" />
-    <AndroidResource Include="Resources\drawable\remote.jpg" />
-    <AndroidResource Include="Resources\drawable\robin.png" />
-    <AndroidResource Include="Resources\drawable\scam.png" />
-    <AndroidResource Include="Resources\drawable\spiker.png" />
-    <AndroidResource Include="Resources\drawable\videobg.xml" />
-    <AndroidResource Include="Resources\values\Strings.xml" />
     <AndroidResource Include="Resources\values\styles.xml" />
+    <AndroidResource Include="Resources\values\Strings.xml" />
     <AndroidResource Include="Resources\layout\Chat.axml" />
     <AndroidResource Include="Resources\layout\ChatLeftSideHeaderListItem.axml" />
     <AndroidResource Include="Resources\layout\ChatLeftSideListItem.axml" />
@@ -173,6 +130,107 @@
     <AndroidResource Include="Resources\layout\SettingsToggleListItem.axml" />
     <AndroidResource Include="Resources\layout\Splash.axml" />
     <AndroidResource Include="Resources\layout\VideoCall.xml" />
+    <AndroidResource Include="Resources\layout\WaitingResponse.axml" />
+    <AndroidResource Include="Resources\drawable\a1.png" />
+    <AndroidResource Include="Resources\drawable\a2.png" />
+    <AndroidResource Include="Resources\drawable\a3.png" />
+    <AndroidResource Include="Resources\drawable\a4.png" />
+    <AndroidResource Include="Resources\drawable\a5.png" />
+    <AndroidResource Include="Resources\drawable\a6.png" />
+    <AndroidResource Include="Resources\drawable\a7.png" />
+    <AndroidResource Include="Resources\drawable\a8.png" />
+    <AndroidResource Include="Resources\drawable\a9.png" />
+    <AndroidResource Include="Resources\drawable\a10.png" />
+    <AndroidResource Include="Resources\drawable\a11.png" />
+    <AndroidResource Include="Resources\drawable\a12.png" />
+    <AndroidResource Include="Resources\drawable\a13.png" />
+    <AndroidResource Include="Resources\drawable\a14.png" />
+    <AndroidResource Include="Resources\drawable\a15.png" />
+    <AndroidResource Include="Resources\drawable\a16.png" />
+    <AndroidResource Include="Resources\drawable\a17.png" />
+    <AndroidResource Include="Resources\drawable\a18.png" />
+    <AndroidResource Include="Resources\drawable\a19.png" />
+    <AndroidResource Include="Resources\drawable\a20.png" />
+    <AndroidResource Include="Resources\drawable\a21.png" />
+    <AndroidResource Include="Resources\drawable\a22.png" />
+    <AndroidResource Include="Resources\drawable\a23.png" />
+    <AndroidResource Include="Resources\drawable\a24.png" />
+    <AndroidResource Include="Resources\drawable\a25.png" />
+    <AndroidResource Include="Resources\drawable\a26.png" />
+    <AndroidResource Include="Resources\drawable\a27.png" />
+    <AndroidResource Include="Resources\drawable\a28.png" />
+    <AndroidResource Include="Resources\drawable\a29.png" />
+    <AndroidResource Include="Resources\drawable\acept.png" />
+    <AndroidResource Include="Resources\drawable\add.png" />
+    <AndroidResource Include="Resources\drawable\avatar.png" />
+    <AndroidResource Include="Resources\drawable\bgcontactlist.xml" />
+    <AndroidResource Include="Resources\drawable\ButtonStyle.xml" />
+    <AndroidResource Include="Resources\drawable\cam.png" />
+    <AndroidResource Include="Resources\drawable\camera.png" />
+    <AndroidResource Include="Resources\drawable\cb.png" />
+    <AndroidResource Include="Resources\drawable\cb1.png" />
+    <AndroidResource Include="Resources\drawable\ch.png" />
+    <AndroidResource Include="Resources\drawable\ch3.png" />
+    <AndroidResource Include="Resources\drawable\chat_alt.png" />
+    <AndroidResource Include="Resources\drawable\chat_bubble_left_source.png" />
+    <AndroidResource Include="Resources\drawable\chat_bubble_right_source.png" />
+    <AndroidResource Include="Resources\drawable\chat.png" />
+    <AndroidResource Include="Resources\drawable\chatbg.xml" />
+    <AndroidResource Include="Resources\drawable\chattxtedit.xml" />
+    <AndroidResource Include="Resources\drawable\decline.png" />
+    <AndroidResource Include="Resources\drawable\emotion.png" />
+    <AndroidResource Include="Resources\drawable\grid.png" />
+    <AndroidResource Include="Resources\drawable\Icon.png" />
+    <AndroidResource Include="Resources\drawable\imageshape.xml" />
+    <AndroidResource Include="Resources\drawable\log.png" />
+    <AndroidResource Include="Resources\drawable\lokalvideoborder.xml" />
+    <AndroidResource Include="Resources\drawable\mic.png" />
+    <AndroidResource Include="Resources\drawable\mic1.png" />
+    <AndroidResource Include="Resources\drawable\move.png" />
+    <AndroidResource Include="Resources\drawable\MyButtons.xml" />
+    <AndroidResource Include="Resources\drawable\MyButtons2.xml" />
+    <AndroidResource Include="Resources\drawable\op.png" />
+    <AndroidResource Include="Resources\drawable\person.png" />
+    <AndroidResource Include="Resources\drawable\radio.png" />
+    <AndroidResource Include="Resources\drawable\radio1.png" />
+    <AndroidResource Include="Resources\drawable\record.png" />
+    <AndroidResource Include="Resources\drawable\redarrow.png" />
+    <AndroidResource Include="Resources\drawable\remote.jpg" />
+    <AndroidResource Include="Resources\drawable\robin.png" />
+    <AndroidResource Include="Resources\drawable\scam.png" />
+    <AndroidResource Include="Resources\drawable\se.png" />
+    <AndroidResource Include="Resources\drawable\send.png" />
+    <AndroidResource Include="Resources\drawable\spiker.png" />
+    <AndroidResource Include="Resources\drawable\videobg.xml" />
+    <AndroidResource Include="Resources\drawable\wpc.png" />
+    <AndroidResource Include="Resources\drawable\wpv.png" />
+    <AndroidResource Include="Resources\drawable\wrbg.png" />
+    <AndroidResource Include="Resources\drawable\wrbgg.png" />
+    <AndroidResource Include="Resources\drawable\wrbggg.png" />
+    <AndroidResource Include="Resources\drawable\animacionshapes.xml" />
+    <AndroidResource Include="Resources\drawable\animacionskybg.xml" />
+    <AndroidResource Include="Resources\drawable\bgsky1.png" />
+    <AndroidResource Include="Resources\drawable\bgsky2.png" />
+    <AndroidResource Include="Resources\drawable\bgsky3.png" />
+    <AndroidResource Include="Resources\layout\Alert.axml" />
+    <AndroidResource Include="Resources\layout\PullToRefreshSession.axml" />
+    <AndroidResource Include="Resources\drawable\bgsessionlist.xml" />
+    <AndroidResource Include="Resources\layout\ListItemSession.axml" />
+    <AndroidResource Include="Resources\drawable\imageshapecircle.xml" />
+    <AndroidResource Include="Resources\drawable\imgmaster.xml" />
+    <AndroidResource Include="Resources\layout\Profile.xml" />
+    <AndroidResource Include="Resources\drawable\ProfileImg.xml" />
+    <AndroidResource Include="Resources\layout\InviteLayout.axml" />
+    <AndroidResource Include="Resources\layout\InviteItem.axml" />
+    <AndroidResource Include="Resources\drawable\linkedin.png" />
+    <AndroidResource Include="Resources\drawable\twiter.png" />
+    <AndroidResource Include="Resources\drawable\facebook.png" />
+    <AndroidResource Include="Resources\drawable\contacts.png" />
+    <AndroidResource Include="Resources\drawable\inviteuser.png" />
+    <AndroidResource Include="Resources\drawable\proid.png" />
+    <AndroidResource Include="Resources\drawable\ses.png" />
+    <AndroidResource Include="Resources\layout\SessionLayout.axml" />
+    <AndroidResource Include="Resources\drawable\search.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -186,21 +244,10 @@
     <Folder Include="Source\Activities\" />
     <Folder Include="Source\Services\" />
     <Folder Include="Source\Views\" />
-    <Folder Include="Source\Database\" />
-    <Folder Include="Source\Helpers\" />
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\drawable\" />
-    <Folder Include="Source\Helpers\Internal\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
-      <Project>{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}</Project>
-      <Name>PullToRefresharp.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\OpenPeerSdkCSharp.csproj">
-      <Project>{8E4FFF81-A605-4848-8633-FDC8CF6B77E5}</Project>
-      <Name>OpenPeerSdkCSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">
       <Project>{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}</Project>
       <Name>ZXing.Net.Mobile.Android</Name>
@@ -209,13 +256,17 @@
       <Project>{8971B59D-78F1-49BA-808D-CBADB37F571F}</Project>
       <Name>zxing.monoandroid</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\OpenPeerAndroidSDK\OpenPeerAndroidSDK.csproj">
-      <Project>{DF7C4BF6-3FBB-4387-B2E6-21C22A4E6D9B}</Project>
-      <Name>OpenPeerAndroidSDK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\libs\Newtonsoft-3.Json-master\Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj">
+    <ProjectReference Include="..\..\..\libs\Newtonsoft.Json\Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj">
       <Project>{E6C3413C-919B-486D-8B6C-225CBD921B98}</Project>
       <Name>Newtonsoft.Json.MonoDroid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OpenPeerSdkCSharp.csproj">
+      <Project>{8E4FFF81-A605-4848-8633-FDC8CF6B77E5}</Project>
+      <Name>OpenPeerSdkCSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\libs\PullToRefresharp\PullToRefresharp.Android\PullToRefresharp.Android.csproj">
+      <Project>{27583AAA-AAE8-4E01-A962-6DCE5E0E3A4B}</Project>
+      <Name>PullToRefresharp.Android</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

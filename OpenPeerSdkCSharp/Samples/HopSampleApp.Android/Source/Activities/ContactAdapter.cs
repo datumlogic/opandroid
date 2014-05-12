@@ -1,19 +1,14 @@
-﻿
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-
 using Android.App;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
-
 using OpenPeerSdk.Helpers;
-
 using HopSampleApp.Services;
 using HopSampleApp.Views;
-
 using Helpers = OpenPeerSdk.Helpers;
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 

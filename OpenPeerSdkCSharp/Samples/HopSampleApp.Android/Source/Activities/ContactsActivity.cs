@@ -1,7 +1,5 @@
-
 using System;
 using System.Collections.Generic;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -9,13 +7,9 @@ using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-
 using OpenPeerSdk.Helpers;
-
 using PullToRefresharp.Android.Views;
-
 using HopSampleApp.Services;
-
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 
 namespace HopSampleApp
@@ -26,6 +20,7 @@ namespace HopSampleApp
 		[Activity (Label = "Open Peer Sample App - Contact List",Icon="@drawable/op" /*,MainLauncher = true*/)]			
 		public class ContactsActivity : ListActivity
 		{
+
 			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
 			private IPullToRefresharpView refreshListView;
 			private ServiceConnection<ImageCachingService> imageCachingServiceConnection;
@@ -41,6 +36,7 @@ namespace HopSampleApp
 
 				imageCachingServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this, downloader);
 
+			 
 				refreshListView = this.ListView as IPullToRefresharpView;
 
 				if (refreshListView != null) {
@@ -49,7 +45,7 @@ namespace HopSampleApp
 
 				this.ListAdapter = new ContactsAdapter (this, downloader);
 			}
-
+		
 			protected override void OnDestroy ()
 			{
 				if (imageCachingServiceConnection != null) {
@@ -82,17 +78,27 @@ namespace HopSampleApp
 						StartActivity (intent);
 						return true;
 					}
+				case Resource.Id.ProfileMenuItem:
+					{
+					Intent intent = new Intent (this, typeof(ProfileActivity));
+					StartActivity (intent);
+					return true;
+
+				    }
 				}
 				return base.OnOptionsItemSelected (item);
 			}
 
+
 			protected override void OnListItemClick(ListView l, View v, int position, long id)
 			{
 				base.OnListItemClick (l, v, position, id);
+									
+
 				Intent intent = new Intent (this, typeof(ChatActivity));
 				StartActivity (intent);
 
-				this.OverridePendingTransition (Resource.Animation.SlideInRight, Resource.Animation.SlideOutLeft);
+					this.OverridePendingTransition (Resource.Animation.SlideInRight, Resource.Animation.SlideOutLeft);
 			}
 
 			private void pullview_RefreshActivated(object sender, EventArgs args)
