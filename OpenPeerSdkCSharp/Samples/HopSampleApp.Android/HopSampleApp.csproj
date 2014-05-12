@@ -81,6 +81,7 @@
     <Compile Include="Source\Activities\InviteActivity.cs" />
     <Compile Include="Source\Activities\InviteAdapter.cs" />
     <Compile Include="Source\Activities\InviteItemsAcc.cs" />
+    <Compile Include="Source\Activities\SessionItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -212,7 +213,6 @@
     <AndroidResource Include="Resources\drawable\bgsky2.png" />
     <AndroidResource Include="Resources\drawable\bgsky3.png" />
     <AndroidResource Include="Resources\layout\Alert.axml" />
-    <AndroidResource Include="Resources\layout\Session.axml" />
     <AndroidResource Include="Resources\layout\PullToRefreshSession.axml" />
     <AndroidResource Include="Resources\drawable\bgsessionlist.xml" />
     <AndroidResource Include="Resources\layout\ListItemSession.axml" />
@@ -229,6 +229,8 @@
     <AndroidResource Include="Resources\drawable\inviteuser.png" />
     <AndroidResource Include="Resources\drawable\proid.png" />
     <AndroidResource Include="Resources\drawable\ses.png" />
+    <AndroidResource Include="Resources\layout\SessionLayout.axml" />
+    <AndroidResource Include="Resources\drawable\search.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

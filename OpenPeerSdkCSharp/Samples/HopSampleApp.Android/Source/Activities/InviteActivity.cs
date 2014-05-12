@@ -19,7 +19,7 @@ namespace HopSampleApp
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-			SetContentView(Resource.Layout.InviteLayout);
+			SetContentView(Resource.Layout.SessionLayout);
 			listView = FindViewById<ListView>(Resource.Id.InviteList);	
 			// Create your application here
 			UsersInviteItems.Add(

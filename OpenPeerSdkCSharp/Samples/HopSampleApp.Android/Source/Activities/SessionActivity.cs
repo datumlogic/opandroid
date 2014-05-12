@@ -6,6 +6,7 @@ using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Views;
+using System.Linq;
 using Android.Widget;
 using OpenPeerSdk.Helpers;
 using PullToRefresharp.Android.Views;
@@ -17,98 +18,138 @@ namespace HopSampleApp
 {
 	[LoggerSubsystem("hop_sample_app")]
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]				
-	public class SessionActivity : ListActivity
+	public class SessionActivity : Activity
 	{
-		private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
-		private IPullToRefresharpView refreshListView;
-		private ServiceConnection<ImageCachingService> imageCachingServiceConnection;
-
-		private DateTime lastRefresh;
-		private static TimeSpan redownloadIfRefreshWithin = TimeSpan.FromSeconds (15);
-		private static TimeSpan redownloadOlderThan = TimeSpan.FromMinutes (5);
-
+		List<SessionItem> UsersSessions = new List<SessionItem>();
+		ListView listView;
+		SocialMediaFeature sm=new SocialMediaFeature();
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
-			SetContentView (Resource.Layout.PullToRefreshSession);
+			SetContentView (Resource.Layout.SessionLayout);
+			listView = FindViewById<ListView> (Resource.Id.SessionList);
+			Button Search = FindViewById<Button> (Resource.Id.SearchButton);
+			EditText SearchKeyword = FindViewById<EditText> (Resource.Id.SearchSessionItem);
 
-			imageCachingServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this, downloader);
+				//Populate session list with users
+			/*
+              UsersSessions.Add (new SessionItem
+				{
+					Id = User Id
+					SessionDate = Session Date
+					SessionTypeName = Session Type Video Call,Voice Call,Chat etc.
+					SessionTime = Modern time stamp ex.usage (sm.Time_stamp(new DateTime(2014,4,20))),
+					SesisonUserName = username of user
+					SessionMyName = user full name or nickname
+				});
 
-			refreshListView = this.ListView as IPullToRefresharpView;
 
-			if (refreshListView != null) {
-				refreshListView.RefreshActivated += pullview_RefreshActivated;
-			}
-
-			this.ListAdapter = new SessionAdapter(this, downloader);
-		}
-
-		protected override void OnDestroy ()
-		{
-			if (imageCachingServiceConnection != null) {
-				imageCachingServiceConnection.Dispose ();
-				imageCachingServiceConnection = null;
-			}
-
-			base.OnDestroy ();
-		}
-
-		public override bool OnCreateOptionsMenu(IMenu menu)
-		{
-			MenuInflater.Inflate (Resource.Menu.main_menu, menu);
-			return true;
-		}
-
-		public override bool OnOptionsItemSelected(IMenuItem item)
-		{
-			switch (item.ItemId) {
-				case Resource.Id.settingsMenuItem:
+			*/
+			UsersSessions.Add (new SessionItem
+				{
+					Id = 0,
+					SessionDate = new DateTime(2014,4,20),
+					SessionTypeName = "Video Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,4,20)),
+					SesisonUserName = "petar-hookflash",
+					SessionMyName = "Petar"
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id = 1,
+					SessionDate = new DateTime(2014,5,07),
+					SessionTypeName = "Video Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,5,07)),
+					SesisonUserName = "sergej-hookflash",
+					SessionMyName = "Sergej"
+				
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id = 2,
+					SessionDate = new DateTime(2014,5,06),
+					SessionTypeName = "Voice Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SesisonUserName = "robin-hookflash",
+					SessionMyName = "Robin"
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id=3,
+					SessionDate = new DateTime(2014,5,06),
+					SessionTypeName = "Voice Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SesisonUserName = "marko-hookflash",
+					SessionMyName = "Marko"
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id=4,
+					SessionDate = new DateTime(2014,5,06),
+					SessionTypeName = "Chat",
+					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SesisonUserName = "adrijano-hookflash",
+					SessionMyName = "Adrijano"
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id=5,
+					SessionDate = new DateTime(2014,3,06),
+					SessionTypeName = "Chat",
+					SessionTime = sm.Time_stamp(new DateTime(2014,3,06)),
+					SesisonUserName = "bojan-hookflash",
+					SessionMyName = "Bojan"
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id=6,
+					SessionDate = new DateTime(2014,5,06),
+					SessionTypeName = "Voice Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SesisonUserName = "eric-hookflash",
+					SessionMyName = "Eric"
+				});
+			//Sorting session by session date and session type.
+			var SortingByDateAndType = UsersSessions.Where (s_date => s_date.SessionDate == s_date.SessionDate).OrderBy (s_type => s_type.SessionTypeName == s_type.SessionTypeName).ToList ();
+			//Search button
+			Search.Click += delegate 
 			{
-				Intent intent = new Intent (this, typeof(SettingsActivity));
-				StartActivity (intent);
-				return true;
-			}
-				case Resource.Id.logoutMenuItem:
+				if(SearchKeyword.Text !=String.Empty)
+				{
+					//Search session items by SearchKeyword.text string
+					listView.Adapter=new SessionAdapter(this,SortingByDateAndType.Where(search=>search.SesisonUserName.Contains(SearchKeyword.Text)).ToList());
+
+				}
+				else
+				{
+					//Populate all session items in list
+					listView.Adapter = new SessionAdapter(this,SortingByDateAndType);
+				}
+			};
+			SearchKeyword.TextChanged += delegate
 			{
-				// this is a temporary hack to get to the login page, it will spawn automatically based on need in the future
-				Intent intent = new Intent (this, typeof(LoginActivity));
-				StartActivity (intent);
-				return true;
-			}
-			}
-			return base.OnOptionsItemSelected (item);
-		}
-
-		protected override void OnListItemClick(ListView l, View v, int position, long id)
-		{
-			base.OnListItemClick (l, v, position, id);
-			Intent intent = new Intent (this, typeof(ChatActivity));
-			StartActivity (intent);
-
-			this.OverridePendingTransition (Resource.Animation.SlideInRight, Resource.Animation.SlideOutLeft);
-		}
-
-		private void pullview_RefreshActivated(object sender, EventArgs args)
-		{
-			this.downloader.RedownloadMissingUponNextFetch ();
-
-			if (lastRefresh != default(DateTime)) {
-				if (lastRefresh + redownloadIfRefreshWithin < DateTime.UtcNow) {
-					this.downloader.RedownloadOlderThan (DateTime.UtcNow - redownloadOlderThan);
+				//if SearchKeyword empty populate all session items
+				if(SearchKeyword.Text==String.Empty)
+				{
+					listView.Adapter = new SessionAdapter(this,SortingByDateAndType);
 				}
+			};
+			//Load session item on screen load
+			listView.Adapter = new SessionAdapter(this,SortingByDateAndType);
+			//Printing lambda expressions in console to see is selecting good.
+			foreach (var item in SortingByDateAndType.ToList()) {
+				Console.WriteLine (String.Format ("Result: {0} - {1} - {2}", item.SessionDate, item.SessionTypeName,item.SesisonUserName));
 			}
-
-			lastRefresh = DateTime.UtcNow;
-
-			ListView.InvalidateViews ();
-
-			ListView.PostDelayed(() => {
-				if (refreshListView != null) {
-					// When you are done refreshing your content, let PullToRefresharp know you're done.
-					refreshListView.OnRefreshCompleted();
-				}
-			}, 2000);
 		}
+
+
+
+			
+
+			
+
+			
+
 	}
 }
 
