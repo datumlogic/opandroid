@@ -82,6 +82,7 @@
     <Compile Include="Source\Activities\InviteAdapter.cs" />
     <Compile Include="Source\Activities\InviteItemsAcc.cs" />
     <Compile Include="Source\Activities\SessionItem.cs" />
+    <Compile Include="Source\Activities\LettersAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

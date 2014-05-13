@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Views;
+using Android.Runtime;
 using System.Linq;
 using Android.Widget;
 using OpenPeerSdk.Helpers;
@@ -14,22 +16,29 @@ using HopSampleApp.Services;
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 using HopSampleApp.Views;
 using HopSampleApp.Activities;
+
 namespace HopSampleApp
 {
 	[LoggerSubsystem("hop_sample_app")]
 	[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]				
-	public class SessionActivity : Activity
+	public class SessionActivity : Activity //ListActivity
 	{
 		List<SessionItem> UsersSessions = new List<SessionItem>();
 		ListView listView;
+		//
 		SocialMediaFeature sm=new SocialMediaFeature();
+
 		protected override void OnCreate (Bundle bundle)
 		{
+
 			base.OnCreate (bundle);
 			SetContentView (Resource.Layout.SessionLayout);
 			listView = FindViewById<ListView> (Resource.Id.SessionList);
 			Button Search = FindViewById<Button> (Resource.Id.SearchButton);
 			EditText SearchKeyword = FindViewById<EditText> (Resource.Id.SearchSessionItem);
+
+
+		  
 
 				//Populate session list with users
 			/*
@@ -109,6 +118,24 @@ namespace HopSampleApp
 					SesisonUserName = "eric-hookflash",
 					SessionMyName = "Eric"
 				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id=7,
+					SessionDate = new DateTime(2014,5,06),
+					SessionTypeName = "Voice Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SesisonUserName = "eric-hookflash",
+					SessionMyName = "Eric"
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id=8,
+					SessionDate = new DateTime(2014,5,06),
+					SessionTypeName = "Voice Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SesisonUserName = "df-hookflash",
+					SessionMyName = "df"
+				});
 			//Sorting session by session date and session type.
 			var SortingByDateAndType = UsersSessions.Where (s_date => s_date.SessionDate == s_date.SessionDate).OrderBy (s_type => s_type.SessionTypeName == s_type.SessionTypeName).ToList ();
 			//Search button
@@ -134,21 +161,20 @@ namespace HopSampleApp
 					listView.Adapter = new SessionAdapter(this,SortingByDateAndType);
 				}
 			};
+
 			//Load session item on screen load
-			listView.Adapter = new SessionAdapter(this,SortingByDateAndType);
+			listView.Adapter = new SessionAdapter(this,UsersSessions);
+			//listView.SmoothScrollbarEnabled = true;
+			//listView.FastScrollAlwaysVisible = true;
+			//listView.FastScrollEnabled = true;
 			//Printing lambda expressions in console to see is selecting good.
 			foreach (var item in SortingByDateAndType.ToList()) {
 				Console.WriteLine (String.Format ("Result: {0} - {1} - {2}", item.SessionDate, item.SessionTypeName,item.SesisonUserName));
 			}
+
 		}
 
-
-
-			
-
-			
-
-			
+				
 
 	}
 }
