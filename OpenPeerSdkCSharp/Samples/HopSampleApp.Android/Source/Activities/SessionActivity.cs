@@ -17,6 +17,7 @@ using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 using HopSampleApp.Views;
 using HopSampleApp.Activities;
 
+
 namespace HopSampleApp
 {
 	[LoggerSubsystem("hop_sample_app")]
@@ -165,8 +166,8 @@ namespace HopSampleApp
 			//Load session item on screen load
 			listView.Adapter = new SessionAdapter(this,UsersSessions);
 			//listView.SmoothScrollbarEnabled = true;
-			//listView.FastScrollAlwaysVisible = true;
-			//listView.FastScrollEnabled = true;
+			listView.FastScrollAlwaysVisible = true;
+			listView.FastScrollEnabled = true;
 			//Printing lambda expressions in console to see is selecting good.
 			foreach (var item in SortingByDateAndType.ToList()) {
 				Console.WriteLine (String.Format ("Result: {0} - {1} - {2}", item.SessionDate, item.SessionTypeName,item.SesisonUserName));

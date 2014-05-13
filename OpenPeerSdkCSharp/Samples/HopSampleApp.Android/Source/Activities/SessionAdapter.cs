@@ -25,12 +25,12 @@ namespace HopSampleApp
 	{
 		[LoggerSubsystem("hop_sample_app")]
 		class SessionAdapter: BaseAdapter<SessionItem>,ISectionIndexer{
-			IList<SessionItem> items;
+			List<SessionItem> items;
 			Activity context;
 			private string[] sections;
 			private Java.Lang.Object[] sectionsObject;
 			private Dictionary<string,int> alphabetindex;
-			public SessionAdapter(Activity context, IList<SessionItem> items)
+			public SessionAdapter(Activity context, List<SessionItem> items)
 				: base()
 			{
 				this.context = context;
@@ -42,8 +42,8 @@ namespace HopSampleApp
 				this.alphabetindex = new Dictionary<string, int> ();
 				for(int i =0;i<items.Count;i++)
 				{
-					var key = items [i].SesisonUserName[i].ToString();
-					if (alphabetindex.ContainsKey (key))
+					var key = items [i].SesisonUserName[0].ToString();
+					if (!alphabetindex.ContainsKey (key))
 					{
 						alphabetindex.Add (key, i);
 					}
@@ -90,7 +90,7 @@ namespace HopSampleApp
 			}
 			public int GetSectionForPosition(int position)
 			{
-				int prevSection = 0;
+				/*int prevSection = 0;
 				for (int i = 0; i < sections.Length; i++) 
 				{
 					if (GetPositionForSection (i) > position && prevSection < position) 
@@ -98,8 +98,8 @@ namespace HopSampleApp
 						prevSection = i;
 						break;
 					}
-				}
-				return prevSection;
+				}*/
+				return 1;// prevSection;
 			}
 			public Java.Lang.Object[] GetSections()
 			{
