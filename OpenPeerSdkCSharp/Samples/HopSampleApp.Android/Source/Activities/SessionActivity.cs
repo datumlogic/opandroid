@@ -58,18 +58,18 @@ namespace HopSampleApp
 			UsersSessions.Add (new SessionItem
 				{
 					Id = 0,
-					SessionDate = new DateTime(2014,4,20),
+					SessionDate = new DateTime(2014,01,20),
 					SessionTypeName = "Video Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,4,20)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,01,20)),
 					SesisonUserName = "petar-hookflash",
 					SessionMyName = "Petar"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id = 1,
-					SessionDate = new DateTime(2014,5,07),
+					SessionDate = new DateTime(2014,01,21),
 					SessionTypeName = "Video Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,5,07)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,01,21)),
 					SesisonUserName = "sergej-hookflash",
 					SessionMyName = "Sergej"
 				
@@ -77,68 +77,78 @@ namespace HopSampleApp
 			UsersSessions.Add (new SessionItem
 				{
 					Id = 2,
-					SessionDate = new DateTime(2014,5,06),
+					SessionDate = new DateTime(2014,02,06),
 					SessionTypeName = "Voice Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,02,06)),
 					SesisonUserName = "robin-hookflash",
 					SessionMyName = "Robin"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=3,
-					SessionDate = new DateTime(2014,5,06),
+					SessionDate = new DateTime(2014,02,06),
 					SessionTypeName = "Voice Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,02,06)),
 					SesisonUserName = "marko-hookflash",
 					SessionMyName = "Marko"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=4,
-					SessionDate = new DateTime(2014,5,06),
+					SessionDate = new DateTime(2014,05,06),
 					SessionTypeName = "Chat",
-					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,05,06)),
 					SesisonUserName = "adrijano-hookflash",
 					SessionMyName = "Adrijano"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=5,
-					SessionDate = new DateTime(2014,3,06),
+					SessionDate = new DateTime(2014,05,06),
 					SessionTypeName = "Chat",
-					SessionTime = sm.Time_stamp(new DateTime(2014,3,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,05,06)),
 					SesisonUserName = "bojan-hookflash",
 					SessionMyName = "Bojan"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=6,
-					SessionDate = new DateTime(2014,5,06),
+					SessionDate = new DateTime(2014,06,06),
 					SessionTypeName = "Voice Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,06,06)),
 					SesisonUserName = "eric-hookflash",
 					SessionMyName = "Eric"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=7,
-					SessionDate = new DateTime(2014,5,06),
+					SessionDate = new DateTime(2014,07,06),
 					SessionTypeName = "Voice Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,07,06)),
 					SesisonUserName = "eric-hookflash",
 					SessionMyName = "Eric"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=8,
-					SessionDate = new DateTime(2014,5,06),
+					SessionDate = new DateTime(2014,07,06),
 					SessionTypeName = "Voice Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,5,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,07,06)),
+					SesisonUserName = "df-hookflash",
+					SessionMyName = "df"
+				});
+			UsersSessions.Add (new SessionItem
+				{
+					Id=9,
+					SessionDate = new DateTime(2014,08,06),
+					SessionTypeName = "Voice Call",
+					SessionTime = sm.Time_stamp(new DateTime(2014,08,06)),
 					SesisonUserName = "df-hookflash",
 					SessionMyName = "df"
 				});
 			//Sorting session by session date and session type.
 			var SortingByDateAndType = UsersSessions.Where (s_date => s_date.SessionDate == s_date.SessionDate).OrderBy (s_type => s_type.SessionTypeName == s_type.SessionTypeName).ToList ();
+			var SortingByDate = UsersSessions.OrderBy(s_date=>s_date.SessionDate==s_date.SessionDate).ToList();
 			//Search button
 			Search.Click += delegate 
 			{
@@ -151,7 +161,7 @@ namespace HopSampleApp
 				else
 				{
 					//Populate all session items in list
-					listView.Adapter = new SessionAdapter(this,SortingByDateAndType);
+					listView.Adapter = new SessionAdapter(this,SortingByDate);
 				}
 			};
 			SearchKeyword.TextChanged += delegate
@@ -159,12 +169,12 @@ namespace HopSampleApp
 				//if SearchKeyword empty populate all session items
 				if(SearchKeyword.Text==String.Empty)
 				{
-					listView.Adapter = new SessionAdapter(this,SortingByDateAndType);
+					listView.Adapter = new SessionAdapter(this,SortingByDate);
 				}
 			};
 
 			//Load session item on screen load
-			listView.Adapter = new SessionAdapter(this,UsersSessions);
+			listView.Adapter = new SessionAdapter(this,SortingByDate);
 			//listView.SmoothScrollbarEnabled = true;
 			listView.FastScrollAlwaysVisible = true;
 			listView.FastScrollEnabled = true;

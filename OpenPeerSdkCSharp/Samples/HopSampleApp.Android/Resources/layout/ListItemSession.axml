@@ -10,6 +10,13 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dip">
         <TextView
+            android:id="@+id/SessionHeadTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="19dip"
+            android:gravity="center"
+            android:textColor="#FF0000" />
+        <TextView
             android:id="@+id/Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
