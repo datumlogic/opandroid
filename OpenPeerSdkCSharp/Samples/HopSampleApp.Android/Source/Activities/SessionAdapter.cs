@@ -70,7 +70,7 @@ namespace HopSampleApp
 				if (GetPositionForSection (section_pos) == position) {
 					//string title = //item_section.SessionDate.ToString ();
 
-						head_title.Text = item_section.SessionDate.ToString ();//title;
+					head_title.Text =  item_section.SessionDate.ToString ("(dd MMMM) dddd",CultureInfo.CreateSpecificCulture("en-US"));//title;
 						head_title.Visibility = ViewStates.Visible;
 
 				} else {
@@ -106,7 +106,7 @@ namespace HopSampleApp
 				view.FindViewById<TextView>(Resource.Id.Username).Text =items[position].SesisonUserName;
 				view.FindViewById<TextView> (Resource.Id.SessionDate).Text =sm.Time_stamp(items[position].SessionDate);
 				view.FindViewById<ImageView>(Resource.Id.Image).SetImageResource(items[position].UserImg);
-				view.FindViewById<TextView> (Resource.Id.SessionHeadTitle).Text = items [position].SessionDate.ToString ();
+				view.FindViewById<TextView> (Resource.Id.SessionHeadTitle).Text = items [position].SessionDate.ToString ("(dd MMMM) dddd",CultureInfo.CreateSpecificCulture("en-US"));
 				bindSectionHeader (view,position);
 				return view;
 			}
