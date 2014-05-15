@@ -122,9 +122,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPStack_createAuthorizedAppl
 	jni_env = getEnv();
 	cls = findClass("android/text/format/Time");
 	jmethodID timeMethodID   = env->GetMethodID(cls, "toMillis", "(Z)J");
-	long longValue = (long) env->CallIntMethod(expires, timeMethodID, false);
+	jlong longValue = env->CallLongMethod(expires, timeMethodID, false);
 	Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
-
 
 	authorizedApplicationID =  env->NewStringUTF(IStack::createAuthorizedApplicationID(applicationIDString, applicationIDSharedSecretString, t).c_str());
 

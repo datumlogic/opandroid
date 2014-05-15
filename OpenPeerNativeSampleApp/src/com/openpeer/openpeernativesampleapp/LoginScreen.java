@@ -335,7 +335,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				if(mNamespaceGrantUrl.isEmpty())
 				{
 					Log.d("JNI", "DEBUG: Load outer frame");
-					myWebView.loadUrl("http://jsouter-v1-beta-1-i.hcs.io/identity.html?view=choose&federated=false");
+					myWebView.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose");
 				}
 				else if (mNamespaceGrantUrl.contains("grant"))
 				{

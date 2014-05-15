@@ -89,7 +89,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 				//Add last updated to IdentityLookupInfo structure
 				jclass timeCls = findClass("android/text/format/Time");
 				jmethodID timeMethodID   = env->GetMethodID(timeCls, "toMillis", "(Z)J");
-				long longValue = (long) env->CallIntMethod(lastUpdated, timeMethodID, false);
+				jlong longValue = env->CallLongMethod(lastUpdated, timeMethodID, false);
 				Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 				identityLookupInfo.mLastUpdated = t;
 

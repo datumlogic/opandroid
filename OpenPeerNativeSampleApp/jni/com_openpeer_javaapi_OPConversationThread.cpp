@@ -158,14 +158,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 				//Add last updated to IdentityContact structure
 				jclass timeCls = findClass("android/text/format/Time");
 				jmethodID timeMethodID   = jni_env->GetMethodID(timeCls, "toMillis", "(Z)J");
-				long longValue = (long) jni_env->CallIntMethod(lastUpdated, timeMethodID, false);
+				jlong longValue = jni_env->CallLongMethod(lastUpdated, timeMethodID, false);
 				Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 				coreIdentityContact.mLastUpdated = t;
 
 				//Add expires to IdentityContact structure
 				//jclass timeCls = findClass("android/text/format/Time");
 				//jmethodID timeMethodID   = jni_env->GetMethodID(timeCls, "toMillis", "(Z)J");
-				longValue = (long) jni_env->CallIntMethod(expires, timeMethodID, false);
+				longValue = jni_env->CallLongMethod(expires, timeMethodID, false);
 				t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 				coreIdentityContact.mExpires = t;
 

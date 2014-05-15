@@ -21,7 +21,7 @@ ICallPtr OpenPeerCoreManager::getCallFromList(jobject javaObject)
 {
 	JNIEnv *jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
-	jfieldID fid = jni_env->GetFieldID(cls, "nativeAccountPointer", "J");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 	jlong pointerValue = jni_env->GetLongField(javaObject, fid);
 
 	ICallPtr returnObj = ICallPtr();
@@ -46,7 +46,7 @@ IContactPtr OpenPeerCoreManager::getContactFromList(jobject javaObject)
 {
 	JNIEnv *jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPContact");
-	jfieldID fid = jni_env->GetFieldID(cls, "nativeAccountPointer", "J");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 	jlong pointerValue = jni_env->GetLongField(javaObject, fid);
 
 	IContactPtr returnObj = IContactPtr();
@@ -70,7 +70,7 @@ IConversationThreadPtr OpenPeerCoreManager::getConversationThreadFromList(jobjec
 {
 	JNIEnv *jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
-	jfieldID fid = jni_env->GetFieldID(cls, "nativeAccountPointer", "J");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 	jlong pointerValue = jni_env->GetLongField(javaObject, fid);
 
 	IConversationThreadPtr returnObj = IConversationThreadPtr();
@@ -94,7 +94,7 @@ IIdentityPtr OpenPeerCoreManager::getIdentityFromList(jobject javaObject)
 {
 	JNIEnv *jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPIdentity");
-	jfieldID fid = jni_env->GetFieldID(cls, "nativeAccountPointer", "J");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 	jlong pointerValue = jni_env->GetLongField(javaObject, fid);
 
 	IIdentityPtr returnObj = IIdentityPtr();

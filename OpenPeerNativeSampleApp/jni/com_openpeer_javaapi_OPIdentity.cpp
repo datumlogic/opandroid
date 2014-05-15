@@ -142,7 +142,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 	if(jni_env->IsInstanceOf(identityAccessSecretExpires, cls) == JNI_TRUE)
 	{
 		jmethodID timeMethodID   = jni_env->GetMethodID(cls, "toMillis", "(Z)J");
-		long longValue = (long) jni_env->CallIntMethod(identityAccessSecretExpires, timeMethodID, false);
+		jlong longValue = jni_env->CallLongMethod(identityAccessSecretExpires, timeMethodID, false);
 		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 	}
 
@@ -302,7 +302,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPre
 	if(jni_env->IsInstanceOf(identityAccessSecretExpires, cls) == JNI_TRUE)
 	{
 		jmethodID timeMethodID   = jni_env->GetMethodID(cls, "toMillis", "(Z)J");
-		long longValue = (long) jni_env->CallIntMethod(identityAccessSecretExpires, timeMethodID, false);
+		jlong longValue = jni_env->CallLongMethod(identityAccessSecretExpires, timeMethodID, false);
 		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 	}
 

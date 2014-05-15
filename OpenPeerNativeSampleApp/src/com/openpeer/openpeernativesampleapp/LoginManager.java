@@ -45,6 +45,9 @@ public class LoginManager {
 		String httpSettings = createHttpSettings();
 		OPSettings.apply(httpSettings);
 		
+		String forceDashSettings = createForceDashSetting();
+		OPSettings.apply(forceDashSettings);
+		
 		String appSettings = createFakeApplicationSettings();
 		OPSettings.apply(appSettings);
 		
@@ -115,9 +118,9 @@ public class LoginManager {
 	  mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
 		   
       mIdentity = OPIdentity.login(mAccount, null,
-    		  "identity-v1-beta-1-i.hcs.io", 
-    		  "identity://identity-v1-beta-1-i.hcs.io/",
-    		  "http://jsouter-v1-beta-1-i.hcs.io/identity.html?view=choose&federated=false?reload=true");
+    		  "identity-v1-rel-lespaul-i.hcs.io", 
+    		  "identity://identity-v1-rel-lespaul-i.hcs.io/",
+    		  "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
 		
 	}
 	
@@ -129,6 +132,22 @@ public class LoginManager {
 
             jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", "true");
             jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", "true");
+            parent.put("root", jsonObject);
+            Log.d("output", parent.toString(2));
+            return parent.toString(2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+	}
+	
+	public static String createForceDashSetting()
+	{
+		try {
+            JSONObject parent = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("openpeer/core/authorized-application-id-split-char", "-");
             parent.put("root", jsonObject);
             Log.d("output", parent.toString(2));
             return parent.toString(2);
@@ -158,9 +177,14 @@ public class LoginManager {
             jsonObject.put("openpeer/common/application-name", "OpenPeer Native Sample App");
             jsonObject.put("openpeer/common/application-image-url", "http://fake-image-url");
             jsonObject.put("openpeer/common/application-url", "http://fake-application-url");
+            
             Time expires = new Time ();
-            expires.set(30, 3, 2014);
-			jsonObject.put("openpeer/calculated/authorizated-application-id", OPStack.createAuthorizedApplicationID("nativeApp", "shared-secret", expires ));
+            expires.set(30, 5, 2014);
+            //rel-dev2
+			//jsonObject.put("openpeer/calculated/authorizated-application-id", OPStack.createAuthorizedApplicationID("com.openpeer.nativeApp", "8f1ff375433b6e11026cb806a32ae4d04a59d7b1", expires ));
+			//lespaul
+            jsonObject.put("openpeer/calculated/authorizated-application-id", OPStack.createAuthorizedApplicationID("com.openpeer.nativeApp", "14b2c9df6713df465d97d0736863c42964faa678", expires ));
+			
             jsonObject.put("openpeer/calculated/user-agent", "OpenPeerNativeSampleApp");
             jsonObject.put("openpeer/calculated/device-id", Secure.getString(mContext.getContentResolver(),
                     Secure.ANDROID_ID));
@@ -206,9 +230,9 @@ public class LoginManager {
 		
 		
 		mAccount = OPAccount.login(null, null, null, 
-				"http://jsouter-v1-beta-1-i.hcs.io/grant.html", 
+				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
 				"bojanGrantID", 
-				"identity-v1-beta-1-i.hcs.io", false);
+				"identity-v1-rel-lespaul-i.hcs.io", false);
 		}
 		else
 		{
@@ -223,7 +247,7 @@ public class LoginManager {
 	public static void startAccountLogin() {
 		// TODO Auto-generated method stub
 		if(mLoginHandler!=null)
-	    	  mLoginHandler.onLoadOuterFrameHandle("http://jsouter-v1-beta-1-i.hcs.io/grant.html");
+	    	  mLoginHandler.onLoadOuterFrameHandle("http://jsouter-v1-rel-dev2-i.hcs.io/grant.html");
 	}
 
 

@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_store
 	if(jni_env->IsInstanceOf(expires, cls) == JNI_TRUE)
 	{
 		jmethodID timeMethodID   = jni_env->GetMethodID(cls, "toMillis", "(Z)J");
-		long longValue = (long) jni_env->CallIntMethod(expires, timeMethodID, false);
+		jlong longValue = jni_env->CallLongMethod(expires, timeMethodID, false);
 		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 	}
 
