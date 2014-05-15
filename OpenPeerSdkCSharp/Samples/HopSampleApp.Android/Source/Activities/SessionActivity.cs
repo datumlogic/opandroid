@@ -62,6 +62,14 @@ namespace HopSampleApp
 					SessionTypeName = "Video Call",
 					SessionTime = sm.Time_stamp(new DateTime(2014,01,20)),
 					SesisonUserName = "petar-hookflash",
+					UserImg = Resource.Drawable.avatar,
+					SessionChat = true,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
+					ActiveSession = false,
 					SessionMyName = "Petar"
 				});
 			UsersSessions.Add (new SessionItem
@@ -71,6 +79,13 @@ namespace HopSampleApp
 					SessionTypeName = "Video Call",
 					SessionTime = sm.Time_stamp(new DateTime(2014,01,21)),
 					SesisonUserName = "sergej-hookflash",
+					UserImg = Resource.Drawable.remote,
+					SessionChat = false,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "Sergej"
 				
 				});
@@ -81,15 +96,30 @@ namespace HopSampleApp
 					SessionTypeName = "Voice Call",
 					SessionTime = sm.Time_stamp(new DateTime(2014,02,06)),
 					SesisonUserName = "robin-hookflash",
+					UserImg = Resource.Drawable.robin,
+					SessionChat = false,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
+					ActiveSession = true,
 					SessionMyName = "Robin"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=3,
-					SessionDate = new DateTime(2014,02,06),
+					SessionDate = new DateTime(2014,05,06),
 					SessionTypeName = "Voice Call",
-					SessionTime = sm.Time_stamp(new DateTime(2014,02,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,05,06)),
 					SesisonUserName = "marko-hookflash",
+					UserImg = Resource.Drawable.person,
+					SessionChat = false,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "Marko"
 				});
 			UsersSessions.Add (new SessionItem
@@ -99,15 +129,29 @@ namespace HopSampleApp
 					SessionTypeName = "Chat",
 					SessionTime = sm.Time_stamp(new DateTime(2014,05,06)),
 					SesisonUserName = "adrijano-hookflash",
+					UserImg = Resource.Drawable.avatar,
+					SessionChat = true,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = false,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "Adrijano"
 				});
 			UsersSessions.Add (new SessionItem
 				{
 					Id=5,
-					SessionDate = new DateTime(2014,05,06),
+					SessionDate = new DateTime(2014,09,06),
 					SessionTypeName = "Chat",
-					SessionTime = sm.Time_stamp(new DateTime(2014,05,06)),
+					SessionTime = sm.Time_stamp(new DateTime(2014,09,06)),
 					SesisonUserName = "bojan-hookflash",
+					UserImg = Resource.Drawable.avatar,
+					SessionChat = false,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = false,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "Bojan"
 				});
 			UsersSessions.Add (new SessionItem
@@ -117,6 +161,13 @@ namespace HopSampleApp
 					SessionTypeName = "Voice Call",
 					SessionTime = sm.Time_stamp(new DateTime(2014,06,06)),
 					SesisonUserName = "eric-hookflash",
+					UserImg = Resource.Drawable.avatar,
+					SessionChat = false,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "Eric"
 				});
 			UsersSessions.Add (new SessionItem
@@ -126,6 +177,13 @@ namespace HopSampleApp
 					SessionTypeName = "Voice Call",
 					SessionTime = sm.Time_stamp(new DateTime(2014,07,06)),
 					SesisonUserName = "eric-hookflash",
+					UserImg = Resource.Drawable.avatar,
+					SessionChat = true,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "Eric"
 				});
 			UsersSessions.Add (new SessionItem
@@ -135,6 +193,13 @@ namespace HopSampleApp
 					SessionTypeName = "Voice Call",
 					SessionTime = sm.Time_stamp(new DateTime(2014,07,06)),
 					SesisonUserName = "df-hookflash",
+					UserImg = Resource.Drawable.avatar,
+					SessionChat = true,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "df"
 				});
 			UsersSessions.Add (new SessionItem
@@ -144,6 +209,13 @@ namespace HopSampleApp
 					SessionTypeName = "Voice Call",
 					SessionTime = sm.Time_stamp(new DateTime(2014,08,06)),
 					SesisonUserName = "df-hookflash",
+					UserImg = Resource.Drawable.avatar,
+					SessionChat = true,
+					SessionChatImg = Resource.Drawable.sessionschat,
+					SessionVideo = true,
+					SessionVideoImg = Resource.Drawable.sessioncam,
+					SessionVoiceCall = true,
+					SessionVoiceCallImg = Resource.Drawable.call,
 					SessionMyName = "df"
 				});
 			//Sorting session by session date and session type.

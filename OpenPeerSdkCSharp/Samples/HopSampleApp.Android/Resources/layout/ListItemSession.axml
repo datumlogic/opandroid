@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:id="@+id/ItemBody"
     android:padding="8dp">
     <LinearLayout
         android:id="@+id/Text"
@@ -38,30 +39,33 @@
     </LinearLayout>
     <ImageView
         android:id="@+id/ChatIcon"
-        android:paddingTop="10dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:padding="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:padding="4dp"
+        android:visibility="gone"
         android:layout_toLeftOf="@+id/VideoIcon" />
     <ImageView
         android:id="@+id/VideoIcon"
-        android:paddingTop="10dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:padding="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:padding="4dp"
+        android:visibility="gone"
         android:layout_toLeftOf="@+id/VoiceIcon" />
     <ImageView
         android:id="@+id/VoiceIcon"
-        android:paddingTop="10dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:padding="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:padding="4dp"
+        android:visibility="gone"
         android:layout_toLeftOf="@+id/Image" />
     <ImageView
         android:id="@+id/Image"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:padding="5dp"
+        android:padding="1dp"
         android:src="@drawable/icon"
         android:layout_alignParentRight="true" />
 </RelativeLayout>

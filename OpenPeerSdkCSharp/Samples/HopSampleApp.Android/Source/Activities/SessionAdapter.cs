@@ -15,7 +15,6 @@ using HopSampleApp.Services;
 using HopSampleApp.Views;
 using System.Linq;
 using System.Globalization;
-
 using Helpers = OpenPeerSdk.Helpers;
 using BitmapType = Android.Graphics.Drawables.BitmapDrawable;
 
@@ -28,7 +27,6 @@ namespace HopSampleApp
 		class SessionAdapter: BaseAdapter<SessionItem>,ISectionIndexer{
 			List<SessionItem> items;
 			Activity context;
-			//private AlphabetIndexer mindexer;
 			private string[] sections;
 			private Java.Lang.Object[] sectionsObject;
 			private Dictionary<string,int> alphabetindex;
@@ -46,7 +44,7 @@ namespace HopSampleApp
 				this.alphabetindex = new Dictionary<string, int> ();
 				for(int i =0;i<items.Count;i++)
 				{
-					var key = items [i].SessionDate.ToString();
+					var key = items [i].SessionDate.ToString("dd MMMM",CultureInfo.CreateSpecificCulture("en-US"));
 					if (!alphabetindex.ContainsKey (key))
 					{
 						alphabetindex.Add (key, i);
@@ -65,16 +63,28 @@ namespace HopSampleApp
 			{
 				var item_section = items[position];
 				int section_pos = GetSectionForPosition (position);
+				RelativeLayout back = (RelativeLayout)itemView.FindViewById (Resource.Id.ItemBody);
 				//LinearLayout itemHeader = (LinearLayout)itemView.FindViewById (Resource.Id.SessionHeader);
 				TextView head_title = (TextView)itemView.FindViewById (Resource.Id.SessionHeadTitle);
+				ImageView session_chat = (ImageView)itemView.FindViewById (Resource.Id.ChatIcon);
+				ImageView session_video = (ImageView)itemView.FindViewById (Resource.Id.VideoIcon);
+				ImageView session_voice = (ImageView)itemView.FindViewById (Resource.Id.VoiceIcon);
 				if (GetPositionForSection (section_pos) == position) {
-					//string title = //item_section.SessionDate.ToString ();
-
 					head_title.Text =  item_section.SessionDate.ToString ("(dd MMMM) dddd",CultureInfo.CreateSpecificCulture("en-US"));//title;
-						head_title.Visibility = ViewStates.Visible;
+					head_title.Visibility = ViewStates.Visible;
+					if (items [position].ActiveSession == true) {back.SetBackgroundColor (Color.DarkOrchid); } 
+					else{back.SetBackgroundColor(Color.Transparent); } 
+					if (items [position].SessionVideo == true) { session_video.Visibility = ViewStates.Visible; } 
+					else{ session_video.Visibility = ViewStates.Gone; }
+
+					if (items [position].SessionChat == true) { session_chat.Visibility = ViewStates.Visible; } 
+					else{ session_chat.Visibility = ViewStates.Gone; }
+
+					if (items [position].SessionVoiceCall == true) { session_voice.Visibility = ViewStates.Visible; } 
+					else{ session_voice.Visibility = ViewStates.Gone; }
 
 				} else {
-					//head_title.Visibility = ViewStates.Gone;
+					head_title.Visibility = ViewStates.Gone;
 					head_title.Text = string.Empty;
 				}
 
@@ -107,12 +117,14 @@ namespace HopSampleApp
 				view.FindViewById<TextView> (Resource.Id.SessionDate).Text =sm.Time_stamp(items[position].SessionDate);
 				view.FindViewById<ImageView>(Resource.Id.Image).SetImageResource(items[position].UserImg);
 				view.FindViewById<TextView> (Resource.Id.SessionHeadTitle).Text = items [position].SessionDate.ToString ("(dd MMMM) dddd",CultureInfo.CreateSpecificCulture("en-US"));
-				bindSectionHeader (view,position);
+				view.FindViewById<ImageView> (Resource.Id.VideoIcon).SetImageResource (items [position].SessionVideoImg);
+				view.FindViewById<ImageView> (Resource.Id.ChatIcon).SetImageResource (items [position].SessionChatImg);
+				view.FindViewById<ImageView> (Resource.Id.VoiceIcon).SetImageResource (items [position].SessionVoiceCallImg);
+				bindSectionHeader (view,position);//create heder and group based on date
 				return view;
 			}
 			public int GetPositionForSection(int section)
 			{
-				//string sec=sections[section];
 				return alphabetindex[sections[section]];
 			}
 			public int GetSectionForPosition(int position)
@@ -125,7 +137,6 @@ namespace HopSampleApp
 						prevSection = i;
 						break;
 					}
-					//prevSection = i;
 				}
 				return prevSection;
 
