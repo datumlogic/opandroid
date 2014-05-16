@@ -81,6 +81,7 @@ namespace HopSampleApp
 				//
 
 				editText.SetOnKeyListener (this);
+				editText.AfterTextChanged += (sender, args) => Emotions.SmilesAdd(this, args.Editable);
 			}
 
 			protected override void OnDestroy ()
