@@ -3,24 +3,13 @@ package com.openpeer.javaapi;
 
 public enum IdentityStates
 {
-    IdentityState_Pending (0),
-    IdentityState_PendingAssociation (1),
-    IdentityState_WaitingAttachmentOfDelegate (2),
-    IdentityState_WaitingForBrowserWindowToBeLoaded (3),
-    IdentityState_WaitingForBrowserWindowToBeMadeVisible (4),
-    IdentityState_WaitingForBrowserWindowToClose (5),
-    IdentityState_Ready (6),
-    IdentityState_Shutdown (7);
-    
-    IdentityStates (int value)
-    {
-        this.type = value;
-    }
+    IdentityState_Pending,
+    IdentityState_PendingAssociation,
+    IdentityState_WaitingAttachmentOfDelegate,
+    IdentityState_WaitingForBrowserWindowToBeLoaded,
+    IdentityState_WaitingForBrowserWindowToBeMadeVisible,
+    IdentityState_WaitingForBrowserWindowToClose,
+    IdentityState_Ready,
+    IdentityState_Shutdown;
 
-    private int type;
-
-    public int getNumericType()
-    {
-        return type;
-    }
 }

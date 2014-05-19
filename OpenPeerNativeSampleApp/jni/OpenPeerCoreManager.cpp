@@ -3,13 +3,13 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include <android/log.h>;
 
-IAccountPtr OpenPeerCoreManager::accountPtr;
-IStackPtr OpenPeerCoreManager::stackPtr;
-IStackMessageQueuePtr OpenPeerCoreManager::queuePtr;
-IIdentityLookupPtr OpenPeerCoreManager::identityLookupPtr;
-IMediaEnginePtr OpenPeerCoreManager::mediaEnginePtr;
-ISettingsPtr OpenPeerCoreManager::settingsPtr;
-ICachePtr OpenPeerCoreManager::cachePtr;
+IAccountPtr OpenPeerCoreManager::accountPtr = IAccountPtr();
+IStackPtr OpenPeerCoreManager::stackPtr = IStackPtr();
+IStackMessageQueuePtr OpenPeerCoreManager::queuePtr = IStackMessageQueuePtr();
+IIdentityLookupPtr OpenPeerCoreManager::identityLookupPtr = IIdentityLookupPtr();
+IMediaEnginePtr OpenPeerCoreManager::mediaEnginePtr = IMediaEnginePtr();
+ISettingsPtr OpenPeerCoreManager::settingsPtr = ISettingsPtr();
+ICachePtr OpenPeerCoreManager::cachePtr = ICachePtr();
 
 std::vector<IContactPtr> OpenPeerCoreManager::coreContactList;
 std::vector<ICallPtr> OpenPeerCoreManager::coreCallList;
@@ -111,6 +111,18 @@ IIdentityPtr OpenPeerCoreManager::getIdentityFromList(jobject javaObject)
 	{
 		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Related identity not found in identity list !!!");
 	}
+
+	return returnObj;
+}
+
+jobject OpenPeerCoreManager::getJavaEnumObject(String enumClassName, jint index)
+{
+	JNIEnv *jni_env = getEnv();
+
+	jclass cls = findClass(enumClassName.c_str());
+	jmethodID valuesMethodID = jni_env->GetStaticMethodID(cls, "values", ("()[L" + enumClassName  + ";").c_str());
+	jobjectArray valuesArray = (jobjectArray)jni_env->CallStaticObjectMethod(cls, valuesMethodID);
+	jobject returnObj = jni_env->GetObjectArrayElement(valuesArray, index);
 
 	return returnObj;
 }

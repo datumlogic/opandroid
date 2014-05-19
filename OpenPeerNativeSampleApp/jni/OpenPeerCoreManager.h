@@ -23,6 +23,8 @@ public:
 	static IConversationThreadPtr getConversationThreadFromList(jobject javaObject);
 	static IIdentityPtr getIdentityFromList(jobject javaObject);
 
+	static jobject getJavaEnumObject(String enumClassName, jint index);
+
 	static void shutdown();
 
 

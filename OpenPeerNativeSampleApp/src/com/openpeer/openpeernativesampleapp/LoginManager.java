@@ -256,5 +256,13 @@ public class LoginManager {
 		// TODO Auto-generated method stub
 		mLoginHandler.onNamespaceGrantInnerFrameInitialized(mAccount.getInnerBrowserWindowFrameURL());
 	}
+
+
+
+	public static void onAccountStateReady() {
+		// TODO Auto-generated method stub
+		mLoginHandler.onAccountStateReady();
+		
+	}
 	
 }

@@ -202,25 +202,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	int state = 0;
+	jint state = 0;
 	unsigned short int outErrorCode;
 	String outErrorReason;
 
 	if (OpenPeerCoreManager::accountPtr)
 	{
-		state = (int) OpenPeerCoreManager::accountPtr->getState(&outErrorCode, &outErrorReason);
-
+		state = (jint) OpenPeerCoreManager::accountPtr->getState(&outErrorCode, &outErrorReason);
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "State = %d", state);
 		jni_env = getEnv();
 		if(jni_env)
 		{
-			cls = findClass("com/openpeer/javaapi/AccountStates");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, state);
-
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/AccountStates", state);
 		}
 	}
 
-
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "RETURN GET STATE");
 	return object;
 }
 
@@ -296,7 +293,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivate
 
 	if (OpenPeerCoreManager::accountPtr)
 	{
-		peerFilePrivateElement = OpenPeerCoreManager::accountPtr->getReloginInformation();
+		peerFilePrivateElement = OpenPeerCoreManager::accountPtr->savePeerFilePrivate();
 
 		peerFilePrivate =  env->NewStringUTF(IHelper::convertToString(peerFilePrivateElement).c_str());
 	}

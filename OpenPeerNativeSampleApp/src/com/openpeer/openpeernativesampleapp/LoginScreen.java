@@ -9,6 +9,8 @@ import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.openpeernativesampleapp.LoginManager;
 
+import com.openpeer.javaapi.test.*;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -388,6 +390,13 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		});
 	}
 
+	@Override
+	public void onAccountStateReady() {
+		// TODO Auto-generated method stub
+		OPTestAccount.execute(LoginManager.mAccount);
+		
+	}
+
 
 }
 
@@ -397,4 +406,5 @@ interface LoginHandlerInterface
 	void onInnerFrameInitialized(String innerFrameUrl);
 	void passMessageToJS(String msg);
 	void onNamespaceGrantInnerFrameInitialized(String innerFrameUrl);
+	void onAccountStateReady();
 }
