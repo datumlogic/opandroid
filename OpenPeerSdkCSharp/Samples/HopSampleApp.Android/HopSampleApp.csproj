@@ -236,6 +236,11 @@
     <AndroidResource Include="Resources\drawable\sessioncam.png" />
     <AndroidResource Include="Resources\drawable\sessionschat.png" />
     <AndroidResource Include="Resources\drawable\call.png" />
+    <AndroidResource Include="Resources\drawable\hookflash.png" />
+    <AndroidResource Include="Resources\drawable\shappy.png" />
+    <AndroidResource Include="Resources\drawable\ssad.png" />
+    <AndroidResource Include="Resources\drawable\iosphone.png" />
+    <AndroidResource Include="Resources\drawable\andorid.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

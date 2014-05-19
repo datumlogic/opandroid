@@ -23,9 +23,11 @@ namespace HopSampleApp
 		static Emotions()
 		{
 			Smiles=new Dictionary<string, int>();
-			Smiles.Add(":-)",Resource.Drawable.a1);
-			Smiles.Add (":)",Resource.Drawable.a2);
-			Smiles.Add ("hookflash", Resource.Drawable.a3);
+			Smiles.Add(":-)",Resource.Drawable.shappy);
+			Smiles.Add (":)",Resource.Drawable.ssad);
+			Smiles.Add ("hookflash", Resource.Drawable.hookflash);
+			Smiles.Add ("ios phone", Resource.Drawable.iosphone);
+			Smiles.Add ("android", Resource.Drawable.andorid);
 		}
 
 		public static bool SmilesAdd(Context context, ISpannable ispan)
