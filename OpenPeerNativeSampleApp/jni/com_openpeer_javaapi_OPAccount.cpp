@@ -217,7 +217,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
 		}
 	}
 
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "RETURN GET STATE");
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Account getState completed");
 	return object;
 }
 

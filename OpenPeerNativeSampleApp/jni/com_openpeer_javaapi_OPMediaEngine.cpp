@@ -1,5 +1,6 @@
 #include "com_openpeer_javaapi_OPMediaEngine.h"
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
+#include "OpenPeerCoreManager.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
 #include "openpeer/core/internal/core_MediaEngine.h"
@@ -91,8 +92,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setDefaultVideoOr
 		cls = findClass("com/openpeer/javaapi/VideoOrientations");
 		if(jni_env->IsInstanceOf(videoOrientationObj, cls) == JNI_TRUE)
 		{
-			jmethodID videoOrientationMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
-			int intValue = (int) jni_env->CallIntMethod(videoOrientationObj, videoOrientationMID);
+			jint intValue = OpenPeerCoreManager::getIntValueFromEnumObject(videoOrientationObj, "com/openpeer/javaapi/VideoOrientations");
 
 			IMediaEngine::VideoOrientations orientation = (IMediaEngine::VideoOrientations)intValue;
 			mediaEnginePtr->setDefaultVideoOrientation(orientation);
@@ -119,9 +119,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getDefaultVide
 		if(jni_env)
 		{
 			IMediaEngine::VideoOrientations value = mediaEnginePtr->getDefaultVideoOrientation();
-			cls = findClass("com/openpeer/javaapi/VideoOrientations");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, (int)value);
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/VideoOrientations", (jint)value);
 		}
 	}
 	return object;
@@ -146,8 +144,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setRecordVideoOri
 		cls = findClass("com/openpeer/javaapi/VideoOrientations");
 		if(jni_env->IsInstanceOf(videoOrientationObj, cls) == JNI_TRUE)
 		{
-			jmethodID videoOrientationMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
-			int intValue = (int) jni_env->CallIntMethod(videoOrientationObj, videoOrientationMID);
+			jint intValue = OpenPeerCoreManager::getIntValueFromEnumObject(videoOrientationObj, "com/openpeer/javaapi/VideoOrientations");
 
 			IMediaEngine::VideoOrientations orientation = (IMediaEngine::VideoOrientations)intValue;
 			mediaEnginePtr->setRecordVideoOrientation(orientation);
@@ -174,9 +171,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getRecordVideo
 		if(jni_env)
 		{
 			IMediaEngine::VideoOrientations value = mediaEnginePtr->getRecordVideoOrientation();
-			cls = findClass("com/openpeer/javaapi/VideoOrientations");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, (int)value);
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/VideoOrientations", (jint)value);
 		}
 	}
 	return object;
@@ -450,9 +445,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getOutputAudio
 		if(jni_env)
 		{
 			IMediaEngine::OutputAudioRoutes value = mediaEnginePtr->getOutputAudioRoute();
-			cls = findClass("com/openpeer/javaapi/OutputAudioRoutes");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, (int)value);
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/OutputAudioRoutes", (jint)value);
 		}
 	}
 	return object;

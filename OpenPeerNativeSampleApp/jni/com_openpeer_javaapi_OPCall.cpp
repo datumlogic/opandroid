@@ -249,19 +249,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	int state = 0;
+	jint state = 0;
 
 	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
 	if (coreCall)
 	{
-		state = (int) coreCall->getState();
+		state = (jint) coreCall->getState();
 
 		jni_env = getEnv();
 		if(jni_env)
 		{
-			cls = findClass("com/openpeer/javaapi/CallStates");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, state);
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallStates", state);
 
 		}
 	}
@@ -281,19 +279,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	int state = 0;
+	jint state = 0;
 
 	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
 	if (coreCall)
 	{
-		state = (int) coreCall->getClosedReason();
+		state = (jint) coreCall->getClosedReason();
 
 		jni_env = getEnv();
 		if(jni_env)
 		{
-			cls = findClass("com/openpeer/javaapi/CallClosedReason");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, state);
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallClosedReason", state);
 
 		}
 	}
@@ -517,8 +513,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
 		cls = findClass("com/openpeer/javaapi/CallClosedReasons");
 		if(jni_env->IsInstanceOf(callClosedReasonObj, cls) == JNI_TRUE)
 		{
-			jmethodID callClosedReasonsMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
-			int intValue = (int) jni_env->CallIntMethod(callClosedReasonObj, callClosedReasonsMID);
+			jint intValue = OpenPeerCoreManager::getIntValueFromEnumObject(callClosedReasonObj, "com/openpeer/javaapi/CallClosedReasons");
 
 			ICall::CallClosedReasons reason = (ICall::CallClosedReasons)intValue;
 			coreCall->hangup(reason);

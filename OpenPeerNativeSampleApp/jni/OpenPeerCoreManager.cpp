@@ -127,6 +127,17 @@ jobject OpenPeerCoreManager::getJavaEnumObject(String enumClassName, jint index)
 	return returnObj;
 }
 
+jint OpenPeerCoreManager::getIntValueFromEnumObject(jobject enumObject, String enumClassName)
+{
+	JNIEnv *jni_env = getEnv();
+
+	jclass cls = findClass(enumClassName.c_str());
+	jmethodID ordinalMethodID = jni_env->GetMethodID(cls, "ordinal", "()I");
+	jint intValue = (jint) jni_env->CallIntMethod(enumObject, ordinalMethodID);
+
+	return intValue;
+}
+
 void OpenPeerCoreManager::shutdown()
 {
 

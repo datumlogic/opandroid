@@ -24,6 +24,7 @@ public:
 	static IIdentityPtr getIdentityFromList(jobject javaObject);
 
 	static jobject getJavaEnumObject(String enumClassName, jint index);
+	static jint getIntValueFromEnumObject(jobject enumObject, String enumClassName);
 
 	static void shutdown();
 

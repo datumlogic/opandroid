@@ -537,19 +537,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	int state = 0;
+	jint state = 0;
 
 	IContactPtr coreContact = OpenPeerCoreManager::getContactFromList(contact);
 	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
 	if (coreThread &&coreContact)
 	{
-		state = (int) coreThread->getContactState(coreContact);
+		state = (jint) coreThread->getContactState(coreContact);
 		jni_env = getEnv();
 		if(jni_env)
 		{
-			cls = findClass("com/openpeer/javaapi/ContactStates");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, state);
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/ContactStates", state);
 
 		}
 	}
@@ -832,9 +830,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 			jboolean exists = coreThread->getMessageDeliveryState(messageIDStr, stateValue);
 			if (exists)
 			{
-				cls = findClass("com/openpeer/javaapi/OPMessageDeliveryStates");
-				method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-				object = jni_env->NewObject(cls, method, (int)stateValue);
+				object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/OPMessageDeliveryStates", (jint)stateValue);
 			}
 			else
 			{

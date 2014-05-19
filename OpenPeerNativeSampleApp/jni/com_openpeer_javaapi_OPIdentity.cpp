@@ -189,21 +189,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	int state = 0;
+	jint state = 0;
 	unsigned short int outErrorCode;
 	String outErrorReason;
 
 	IIdentityPtr identityPtr = OpenPeerCoreManager::getIdentityFromList(owner);
 	if (identityPtr)
 	{
-		state = (int) identityPtr->getState(&outErrorCode, &outErrorReason);
+		state = (jint) identityPtr->getState(&outErrorCode, &outErrorReason);
 
 		jni_env = getEnv();
 		if(jni_env)
 		{
-			cls = findClass("com/openpeer/javaapi/IdentityStates");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, state);
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/IdentityStates", state);
 
 		}
 	}
