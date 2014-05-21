@@ -355,7 +355,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityProvid
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    getSelfIdentityContact
- * Signature: ()Lcom/openpeer/javaapi/OPContact;
+ * Signature: ()Lcom/openpeer/javaapi/OPIdentityContact;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityContact
 (JNIEnv *, jobject owner)
@@ -371,6 +371,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 	{
 		identityPtr->getSelfIdentityContact(coreContact);
 
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "IdentityPtr is NULL!!!");
+		return object;
 	}
 	jni_env = getEnv();
 	if(jni_env)
@@ -389,11 +394,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		jclass peerFileCls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
 		jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
 		jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
-		method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic)V");
+
+		method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic;)V");
 		jni_env->CallVoidMethod(object, method, peerFileObject);
 
+
 		//set IdentityProofBundle to OPIdentityContact
-		method = jni_env->GetMethodID(cls, "setIdentityProofBundleEl", "(Ljava/lang/String;)V");
+		method = jni_env->GetMethodID(cls, "setIdentityProofBundle", "(Ljava/lang/String;)V");
 		jstring identityProofBundle =  jni_env->NewStringUTF(IHelper::convertToString(coreContact.mIdentityProofBundleEl).c_str());
 		jni_env->CallVoidMethod(object, method, identityProofBundle);
 
@@ -409,7 +416,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 		jclass timeCls = findClass("android/text/format/Time");
 		jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
-		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
 		//calculate and set Last Updated
 		zsLib::Duration lastUpdated = coreContact.mLastUpdated - time_t_epoch;
@@ -421,10 +428,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 
 		//calculate and set Expires
 		zsLib::Duration expires = coreContact.mExpires - time_t_epoch;
-		jobject timeExpiresObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
+		jobject timeExpiresObject = jni_env->NewObject(timeCls, timeMethodID);
 		jni_env->CallVoidMethod(timeExpiresObject, timeSetMillisMethodID, expires.total_milliseconds());
 		//Time has been converted, now call OPIdentityContact setter
-		method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
+		method = jni_env->GetMethodID(cls, "setExpires", "(Landroid/text/format/Time;)V");
 		jni_env->CallVoidMethod(object, method, timeExpiresObject);
 
 	}

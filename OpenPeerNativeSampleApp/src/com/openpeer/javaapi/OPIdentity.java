@@ -55,7 +55,7 @@ public class OPIdentity {
 	
 	public native String getIdentityProviderDomain();
 	
-	public native OPContact getSelfIdentityContact();
+	public native OPIdentityContact getSelfIdentityContact();
 
 	public native String getInnerBrowserWindowFrameURL();
 

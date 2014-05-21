@@ -14,6 +14,8 @@ public class OPTestAccount {
 	{
 		try
 		{
+			Log.d("output", "Account test started...");
+			
 			long stableID = 0;
 			stableID = account.getStableID();
 			if (stableID == 0)
@@ -79,8 +81,10 @@ public class OPTestAccount {
 			}
 			Log.d("output", "Account test identities = " + Arrays.deepToString(identities.toArray()));
 			
-			
 			Log.d("output", "Account test PASSED");
+			Log.d("output", "Calling Identity test...");
+			
+			OPTestIdentity.execute(identities.get(0));
 			return true;
 		}
 		catch (Exception e)

@@ -14,6 +14,11 @@ public class OPIdentityContact {
 
     private Time mLastUpdated;
     private Time mExpires;
+    
+    public OPIdentityContact()
+    {
+    	
+    }
 
     public OPIdentityContact( OPRolodexContact rolodexContact)
     {
