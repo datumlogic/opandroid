@@ -19,9 +19,9 @@ namespace HopSampleApp
 	namespace Activities
 	{
 		[LoggerSubsystem("hop_sample_app")]
-		[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op",WindowSoftInputMode = SoftInput.AdjustPan)]	
+		[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]	
 		//
-		public class ChatActivity : ListActivity,
+		public class ChatActivity : Activity,
 									View.IOnKeyListener
 		{
 			private ImageCachingServiceDownloader downloader = new ImageCachingServiceDownloader ();
@@ -37,21 +37,22 @@ namespace HopSampleApp
 
 				imageCachingServiceConnection = ServiceConnection<Services.ImageCachingService>.Bind (this, downloader);
 
-				this.ListAdapter = new ChatAdapter (this, downloader);
-
-				ListView listView = FindViewById<ListView> (Android.Resource.Id.List);
+				ListView listView = FindViewById<ListView> (Resource.Id.listchat);
+				listView.Adapter = new ChatAdapter (this, downloader);
 				listView.ItemsCanFocus = true;
-
+				//listView.Measure (0,0);
+				//listView.TranscriptMode = TranscriptMode.Normal;
+				//listView.ScrollingCacheEnabled = false;
 				editText = FindViewById<EditText> (Resource.Id.editText);
 				//ImageButton StartVideoCall=FindViewById<ImageButton>(Resource.Id.ButtonCallVideo);
 				//ImageButton StartCallOnly = FindViewById<ImageButton> (Resource.Id.ButtonCallOnly);
 
 				Button sendButton = FindViewById<Button> (Resource.Id.sendButton);
 
-				listView.Touch += (object sender, View.TouchEventArgs e) => {
+				/*listView.Touch += (object sender, View.TouchEventArgs e) => {
 					Logger.Trace ("touch event");
 					ClearEditFocus ();
-				};
+				};*/
 
 				sendButton.Click += (object sender, EventArgs e) => {
 					OnSend ();
@@ -81,8 +82,8 @@ namespace HopSampleApp
 				//
 
 				editText.SetOnKeyListener (this);
-				editText.AfterTextChanged += (sender, args) => Emotions.SmilesAdd(this, args.Editable);
-			}
+				//editText.AfterTextChanged += (sender, args) => Emotions.SmilesAdd(this, args.Editable);
+				}
 
 			protected override void OnDestroy ()
 			{

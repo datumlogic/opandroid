@@ -32,17 +32,17 @@ namespace HopSampleApp
 		//}
 
 
-		public override void OnLongPress(MotionEvent e) {/* Console.WriteLine ("OnLongPress");*/} 
+		//public override void OnLongPress(MotionEvent e) {/* Console.WriteLine ("OnLongPress");*/} 
 
-		public override bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){	return false; }
+		public override bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){	return true; }
 
-		public override void OnShowPress(MotionEvent e){/* Console.WriteLine ("OnShowPress");*/ }
+		//public override void OnShowPress(MotionEvent e){/* Console.WriteLine ("OnShowPress");*/ }
 
-		public override bool OnSingleTapUp(MotionEvent e){/* Console.WriteLine ("OnSingleTapUp"); */ return false;	}
+		//public override bool OnSingleTapUp(MotionEvent e){/* Console.WriteLine ("OnSingleTapUp"); */ return false;	}
 
-		public  bool onDoubleTapEvent(MotionEvent e)	{ /*Console.WriteLine ("OnDoubleTapEvent");*/ return false;}
+		public  bool onDoubleTapEvent(MotionEvent e)	{ /*Console.WriteLine ("OnDoubleTapEvent");*/ return true;}
 
-		public  bool onSingleTapConfirmed(MotionEvent e) {/* Console.WriteLine ("OnSingleTapConfirmed");*/ return false;}
+		public  bool onSingleTapConfirmed(MotionEvent e) {/* Console.WriteLine ("OnSingleTapConfirmed");*/ return true;}
 
 		//public GestureListener(){ }
 

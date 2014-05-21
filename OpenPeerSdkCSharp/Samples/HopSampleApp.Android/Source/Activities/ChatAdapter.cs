@@ -169,7 +169,6 @@ namespace HopSampleApp
 								holder = headerHolder = new HeaderViewHolder ();
 								headerHolder.Name = view.FindViewById<TextView> (Resource.Id.nameTextView);
 								headerHolder.Time = view.FindViewById<TextView> (Resource.Id.timeTextView);
-
 								break;
 							case ListItemType.RightHeader:
 								view = context.LayoutInflater.Inflate (Resource.Layout.ChatRightSideHeaderListItem, null);
@@ -275,7 +274,7 @@ namespace HopSampleApp
 						case 9:
 							person = 1;
 							string data_message = dataHolder.Message.Text;
-							data_message = "https://www.youtube.com/watch?v=7II2wAb9CeQ";
+							/*data_message = "https://www.youtube.com/watch?v=7II2wAb9CeQ";
 							if (data_message != null) {
 								if (data_message.IndexOf ("youtube", 0) > 0 || data_message.IndexOf ("youtu", 0) > 0 | data_message.IndexOf ("vimeo", 0) > 0) {
 									dataHolder.WEB.Visibility = ViewStates.Visible;
@@ -290,7 +289,9 @@ namespace HopSampleApp
 									dataHolder.Message.Text = data_message;
 									dataHolder.WEB.Visibility = ViewStates.Invisible;
 								}
-							}
+							}*/
+							dataHolder.Message.Text = data_message;
+							dataHolder.WEB.Visibility = ViewStates.Invisible;
 
 							break;
 						case 10:
@@ -320,10 +321,11 @@ namespace HopSampleApp
 
 								} else {
 									dataHolder.Message.Text = data_message1;
-									dataHolder.WEB.Visibility = ViewStates.Invisible;
+									//dataHolder.WEB.Visibility = ViewStates.Invisible;
 								}
 							}
-
+							//dataHolder.Message.Text = data_message1;
+							//dataHolder.WEB.Visibility = ViewStates.Invisible;
 							break;
 
 						default:

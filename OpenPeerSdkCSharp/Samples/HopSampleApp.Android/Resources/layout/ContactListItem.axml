@@ -31,7 +31,6 @@
                 p1:focusable="false"
                 p1:focusableInTouchMode="false"
                 p1:clickable="true"
-                p1:onClick="AvatarClick"
                 p1:layout_marginRight="5dp" />
             <LinearLayout
                 p1:orientation="vertical"
