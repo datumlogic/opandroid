@@ -372,6 +372,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 				jmethodID identityConstructorMethodID = jni_env->GetMethodID(identityClass, "<init>", "()V");
 				jobject identityObject = jni_env->NewObject(identityClass, identityConstructorMethodID);
 
+				jfieldID fid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
+				jlong identity = (jlong) (*coreListIter).get();
+				jni_env->SetLongField(identityObject, fid, identity);
+
 				//add to map for future calls
 				identityMap.insert(std::pair<jobject, IIdentityPtr>(identityObject, *coreListIter));
 				//identityMap[identityObject] = *coreListIter;

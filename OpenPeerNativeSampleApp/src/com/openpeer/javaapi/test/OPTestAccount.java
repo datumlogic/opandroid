@@ -1,11 +1,13 @@
 package com.openpeer.javaapi.test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import android.util.Log;
 
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPIdentity;
 
 public class OPTestAccount {
 	public static boolean execute (OPAccount account)
@@ -69,7 +71,13 @@ public class OPTestAccount {
 			Log.d("output", "Account test peerFilePrivateSecret = " + peerFilePrivateSecret.toString());
 			Log.d("output", "Account test peerFilePrivateSecret = " + Arrays.toString(peerFilePrivateSecret));
 			
-			
+			List<OPIdentity> identities = account.getAssociatedIdentities();
+			if(identities.size() == 0)
+			{
+				Log.d("output", "Account test FAILED identities = " + Arrays.deepToString(identities.toArray()));
+				return false;
+			}
+			Log.d("output", "Account test identities = " + Arrays.deepToString(identities.toArray()));
 			
 			
 			Log.d("output", "Account test PASSED");
