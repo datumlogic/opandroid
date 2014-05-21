@@ -260,7 +260,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 			jclass timeCls = findClass("android/text/format/Time");
 			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
-			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
 			//calculate and set Last Updated
 			zsLib::Duration lastUpdated = coreContact.mLastUpdated - time_t_epoch;
@@ -275,7 +275,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			jobject timeExpiresObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
 			jni_env->CallVoidMethod(timeExpiresObject, timeSetMillisMethodID, expires.total_milliseconds());
 			//Time has been converted, now call OPIdentityContact setter
-			method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
+			method = jni_env->GetMethodID(cls, "setExpires", "(Landroid/text/format/Time;)V");
 			jni_env->CallVoidMethod(object, method, timeExpiresObject);
 
 			//add to return List
@@ -346,7 +346,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
 			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 			jclass timeCls = findClass("android/text/format/Time");
 			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
-			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 			//calculate and set Ring time
 			zsLib::Duration creationTimeDuration = coreListIter->mLastUpdated - time_t_epoch;
 			jobject lastUpdatedObject = jni_env->NewObject(timeCls, timeMethodID);
@@ -420,7 +420,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidI
 			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 			jclass timeCls = findClass("android/text/format/Time");
 			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
-			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 			//calculate and set Ring time
 			zsLib::Duration creationTimeDuration = coreListIter->mLastUpdated - time_t_epoch;
 			jobject lastUpdatedObject = jni_env->NewObject(timeCls, timeMethodID);

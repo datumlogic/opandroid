@@ -384,7 +384,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 		Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 		jclass timeCls = findClass("android/text/format/Time");
 		jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
-		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(Z)V");
+		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
 		//calculate and set Last Updated
 		zsLib::Duration lastUpdated = coreContact.mLastUpdated - time_t_epoch;
