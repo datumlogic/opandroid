@@ -216,10 +216,15 @@ namespace HopSampleApp
 		//
 		static string GetGUIDstring()
 		{
+			// Outputs "8c1d1c4b-df68-454c-bf30-953e5701949f"
+			Guid guid = Guid.NewGuid();
+			return guid.ToString();
+			/*
 			CFUUIDRef guid = CFUUIDCreate(null);
 			string strGuid = (string)CFBridgingRelease(CFUUIDCreateString(null, guid));
 			CFRelease (guid);
 			return strGuid;
+			*/
 		}
 		//need fix
 		static string GetCallStateAsString(HOPCallStates callState)
