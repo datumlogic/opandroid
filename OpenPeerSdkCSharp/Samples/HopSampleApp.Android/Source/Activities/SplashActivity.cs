@@ -68,7 +68,7 @@ namespace HopSampleApp
 
 					}else
 					{
-						Intent intent = new Intent (this, typeof(HopSampleApp.SessionActivity));
+						Intent intent = new Intent (this, typeof(LoginActivity));
 						StartActivity (intent);
 
 

@@ -25,6 +25,7 @@ namespace HopSampleApp
 				if (message == "finish") {
 					Finish ();
 					return;
+
 				}
 				Console.WriteLine ("LoginActivity.OnMessageFromInner invoked!");
 				Toast.MakeText (this, "Message from inner: " + message, ToastLength.Short).Show ();

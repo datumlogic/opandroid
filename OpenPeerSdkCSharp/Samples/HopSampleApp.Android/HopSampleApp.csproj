@@ -85,6 +85,7 @@
     <Compile Include="Source\Activities\LettersAdapter.cs" />
     <Compile Include="Source\Services\Emotions.cs" />
     <Compile Include="Source\Activities\ChatItem.cs" />
+    <Compile Include="Source\Services\AppConsts.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
