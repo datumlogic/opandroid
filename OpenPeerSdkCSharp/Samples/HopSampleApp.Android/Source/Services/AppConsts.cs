@@ -14,7 +14,7 @@ using System.IO;
 namespace HopSampleApp
 {
 
-	class AppConsts
+	public static class AppConsts
 	{
 
 		public const string identityFacebookBaseURI = @"identity://facebook.com/";
