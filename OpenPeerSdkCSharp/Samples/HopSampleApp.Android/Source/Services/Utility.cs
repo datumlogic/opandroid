@@ -9,7 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using 
+using Newtonsoft.Json;
 namespace HopSampleApp
 {
 	public static class Utility
@@ -174,52 +174,18 @@ namespace HopSampleApp
 		}
 
 
-		//need fix
+		//done
 		static string GetDeviceOs()
 		{
+
+			string deviceOs = String.Format ("{0} {1}",Build.VERSION.Release,System.Environment.OSVersion);
+			return deviceOs;
+			/*
 			string deviceOs = NSString.StringWithFormat("%@ %@,", UIDevice.CurrentDevice().SystemName(), UIDevice.CurrentDevice().SystemVersion());
 			return deviceOs;
+			*/
 		}
 
-		//need fix and change for andorid
-		static string GetPlatform()
-		{
-			size_t size;
-			sysctlbyname("hw.machine", null, size, null, 0);
-			char machine = (char)malloc(size);
-			sysctlbyname("hw.machine", machine, size, null, 0);
-			string platform = NSString.StringWithCStringEncoding(machine, NSUTF8StringEncoding);
-			free (machine);
-			if (platform.IsEqualToString("iPhone1,1")) return "iPhone 1G";
-
-			if (platform.IsEqualToString("iPhone1,2")) return "iPhone 3G";
-
-			if (platform.IsEqualToString("iPhone2,1")) return "iPhone 3GS";
-
-			if (platform.HasPrefix("iPhone3")) return "iPhone 4";
-
-			if (platform.HasPrefix("iPhone4")) return "iPhone 4S";
-
-			if (platform.HasPrefix("iPhone6,2")) return "iPhone 5S";
-
-			if (platform.IsEqualToString("iPod1,1")) return "iPod Touch 1G";
-
-			if (platform.IsEqualToString("iPod2,1")) return "iPod Touch 2G";
-
-			if (platform.HasPrefix("iPod3")) return "iPod Touch 3G";
-
-			if (platform.HasPrefix("iPod4")) return "iPod Touch 4G";
-
-			if (platform.IsEqualToString("iPad1,1")) return "iPad 1";
-
-			if (platform.IsEqualToString("iPad2,1")) return "iPad 2";
-
-			if (platform.HasPrefix("iPad3")) return "iPad 3";
-
-			if (platform.IsEqualToString("i386")) return "iPhone Simulator";
-
-			return platform;
-		}
 		//
 		static string GetUserAgentName()
 		{
