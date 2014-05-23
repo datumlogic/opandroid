@@ -444,10 +444,10 @@ namespace HopSampleApp
 			*/
 		}
 		//done
-		static DateTime DateFromTimeString(DateTime date)
+		static DateTime DateFromTimeString(string date)
 		{
 			TimeZone zone = TimeZone.CurrentTimeZone;
-			DateTime timeFormater = zone.ToLocalTime(date);
+			DateTime timeFormater = zone.ToLocalTime(Convert.ToDateTime(date));
 			return timeFormater;
 			/*
 			DateTime timeFormatter = new DateTime();
