@@ -9,6 +9,9 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using System.Net;
+using Android.Net.Http;
+using Android.Net;
 using Newtonsoft.Json;
 namespace HopSampleApp
 {
@@ -236,15 +239,20 @@ namespace HopSampleApp
 			string userAgent = NSString.StringWithFormat("%@/%@ (%@ %@;%@) HOPID/1.0 (%@)", appName, appVersion, appOs, appVersionOs, model, developerId);
 			return userAgent;
 		}
-		//need fix
+		//done
 		static void RemoveCookiesAndClearCredentials()
 		{
+			Android.Webkit.CookieSyncManager.CreateInstance (Android.App.Application.Context);
+			Android.Webkit.CookieManager.Instance.RemoveAllCookie ();
 
+			/*
 			NSHTTPCookieStorage cookieStorage = NSHTTPCookieStorage.SharedHTTPCookieStorage();
 			foreach (NSHTTPCookie each in cookieStorage.Cookies())
 			{
 				cookieStorage.DeleteCookie(each);
 			}
+			*/
+
 		}
 
 		//
