@@ -86,6 +86,7 @@
     <Compile Include="Source\Services\Emotions.cs" />
     <Compile Include="Source\Activities\ChatItem.cs" />
     <Compile Include="Source\Services\AppConsts.cs" />
+    <Compile Include="Source\Services\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
