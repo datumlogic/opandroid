@@ -9,7 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
+using 
 namespace HopSampleApp
 {
 	public static class Utility
@@ -428,23 +428,34 @@ namespace HopSampleApp
 
 			return ret;
 		}
-		//need fix
-		static string StringFromDate(NSDate date)
+		//done
+		static string StringFromDate(DateTime date)
 		{
+			TimeZone zone = TimeZone.CurrentTimeZone;
+			DateTime timeFormater = zone.ToLocalTime(date);//DateTime.Now
+			var time = timeFormater.ToString("yyyy:MM:dd HH:mm");
+			return time.ToString();
+			/*
 			NSDateFormatter timeFormatter = new NSDateFormatter();
 			timeFormatter.SetTimeZone(NSTimeZone.SystemTimeZone());
 			timeFormatter.SetDateFormat("yyyy:MM:dd HH:mm");
 			string ret = timeFormatter.StringFromDate(date);
 			return ret;
+			*/
 		}
-		//need fix
-		static NSDate DateFromTimeString(string timeStr)
+		//done
+		static DateTime DateFromTimeString(DateTime date)
 		{
-			NSDateFormatter timeFormatter = new NSDateFormatter();
-			timeFormatter.SetDateFormat("yyyy:MM:dd HH:mm");
-			timeFormatter.SetTimeZone(NSTimeZone.SystemTimeZone());
+			TimeZone zone = TimeZone.CurrentTimeZone;
+			DateTime timeFormater = zone.ToLocalTime(date);
+			return timeFormater;
+			/*
+			DateTime timeFormatter = new DateTime();
+			timeFormatter.ToString("yyyy:MM:dd HH:mm");
+			timeFormatter.NSTimeZone.SystemTimeZone());
 			NSDate date = timeFormatter.DateFromString(timeStr);
 			return date;
+			*/
 		}
 		//need fix
 		static bool IsAppUpdated()
