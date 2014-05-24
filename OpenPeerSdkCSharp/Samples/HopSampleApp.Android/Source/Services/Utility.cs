@@ -12,7 +12,11 @@ using Android.Widget;
 using System.Net;
 using Android.Net.Http;
 using Android.Net;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Serialization;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 namespace HopSampleApp
 {
@@ -436,9 +440,30 @@ namespace HopSampleApp
 			*/
 		}
 
-		//need fix
-		static bool IsValidJSON(string json)
+		//done
+		static bool IsValidJSON(string data)
 		{
+			bool ret = false;
+			if (data.Length > 0)
+			{
+				try
+				{
+					JsonSchema schema = JsonSchema.Parse(data);
+					JObject json = JObject.Parse(data);
+					if (json.IsValid(schema))
+					{
+						return ret=json.IsValid(schema);
+					}else{ return ret; }
+				}
+				catch (Exception error)
+				{ 
+					System.Diagnostics.Debug.WriteLine(String.Format("Parse Error:{0}",error.Message));
+					return ret;
+				}
+			}
+			return ret;
+
+			/*
 			bool ret = false;
 			if (json.Length() > 0)
 			{
@@ -448,6 +473,7 @@ namespace HopSampleApp
 			}
 
 			return ret;
+			*/
 		}
 		//done
 		static string StringFromDate(DateTime date)
