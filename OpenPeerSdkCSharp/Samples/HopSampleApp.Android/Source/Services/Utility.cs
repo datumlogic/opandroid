@@ -13,6 +13,7 @@ using System.Net;
 using Android.Net.Http;
 using Android.Net;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 namespace HopSampleApp
 {
 	public static class Utility
@@ -217,10 +218,11 @@ namespace HopSampleApp
 
 			string deviceOs = String.Format ("{0} {1}",Build.VERSION.Release,System.Environment.OSVersion);
 			return deviceOs;
-			/*
-			string deviceOs = NSString.StringWithFormat("%@ %@,", UIDevice.CurrentDevice().SystemName(), UIDevice.CurrentDevice().SystemVersion());
-			return deviceOs;
-			*/
+
+			//string deviceOs = NSString.StringWithFormat("%@ %@,", UIDevice.CurrentDevice().SystemName(), UIDevice.CurrentDevice().SystemVersion());
+			//return deviceOs;
+
+
 		}
 
 		//
@@ -420,12 +422,18 @@ namespace HopSampleApp
 		{
 			return AVCaptureDevice.DevicesWithMediaType(AVMediaTypeVideo).Count() > 0;
 		}
-		//need fix
+		//done
 		static bool IsValidURL(string candidate)
 		{
+			//http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$
+			string urlRegEx = @"(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
+			Regex urlTest = new Regex(urlRegEx, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			return urlTest.IsMatch (candidate);
+			/*
 			string urlRegEx = "(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
 			NSPredicate urlTest = NSPredicate.PredicateWithFormat("SELF MATCHES %@", urlRegEx);
 			return urlTest.EvaluateWithObject(candidate);
+			*/
 		}
 
 		//need fix
