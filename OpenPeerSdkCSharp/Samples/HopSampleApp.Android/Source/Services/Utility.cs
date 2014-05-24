@@ -217,7 +217,7 @@ namespace HopSampleApp
 			}
 		}
 		//done
-		static string GetDeviceOs()
+		public static string GetDeviceOs()
 		{
 
 			string deviceOs = String.Format ("{0} {1}",Build.VERSION.Release,System.Environment.OSVersion);
@@ -230,7 +230,7 @@ namespace HopSampleApp
 		}
 
 		//
-		static string GetUserAgentName()
+		public static string GetUserAgentName()
 		{
 			string developerId = NSBundle.MainBundle().InfoDictionary().ObjectForKey("Hookflash Developer ID");
 			string appName = NSBundle.MainBundle().InfoDictionary().ObjectForKey("CFBundleName");
@@ -246,7 +246,7 @@ namespace HopSampleApp
 			return userAgent;
 		}
 		//done
-		static void RemoveCookiesAndClearCredentials()
+		public static void RemoveCookiesAndClearCredentials()
 		{
 			Android.Webkit.CookieSyncManager.CreateInstance (Android.App.Application.Context);
 			Android.Webkit.CookieManager.Instance.RemoveAllCookie ();
@@ -262,7 +262,7 @@ namespace HopSampleApp
 		}
 
 		//
-		static string GetGUIDstring()
+		public static string GetGUIDstring()
 		{
 			// Outputs "8c1d1c4b-df68-454c-bf30-953e5701949f"
 			Guid guid = Guid.NewGuid();
@@ -275,7 +275,7 @@ namespace HopSampleApp
 			*/
 		}
 		//need fix
-		static string GetCallStateAsString(HOPCallStates callState)
+		public static string GetCallStateAsString(HOPCallStates callState)
 		{
 			string res = null;
 			switch (callState)
@@ -326,7 +326,7 @@ namespace HopSampleApp
 		}
 
 		//
-		static string GetMessageDeliveryStateAsString(HOPConversationThreadMessageDeliveryStates messageState)
+		public static string GetMessageDeliveryStateAsString(HOPConversationThreadMessageDeliveryStates messageState)
 		{
 			string res = null;
 			switch (messageState)
@@ -345,7 +345,7 @@ namespace HopSampleApp
 			return res;
 		}
 		//
-		static string GetFunctionNameForRequest(string requestString)
+		public static string GetFunctionNameForRequest(string requestString)
 		{
 			string ret = "";
 			if (requestString.HasPrefix("https://datapass.hookflash.me/?method=")) ret = requestString.SubstringFromIndex("https://datapass.hookflash.me/?method=".Length());
@@ -358,7 +358,7 @@ namespace HopSampleApp
 		}
 
 		//
-		static string GetParametersNameForRequest(string requestString)
+		public static string GetParametersNameForRequest(string requestString)
 		{
 			string ret = "";
 			ArrayList components = requestString.ComponentsSeparatedByString(";");
@@ -375,7 +375,7 @@ namespace HopSampleApp
 			return ret;
 		}
 		//
-		static UIBarButtonItem CreateNavigationBackButtonForTarget(object target)
+		public static UIBarButtonItem CreateNavigationBackButtonForTarget(object target)
 		{
 			UIButton button = UIButton.ButtonWithType(UIButtonTypeCustom);
 			button.SetImageForState(UIImage.ImageNamed("iPhone_back_button.png"), UIControlStateNormal);
@@ -386,7 +386,7 @@ namespace HopSampleApp
 		}
 
 		//need fix
-		static string FormatedMessageTimeStampForDate(NSDate inDate)
+		public static string FormatedMessageTimeStampForDate(NSDate inDate)
 		{
 			NSDateFormatter df = new NSDateFormatter();
 			NSDateComponents massageDayOfDate = NSCalendar.CurrentCalendar().ComponentsFromDate(NSEraCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit, inDate);
@@ -404,7 +404,7 @@ namespace HopSampleApp
 		}
 
 		//need fix
-		static string HexadecimalStringForData(NSData data)
+		public static string HexadecimalStringForData(NSData data)
 		{
 			const byte dataBuffer = (const unsigned char)data.Bytes();
 			if (!dataBuffer) return NSString.TheString();
@@ -417,17 +417,17 @@ namespace HopSampleApp
 		}
 
 		//need fix
-		static int GetNumberOfDeviceCameras()
+		public static int GetNumberOfDeviceCameras()
 		{
 			return AVCaptureDevice.DevicesWithMediaType(AVMediaTypeVideo).Count();
 		}
 		//need fix
-		static bool HasCamera()
+		public static bool HasCamera()
 		{
 			return AVCaptureDevice.DevicesWithMediaType(AVMediaTypeVideo).Count() > 0;
 		}
 		//done
-		static bool IsValidURL(string candidate)
+		public static bool IsValidURL(string candidate)
 		{
 			//http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$
 			string urlRegEx = @"(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
@@ -441,7 +441,7 @@ namespace HopSampleApp
 		}
 
 		//done
-		static bool IsValidJSON(string data)
+		public static bool IsValidJSON(string data)
 		{
 			bool ret = false;
 			if (data.Length > 0)
@@ -476,7 +476,7 @@ namespace HopSampleApp
 			*/
 		}
 		//done
-		static string StringFromDate(DateTime date)
+		public static string StringFromDate(DateTime date)
 		{
 			TimeZone zone = TimeZone.CurrentTimeZone;
 			DateTime timeFormater = zone.ToLocalTime(date);//DateTime.Now
@@ -491,7 +491,7 @@ namespace HopSampleApp
 			*/
 		}
 		//done
-		static DateTime DateFromTimeString(string date)
+		public static DateTime DateFromTimeString(string date)
 		{
 			TimeZone zone = TimeZone.CurrentTimeZone;
 			DateTime timeFormater = zone.ToLocalTime(Convert.ToDateTime(date));
@@ -505,7 +505,7 @@ namespace HopSampleApp
 			*/
 		}
 		//need fix
-		static bool IsAppUpdated()
+		public static bool IsAppUpdated()
 		{
 			bool ret = true;
 			NSDate appPreviousModificationDate = NSUserDefaults.StandardUserDefaults().ObjectForKey("appUpdateDate");
