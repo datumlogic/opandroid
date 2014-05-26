@@ -38,6 +38,8 @@ public class OPIdentityDelegateImplementation extends OPIdentityDelegate{
 	@Override
 	public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 		// TODO Auto-generated method stub
+		LoginManager.onDownloadedRolodexContacts(identity);
+		
 		
 	}
 

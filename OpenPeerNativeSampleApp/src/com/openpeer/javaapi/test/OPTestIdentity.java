@@ -79,6 +79,10 @@ public class OPTestIdentity {
 				
 				Log.d("output", "Identity test PASSED");
 				
+				Log.d("output", "Calling Identity lookup test...");
+				
+				OPTestIdentityLookup.execute(identity);
+				
 				return true;
 			}
 			catch (Exception e)

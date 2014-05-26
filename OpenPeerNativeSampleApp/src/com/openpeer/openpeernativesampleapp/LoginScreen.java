@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.openpeer.openpeernativesampleapp.R;
+import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
@@ -396,6 +397,14 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		OPTestAccount.execute(LoginManager.mAccount);
 		
 	}
+	
+	@Override
+	public void onDownloadedRolodexContacts(OPIdentity identity) {
+		// TODO Auto-generated method stub
+		OPTestIdentityLookup.isContactsDownloaded = true;
+		OPTestIdentityLookup.execute(identity);
+		
+	}
 
 
 }
@@ -407,4 +416,5 @@ interface LoginHandlerInterface
 	void passMessageToJS(String msg);
 	void onNamespaceGrantInnerFrameInitialized(String innerFrameUrl);
 	void onAccountStateReady();
+	void onDownloadedRolodexContacts(OPIdentity identity);
 }

@@ -109,7 +109,7 @@ IIdentityPtr OpenPeerCoreManager::getIdentityFromList(jobject javaObject)
 	}
 	if(!returnObj)
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Related identity not found in identity list !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Related identity not found in identity list = %p!!!",javaObject);
 	}
 
 	return returnObj;

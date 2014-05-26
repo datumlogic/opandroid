@@ -265,4 +265,9 @@ public class LoginManager {
 		
 	}
 	
+	public static void onDownloadedRolodexContacts(OPIdentity identity) {
+		// TODO Auto-generated method stub
+		mLoginHandler.onDownloadedRolodexContacts(identity);
+		
+	}
 }
