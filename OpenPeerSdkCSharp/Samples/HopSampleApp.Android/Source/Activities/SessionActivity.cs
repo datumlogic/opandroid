@@ -33,13 +33,20 @@ namespace HopSampleApp
 		{
 
 			base.OnCreate (bundle);
+
 			SetContentView (Resource.Layout.SessionLayout);
 			listView = FindViewById<ListView> (Resource.Id.SessionList);
 			Button Search = FindViewById<Button> (Resource.Id.SearchButton);
 			EditText SearchKeyword = FindViewById<EditText> (Resource.Id.SearchSessionItem);
 
+			/*
+			var settings = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
+			var items = settings.Edit();
+			items.PutString("Date", "HOOKFLASH");
+			items.Commit();
+             */
 
-		  
+			//Console.WriteLine (Utility.IsAppUpdated().ToString());
 
 				//Populate session list with users
 			/*

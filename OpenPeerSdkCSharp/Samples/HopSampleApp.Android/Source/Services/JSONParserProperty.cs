@@ -14,6 +14,7 @@ namespace HopSampleApp
 	class JSONParserProperty
 	{
 		/*  Propertyes for JsonParser class  */
+		public static DateTime date{ get; set; }
 		public string outerFrameURL { get; set;}
 		public string identityProviderDomain { get; set;}
 		public string identityFederateBaseURI { get; set;}

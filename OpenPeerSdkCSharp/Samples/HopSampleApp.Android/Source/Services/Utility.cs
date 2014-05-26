@@ -42,170 +42,13 @@ using Newtonsoft.Json.Serialization;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Android.Hardware;
+
 namespace HopSampleApp
 {
 	public static class Utility
 	{
-		/*
-		const char[] _base64EncodingTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		const short[] _base64DecodingTable = {
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -1, -1,
-			-2, -1, -1, -2, -2, -2, -2, -2, -2, -2, -2,
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -1, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 62, 
-			-2, -2, -2, 63, 52, 53, 54, 55, 56, 57, 58, 
-			59, 60, 61, -2, -2, -2, -2, -2, -2, -2, 0, 1,
-			2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-			15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 
-			-2, -2, -2, -2, -2, -2, 26, 27, 28, 29, 30, 
-			31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 
-			42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -2, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
-			-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2
-		};
-		//Need fix a litle
-		public static string Base64StringFromDataLength(NSData data, int length)
-		{
-			uint ixtext, lentext;
-			int ctremaining;
-			byte input[3], output[4];
-			short i, charsonline = 0, ctcopy;
-			const byte raw;
-			NSMutableString result;
-			lentext = data.Length();
-			if (lentext < 1) return "";
-
-			result = NSMutableString.StringWithCapacity(lentext);
-			raw = data.Bytes();
-			ixtext = 0;
-			while (true)
-			{
-				ctremaining = lentext - ixtext;
-				if (ctremaining <= 0) break;
-
-				for (i = 0; i < 3; i++)
-				{
-					uint ix = ixtext + i;
-					if (ix < lentext) input[i] = raw[ix];
-					else input[i] = 0;
-
-				}
-
-				output[0] = (input[0] & 0xFC) >> 2;
-				output[1] = ((input[0] & 0x03) << 4) | ((input[1] & 0xF0) >> 4);
-				output[2] = ((input[1] & 0x0F) << 2) | ((input[2] & 0xC0) >> 6);
-				output[3] = input[2] & 0x3F;
-				ctcopy = 4;
-				switch (ctremaining)
-				{
-				case 1 :
-					ctcopy = 2;
-					break;
-				case 2 :
-					ctcopy = 3;
-					break;
-				}
-
-				for (i = 0; i < ctcopy; i++) result.AppendString(NSString.StringWithFormat("%c", _base64EncodingTable[output[i]]));
-
-				for (i = ctcopy; i < 4; i++) result.AppendString("=");
-
-				ixtext += 3;
-				charsonline += 4;
-				if ((length > 0) && (charsonline >= length)) charsonline = 0;
-
-			}
-
-			return result;
-		}
-
-
-		public static string DecodeBase64(string data64based)
-		{
-			const char objPointer = data64based.CStringUsingEncoding(NSASCIIStringEncoding);
-			if (objPointer == null) return null;
-
-			size_t intLength = strlen(objPointer);
-			int intCurrent;
-			int i = 0, j = 0, k;
-			byte objResult;
-			objResult = calloc(intLength, sizeof (unsigned char));
-			while (((intCurrent = objPointer++) != '\0') && (intLength-- > 0))
-			{
-				if (intCurrent == '=')
-				{
-					if (objPointer != '=' && ((i % 4) == 1))
-					{
-						free (objResult);
-						return null;
-					}
-
-					continue;
-				}
-
-				intCurrent = _base64DecodingTable[intCurrent];
-				if (intCurrent == -1)
-				{
-					continue;
-				}
-				else if (intCurrent == -2)
-				{
-					free (objResult);
-					return null;
-				}
-
-				switch (i % 4)
-				{
-				case 0 :
-					objResult[j] = intCurrent << 2;
-					break;
-				case 1 :
-					objResult[j++] |= intCurrent >> 4;
-					objResult[j] = (intCurrent & 0x0f) << 4;
-					break;
-				case 2 :
-					objResult[j++] |= intCurrent >> 2;
-					objResult[j] = (intCurrent & 0x03) << 6;
-					break;
-				case 3 :
-					objResult[j++] |= intCurrent;
-					break;
-				}
-
-				i++;
-			}
-
-			k = j;
-			if (intCurrent == '=')
-			{
-				switch (i % 4)
-				{
-				case 1 :
-					free(objResult);
-					return null;
-				case 2 :
-					k++;
-				case 3 :
-					objResult[k] = 0;
-				}
-
-			}
-
-			NSData retData = new NSData(objResult, j, true);
-			string retString = new string(retData, NSUTF8StringEncoding);
-			return retString;
-		}
-		*/
+		//Base 64 Encoding.
 		public static string base64Encode(string data)
 		{
 			try
@@ -220,7 +63,7 @@ namespace HopSampleApp
 				throw new Exception("Error in base64Encode" + e.Message);
 			}
 		}
-
+		//Base 64 Decoding.
 		public static string base64Decode(string data)
 		{
 			try
@@ -240,20 +83,23 @@ namespace HopSampleApp
 				throw new Exception("Error in base64Decode" + e.Message);
 			}
 		}
-		//done
+		//Get Device os info.
 		public static string GetDeviceOs()
 		{
+			try
+			{
+				string deviceOs = String.Format ("{0} {1}",Build.VERSION.Release,System.Environment.OSVersion);
+			    return deviceOs;
+			}
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("GetDeviceOS Error:{0}",error.Message));
 
-			string deviceOs = String.Format ("{0} {1}",Build.VERSION.Release,System.Environment.OSVersion);
-			return deviceOs;
-
-			//string deviceOs = NSString.StringWithFormat("%@ %@,", UIDevice.CurrentDevice().SystemName(), UIDevice.CurrentDevice().SystemVersion());
-			//return deviceOs;
-
+			}
 
 		}
 
-		//
+		/*
 		public static string GetUserAgentName()
 		{
 			string developerId = NSBundle.MainBundle().InfoDictionary().ObjectForKey("Hookflash Developer ID");
@@ -269,36 +115,40 @@ namespace HopSampleApp
 			string userAgent = NSString.StringWithFormat("%@/%@ (%@ %@;%@) HOPID/1.0 (%@)", appName, appVersion, appOs, appVersionOs, model, developerId);
 			return userAgent;
 		}
-		//done
+		*/
+
+		//Remove Cookies And Clear Credentials.
 		public static void RemoveCookiesAndClearCredentials()
 		{
-			Android.Webkit.CookieSyncManager.CreateInstance (Android.App.Application.Context);
-			Android.Webkit.CookieManager.Instance.RemoveAllCookie ();
-
-			/*
-			NSHTTPCookieStorage cookieStorage = NSHTTPCookieStorage.SharedHTTPCookieStorage();
-			foreach (NSHTTPCookie each in cookieStorage.Cookies())
+			try
 			{
-				cookieStorage.DeleteCookie(each);
+				Android.Webkit.CookieSyncManager.CreateInstance (Android.App.Application.Context);
+		        Android.Webkit.CookieManager.Instance.RemoveAllCookie ();
 			}
-			*/
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("RemoveCookiesAndClearCredentials Error:{0}",error.Message));
 
+			}
 		}
 
-		//
+		//Get GUID string.
 		public static string GetGUIDstring()
 		{
-			// Outputs "8c1d1c4b-df68-454c-bf30-953e5701949f"
-			Guid guid = Guid.NewGuid();
-			return guid.ToString();
-			/*
-			CFUUIDRef guid = CFUUIDCreate(null);
-			string strGuid = (string)CFBridgingRelease(CFUUIDCreateString(null, guid));
-			CFRelease (guid);
-			return strGuid;
-			*/
+			try
+			{
+				// Outputs "8c1d1c4b-df68-454c-bf30-953e5701949f"
+			    Guid guid = Guid.NewGuid();
+			    return guid.ToString();
+			}
+			catch(Exception error) 
+			{
+				throw new Exception(String.Format("GetGUIDString Error:{0}",error.Message));
+			}
+
 		}
-		//need fix
+		/*
+		//need sdk for fix
 		public static string GetCallStateAsString(HOPCallStates callState)
 		{
 			string res = null;
@@ -348,8 +198,10 @@ namespace HopSampleApp
 
 			return res;
 		}
+		*/
 
-		//
+		/*
+		//need sdk for fix
 		public static string GetMessageDeliveryStateAsString(HOPConversationThreadMessageDeliveryStates messageState)
 		{
 			string res = null;
@@ -368,65 +220,10 @@ namespace HopSampleApp
 
 			return res;
 		}
-		//
-		public static string GetFunctionNameForRequest(string requestString)
-		{
-			string ret = "";
-			if (requestString.HasPrefix("https://datapass.hookflash.me/?method=")) ret = requestString.SubstringFromIndex("https://datapass.hookflash.me/?method=".Length());
-			else if (requestString.HasPrefix("http://datapass.hookflash.me/?method=")) ret = requestString.SubstringFromIndex("http://datapass.hookflash.me/?method=".Length());
 
-			ArrayList components = ret.ComponentsSeparatedByString(";");
-			if (components.Count > 0) ret = components[0];
+		*/
 
-			return ret;
-		}
-
-		//
-		public static string GetParametersNameForRequest(string requestString)
-		{
-			string ret = "";
-			ArrayList components = requestString.ComponentsSeparatedByString(";");
-			if (components.Count == 2)
-			{
-				string theParams = (string)components[1];
-				if (theParams.HasPrefix("data="))
-				{
-					ret = theParams.SubstringFromIndex("data=".Length());
-				}
-
-			}
-
-			return ret;
-		}
-		//
-		public static UIBarButtonItem CreateNavigationBackButtonForTarget(object target)
-		{
-			UIButton button = UIButton.ButtonWithType(UIButtonTypeCustom);
-			button.SetImageForState(UIImage.ImageNamed("iPhone_back_button.png"), UIControlStateNormal);
-			button.AddTargetActionForControlEvents(target, @selector (popViewControllerAnimated:), UIControlEventTouchUpInside);
-			button.Frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
-			UIBarButtonItem backButon = new UIBarButtonItem(button);
-			return backButon;
-		}
-
-		//need fix
-		public static string FormatedMessageTimeStampForDate(NSDate inDate)
-		{
-			NSDateFormatter df = new NSDateFormatter();
-			NSDateComponents massageDayOfDate = NSCalendar.CurrentCalendar().ComponentsFromDate(NSEraCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit, inDate);
-			NSDateComponents today = NSCalendar.CurrentCalendar().ComponentsFromDate(NSEraCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit, NSDate.Date());
-			if (today.Day() == massageDayOfDate.Day() && today.Month() == massageDayOfDate.Month() && today.Year() == massageDayOfDate.Year() && today.Era() == massageDayOfDate.Era())
-			{
-				df.SetDateFormat("hh:mm aa");
-			}
-			else
-			{
-				df.SetDateFormat("MM/dd/yyyy hh:mm aa");
-			}
-
-			return df.StringFromDate(inDate);
-		}
-
+		/*
 		//need fix
 		public static string HexadecimalStringForData(NSData data)
 		{
@@ -439,32 +236,64 @@ namespace HopSampleApp
 
 			return NSString.StringWithString(hexString);
 		}
+		*/
 
-		//need fix
+
+		//Count number of cameras that current device have. 
 		public static int GetNumberOfDeviceCameras()
 		{
-			return AVCaptureDevice.DevicesWithMediaType(AVMediaTypeVideo).Count();
-		}
-		//need fix
-		public static bool HasCamera()
-		{
-			return AVCaptureDevice.DevicesWithMediaType(AVMediaTypeVideo).Count() > 0;
-		}
-		//done
-		public static bool IsValidURL(string candidate)
-		{
-			//http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$
-			string urlRegEx = @"(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
-			Regex urlTest = new Regex(urlRegEx, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-			return urlTest.IsMatch (candidate);
-			/*
-			string urlRegEx = "(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
-			NSPredicate urlTest = NSPredicate.PredicateWithFormat("SELF MATCHES %@", urlRegEx);
-			return urlTest.EvaluateWithObject(candidate);
-			*/
+			try
+			{
+				return Camera.NumberOfCameras;
+			}
+			catch(Exception error)
+			{
+				throw new Exception (String.Format ("GetNumberOfDeviceCameras Error:{0}", error.Message));
+			}
 		}
 
-		//done
+
+
+		//Check if current device have camera.
+		public static bool HasCamera()
+		{
+			try
+			{
+				int NumberOfCammera = Camera.NumberOfCameras;
+			    if (NumberOfCammera > 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			catch(Exception error)
+			{
+				throw new Exception (String.Format ("HasCamera Error:{0}",error.Message));
+			}
+
+		}
+
+
+		//Check if is url valid using regular expression.
+		public static bool IsValidURL(string candidate)
+		{
+			try
+			{
+				//http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$
+				string urlRegEx = @"(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
+			    Regex urlTest = new Regex(urlRegEx, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			    return urlTest.IsMatch (candidate);
+			}
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("IsValidURL Error:{0}",error.Message));
+			}
+		}
+
+		//Check if is Json valid.
 		public static bool IsValidJSON(string data)
 		{
 			bool ret = false;
@@ -481,66 +310,77 @@ namespace HopSampleApp
 				}
 				catch (Exception error)
 				{ 
-					System.Diagnostics.Debug.WriteLine(String.Format("Parse Error:{0}",error.Message));
-					return ret;
+					throw new Exception (String.Format ("Parse Error:{0}",error.Message));
+
 				}
 			}
 			return ret;
 
-			/*
-			bool ret = false;
-			if (json.Length() > 0)
-			{
-				NSData data = json.DataUsingEncoding(NSUTF8StringEncoding);
-				object jsonObj = NSJSONSerialization.JSONObjectWithDataOptionsError(data, kNilOptions, null);
-				ret = jsonObj != null;
-			}
-
-			return ret;
-			*/
 		}
-		//done
+		//Get date string from date.
 		public static string StringFromDate(DateTime date)
 		{
-			TimeZone zone = TimeZone.CurrentTimeZone;
-			DateTime timeFormater = zone.ToLocalTime(date);//DateTime.Now
-			var time = timeFormater.ToString("yyyy:MM:dd HH:mm");
-			return time.ToString();
-			/*
-			NSDateFormatter timeFormatter = new NSDateFormatter();
-			timeFormatter.SetTimeZone(NSTimeZone.SystemTimeZone());
-			timeFormatter.SetDateFormat("yyyy:MM:dd HH:mm");
-			string ret = timeFormatter.StringFromDate(date);
-			return ret;
-			*/
+			try
+			{
+				TimeZone zone = TimeZone.CurrentTimeZone;
+			    DateTime timeFormater = zone.ToLocalTime(date);//DateTime.Now
+			    var time = timeFormater.ToString("yyyy:MM:dd HH:mm");
+			    return time.ToString();
+			}
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("StringFromDate Error:{0}",error.Message));
+			}
 		}
-		//done
+		//get date from string.
 		public static DateTime DateFromTimeString(string date)
 		{
-			TimeZone zone = TimeZone.CurrentTimeZone;
-			DateTime timeFormater = zone.ToLocalTime(Convert.ToDateTime(date));
-			return timeFormater;
-			/*
-			DateTime timeFormatter = new DateTime();
-			timeFormatter.ToString("yyyy:MM:dd HH:mm");
-			timeFormatter.NSTimeZone.SystemTimeZone());
-			NSDate date = timeFormatter.DateFromString(timeStr);
-			return date;
-			*/
+			try
+			{
+				TimeZone zone = TimeZone.CurrentTimeZone;
+			    DateTime timeFormater = zone.ToLocalTime(Convert.ToDateTime(date));
+			    return timeFormater;
+			}
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("DateFromTimeString Error:{0}",error.Message));
+			}
 		}
-		//need fix
+		public static string Proba()
+		{
+			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);  
+			var somePref = prefs.GetString("APPSETTINGS", null);
+			return somePref;
+		}
+
+		//Check if app setting need to be updated.
 		public static bool IsAppUpdated()
 		{
-			bool ret = true;
-			NSDate appPreviousModificationDate = NSUserDefaults.StandardUserDefaults().ObjectForKey("appUpdateDate");
-			string exePath = NSBundle.MainBundle().ExecutablePath();
-			NSDictionary exeAttrs = NSFileManager.DefaultManager().AttributesOfItemAtPathError(exePath, null);
-			NSDate lastModificationDate = exeAttrs.ObjectForKey("NSFileModificationDate");
-			if (lastModificationDate.IsEqualToDate(appPreviousModificationDate)) ret = false;
-			else NSUserDefaults.StandardUserDefaults().SetObjectForKey(lastModificationDate, "appUpdateDate");
+			try
+			{
+				bool ret = false;
+				var settings = Application.Context.GetSharedPreferences("android_sample_app", FileCreationMode.Private);  
+			    var data1 = settings.GetString("date", null);
+				if (JSONParserProperty.date != Convert.ToDateTime(data1))
+				{
+					ret=true;
+					return ret;
+				}
+				else
+				{
+					ret=false;
+					return ret;
+				}
+			
 
-			return ret;
+			}
+			catch(Exception error)
+			{
+				throw new Exception (String.Format ("IsAppUpdated Error:{0}", error.Message));
+			}
 		}
-		//
+
+
+
 	}
 }
