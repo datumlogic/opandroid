@@ -38,7 +38,10 @@ namespace HopSampleApp
 			listView = FindViewById<ListView> (Resource.Id.SessionList);
 			Button Search = FindViewById<Button> (Resource.Id.SearchButton);
 			EditText SearchKeyword = FindViewById<EditText> (Resource.Id.SearchSessionItem);
-
+			Console.WriteLine (Utility.GetManufacturer());
+			Console.WriteLine (Utility.GetDeviceFullNameOfModel());
+			Console.WriteLine (Utility.GetDeviceModelName());
+			Console.WriteLine (Utility.GetPlatform ());
 			/*
 			var settings = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
 			var items = settings.Edit();

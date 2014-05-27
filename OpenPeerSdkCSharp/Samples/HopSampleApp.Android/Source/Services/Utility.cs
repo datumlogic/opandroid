@@ -43,6 +43,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Android.Hardware;
+using Mono;
+
 
 namespace HopSampleApp
 {
@@ -131,6 +133,180 @@ namespace HopSampleApp
 
 			}
 		}
+		public static string GetManufacturer()
+		{
+			var Manufacturer=Android.OS.Build.Manufacturer;
+			return Manufacturer;
+		}
+
+		public static string GetPlatform()
+		{
+			var platformID = Android.OS.Build.VERSION.SdkInt.ToString();
+			switch (platformID)
+			{
+			case "3":
+				return "Cupcake (API 3 Android 1.5)";
+				break;
+			case "4":
+				return "Donut (API 4  Android 1.6)";
+				break;
+			case "5":
+				return "Eclair  (API 5 Android 2.0)";
+				break;
+
+			case "6":
+				return "Eclair (API 6 Android 2.0.1)";
+				break;
+			case "7":
+				return "Eclair (API 7 Android 2.1) ";
+				break;
+			case "8":
+				return"Froyo (API 8  Android 2.2–2.2.3)";
+				break;
+			case "9":
+				return "Gingerbread (API 9  Android 2.3–2.3.2)";
+				break;
+			case "10":
+				return "Gingerbread (API 10 Android 2.3.3–2.3.7)";
+				break;
+			case "11":
+				return "Honeycomb (API 11 Android 3.0)";
+				break;
+			case "12":
+				return "Honeycomb (API 12 Android 3.1)";
+				break;
+			case "13":
+				return "Honeycomb (API 13  Android 3.2 )";
+				break;
+			case "14":
+				return "Ice Cream Sandwich (API 14 Android 4.0–4.0.2 )";
+				break;
+			case "15":
+				return "Ice Cream Sandwich (api 15 Android 4.0.3–4.0.4 )";
+				break;
+			case "16":
+				return "Jelly Bean (API 16 Android 4.1)";
+				break;
+			case "17":
+				return "Jelly Bean (API 17 Android 4.2)";
+				break;
+			case "18":
+				return "Jelly Bean (API 18 Android 4.3)";
+				break;
+			case "19":
+				return "KitKat (API 19 Android 4.4)";
+				break;
+			default:
+				return "Unknown";
+				break;
+			}
+		}
+		public static string GetDeviceModelName()
+		{
+			var device = Android.OS.Build.Model;
+			return device;
+		}
+		//need fix and change for andorid
+		public static string GetDeviceFullNameOfModel()
+		{
+
+			var device=Android.OS.Build.Model;
+			//Samsung Galaxy S4
+			if (device == "GT-I9505")return "Samsung Galaxy S4";
+
+			//Samsung Galaxy S5
+			if (device == "SM-G900F")return"Samsung Galaxy S5";
+			if (device == "SM-G900H")return "Samsung Galaxy S5";
+			if (device == "SM-G900R4")return "Samsung Galaxy S5";
+			if (device == "SM-G900V")return "Samsung Galaxy S5";
+			if (device == "SM-G900RZWAUSC")return "Samsung Galaxy S5";
+			if (device == "SM-G900W8")return "Samsung Galaxy S5";
+
+			//Samsung Galaxy Grand
+			if (device == "GT-I9080")return "Samsung Galaxy Grand";
+			if (device == "GT-I9082")return "Samsung Galaxy Grand";
+			if (device == "SM-G7100")return "Samsung Galaxy Grand 2";
+			if (device == "SM-G7102")return "Samsung Galaxy Grand 2";
+			if (device == "SM-G7105")return "Samsung Galaxy Grand 2";
+
+			//Samsung Galaxy Ace
+			if (device == "GT-S7500")return "Samsung Galaxy Ace Plus";
+			if (device == "GT-S5830")return "Samsung Galaxy Ace";
+
+			//Samsung Galaxy Mega
+			if (device == "GT-I9150")return "Samsung Galaxy Mega";
+			if (device == "GT-I9152")return "Samsung Galaxy Mega";
+			if (device == "GT-I9200")return "Samsung Galaxy Mega";
+			if (device == "GT-I9205")return "Samsung Galaxy Mega";
+
+			//Galaxy Nexus
+			if (device == "GT-I9250")return "Galaxy Nexus";
+
+			//Samsung Galaxy Note
+			if (device == "GT-N7000")return "Samsung Galaxy Note";
+			if (device == "GT-N7000B")return "Samsung Galaxy Note";
+			if (device == "GT-N7005")return "Samsung Galaxy Note";
+			if (device == "SHV-E160K")return "Samsung Galaxy Note";
+			if (device == "SHV-E160L")return "Samsung Galaxy Note";
+			if (device == "SHV-E160S")return "Samsung Galaxy Note";
+			if (device == "SGH-I717")return "Samsung Galaxy Note";
+			if (device == "SC-05D")return "Samsung Galaxy Note";
+			if (device == "SGH-T879")return "Samsung Galaxy Note";
+			if (device == "GT-I9228")return "Samsung Galaxy Note";
+			if (device == "GT-I9220")return "Samsung Galaxy Note";
+			if (device == "SCH-I889")return "Samsung Galaxy Note";
+
+			//Samsung Galaxy Note II
+			if (device == "GT-N7100")return "Samsung Galaxy Note II";
+			if (device == "GT-N7102")return "Samsung Galaxy Note II";
+			if (device == "GT-N7105")return "Samsung Galaxy Note II";
+			if (device == "GT-N7108")return "Samsung Galaxy Note II";
+			if (device == "SCH-i605")return "Samsung Galaxy Note II";
+			if (device == "SCH-R950")return "Samsung Galaxy Note II";
+			if (device == "SGH-i317")return "Samsung Galaxy Note II";
+			if (device == "SGH-i317M")return"Samsung Galaxy Note II";
+			if (device == "SGH-T889")return "Samsung Galaxy Note II";
+			if (device == "SGH-T889V")return "Samsung Galaxy Note II";
+			if (device == "SPH-L900")return "Samsung Galaxy Note II";
+			if (device == "SCH-N719")return "Samsung Galaxy Note II";
+
+			//Samsung Galaxy Note 10.1
+			if (device =="SM-P600")return "Samsung Galaxy Note 10.1";
+			if (device == "SM-P601")return "Samsung Galaxy Note 10.1";
+			if (device == "SM-P605")return "Samsung Galaxy Note 10.1";
+
+			//Samsung Galaxy S III
+			if (device == "GT-I9300")return"Samsung Galaxy S III";
+			if (device == "SGH-I747")return"Samsung Galaxy S III";
+			if (device == "SGH-N064")return "Samsung Galaxy S III";
+			if (device == "SGH-N035")return "Samsung Galaxy S III";
+			if (device == "GT-I9308")return "Samsung Galaxy S III";
+
+			//Nexus 5
+			if (device == "LG-D820")return"Nexus 5";
+			if (device == "LG-D821")return"Nexus 5";
+
+			//LG Optimus 4X HD P880
+			if (device == "LG-P880")return"LG Optimus 4X HD P880";
+			if (device == "LG-P880g")return"LG Optimus 4X HD P880g";
+
+			//LG Optimus
+			if (device == "SU640") return "LG Optimus LTE";
+			if (device == "LU6200") return "LG Optimus LTE";
+			if (device == "LG P930") return "LG Optimus LTE";
+			if (device == "LG P930") return "LG Nitro HD";
+			if (device == "L-01D") return "Optimus LTE L-01D";
+			if (device == "LG VS920") return "LG Spectrum";
+
+			//Samsung Galaxy Tab Pro 8.4
+			if (device == "SM-T320") return"Samsung Galaxy Tab Pro 8.4";
+			if (device == "SM-T321") return "Samsung Galaxy Tab Pro 8.4";
+			if (device == "SM-T325") return "Samsung Galaxy Tab Pro 8.4";
+
+			return device;
+            
+		}
+
 
 		//Get GUID string.
 		public static string GetGUIDstring()
