@@ -48,11 +48,7 @@ using Mono;
 
 namespace HopSampleApp
 {
-	public class DeviceModelsClass
-	{
-		public string PhoneModelName{ get;set;}
 
-	}
 	public static class Utility
 	{
 
@@ -238,51 +234,46 @@ namespace HopSampleApp
 			try
 			{
 				var device=Android.OS.Build.Model;
-			    List<DeviceModelsClass> items = new List<DeviceModelsClass>()
-				{new DeviceModelsClass{PhoneModelName= "SM-G900F:Samsung Galaxy S5"},new DeviceModelsClass{PhoneModelName="SM-G900H:Samsung Galaxy S5"}, 
-				new DeviceModelsClass{PhoneModelName="SM-G900R4:Samsung Galaxy S5"},new DeviceModelsClass{PhoneModelName="SM-G900V:Samsung Galaxy S5"},
-				new DeviceModelsClass{PhoneModelName="SM-G900RZWAUSC:Samsung Galaxy S5"},new DeviceModelsClass{PhoneModelName="SM-G900W8:Samsung Galaxy S5"},
-				new DeviceModelsClass{PhoneModelName="GT-I9080:Samsung Galaxy Grand"},new DeviceModelsClass{PhoneModelName="GT-I9082:Samsung Galaxy Grand"},
-				new DeviceModelsClass{PhoneModelName="SM-G7100:Samsung Galaxy Grand 2"},new DeviceModelsClass{PhoneModelName="SM-G7102:Samsung Galaxy Grand 2"},
-				new DeviceModelsClass{PhoneModelName="SM-G7105:Samsung Galaxy Grand 2"},new DeviceModelsClass{PhoneModelName="GT-S7500:Samsung Galaxy Ace Plus"},
-				new DeviceModelsClass{PhoneModelName="GT-S5830:Samsung Galaxy Ace"},new DeviceModelsClass{PhoneModelName="GT-I9505:Samsung Galaxy S4"},
-				new DeviceModelsClass{PhoneModelName="GT-I9150:Samsung Galaxy Mega"},new DeviceModelsClass{PhoneModelName="GT-I9152:Samsung Galaxy Mega"},
-				new DeviceModelsClass{PhoneModelName="GT-I9200:Samsung Galaxy Mega"},new DeviceModelsClass{PhoneModelName="GT-I9205:Samsung Galaxy Mega"},
-				new DeviceModelsClass{PhoneModelName="GT-N7000:Samsung Galaxy Note"},new DeviceModelsClass{PhoneModelName="GT-N7000B:Samsung Galaxy Note"},
-				new DeviceModelsClass{PhoneModelName="GT-N7005:Samsung Galaxy Note"},new DeviceModelsClass{PhoneModelName="SHV-E160K:Samsung Galaxy Note"},
-				new DeviceModelsClass{PhoneModelName="SHV-E160L:Samsung Galaxy Note"},new DeviceModelsClass{PhoneModelName="SHV-E160S:Samsung Galaxy Note"},
-				new DeviceModelsClass{PhoneModelName="SGH-I717:Samsung Galaxy Note"},new DeviceModelsClass{PhoneModelName="SC-05D:Samsung Galaxy Note"},
-				new DeviceModelsClass{PhoneModelName="SGH-T879:Samsung Galaxy Note"},new DeviceModelsClass{PhoneModelName="GT-I9228:Samsung Galaxy Note"},	
-				new DeviceModelsClass{PhoneModelName="GT-I9220:Samsung Galaxy Note"},new DeviceModelsClass{PhoneModelName="SCH-I889:Samsung Galaxy Note"},
-				new DeviceModelsClass{PhoneModelName="GT-N7100:Samsung Galaxy Note II"},new DeviceModelsClass{PhoneModelName="GT-N7102:Samsung Galaxy Note II"},
-				new DeviceModelsClass{PhoneModelName="GT-N7105:Samsung Galaxy Note II"},new DeviceModelsClass{PhoneModelName="GT-N7108:Samsung Galaxy Note II"},
-				new DeviceModelsClass{PhoneModelName="SCH-i605:Samsung Galaxy Note II"},new DeviceModelsClass{PhoneModelName="SCH-R950:Samsung Galaxy Note II"},
-				new DeviceModelsClass{PhoneModelName="SGH-i317:Samsung Galaxy Note II"},new DeviceModelsClass{PhoneModelName="SGH-i317M:Samsung Galaxy Note II"},
-				new DeviceModelsClass{PhoneModelName="SGH-T889:Samsung Galaxy Note II"},new DeviceModelsClass{PhoneModelName="SGH-T889V:Samsung Galaxy Note II"},
-				new DeviceModelsClass{PhoneModelName="SPH-L900:Samsung Galaxy Note II"},new DeviceModelsClass{PhoneModelName="SCH-N719:Samsung Galaxy Note II"},
-				new DeviceModelsClass{PhoneModelName="SM-P600:Samsung Galaxy Note 10.1"},new DeviceModelsClass{PhoneModelName="SM-P601:Samsung Galaxy Note 10.1"},
-				new DeviceModelsClass{PhoneModelName="SM-P605:Samsung Galaxy Note 10.1"},new DeviceModelsClass{PhoneModelName="GT-I9300:Samsung Galaxy S III"},
-				new DeviceModelsClass{PhoneModelName="SGH-I747:Samsung Galaxy S III"},new DeviceModelsClass{PhoneModelName="SGH-N064:Samsung Galaxy S III"},
-				new DeviceModelsClass{PhoneModelName="SGH-N035:Samsung Galaxy S III"},new DeviceModelsClass{PhoneModelName="GT-I9308:Samsung Galaxy S III"},
-				new DeviceModelsClass{PhoneModelName="LG-D820:Nexus 5"},new DeviceModelsClass{PhoneModelName="LG-D821:Nexus 5"},
-				new DeviceModelsClass{PhoneModelName="LG-P880:LG Optimus 4X HD P880"},new DeviceModelsClass{PhoneModelName="LG-P880g:LG Optimus 4X HD P880g"},
-				new DeviceModelsClass{PhoneModelName="SU640:LG Optimus LTE"},new DeviceModelsClass{PhoneModelName="LU6200:LG Optimus LTE"},
-				new DeviceModelsClass{PhoneModelName="LG P930:LG Optimus LTE"},	new DeviceModelsClass{PhoneModelName="LG P930:LG Nitro HD"},
-				new DeviceModelsClass{PhoneModelName="L-01D:Optimus LTE L-01D"},new DeviceModelsClass{PhoneModelName="LG VS920:LG Spectrum"},
-				new DeviceModelsClass{PhoneModelName="SM-T320:Samsung Galaxy Tab Pro 8.4"},	new DeviceModelsClass{PhoneModelName="SM-T321:Samsung Galaxy Tab Pro 8.4"},
-				new DeviceModelsClass{PhoneModelName="SM-T325:Samsung Galaxy Tab Pro 8.4"}
-			};
 
-			var model = items.Where (p=>p.PhoneModelName.Contains(device)).FirstOrDefault();
-			string[]  platform = model.PhoneModelName.ToString().Split(':');
-			return platform[1];
+				Dictionary<string,string> DeviceList=new Dictionary<string, string>(){
+					{"SM-G900F","Samsung Galaxy S5"},{"SM-G900H","Samsung Galaxy S5"},{"SM-G900R4","Samsung Galaxy S5"},
+					{"SM-G900V","Samsung Galaxy S5"},{"SM-G900RZWAUSC","Samsung Galaxy S5"},{"SM-G900W8","Samsung Galaxy S5"},
+					{"GT-I9080","Samsung Galaxy Grand"},{"GT-I9082","Samsung Galaxy Grand"},{"SM-G7100","Samsung Galaxy Grand 2"},
+					{"SM-G7102","Samsung Galaxy Grand 2"},{"SM-G7105","Samsung Galaxy Grand 2"},{"GT-S7500","Samsung Galaxy Ace Plus"},
+					{"GT-S5830","Samsung Galaxy Ace"},{"GT-I9505","Samsung Galaxy S4"},{"GT-I9150","Samsung Galaxy Mega"},
+					{"GT-I9152","Samsung Galaxy Mega"},{"GT-I9200","Samsung Galaxy Mega"},{"GT-I9205","Samsung Galaxy Mega"},
+					{"GT-N7000","Samsung Galaxy Note"},{"GT-N7000B","Samsung Galaxy Note"},{"GT-N7005","Samsung Galaxy Note"},
+					{"SHV-E160K","Samsung Galaxy Note"},{"SHV-E160L","Samsung Galaxy Note"},{"SHV-E160S","Samsung Galaxy Note"},
+					{"SGH-I717","Samsung Galaxy Note"},{"SC-05D","Samsung Galaxy Note"},{"SGH-T879","Samsung Galaxy Note"},
+					{"GT-I9228","Samsung Galaxy Note"},{"GT-I9220","Samsung Galaxy Note"},{"SCH-I889","Samsung Galaxy Note"},
+					{"GT-N7100","Samsung Galaxy Note II"},{"GT-N7102","Samsung Galaxy Note II"},{"GT-N7105","Samsung Galaxy Note II"},
+					{"GT-N7108","Samsung Galaxy Note II"},{"SCH-i605","Samsung Galaxy Note II"},{"SCH-R950","Samsung Galaxy Note II"},
+					{"SGH-i317","Samsung Galaxy Note II"},{"SGH-i317M","Samsung Galaxy Note II"},{"SGH-T889","Samsung Galaxy Note II"},
+					{"SGH-T889V","Samsung Galaxy Note II"},{"SPH-L900","Samsung Galaxy Note II"},{"SCH-N719","Samsung Galaxy Note II"},
+					{"SM-P600","Samsung Galaxy Note 10.1"},{"SM-P601","Samsung Galaxy Note 10.1"},{"SM-P605","Samsung Galaxy Note 10.1"},
+					{"GT-I9300","Samsung Galaxy S III"},{"SGH-I747","Samsung Galaxy S III"},{"SGH-N064","Samsung Galaxy S III"},
+					{"SGH-N035","Samsung Galaxy S III"},{"GT-I9308","Samsung Galaxy S III"},{"LG-D820","Nexus 5"},
+					{"LG-D821","Nexus 5"},{"LG-P880","LG Optimus 4X HD P880"},{"LG-P880g","LG Optimus 4X HD P880g"},
+					{"SU640","LG Optimus LTE"},{"LU6200","LG Optimus LTE"},{"LG-P930","LG Nitro HD"},
+					{"L-01D","Optimus LTE L-01D"},{"LG VS920","LG Spectrum"},{"SM-T320","Samsung Galaxy Tab Pro 8.4"},
+					{"SM-T321","Samsung Galaxy Tab Pro 8.4"},{"SM-T325","Samsung Galaxy Tab Pro 8.4"}
+				};
+
+				if(DeviceList.ContainsKey(device))
+					return DeviceList[device];
+				else
+					return "Unknown device";
 			}
 			catch(Exception error)
 			{
-				throw new Exception(String.Format("GetDeviceFullNameOfModel Error:{0}",error.Message));
+
+				throw new Exception (String.Format("GetDeviceFullNameOfModel Error:{0}",error.Message));
 			}
-            
+
+
+
 		}
+
 
 
 		//Get GUID string.
