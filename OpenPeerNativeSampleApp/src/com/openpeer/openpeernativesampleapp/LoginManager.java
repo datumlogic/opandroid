@@ -12,11 +12,14 @@ import android.util.Log;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPAccountDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
+import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
+import com.openpeer.javaapi.OPIdentityLookup;
+import com.openpeer.javaapi.OPIdentityLookupDelegate;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
@@ -72,8 +75,10 @@ public class LoginManager {
 	public static OPIdentity mIdentity;
 	public static OPIdentityDelegate mIdentityDelegate;
 	public static OPMediaEngine mMediaEngine;
+	public static OPIdentityLookupDelegate mIdentityLookupDelegate;
 	//public static OPLogger mLogger;
 	static LoginHandlerInterface mLoginHandler;
+	public static OPIdentityLookup mIdentityLookup;
 	
 	public static void setHandlerListener(LoginHandlerInterface listener)
    {
@@ -267,6 +272,10 @@ public class LoginManager {
 	
 	public static void onDownloadedRolodexContacts(OPIdentity identity) {
 		// TODO Auto-generated method stub
+		LoginManager.mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation();
+		LoginManager.mIdentityLookup = new OPIdentityLookup();
+		mCallbackHandler.registerIdentityLookupDelegate(LoginManager.mIdentityLookup, LoginManager.mIdentityLookupDelegate);
+		
 		mLoginHandler.onDownloadedRolodexContacts(identity);
 		
 	}

@@ -2,7 +2,7 @@ package com.openpeer.javaapi;
 
 import android.text.format.Time;
 
-public class OPIdentityContact {
+public class OPIdentityContact extends OPRolodexContact {
 
 	private String mStableID;
 

@@ -431,7 +431,7 @@ public class CallbackHandler{
 	}
 
 	//Identity lookup delegate register/unregister methods
-	public boolean registerCallDelegate(OPIdentityLookup identityLookup, OPIdentityLookupDelegate delegate)
+	public boolean registerIdentityLookupDelegate(OPIdentityLookup identityLookup, OPIdentityLookupDelegate delegate)
 	{
 		if (identityLookup == null || delegate == null)
 		{
@@ -447,7 +447,7 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterCallDelegate(OPIdentityLookupDelegate delegate)
+	public void unregisterIdentityLookupDelegate(OPIdentityLookupDelegate delegate)
 	{
 		mIdentityLookup = null;
 		identityLookupDelegate = null;

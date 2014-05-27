@@ -66,7 +66,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 		for( int i=0; i<listItemsCount; ++i )
 		{
 			// Call "java.util.List.get" method and get Contact object by index.
-			jobject identityLookupInfoObject = jni_env->CallObjectMethod( identityLookupInfos, listGetMethodID, i - 1 );
+			jobject identityLookupInfoObject = jni_env->CallObjectMethod( identityLookupInfos, listGetMethodID, i );
 			if( identityLookupInfoObject != NULL )
 			{
 				//Fetch OPIdentityLookupInfo class
@@ -79,7 +79,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 				// Call "getIdentityURI method to fetch contact from Identity lookup info
 				jstring identityURI = (jstring)jni_env->CallObjectMethod( identityLookupInfoObject, getIdentityURIMethodID );
 
-				// Call "getIdentityURI method to fetch contact from Identity lookup info
+				// Call "getLastUpdated method to fetch last updated from Identity lookup info
 				jobject lastUpdated = jni_env->CallObjectMethod( identityLookupInfoObject, getLastUpdatedMethodID );
 
 				//Add identity URI to IdentityLookupInfo structure
@@ -113,6 +113,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 			cls = findClass("com/openpeer/javaapi/OPIdentityLookup");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
+
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong identityLookup = (jlong) OpenPeerCoreManager::identityLookupPtr.get();
+		    jni_env->SetLongField(object, fid, identityLookup);
 		}
 	}
 	return object;
