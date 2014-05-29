@@ -88,6 +88,12 @@
     <Compile Include="Source\Services\AppConsts.cs" />
     <Compile Include="Source\Services\Utility.cs" />
     <Compile Include="Source\Services\Loger.cs" />
+    <Compile Include="Source\Services\StackDelegate.cs" />
+    <Compile Include="Source\Services\AccountDelegate.cs" />
+    <Compile Include="Source\Services\MediaEngineDelegate.cs" />
+    <Compile Include="Source\Services\IdentityLookupDelegate.cs" />
+    <Compile Include="Source\Services\IdentityDelegate.cs" />
+    <Compile Include="Source\Services\CallDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

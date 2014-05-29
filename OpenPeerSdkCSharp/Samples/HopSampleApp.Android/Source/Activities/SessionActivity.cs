@@ -42,6 +42,7 @@ namespace HopSampleApp
 			Console.WriteLine (Utility.GetDeviceFullNameOfModel());
 			Console.WriteLine (Utility.GetDeviceModelName());
 			Console.WriteLine (Utility.GetPlatform ());
+			StackDelegate.OnStackShutdown ();
 			/*
 			var settings = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
 			var items = settings.Edit();
