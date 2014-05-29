@@ -62,7 +62,7 @@ namespace HopSampleApp
 	class MediaEngineDelegate
 	{
 
-		void OnMediaEngineAudioRouteChanged(HOPMediaEngineOutputAudioRoutes audioRoute)
+		public static void OnMediaEngineAudioRouteChanged(HOPMediaEngineOutputAudioRoutes audioRoute)
 		{
 			ThreadPool.QueueUserWorkItem (async delegate {
 
@@ -73,7 +73,7 @@ namespace HopSampleApp
 
 		}
 
-		void OnMediaEngineFaceDetected()
+		public static void OnMediaEngineFaceDetected()
 		{
 			ThreadPool.QueueUserWorkItem (async delegate {
 				SessionManager.SharedSessionManager().OnFaceDetected();
@@ -84,7 +84,7 @@ namespace HopSampleApp
 				
 		}
 
-		void OnMediaEngineVideoCaptureRecordStopped()
+		public static void OnMediaEngineVideoCaptureRecordStopped()
 		{
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Video capture record has stopped.");
 			ThreadPool.QueueUserWorkItem (async delegate {
@@ -94,13 +94,13 @@ namespace HopSampleApp
 
 		}
 
-		void OnMediaEngineAudioSessionInterruptionBegan()
+		public static void OnMediaEngineAudioSessionInterruptionBegan()
 		{
 			HOPMediaEngine.SharedInstance().PauseVoice(true);
 
 		}
 
-		void OnMediaEngineAudioSessionInterruptionEnded()
+		public static void OnMediaEngineAudioSessionInterruptionEnded()
 		{
 			HOPMediaEngine.SharedInstance().PauseVoice(false);
 
