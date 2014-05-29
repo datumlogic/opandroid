@@ -54,7 +54,7 @@ namespace HopSampleApp
 		private static SessionManager instance;
 		private SessionManager(){ /* code  */ }
 		public static SessionManager SharedSessionManager(){if (instance == null)	instance = new SessionManager();return instance;}
-		public void OnFaceDetected(bool value){ /*code*/ }
+		public void OnFaceDetected(){ /*code*/ }
 	}
 
 	//end pattern
@@ -76,7 +76,7 @@ namespace HopSampleApp
 		public static void OnMediaEngineFaceDetected()
 		{
 			ThreadPool.QueueUserWorkItem (async delegate {
-				SessionManager.SharedSessionManager().OnFaceDetected();
+				 SessionManager.SharedSessionManager().OnFaceDetected();
 
 			});
 

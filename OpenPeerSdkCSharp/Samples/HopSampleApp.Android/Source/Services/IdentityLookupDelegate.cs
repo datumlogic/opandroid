@@ -40,14 +40,22 @@ using Android.Widget;
 */
 namespace HopSampleApp
 {
+	public class HOPIdentityLookup{}
+	public class ContactsManager
+	{
+		private static ContactsManager instance;
+		private ContactsManager(){ /* code  */ }
+		public static ContactsManager SharedContactsManager(){if (instance == null)	instance = new ContactsManager();return instance;}
+		public void UpdateContactsWithDataFromLookup (object somevalue){ /*code*/ }
+	}
 	class IdentityLookupDelegate
 	{
-		/*
+
 		void OnIdentityLookupCompleted(HOPIdentityLookup lookup)
 		{
 			ContactsManager.SharedContactsManager().UpdateContactsWithDataFromLookup(lookup);
 		}
-		*/
+
 	}
 }
 
