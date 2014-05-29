@@ -3,6 +3,8 @@ package com.openpeer.javaapi;
 
 public class OPContact {
 
+	private long nativeClassPointer;
+	
 	public static native String toDebugString(OPContact contact, boolean includeCommaPrefix);
 
     public static native OPContact createFromPeerFilePublic(

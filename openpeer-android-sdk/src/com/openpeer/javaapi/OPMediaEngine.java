@@ -3,6 +3,8 @@ package com.openpeer.javaapi;
 
 public class OPMediaEngine {
 	
+	private long nativeClassPointer;
+	
 	protected static OPMediaEngine   _instance;
 
     protected OPMediaEngine()

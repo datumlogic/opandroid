@@ -7,9 +7,9 @@ EventManagerPtr globalEventManager = EventManagerPtr(new EventManager());
 SettingsDelegateWrapperPtr settingsDelegatePtr = SettingsDelegateWrapperPtr(new SettingsDelegateWrapper());
 CacheDelegateWrapperPtr cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDelegateWrapper());
 
-IAccountPtr accountPtr;
-IStackPtr stackPtr;
+//IAccountPtr accountPtr;
+//IStackPtr stackPtr;
 IStackMessageQueuePtr queuePtr;
-IIdentityPtr identityPtr;
-IIdentityLookupPtr identityLookupPtr;
+//IIdentityPtr identityPtr;
+//IIdentityLookupPtr identityLookupPtr;
 IMediaEnginePtr mediaEnginePtr;

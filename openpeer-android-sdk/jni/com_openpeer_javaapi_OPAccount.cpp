@@ -9,6 +9,9 @@
 #include "openpeer/core/IAccount.h"
 #include "openpeer/core/IIdentity.h"
 #include "openpeer/core/IHelper.h"
+#include "OpenPeerCoreManager.h"
+
+#include <android/log.h>;
 
 #include "globals.h"
 
@@ -75,10 +78,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 		return object;
 	}
 
-	accountPtr = IAccount::login(globalEventManager, globalEventManager, globalEventManager,
+	OpenPeerCoreManager::accountPtr = IAccount::login(globalEventManager, globalEventManager, globalEventManager,
 			namespaceGrantOuterFrameURLUponReloadStr, grantIDStr, lockboxServiceDomainStr, forceCreateNewLockboxAccount);
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
 		jni_env = getEnv();
 		if(jni_env)
@@ -87,6 +90,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
 			globalAccount = object;
+
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong acc = (jlong) OpenPeerCoreManager::accountPtr.get();
+			jni_env->SetLongField(object, fid, acc);
+
+			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
+					"CorePtr raw = %p, ptr as long = %Lu",OpenPeerCoreManager::accountPtr.get(), acc);
 
 		}
 
@@ -124,10 +134,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 
 
 	ElementPtr reloginElement = IHelper::createElement(reloginInformationStr);
-	accountPtr = IAccount::relogin(globalEventManager, globalEventManager, globalEventManager,
+	OpenPeerCoreManager::accountPtr = IAccount::relogin(globalEventManager, globalEventManager, globalEventManager,
 			namespaceGrantOuterFrameURLUponReloadStr, reloginElement);
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
 		jni_env = getEnv();
 		if(jni_env)
@@ -136,6 +146,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
 			globalAccount = object;
+
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong acc = (jlong) OpenPeerCoreManager::accountPtr.get();
+			jni_env->SetLongField(object, fid, acc);
+
+			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
+					"CorePtr raw = %p, ptr as long = %Lu",OpenPeerCoreManager::accountPtr.get(), acc);
 
 		}
 
@@ -149,13 +166,24 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
  * Signature: ()J;
  */
 JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
-(JNIEnv *, jobject)
+(JNIEnv *env, jobject obj)
 {
 	jlong pid = 0;
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		pid = accountPtr->getID();
+		jclass cls = findClass("com/openpeer/javaapi/OPAccount");
+		jfieldID fid = env->GetFieldID(cls, "nativeClassPointer", "J");
+
+
+		jlong acc = env->GetLongField(obj, fid);
+
+		if (acc == (jlong)OpenPeerCoreManager::accountPtr.get())
+		{
+			pid = OpenPeerCoreManager::accountPtr->getID();
+		}
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
+				"CorePtr raw = %p, java ptr as long = %Lu",OpenPeerCoreManager::accountPtr.get(), acc);
 	}
 
 	return pid;
@@ -174,25 +202,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	int state = 0;
+	jint state = 0;
 	unsigned short int outErrorCode;
 	String outErrorReason;
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		state = (int) accountPtr->getState(&outErrorCode, &outErrorReason);
-
+		state = (jint) OpenPeerCoreManager::accountPtr->getState(&outErrorCode, &outErrorReason);
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "State = %d", state);
 		jni_env = getEnv();
 		if(jni_env)
 		{
-			cls = findClass("com/openpeer/javaapi/AccountStates");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, state);
-
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/AccountStates", state);
 		}
 	}
 
-
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Account getState completed");
 	return object;
 }
 
@@ -208,9 +233,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformat
 	jstring reloginInfo;
 
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		reloginInfoElement = accountPtr->getReloginInformation();
+		reloginInfoElement = OpenPeerCoreManager::accountPtr->getReloginInformation();
 
 		reloginInfo =  env->NewStringUTF(IHelper::convertToString(reloginInfoElement).c_str());
 	}
@@ -229,10 +254,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getLocationID
 	jstring locationID;
 
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
 
-		locationID =  env->NewStringUTF(accountPtr->getLocationID().c_str());
+		locationID =  env->NewStringUTF(OpenPeerCoreManager::accountPtr->getLocationID().c_str());
 	}
 
 	return locationID;
@@ -246,6 +271,11 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getLocationID
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_shutdown
 (JNIEnv *, jobject)
 {
+	if (OpenPeerCoreManager::accountPtr)
+	{
+		OpenPeerCoreManager::accountPtr->shutdown();
+		//todo reset OpenPeerCoreManager::accountPtr when shutdown state is received
+	}
 
 }
 
@@ -261,9 +291,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivate
 	jstring peerFilePrivate;
 
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		peerFilePrivateElement = accountPtr->getReloginInformation();
+		peerFilePrivateElement = OpenPeerCoreManager::accountPtr->savePeerFilePrivate();
 
 		peerFilePrivate =  env->NewStringUTF(IHelper::convertToString(peerFilePrivateElement).c_str());
 	}
@@ -282,9 +312,9 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
 	jbyte* bufferPtr;
 	jbyteArray returnArr;
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		SecureByteBlockPtr sec = accountPtr->getPeerFilePrivateSecret();
+		SecureByteBlockPtr sec = OpenPeerCoreManager::accountPtr->getPeerFilePrivateSecret();
 		returnArr = env->NewByteArray(sec->SizeInBytes());
 		env->SetByteArrayRegion(returnArr, (int)0, (int)sec->SizeInBytes(), (const signed char *)sec->data());
 
@@ -313,9 +343,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 
 
 	//take associated identities from core
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		coreIdentities = accountPtr->getAssociatedIdentities();
+		coreIdentities = OpenPeerCoreManager::accountPtr->getAssociatedIdentities();
 	}
 
 	//fetch JNI env
@@ -341,6 +371,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 				jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 				jmethodID identityConstructorMethodID = jni_env->GetMethodID(identityClass, "<init>", "()V");
 				jobject identityObject = jni_env->NewObject(identityClass, identityConstructorMethodID);
+
+				jfieldID fid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
+				jlong identity = (jlong) (*coreListIter).get();
+				jni_env->SetLongField(identityObject, fid, identity);
 
 				//add to map for future calls
 				identityMap.insert(std::pair<jobject, IIdentityPtr>(identityObject, *coreListIter));
@@ -414,9 +448,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
 		}
 	}
 	//remove associated identities from core
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		accountPtr->removeIdentities(coreIdentitiesToRemove);
+		OpenPeerCoreManager::accountPtr->removeIdentities(coreIdentitiesToRemove);
 	}
 }
 
@@ -432,9 +466,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWin
 	jstring innerBrowserWindowFrameURL;
 
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		innerBrowserWindowFrameURLString = accountPtr->getInnerBrowserWindowFrameURL();
+		innerBrowserWindowFrameURLString = OpenPeerCoreManager::accountPtr->getInnerBrowserWindowFrameURL();
 
 		innerBrowserWindowFrameURL =  env->NewStringUTF(innerBrowserWindowFrameURLString.c_str());
 	}
@@ -450,9 +484,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWin
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVisible
 (JNIEnv *, jobject)
 {
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		accountPtr->notifyBrowserWindowVisible();
+		OpenPeerCoreManager::accountPtr->notifyBrowserWindowVisible();
 	}
 }
 
@@ -464,9 +498,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVi
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowClosed
 (JNIEnv *, jobject)
 {
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		accountPtr->notifyBrowserWindowClosed();
+		OpenPeerCoreManager::accountPtr->notifyBrowserWindowClosed();
 	}
 }
 
@@ -482,9 +516,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForI
 	jstring nextMessageForInnerBrowerWindowFrame;
 
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		nextMessageForInnerBrowerWindowFrameElement = accountPtr->getNextMessageForInnerBrowerWindowFrame();
+		nextMessageForInnerBrowerWindowFrameElement = OpenPeerCoreManager::accountPtr->getNextMessageForInnerBrowerWindowFrame();
 
 		nextMessageForInnerBrowerWindowFrame =  env->NewStringUTF(IHelper::convertToString(nextMessageForInnerBrowerWindowFrameElement).c_str());
 	}
@@ -506,9 +540,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_handleMessageFromInne
 		return;
 	}
 
-	if (accountPtr)
+	if (OpenPeerCoreManager::accountPtr)
 	{
-		accountPtr->handleMessageFromInnerBrowserWindowFrame(IHelper::createElement(unparsedMessageString));
+		OpenPeerCoreManager::accountPtr->handleMessageFromInnerBrowserWindowFrame(IHelper::createElement(unparsedMessageString));
 	}
 }
 

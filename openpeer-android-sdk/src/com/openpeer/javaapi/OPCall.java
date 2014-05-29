@@ -6,6 +6,8 @@ import android.text.format.Time;
 
 public class OPCall {
 
+	private long nativeClassPointer;
+	
 	public static native String toString(CallStates state);
 	
 	public static native String toString(CallClosedReasons reason);

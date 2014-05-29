@@ -1,6 +1,8 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
+
+#include "OpenPeerCoreManager.h"
 #include <android/log.h>
 
 #include "globals.h"
@@ -30,8 +32,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
 
-		IStackPtr stack = IStack::singleton();
-		stackPair = std::pair<jobject, IStackPtr>(object, stack);
+		IStackPtr stackPtr = IStack::singleton();
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong stack = (jlong) OpenPeerCoreManager::stackPtr.get();
+		jni_env->SetLongField(object, fid, stack);
+
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
+				"CorePtr raw = %p, ptr as long = %Lu",OpenPeerCoreManager::stackPtr.get(), stack);
 	}
 	return object;
 }
@@ -44,16 +51,27 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 (JNIEnv *env, jobject owner, jobject, jobject)
 {
+	jclass cls;
+	JNIEnv *jni_env = 0;
 
-	if (stackPair.first == owner)
+	if (OpenPeerCoreManager::stackPtr)
 	{
-		stackPair.second->setup(globalEventManager, globalEventManager);
+		OpenPeerCoreManager::stackPtr->setup(globalEventManager, globalEventManager);
 	}
 	else
 	{
 		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not initialized. It will be auto initialized.");
-		IStack::singleton()->setup(globalEventManager, globalEventManager);
-		stackPair = std::pair<jobject, IStackPtr>(owner, IStack::singleton());
+		OpenPeerCoreManager::stackPtr = IStack::singleton();
+		OpenPeerCoreManager::stackPtr->setup(globalEventManager, globalEventManager);
+		jni_env = getEnv();
+		if(jni_env)
+		{
+			cls = findClass("com/openpeer/javaapi/OPStack");
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong stack = (jlong) OpenPeerCoreManager::stackPtr.get();
+			jni_env->SetLongField(owner, fid, stack);
+		}
+
 	}
 }
 
@@ -65,9 +83,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
 (JNIEnv *, jobject owner)
 {
-	if (stackPair.first == owner)
+	if (OpenPeerCoreManager::stackPtr)
 	{
-		stackPair.second->shutdown();
+		OpenPeerCoreManager::stackPtr->shutdown();
 	}
 	else
 	{
@@ -106,7 +124,6 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPStack_createAuthorizedAppl
 	jmethodID timeMethodID   = env->GetMethodID(cls, "toMillis", "(Z)J");
 	jlong longValue = env->CallLongMethod(expires, timeMethodID, false);
 	Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
-
 
 	authorizedApplicationID =  env->NewStringUTF(IStack::createAuthorizedApplicationID(applicationIDString, applicationIDSharedSecretString, t).c_str());
 

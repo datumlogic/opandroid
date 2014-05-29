@@ -7,6 +7,8 @@ import android.text.format.Time;
 
 public class OPIdentity {
 
+	private long nativeClassPointer;
+	
 	public static native String toString(IdentityStates state);
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
@@ -53,7 +55,7 @@ public class OPIdentity {
 	
 	public native String getIdentityProviderDomain();
 	
-	public native OPContact getSelfIdentityContact();
+	public native OPIdentityContact getSelfIdentityContact();
 
 	public native String getInnerBrowserWindowFrameURL();
 

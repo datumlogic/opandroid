@@ -10,6 +10,11 @@ public class OPRolodexContact {
 		private int mWidth;
 		private int mHeight;
 		
+		OPAvatar()
+		{
+			
+		}
+		
 		public String getName() {
 			return mName;
 		}
@@ -39,21 +44,14 @@ public class OPRolodexContact {
 	
 	enum Dispositions
     {
-      Disposition_NA (0),
-      Disposition_Update (1),
-      Disposition_Remove (2);
+      Disposition_NA,
+      Disposition_Update,
+      Disposition_Remove;
       
-      Dispositions (int value)
+      Dispositions ()
       {
-          this.type = value;
       }
 
-      private int type;
-
-      public int getNumericType()
-      {
-          return type;
-      }
     };
     
     private Dispositions mDisposition;

@@ -2,6 +2,7 @@
 #include "openpeer/core/IIdentityLookup.h"
 #include "openpeer/core/ILogger.h"
 #include "openpeer/core/IHelper.h"
+#include "OpenPeerCoreManager.h"
 #include <android/log.h>
 
 #include "globals.h"
@@ -65,7 +66,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 		for( int i=0; i<listItemsCount; ++i )
 		{
 			// Call "java.util.List.get" method and get Contact object by index.
-			jobject identityLookupInfoObject = jni_env->CallObjectMethod( identityLookupInfos, listGetMethodID, i - 1 );
+			jobject identityLookupInfoObject = jni_env->CallObjectMethod( identityLookupInfos, listGetMethodID, i );
 			if( identityLookupInfoObject != NULL )
 			{
 				//Fetch OPIdentityLookupInfo class
@@ -78,7 +79,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 				// Call "getIdentityURI method to fetch contact from Identity lookup info
 				jstring identityURI = (jstring)jni_env->CallObjectMethod( identityLookupInfoObject, getIdentityURIMethodID );
 
-				// Call "getIdentityURI method to fetch contact from Identity lookup info
+				// Call "getLastUpdated method to fetch last updated from Identity lookup info
 				jobject lastUpdated = jni_env->CallObjectMethod( identityLookupInfoObject, getLastUpdatedMethodID );
 
 				//Add identity URI to IdentityLookupInfo structure
@@ -88,7 +89,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 				//Add last updated to IdentityLookupInfo structure
 				jclass timeCls = findClass("android/text/format/Time");
 				jmethodID timeMethodID   = env->GetMethodID(timeCls, "toMillis", "(Z)J");
-				long longValue = (long) env->CallIntMethod(lastUpdated, timeMethodID, false);
+				jlong longValue = env->CallLongMethod(lastUpdated, timeMethodID, false);
 				Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 				identityLookupInfo.mLastUpdated = t;
 
@@ -99,12 +100,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 		}
 	}
 
-	identityLookupPtr = IIdentityLookup::create(accountPtr,
+	OpenPeerCoreManager::identityLookupPtr = IIdentityLookup::create(OpenPeerCoreManager::accountPtr,
 			globalEventManager,
 			identityLookupInfosForCore,
 			identityServiceDomainStr);
 
-	if(identityLookupPtr)
+	if(OpenPeerCoreManager::identityLookupPtr)
 	{
 		jni_env = getEnv();
 		if(jni_env)
@@ -112,6 +113,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 			cls = findClass("com/openpeer/javaapi/OPIdentityLookup");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
+
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong identityLookup = (jlong) OpenPeerCoreManager::identityLookupPtr.get();
+		    jni_env->SetLongField(object, fid, identityLookup);
 		}
 	}
 	return object;
@@ -127,9 +132,9 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
 {
 	jlong pid = 0;
 
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		pid = identityLookupPtr->getID();
+		pid = OpenPeerCoreManager::identityLookupPtr->getID();
 	}
 
 	return pid;
@@ -145,9 +150,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
 {
 	jboolean ret = 0;
 
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		ret = identityLookupPtr->isComplete();
+		ret = OpenPeerCoreManager::identityLookupPtr->isComplete();
 	}
 
 	return ret;
@@ -165,9 +170,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
 	String outReasonCore;
 	WORD ourCodeCore;
 
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		ret = identityLookupPtr->wasSuccessful(&ourCodeCore, &outReasonCore);
+		ret = OpenPeerCoreManager::identityLookupPtr->wasSuccessful(&ourCodeCore, &outReasonCore);
 		outErrorCode = ourCodeCore;
 		outErrorReason = env->NewStringUTF(outReasonCore);
 	}
@@ -183,9 +188,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
 (JNIEnv *, jobject)
 {
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		identityLookupPtr->cancel();
+		OpenPeerCoreManager::identityLookupPtr->cancel();
 	}
 }
 
@@ -205,9 +210,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 	IdentityContact coreContact;
 	IdentityContactListPtr coreContactList;
-	if(identityLookupPtr)
+	if(OpenPeerCoreManager::identityLookupPtr)
 	{
-		coreContactList = identityLookupPtr->getUpdatedIdentities();
+		coreContactList = OpenPeerCoreManager::identityLookupPtr->getUpdatedIdentities();
 
 	}
 	jni_env = getEnv();
@@ -240,11 +245,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			jclass peerFileCls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
 			jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
 			jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
-			method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic)V");
+			method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic;)V");
 			jni_env->CallVoidMethod(object, method, peerFileObject);
 
 			//set IdentityProofBundle to OPIdentityContact
-			method = jni_env->GetMethodID(cls, "setIdentityProofBundleEl", "(Ljava/lang/String;)V");
+			method = jni_env->GetMethodID(cls, "setIdentityProofBundle", "(Ljava/lang/String;)V");
 			jstring identityProofBundle =  jni_env->NewStringUTF(IHelper::convertToString(coreContact.mIdentityProofBundleEl).c_str());
 			jni_env->CallVoidMethod(object, method, identityProofBundle);
 
@@ -272,7 +277,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 			//calculate and set Expires
 			zsLib::Duration expires = coreContact.mExpires - time_t_epoch;
-			jobject timeExpiresObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
+			jobject timeExpiresObject = jni_env->NewObject(timeCls, timeMethodID);
 			jni_env->CallVoidMethod(timeExpiresObject, timeSetMillisMethodID, expires.total_milliseconds());
 			//Time has been converted, now call OPIdentityContact setter
 			method = jni_env->GetMethodID(cls, "setExpires", "(Landroid/text/format/Time;)V");
@@ -305,9 +310,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
 
 
 	//take list from core identity lookup
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		coreIdentityLookupInfoList = identityLookupPtr->getUnchangedIdentities();
+		coreIdentityLookupInfoList = OpenPeerCoreManager::identityLookupPtr->getUnchangedIdentities();
 	}
 
 	//fetch JNI env
@@ -379,9 +384,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidI
 
 
 	//take list from core identity lookup
-	if (identityLookupPtr)
+	if (OpenPeerCoreManager::identityLookupPtr)
 	{
-		coreIdentityLookupInfoList = identityLookupPtr->getInvalidIdentities();
+		coreIdentityLookupInfoList = OpenPeerCoreManager::identityLookupPtr->getInvalidIdentities();
 	}
 
 	//fetch JNI env

@@ -5,6 +5,8 @@ import java.util.List;
 
 public class OPIdentityLookup {
 
+	private long nativeClassPointer;
+	
 	public static native String toDebugString(OPIdentityLookup lookup, boolean includeCommaPrefix);
 
 	public static native OPIdentityLookup create(
