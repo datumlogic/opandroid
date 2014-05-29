@@ -32,46 +32,80 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using System.Threading;
 
 namespace HopSampleApp
 {
+	//Test and simulation Singleton Pattern
+
+	public class HOPMediaEngineOutputAudioRoutes{}
+	//Simulation MediaEngine class
+	public class HOPMediaEngine
+	{
+		private static HOPMediaEngine instance;
+		private HOPMediaEngine(){ /* code  */ }
+		public static HOPMediaEngine SharedInstance(){if (instance == null)	instance = new HOPMediaEngine();return instance;}
+		public void PauseVoice(bool value){ /*code*/ }
+	}
+
+	//Simulation SessionManager class
+	public class SessionManager
+	{
+		private static SessionManager instance;
+		private SessionManager(){ /* code  */ }
+		public static SessionManager SharedSessionManager(){if (instance == null)	instance = new SessionManager();return instance;}
+		public void OnFaceDetected(bool value){ /*code*/ }
+	}
+
+	//end pattern
+
 	class MediaEngineDelegate
 	{
-		/*
+
 		void OnMediaEngineAudioRouteChanged(HOPMediaEngineOutputAudioRoutes audioRoute)
 		{
-			dispatch_async(dispatch_get_main_queue(), delegate()
-				{
-				});
+			ThreadPool.QueueUserWorkItem (async delegate {
+
+			});
+
+
+			//dispatch_async(dispatch_get_main_queue(), delegate(){});
+
 		}
 
 		void OnMediaEngineFaceDetected()
 		{
-			dispatch_async(dispatch_get_main_queue(), delegate()
-				{
-					SessionManager.SharedSessionManager().OnFaceDetected();
-				});
+			ThreadPool.QueueUserWorkItem (async delegate {
+				SessionManager.SharedSessionManager().OnFaceDetected();
+
+			});
+
+			//dispatch_async(dispatch_get_main_queue(), delegate(){	SessionManager.SharedSessionManager().OnFaceDetected();	});
+				
 		}
 
 		void OnMediaEngineVideoCaptureRecordStopped()
 		{
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Video capture record has stopped.");
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Video capture record has stopped.");
+			ThreadPool.QueueUserWorkItem (async delegate {
 
-			dispatch_async(dispatch_get_main_queue(), delegate()
-				{
-				});
+			});
+			//dispatch_async(dispatch_get_main_queue(), delegate(){});
+
 		}
 
 		void OnMediaEngineAudioSessionInterruptionBegan()
 		{
 			HOPMediaEngine.SharedInstance().PauseVoice(true);
+
 		}
 
 		void OnMediaEngineAudioSessionInterruptionEnded()
 		{
 			HOPMediaEngine.SharedInstance().PauseVoice(false);
+
 		}
-		*/
+
 	}
 }
 
