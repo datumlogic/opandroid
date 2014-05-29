@@ -44,6 +44,15 @@ using System.Threading.Tasks;
 
 namespace HopSampleApp
 {
+	// Singleton Pattern only for translation
+	public class OpenPeer
+	{
+		private static OpenPeer instance;
+		private OpenPeer(){ /* code  */ }
+		public static OpenPeer sharedOpenPeer(){if (instance == null)	instance = new OpenPeer();return instance;}
+		public void setup(){ Console.WriteLine ("test"); }
+	}
+	//end
 	public static class StackDelegate
 	{
 		public static void OnStackShutdown()
@@ -55,11 +64,11 @@ namespace HopSampleApp
 					//[[OpenPeer sharedOpenPeer] setup];
 			});
 			*/
-
-			ThreadPool.QueueUserWorkItem (delegate {
-				Console.WriteLine("Working..");
-				//[[OpenPeer sharedOpenPeer] setup];
+			ThreadPool.QueueUserWorkItem( delegate {
+				OpenPeer.sharedOpenPeer().setup();
 			});
+
+
 
 
 

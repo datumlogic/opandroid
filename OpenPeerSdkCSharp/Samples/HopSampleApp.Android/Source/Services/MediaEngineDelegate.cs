@@ -33,10 +33,10 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.Threading;
-
+using System.Threading.Tasks;
 namespace HopSampleApp
 {
-	//Test and simulation Singleton Pattern
+	// Singleton Pattern only for translation
 
 	public class HOPMediaEngineOutputAudioRoutes{}
 	//Simulation MediaEngine class
@@ -57,15 +57,14 @@ namespace HopSampleApp
 		public void OnFaceDetected(){ /*code*/ }
 	}
 
-	//end pattern
+	//end
 
 	class MediaEngineDelegate
 	{
 
 		public static void OnMediaEngineAudioRouteChanged(HOPMediaEngineOutputAudioRoutes audioRoute)
 		{
-			ThreadPool.QueueUserWorkItem (async delegate {
-
+			ThreadPool.QueueUserWorkItem( delegate {
 			});
 
 
@@ -75,7 +74,7 @@ namespace HopSampleApp
 
 		public static void OnMediaEngineFaceDetected()
 		{
-			ThreadPool.QueueUserWorkItem (async delegate {
+			ThreadPool.QueueUserWorkItem( delegate {
 				 SessionManager.SharedSessionManager().OnFaceDetected();
 
 			});
@@ -87,7 +86,7 @@ namespace HopSampleApp
 		public static void OnMediaEngineVideoCaptureRecordStopped()
 		{
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Video capture record has stopped.");
-			ThreadPool.QueueUserWorkItem (async delegate {
+			ThreadPool.QueueUserWorkItem( delegate {
 
 			});
 			//dispatch_async(dispatch_get_main_queue(), delegate(){});
