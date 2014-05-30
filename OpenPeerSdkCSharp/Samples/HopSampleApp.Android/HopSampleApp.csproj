@@ -88,12 +88,12 @@
     <Compile Include="Source\Services\AppConsts.cs" />
     <Compile Include="Source\Services\Utility.cs" />
     <Compile Include="Source\Services\Loger.cs" />
-    <Compile Include="Source\Services\StackDelegate.cs" />
-    <Compile Include="Source\Services\AccountDelegate.cs" />
-    <Compile Include="Source\Services\MediaEngineDelegate.cs" />
-    <Compile Include="Source\Services\IdentityLookupDelegate.cs" />
-    <Compile Include="Source\Services\IdentityDelegate.cs" />
-    <Compile Include="Source\Services\CallDelegate.cs" />
+    <Compile Include="Source\OPDelegates\StackDelegate.cs" />
+    <Compile Include="Source\OPDelegates\MediaEngineDelegate.cs" />
+    <Compile Include="Source\OPDelegates\IdentityLookupDelegate.cs" />
+    <Compile Include="Source\OPDelegates\IdentityDelegate.cs" />
+    <Compile Include="Source\OPDelegates\CallDelegate.cs" />
+    <Compile Include="Source\OPDelegates\AccountDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -266,6 +266,7 @@
     <Folder Include="Source\Views\" />
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\drawable\" />
+    <Folder Include="Source\OPDelegates\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">
