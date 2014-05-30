@@ -41,7 +41,6 @@ using Android.Widget;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 namespace HopSampleApp
 {
 	// Singleton Pattern only for translation
@@ -53,28 +52,16 @@ namespace HopSampleApp
 		public void setup(){ Console.WriteLine ("test"); }
 	}
 	//end
+
 	public static class StackDelegate
 	{
 		public static void OnStackShutdown()
 		{
 
-			/*
-			dispatch_async(dispatch_get_main_queue(), delegate()
-			{
-					//[[OpenPeer sharedOpenPeer] setup];
-			});
-			*/
 			ThreadPool.QueueUserWorkItem( delegate {
 				OpenPeer.sharedOpenPeer().setup();
 			});
-
-
-
-
-
 		}
-
 	}
-
 }
 

@@ -40,16 +40,10 @@ using Android.Widget;
 */
 namespace HopSampleApp
 {
-	// Singleton Pattern only for translation
+	//Only for translation
 	public class HOPIdentityLookup{}
-	public class ContactsManager
-	{
-		private static ContactsManager instance;
-		private ContactsManager(){ /* code  */ }
-		public static ContactsManager SharedContactsManager(){if (instance == null)	instance = new ContactsManager();return instance;}
-		public void UpdateContactsWithDataFromLookup (object somevalue){ /*code*/ }
-	}
 	//end
+
 	class IdentityLookupDelegate
 	{
 
