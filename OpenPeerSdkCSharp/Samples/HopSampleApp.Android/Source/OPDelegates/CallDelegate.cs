@@ -34,12 +34,14 @@ using Android.Views;
 using Android.Widget;
 using System.Threading.Tasks;
 using System.Threading;
+using HopSampleApp.Services;
+using HopSampleApp.Enums;
 
 namespace HopSampleApp
 {
 	//only for translation
 	public class HOPCall{}
-	public class HOPCallStates{}
+
 
 
 	//End
@@ -50,66 +52,66 @@ namespace HopSampleApp
 		{
 
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Call state: %@", Utility.GetCallStateAsString(call.GetState()));
-			SessionManager.SharedSessionManager().SetLatestValidConversationThread(call.GetConversationThread());
-			String sessionId = call.GetConversationThread().GetThreadId();
+			SessionManager.SharedSessionManager().SetLatestValidConversationThread(/*call.GetConversationThread()*/);
+			//String sessionId = call.GetConversationThread().GetThreadId();
 			ThreadPool.QueueUserWorkItem( delegate {
 				//SessionViewController_iPhone sessionViewController = OpenPeer.SharedOpenPeer().MainViewController().SessionViewControllersDictionary().ObjectForKey(sessionId);
-					sessionViewController.UpdateCallState();
-					switch (callState)
-					{
-					case HOPCallStatePreparing :
+				//sessionViewController.UpdateCallState();
+				switch (callState)
+				{
+				case HOPCallStates.HOPCallStatePreparing :
 						//Receives both parties, caller and callee.
 						SessionManager.SharedSessionManager().OnCallPreparing(call);
 						break;
-					case HOPCallStateIncoming :
+				case HOPCallStates.HOPCallStateIncoming :
 						//Receives just callee
 						SessionManager.SharedSessionManager().OnCallIncoming(call);
 						break;
-					case HOPCallStatePlaced :
+				case HOPCallStates.HOPCallStatePlaced :
 						//Receives just calller
 						break;
-					case HOPCallStateEarly :
+				case HOPCallStates.HOPCallStateEarly :
 						//Currently is not in use
 						break;
-					case HOPCallStateRinging :
+				case HOPCallStates.HOPCallStateRinging :
 						//Receives just callee side. Now should play ringing sound
 						SessionManager.SharedSessionManager().OnCallRinging(call);
 						//[[SoundManager sharedSoundsManager] playRingingSound];
 						break;
-					case HOPCallStateRingback :
+				case HOPCallStates.HOPCallStateRingback :
 						//Receives just caller side
-						SoundManager.SharedSoundsManager().PlayCallingSound();
+					//SoundManager.SharedSoundsManager().PlayCallingSound();
 						break;
-					case HOPCallStateOpen :
+				case HOPCallStates.HOPCallStateOpen :
 						//Receives both parties. Call is established
 						SoundManager.SharedSoundsManager().StopCallingSound();
 						SoundManager.SharedSoundsManager().StopRingingSound();
 						SessionManager.SharedSessionManager().OnCallOpened(call);
-						sessionViewController.StartTimer();
+					//sessionViewController.StartTimer();
 						break;
-					case HOPCallStateActive :
+				case HOPCallStates.HOPCallStateActive :
 						//Currently not in use
 						break;
-					case HOPCallStateInactive :
+				case HOPCallStates.HOPCallStateInactive :
 						//Currently not in use
 						break;
-					case HOPCallStateHold :
+				case HOPCallStates.HOPCallStateHold :
 						//Receives both parties
 						break;
-					case HOPCallStateClosing :
+				  case HOPCallStates.HOPCallStateClosing :
 						//Receives both parties
 					if (OpenPeer.sharedOpenPeer().AppEnteredBackground()) OpenPeer.sharedOpenPeer().PrepareAppForBackground();
 
 						SessionManager.SharedSessionManager().OnCallClosing(call);
 						SoundManager.SharedSoundsManager().StopCallingSound();
 						SoundManager.SharedSoundsManager().StopRingingSound();
-						sessionViewController.StopTimer();
+					//sessionViewController.StopTimer();
 						break;
-					case HOPCallStateClosed :
+				case HOPCallStates.HOPCallStateClosed :
 						//Receives both parties
 						SessionManager.SharedSessionManager().OnCallEnded(call);
 						break;
-					case HOPCallStateNone :
+				case HOPCallStates.HOPCallStateNone :
 					default :
 						break;
 					}

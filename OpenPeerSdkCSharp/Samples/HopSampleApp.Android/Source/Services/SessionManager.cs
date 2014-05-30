@@ -45,6 +45,9 @@ namespace HopSampleApp
 		public void OnCallClosing(object something){}
 		public void OnCallEnded(object something){}
 		public void OnCallOpened(){}
+		public void OnCallRinging(object something){}
+		public void OnCallIncoming(object something){}
+		public void OnCallPreparing(object something){}
 	}
 }
 

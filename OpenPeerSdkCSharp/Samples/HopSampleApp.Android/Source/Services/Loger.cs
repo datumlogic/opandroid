@@ -38,6 +38,7 @@ namespace HopSampleApp
 			HOPLogger.SetLogLevelbyNameLevel(moduleJavaScript, Settings.SharedSettings().GetLoggerLevelForAppModuleKey(moduleJavaScript));
 			applicationLogerLevel = Settings.SharedSettings().GetLoggerLevelForAppModuleKey(moduleApplication);
 			*/
+
 		}
 		//Need fix
 		public static void StartStdLogger(bool start)
