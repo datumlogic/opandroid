@@ -405,6 +405,13 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		OPTestIdentityLookup.execute(identity);
 		
 	}
+	
+	@Override
+	public void onLookupCompleted() {
+		// TODO Auto-generated method stub
+		OPTestConversationThread.execute();
+		
+	}
 
 
 }
@@ -417,4 +424,5 @@ interface LoginHandlerInterface
 	void onNamespaceGrantInnerFrameInitialized(String innerFrameUrl);
 	void onAccountStateReady();
 	void onDownloadedRolodexContacts(OPIdentity identity);
+	void onLookupCompleted();
 }

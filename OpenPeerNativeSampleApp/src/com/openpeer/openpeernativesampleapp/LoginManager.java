@@ -11,11 +11,16 @@ import android.util.Log;
 
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPAccountDelegateImplementation;
+import com.openpeer.delegates.OPCacheDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
 import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPCache;
+import com.openpeer.javaapi.OPCacheDelegate;
+import com.openpeer.javaapi.OPCall;
+import com.openpeer.javaapi.OPCallDelegate;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPIdentityLookup;
@@ -29,7 +34,7 @@ import com.openpeer.javaapi.OPMediaEngineDelegate;
 
 public class LoginManager {
 	
-	static CallbackHandler mCallbackHandler = new CallbackHandler();
+	public static CallbackHandler mCallbackHandler = new CallbackHandler();
 	public static Context mContext;
 
 	public static void LoginWithFacebook (){
@@ -40,7 +45,9 @@ public class LoginManager {
 		OPLogger.installTelnetLogger(59999, 60, true);
 		stack = OPStack.singleton();
 		
-		//OPCache.setup(null);
+		mCacheDelegate = new OPCacheDelegateImplementation();
+		mCallbackHandler.registerCacheDelegate(mCacheDelegate);
+		OPCache.setup(mCacheDelegate);
 		
 		//OPSettings.setup(null);
 		OPSettings.applyDefaults();
@@ -79,6 +86,10 @@ public class LoginManager {
 	//public static OPLogger mLogger;
 	static LoginHandlerInterface mLoginHandler;
 	public static OPIdentityLookup mIdentityLookup;
+	public static OPConversationThread mConvThread;
+	public static OPCacheDelegate mCacheDelegate;
+	public static OPCall mCall;
+	public static OPCallDelegate mCallDelegate;
 	
 	public static void setHandlerListener(LoginHandlerInterface listener)
    {
@@ -278,5 +289,14 @@ public class LoginManager {
 		
 		mLoginHandler.onDownloadedRolodexContacts(identity);
 		
+	}
+
+
+
+	public static void onIdentityLookupCompleted(OPIdentityLookup lookup) {
+		// TODO Auto-generated method stub
+		LoginManager.mIdentityLookup = lookup;
+		
+		mLoginHandler.onLookupCompleted();
 	}
 }

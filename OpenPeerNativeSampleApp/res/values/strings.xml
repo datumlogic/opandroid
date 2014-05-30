@@ -7,5 +7,6 @@
     <string name="btnFacebookLoginText">Login with Facebook</string>
     <string name="accountLoginButtonText">Account Login</string>
     <string name="identityLoginButtonText">Identity Login</string>
+    <string name="preference_file_key">com.openpeer.openpeernativesampleapp</string>
 
 </resources>
