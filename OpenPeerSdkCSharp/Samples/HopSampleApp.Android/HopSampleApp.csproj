@@ -94,6 +94,9 @@
     <Compile Include="Source\OPDelegates\IdentityDelegate.cs" />
     <Compile Include="Source\OPDelegates\CallDelegate.cs" />
     <Compile Include="Source\OPDelegates\AccountDelegate.cs" />
+    <Compile Include="Source\OPDelegates\ConversationThreadDelegate.cs" />
+    <Compile Include="Source\Services\SessionManager.cs" />
+    <Compile Include="Source\Services\MessageManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

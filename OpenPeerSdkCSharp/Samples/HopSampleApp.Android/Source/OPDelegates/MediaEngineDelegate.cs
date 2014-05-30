@@ -48,16 +48,7 @@ namespace HopSampleApp
 		public void PauseVoice(bool value){ /*code*/ }
 	}
 
-	//Simulation SessionManager class
-	public class SessionManager
-	{
-		private static SessionManager instance;
-		private SessionManager(){ /* code  */ }
-		public static SessionManager SharedSessionManager(){if (instance == null)	instance = new SessionManager();return instance;}
-		public void OnFaceDetected(){ /*code*/ }
-	}
 
-	//end
 
 	class MediaEngineDelegate
 	{
