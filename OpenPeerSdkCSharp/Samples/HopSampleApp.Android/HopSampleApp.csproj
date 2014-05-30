@@ -98,6 +98,7 @@
     <Compile Include="Source\Services\SessionManager.cs" />
     <Compile Include="Source\Services\MessageManager.cs" />
     <Compile Include="Source\Services\ContactsManager.cs" />
+    <Compile Include="Source\Services\SoundManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

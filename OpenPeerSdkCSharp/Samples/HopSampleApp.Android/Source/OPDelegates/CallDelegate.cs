@@ -32,20 +32,28 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace HopSampleApp
 {
+	//only for translation
+	public class HOPCall{}
+	public class HOPCallStates{}
+
+
+	//End
 	class CallDelegate
 	{
-		/*
+
 		void OnCallStateChangedCallState(HOPCall call, HOPCallStates callState)
 		{
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Call state: %@", Utility.GetCallStateAsString(call.GetState()));
+
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Call state: %@", Utility.GetCallStateAsString(call.GetState()));
 			SessionManager.SharedSessionManager().SetLatestValidConversationThread(call.GetConversationThread());
-			NSString sessionId = call.GetConversationThread().GetThreadId();
-			dispatch_async(dispatch_get_main_queue(), delegate()
-				{
-					SessionViewController_iPhone sessionViewController = OpenPeer.SharedOpenPeer().MainViewController().SessionViewControllersDictionary().ObjectForKey(sessionId);
+			String sessionId = call.GetConversationThread().GetThreadId();
+			ThreadPool.QueueUserWorkItem( delegate {
+				//SessionViewController_iPhone sessionViewController = OpenPeer.SharedOpenPeer().MainViewController().SessionViewControllersDictionary().ObjectForKey(sessionId);
 					sessionViewController.UpdateCallState();
 					switch (callState)
 					{
@@ -90,7 +98,7 @@ namespace HopSampleApp
 						break;
 					case HOPCallStateClosing :
 						//Receives both parties
-						if (OpenPeer.SharedOpenPeer().AppEnteredBackground()) OpenPeer.SharedOpenPeer().PrepareAppForBackground();
+					if (OpenPeer.sharedOpenPeer().AppEnteredBackground()) OpenPeer.sharedOpenPeer().PrepareAppForBackground();
 
 						SessionManager.SharedSessionManager().OnCallClosing(call);
 						SoundManager.SharedSoundsManager().StopCallingSound();
@@ -108,7 +116,7 @@ namespace HopSampleApp
 
 				});
 		}
-		*/
+
 	}
 }
 

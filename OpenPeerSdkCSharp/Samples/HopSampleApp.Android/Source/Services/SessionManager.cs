@@ -42,6 +42,9 @@ namespace HopSampleApp
 			return null;
 			/* code */
 		}
+		public void OnCallClosing(object something){}
+		public void OnCallEnded(object something){}
+		public void OnCallOpened(){}
 	}
 }
 

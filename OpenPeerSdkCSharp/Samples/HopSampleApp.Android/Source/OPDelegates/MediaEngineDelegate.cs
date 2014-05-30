@@ -56,10 +56,9 @@ namespace HopSampleApp
 		public static void OnMediaEngineAudioRouteChanged(HOPMediaEngineOutputAudioRoutes audioRoute)
 		{
 			ThreadPool.QueueUserWorkItem( delegate {
+
 			});
 
-
-			//dispatch_async(dispatch_get_main_queue(), delegate(){});
 
 		}
 
@@ -69,9 +68,6 @@ namespace HopSampleApp
 				 SessionManager.SharedSessionManager().OnFaceDetected();
 
 			});
-
-			//dispatch_async(dispatch_get_main_queue(), delegate(){	SessionManager.SharedSessionManager().OnFaceDetected();	});
-				
 		}
 
 		public static void OnMediaEngineVideoCaptureRecordStopped()
@@ -80,8 +76,6 @@ namespace HopSampleApp
 			ThreadPool.QueueUserWorkItem( delegate {
 
 			});
-			//dispatch_async(dispatch_get_main_queue(), delegate(){});
-
 		}
 
 		public static void OnMediaEngineAudioSessionInterruptionBegan()

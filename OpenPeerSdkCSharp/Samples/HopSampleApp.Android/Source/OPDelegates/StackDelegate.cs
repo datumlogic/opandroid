@@ -50,6 +50,8 @@ namespace HopSampleApp
 		private OpenPeer(){ /* code  */ }
 		public static OpenPeer sharedOpenPeer(){if (instance == null)	instance = new OpenPeer();return instance;}
 		public void setup(){ Console.WriteLine ("test"); }
+		public void PrepareAppForBackground(){}
+		public void AppEnteredBackground(){}
 	}
 	//end
 
