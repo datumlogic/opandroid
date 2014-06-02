@@ -124,8 +124,8 @@ namespace HopSampleApp
 		void OnConversationThreadPushMessageMessageIDContact(HOPConversationThread conversationThread, string messageID, HOPContact coreContact)
 		{
 			//need fix
-			/*
-			#if APNS_ENABLED
+
+			//#if APNS_ENABLED
 			if (coreContact)
 			{
 				bool missedCall = false;
@@ -152,8 +152,8 @@ namespace HopSampleApp
 				}
 			}
 
-			#endif
-			*/
+			//#endif
+
 		}
 	}
 }

@@ -14,6 +14,8 @@ namespace HopSampleApp
 	// Singleton Pattern only for translation
 	public class SessionManager
 	{
+		public Session SessionWithActiveCall {get; set;}
+
 		private static SessionManager instance;
 		private SessionManager()
 		{ 
@@ -25,9 +27,9 @@ namespace HopSampleApp
 				instance = new SessionManager();
 			return instance;
 		}
-		public void OnFaceDetected()
+		public static void onFaceDetected()
 		{
-			/* code */ 
+			//code
 		}
 		public void SetLatestValidConversationThread(object something /*need fix */)
 		{
@@ -42,12 +44,45 @@ namespace HopSampleApp
 			return null;
 			/* code */
 		}
-		public void OnCallClosing(object something){}
+		/**
+        
+           Handle case when call is in closing state.
+        
+           @param call HOPCall Ending call
+        
+           */
+		void onCallClosing(HOPCall call)
+		{
+			String sessionId = call.getConversationThread().getThreadId();
+			Session session = SessionManager.sharedSessionManager().sessionsDictionary().objectForKey(sessionId);
+			HOPMediaEngine.sharedInstance().stopVideoCapture();
+			session.currentCall().hangup(HOPCallClosedReasonNone);
+			//Set flag that there is no active call
+			this.setActiveCallSessionCallActive(session, false);
+		}
+
 		public void OnCallEnded(object something){}
-		public void OnCallOpened(){}
-		public void OnCallRinging(object something){}
+		public void OnCallOpened(object something){}
+
+		void onCallRinging(HOPCall call)
+		{
+			String sessionId = call.getConversationThread().getThreadId();
+			if (sessionId.length() > 0)
+			{
+				Session session = SessionManager.SharedSessionManager.sessionsDictionary().objectForKey(sessionId);
+				if (session)
+				{
+					OpenPeer.sharedOpenPeer().mainViewController().showIncominCallForSession(session);
+					SoundManager.sharedSoundsManager().playRingingSound();
+				}
+
+			}
+
+		}
 		public void OnCallIncoming(object something){}
 		public void OnCallPreparing(object something){}
+
+
 	}
 }
 

@@ -100,6 +100,7 @@
     <Compile Include="Source\Services\ContactsManager.cs" />
     <Compile Include="Source\Services\SoundManager.cs" />
     <Compile Include="Source\Services\HOPTypes.cs" />
+    <Compile Include="Source\Services\LoginManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

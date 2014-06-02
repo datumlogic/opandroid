@@ -50,9 +50,9 @@ namespace HopSampleApp
 
 		void OnCallStateChangedCallState(HOPCall call, HOPCallStates callState)
 		{
-
+			/*
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Call state: %@", Utility.GetCallStateAsString(call.GetState()));
-			SessionManager.SharedSessionManager().SetLatestValidConversationThread(/*call.GetConversationThread()*/);
+			//SessionManager.SharedSessionManager().SetLatestValidConversationThread(call.GetConversationThread());
 			//String sessionId = call.GetConversationThread().GetThreadId();
 			ThreadPool.QueueUserWorkItem( delegate {
 				//SessionViewController_iPhone sessionViewController = OpenPeer.SharedOpenPeer().MainViewController().SessionViewControllersDictionary().ObjectForKey(sessionId);
@@ -117,6 +117,7 @@ namespace HopSampleApp
 					}
 
 				});
+			*/
 		}
 
 	}

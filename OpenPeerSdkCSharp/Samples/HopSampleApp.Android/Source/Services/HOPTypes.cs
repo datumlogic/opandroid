@@ -11,6 +11,11 @@ using Android.Widget;
 
 namespace HopSampleApp.Enums
 {
+
+	//#if	//openpeer_ios_sdk_OpenPeerTypes_h
+
+	//#define //openpeer_ios_sdk_OpenPeerTypes_h
+
 	//#pragma mark - HOPCall enums
 	public enum HOPCallStates
 	{
@@ -27,7 +32,7 @@ namespace HopSampleApp.Enums
 		HOPCallStateHold, // call is open but on hold
 		HOPCallStateClosing, // call is hanging up
 		HOPCallStateClosed, // call has ended
-	}
+	};
 	public enum HOPCallClosedReasons
 	{
 		HOPCallClosedReasonNone = 0,
@@ -43,14 +48,15 @@ namespace HopSampleApp.Enums
 		CallClosedReasonServerInternalError = 500,
 
 		CallClosedReasonDecline = 603,
-	}
+	};
+
 	//#pragma mark - HOPConversationThread enums
 	public enum HOPConversationThreadMessageDeliveryStates
 	{
 		HOPConversationThreadMessageDeliveryStateDiscovering = 0,
 		HOPConversationThreadMessageDeliveryStateUserNotAvailable = 1,
 		HOPConversationThreadMessageDeliveryStateDelivered = 2,
-	}
+	};
 
 	public enum HOPConversationThreadContactStates
 	{
@@ -58,7 +64,7 @@ namespace HopSampleApp.Enums
 		HOPConversationThreadContactStateFinding,
 		HOPConversationThreadContactStateConnected,
 		HOPConversationThreadContactStateDisconnected
-	}
+	};
 	public enum HOPAccountStates
 	{
 		HOPAccountStatePending,
@@ -70,7 +76,7 @@ namespace HopSampleApp.Enums
 		HOPAccountStateReady,
 		HOPAccountStateShuttingDown,
 		HOPAccountStateShutdown,
-	}
+	};
 
 
 	//#pragma mark - HOPIdentity enums
@@ -84,7 +90,7 @@ namespace HopSampleApp.Enums
 		HOPIdentityStateWaitingForBrowserWindowToClose,
 		HOPIdentityStateReady,
 		HOPIdentityStateShutdown
-	}
+	};
 
 
 
@@ -95,7 +101,7 @@ namespace HopSampleApp.Enums
 		HOPLoggerSeverityWarning,
 		HOPLoggerSeverityError,
 		HOPLoggerSeverityFatal
-	} //Replacing HOPClientLogSeverities
+	}; //Replacing HOPClientLogSeverities
 
 	public enum HOPLoggerLevels
 	{
@@ -107,7 +113,7 @@ namespace HopSampleApp.Enums
 		HOPLoggerLevelInsane,
 
 		HOPLoggerTotalNumberOfLevels
-	} //Replacing HOPClientLogSeverities
+	} ;//Replacing HOPClientLogSeverities
 
 
 	//#pragma mark - Client enums
@@ -115,7 +121,7 @@ namespace HopSampleApp.Enums
 	{
 		HOPContactTypeOpenPeer,
 		HOPContactTypeExternal
-	}
+	};
 
 
 	//#pragma mark - HOPMediaEngine enums
@@ -124,7 +130,7 @@ namespace HopSampleApp.Enums
 		HOPMediaEngineCameraTypeNone,
 		HOPMediaEngineCameraTypeFront,
 		HOPMediaEngineCameraTypeBack
-	}
+	};
 
 	public enum HOPMediaEngineVideoOrientations
 	{
@@ -132,14 +138,15 @@ namespace HopSampleApp.Enums
 		HOPMediaEngineVideoOrientationPortraitUpsideDown,
 		HOPMediaEngineVideoOrientationLandscapeRight,
 		HOPMediaEngineVideoOrientationPortrait
-	}
+	};
 
 	public enum HOPMediaEngineOutputAudioRoutes
 	{
 		HOPMediaEngineOutputAudioRouteHeadphone,
 		HOPMediaEngineOutputAudioRouteBuiltInReceiver,
 		HOPMediaEngineOutputAudioRouteBuiltInSpeaker
-	}
+	};
+	//#endif
 	class HOPTypes
 	{
 
