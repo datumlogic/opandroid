@@ -100,7 +100,10 @@
     <Compile Include="Source\Services\ContactsManager.cs" />
     <Compile Include="Source\Services\SoundManager.cs" />
     <Compile Include="Source\Services\HOPTypes.cs" />
-    <Compile Include="Source\Services\LoginManager.cs" />
+    <Compile Include="Source\Services\HOPIdentityContract.cs" />
+    <Compile Include="Source\Login\LoginManager.cs" />
+    <Compile Include="Source\Login\WebLoginViewController.cs" />
+    <Compile Include="Source\Model\Session.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -274,6 +277,8 @@
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\drawable\" />
     <Folder Include="Source\OPDelegates\" />
+    <Folder Include="Source\Login\" />
+    <Folder Include="Source\Model\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">

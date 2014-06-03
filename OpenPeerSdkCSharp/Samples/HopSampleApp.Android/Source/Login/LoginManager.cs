@@ -62,7 +62,7 @@ namespace HopSampleApp
 			ArrayList associatedIdentities = HOPAccount.sharedAccount().getAssociatedIdentities();
 			foreach (HOPIdentity identity in associatedIdentities)
 			{
-				identity.cancel();
+				identity.cancel ();
 			}
 			foreach (HOPIdentity identity in this.AssociatingIdentitiesDictionary)
 			{
@@ -79,7 +79,7 @@ namespace HopSampleApp
            */
 		void logout()
 		{
-			/*
+
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Logout started");
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelInsane, "Remove cookies");
 			//Delete all cookies.
@@ -110,7 +110,7 @@ namespace HopSampleApp
 			HOPModelManager.sharedModelManager().clearSessionRecords();
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelInsane, "Release all core objects");
 			HOPStack.sharedStack().doLogoutCleanup();
-			*/
+
 		}
 		//
 		/**
@@ -170,7 +170,7 @@ namespace HopSampleApp
 		void startRelogin()
 		{
 			bool reloginStarted = false;
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Relogin started");
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Relogin started");
 			OpenPeer.sharedOpenPeer().mainViewController().onRelogin();
 			HOPHomeUser homeUser = HOPModelManager.sharedModelManager().getLastLoggedInHomeUser();
 			if (homeUser && homeUser.reloginInfo.length() > 0)
@@ -179,20 +179,21 @@ namespace HopSampleApp
 				reloginStarted = HOPAccount.sharedAccount().reloginWithAccountDelegateConversationThreadDelegateCallDelegateLockboxOuterFrameURLUponReloadReloginInformation((HOPAccountDelegate)OpenPeer.sharedOpenPeer().accountDelegate(), (HOPConversationThreadDelegate)OpenPeer.sharedOpenPeer().conversationThreadDelegate(), (HOPCallDelegate)OpenPeer.sharedOpenPeer().callDelegate(), Settings.sharedSettings().getOuterFrameURL(), homeUser.reloginInfo);
 			}
 
-			if (!reloginStarted) OPLog(HOPLoggerSeverityError, HOPLoggerLevelDebug, "Relogin has failed");
+			if (!reloginStarted)
+				//OPLog(HOPLoggerSeverityError, HOPLoggerLevelDebug, "Relogin has failed");
 
 		}
 
-		void preloadLoginWebPage()
+		public void preloadLoginWebPage()
 		{
-			if (!this.preloadedWebLoginViewController)
+			if (!this.PreloadedWebLoginViewController)
 			{
-				this.preloadedWebLoginViewController = new WebLoginViewController();
-				if (this.preloadedWebLoginViewController) this.preloadedWebLoginViewController.view.hidden = true;
+				this.PreloadedWebLoginViewController = new WebLoginViewController ();
+				if (this.PreloadedWebLoginViewController) this.PreloadedWebLoginViewController.view.hidden = true;
 
 			}
 
-			this.preloadedWebLoginViewController.openLoginUrl(Settings.sharedSettings().getOuterFrameURL());
+			this.PreloadedWebLoginViewController.openLoginUrl(Settings.sharedSettings().getOuterFrameURL());
 		}
 
 		/**
@@ -202,7 +203,7 @@ namespace HopSampleApp
            @param identity HOPIdentity identity used for login
         
            */
-		void onIdentityAssociationFinished(HOPIdentity identity)
+		public void onIdentityAssociationFinished(HOPIdentity identity)
 		{
 			string relogininfo = HOPAccount.sharedAccount().getReloginInformation();
 			if (relogininfo.length() > 0)
@@ -236,7 +237,7 @@ namespace HopSampleApp
 			this.onUserLoggedIn();
 		}
 		//
-		void attachDelegateForIdentityForceAttach(HOPIdentity identity, bool forceAttach)
+		public void attachDelegateForIdentityForceAttach(HOPIdentity identity, bool forceAttach)
 		{
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Attach delegate for identity with URI: %@", identity.getIdentityURI());
 			if (!identity.isDelegateAttached() || forceAttach)
@@ -269,8 +270,8 @@ namespace HopSampleApp
                     {
                         if (!identity.isDelegateAttached())
                         {
-                            string redirectAfterLoginCompleteURL = NSString.stringWithFormat("%@?reload=true", Settings.sharedSettings().getOuterFrameURL());
-                            identity.attachDelegateRedirectionURL((HOPIdentityDelegate)OpenPeer.sharedOpenPeer().identityDelegate(), redirectAfterLoginCompleteURL);
+							string redirectAfterLoginCompleteURL = String.Format("{0}?reload=true", Settings.sharedSettings().getOuterFrameURL());
+							identity.attachDelegateRedirectionURL((IdentityDelegate)OpenPeer.sharedOpenPeer().identityDelegate(), redirectAfterLoginCompleteURL);
                         }
 
                     }
@@ -330,7 +331,7 @@ namespace HopSampleApp
                     {
                         OpenPeer.sharedOpenPeer().mainViewController().onLoginFinished();
                         //Start loading contacts.
-                        ContactsManager.sharedContactsManager().loadContacts();
+						ContactsManager.sharedContactsManager().loadContacts();
                     }
                 }
                 else
@@ -427,7 +428,7 @@ namespace HopSampleApp
                     LoginManager.sharedLoginManager().startLoginUsingIdentityURI(identityFacebookBaseURI);
                 }
 
-                this.isAssociation = true;
+				this.IsAssociation = true;
             }
             else
             {

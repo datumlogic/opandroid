@@ -42,6 +42,7 @@ namespace HopSampleApp
 	public class HOPConversationThreadMessageDeliveryStates{}
 	public class HOPContact{}
 	public class HOPMessage{}
+
 	public class HOPConversationThread 
 	{
 		public static void StringForContactState(string str){}
@@ -49,7 +50,7 @@ namespace HopSampleApp
 		{ 
 			return messageid;
 		}
-		public static void GetThreadId(){}
+		public  string GetThreadId(){ return null;}
 
 		public string GetContacts()
 		{

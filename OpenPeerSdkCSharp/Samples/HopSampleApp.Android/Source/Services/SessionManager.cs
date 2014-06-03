@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using Android.App;
@@ -8,7 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
+using HopSampleApp.Enums;
 namespace HopSampleApp
 {
 	// Singleton Pattern only for translation
@@ -27,60 +28,134 @@ namespace HopSampleApp
 				instance = new SessionManager();
 			return instance;
 		}
-		public static void onFaceDetected()
+		/*
+		Session createSessionForContact(HOPRolodexContact contact)
 		{
-			//code
-		}
-		public void SetLatestValidConversationThread(object something /*need fix */)
-		{
-			/* code */
-		}
-		public void CreateSessionForConversationThread(object something/*need fix */)
-		{
-			/* code */
-		}
-		public object ProceedWithExistingSessionForContactNewConversationThread(object something1,object something2)
-		{
-			return null;
-			/* code */
-		}
-		/**
-        
-           Handle case when call is in closing state.
-        
-           @param call HOPCall Ending call
-        
-           */
-		void onCallClosing(HOPCall call)
-		{
-			String sessionId = call.getConversationThread().getThreadId();
-			Session session = SessionManager.sharedSessionManager().sessionsDictionary().objectForKey(sessionId);
-			HOPMediaEngine.sharedInstance().stopVideoCapture();
-			session.currentCall().hangup(HOPCallClosedReasonNone);
-			//Set flag that there is no active call
-			this.setActiveCallSessionCallActive(session, false);
-		}
+		Console.WriteLine ("Empty");
 
-		public void OnCallEnded(object something){}
-		public void OnCallOpened(object something){}
-
+		}
+		*/
+		Session createSessionForConversationThread(HOPConversationThread inConversationThread)
+		{
+			Console.WriteLine ("Empty");
+		}
+		//
+		Session createSessionInitiatedFromSessionForContactPeerURIs(Session inSession, string peerURIs)
+		{
+			Console.WriteLine ("Empty");
+		}
+		Session createRemoteSessionForContacts(ArrayList participants)
+		{
+			Console.WriteLine ("Empty");
+		}
+		void setValidSessionNewSessionIdOldSessionId(Session inSession, string newSessionId, string oldSessionId)
+		{
+			Console.WriteLine ("Empty");
+		}
+		Session proceedWithExistingSessionForContactNewConversationThread(HOPContact contact, HOPConversationThread inConversationThread)
+		{
+			Console.WriteLine ("Empty");
+		}
+		//need fix
+		Session getSessionForContact(HOPRolodexContact contact)
+		{
+			Console.WriteLine ("Empty");
+		}
+		Session getSessionForSessionId(string sessionId)
+		{
+			Console.WriteLine ("Empty");
+		}
+		void makeCallForSessionIncludeVideoIsRedial(Session inSession, bool includeVideo, bool isRedial)
+		{
+			Console.WriteLine ("Empty");
+		}
+		void answerCallForSession(Session inSession)
+		{
+			Console.WriteLine ("Empty");
+		}
+		void endCallForSession(Session inSession)
+		{
+			Console.WriteLine ("Empty");
+		}
+		void onCallPreparing(HOPCall call)
+		{
+		}
+		void onCallIncoming(HOPCall call)
+		{
+			Console.WriteLine ("Empty");
+		}
 		void onCallRinging(HOPCall call)
 		{
-			String sessionId = call.getConversationThread().getThreadId();
-			if (sessionId.length() > 0)
-			{
-				Session session = SessionManager.SharedSessionManager.sessionsDictionary().objectForKey(sessionId);
-				if (session)
-				{
-					OpenPeer.sharedOpenPeer().mainViewController().showIncominCallForSession(session);
-					SoundManager.sharedSoundsManager().playRingingSound();
-				}
-
-			}
-
+			Console.WriteLine ("Empty");
 		}
-		public void OnCallIncoming(object something){}
-		public void OnCallPreparing(object something){}
+		void onCallOpened(HOPCall call)
+		{
+		}
+		void onCallClosing(HOPCall call)
+		{
+			Console.WriteLine ("Empty");
+		}
+		bool setActiveCallSessionCallActive(Session inSession, bool callActive)
+		{
+			bool value = false;
+			Console.WriteLine ("Empty");
+			return value;
+		}
+		void redialCallForSession(Session inSession)
+		{
+			Console.WriteLine ("Empty");
+		}
+		void onCallEnded(HOPCall call)
+		{
+			Console.WriteLine ("Empty");
+		}
+		void onFaceDetected()
+		{
+			Console.WriteLine ("Empty");
+		}
+		void startVideoRecording()
+		{
+			Console.WriteLine ("Empty");
+		}
+		void stopVideoRecording()
+		{
+			Console.WriteLine ("Empty");
+		}
+		bool isCallInProgress()
+		{
+			bool value = false;
+			Console.WriteLine ("Empty");
+			return value;
+		}
+		void recreateExistingSessions()
+		{
+			Console.WriteLine ("Empty");
+		}
+		void stopAnyActiveCall()
+		{
+			Console.WriteLine ("Empty");
+		}
+
+		void clearAllSessions()
+		{
+			Console.WriteLine ("Empty");
+		}
+
+		void setLatestValidConversationThread(HOPConversationThread inConversationThread)
+		{
+			Console.WriteLine ("Empty");
+		}
+
+		int totalNumberOfUnreadMessages()
+		{
+			int ret = 0;
+			Console.WriteLine ("Empty");
+			return ret;
+		}
+
+	
+
+
 
 
 	}

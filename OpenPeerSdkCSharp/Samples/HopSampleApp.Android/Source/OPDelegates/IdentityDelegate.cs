@@ -40,11 +40,18 @@ namespace HopSampleApp
 {
 	class IdentityDelegate
 	{
+		protected Mutex mutexVisibleWebView;
+		public Dictionary<string,object> LoginWebViewsDictionary {get; set;}
+
+		public HOPIdentity IdentityMutexOwner {get; set;}
+		//public LoginEventsDelegate LoginDelegate {get; set;}//need fix
+		void removeAllWebViewControllers();
+
 		WebLoginViewController GetLoginWebViewForIdentityCreate(HOPIdentity identity, bool create)
 		{
 			WebLoginViewController ret = null;
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity - Get login web view for identity objectId:%d", identity, identity.GetObjectId().IntValue());
-			ret = this.LoginWebViewsDictionary.ObjectForKey(identity.GetObjectId());
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity - Get login web view for identity objectId:%d", identity, identity.GetObjectId().IntValue());
+			ret = this.LoginWebViewsDictionary.TryGetValue(identity.getObjectId());
 			if (create && !ret)
 			{
 				//ret = [[LoginManager sharedLoginManager] preloadedWebLoginViewController];
@@ -52,20 +59,20 @@ namespace HopSampleApp
 
 				{
 					ret = new WebLoginViewController(identity);
-					OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity - Created web view: %p \nidentity uri: %@ \nidentity object id:%d", identity, ret, identity.GetIdentityURI(), identity.GetObjectId().IntValue());
+					//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity - Created web view: %p \nidentity uri: %@ \nidentity object id:%d", identity, ret, identity.GetIdentityURI(), identity.GetObjectId().IntValue());
 				}
-				ret.View.Hidden = true;
-				ret.CoreObject = identity;
-				this.LoginWebViewsDictionary.SetObjectForKey(ret, identity.GetObjectId());
+				//ret.View.Hidden = true;
+				//ret.CoreObject = identity;
+				this.LoginWebViewsDictionary.Add(ret, identity.getObjectId());
 				//[[LoginManager sharedLoginManager] setPreloadedWebLoginViewController:nil];
 			}
 			else
 			{
-				if (ret)
-				{
-					OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity - Retrieved exisitng web view:%p for identity objectId:%d", identity, ret, identity.GetObjectId().IntValue());
+				if (ret) {
+					//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity - Retrieved exisitng web view:%p for identity objectId:%d", identity, ret, identity.GetObjectId().IntValue());
+				} else {
+					//OPLog (HOPLoggerSeverityWarning, HOPLoggerLevelTrace, "<%p> Identity - getLoginWebViewForIdentity - NO VALID WEB VIEW:%p - %d", identity, ret, identity.GetObjectId ().IntValue ());
 				}
-				else OPLog(HOPLoggerSeverityWarning, HOPLoggerLevelTrace, "<%p> Identity - getLoginWebViewForIdentity - NO VALID WEB VIEW:%p - %d", identity, ret, identity.GetObjectId().IntValue());
 
 			}
 
@@ -74,19 +81,19 @@ namespace HopSampleApp
 		//
 		void RemoveLoginWebViewForIdentity(HOPIdentity identity)
 		{
-			this.LoginWebViewsDictionary.RemoveObjectForKey(identity.GetObjectId());
+			this.LoginWebViewsDictionary.Remove(identity.getObjectId());
 		}
 		//
 		void IdentityStateChanged(HOPIdentity identity, HOPIdentityStates state)
 		{
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity login state has changed to: %@ - identityURI: %@", identity, HOPIdentity.StringForIdentityState(state), identity.GetIdentityURI());
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity login state has changed to: %@ - identityURI: %@", identity, HOPIdentity.StringForIdentityState(state), identity.GetIdentityURI());
 			//Prevent to have two web views visible at the time
-			if (state == HOPIdentityStateWaitingForBrowserWindowToBeMadeVisible)
+			if (state == HOPIdentityStates.HOPIdentityStateWaitingForBrowserWindowToBeMadeVisible)
 			{
-				OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity tries to obtain web view visibility mutex. identityURI: %@ identityObjectId: %d", identity, identity.GetIdentityURI(), identity.GetObjectId().IntegerValue());
+				//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity tries to obtain web view visibility mutex. identityURI: %@ identityObjectId: %d", identity, identity.GetIdentityURI(), identity.GetObjectId().IntegerValue());
 				lock(mutexVisibleWebView);
 				this.IdentityMutexOwner = identity;
-				OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity owns web view visibility mutex. identityURI: %@ identityObjectId: %d", identity, identity.GetIdentityURI(), identity.GetObjectId().IntegerValue());
+				//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity owns web view visibility mutex. identityURI: %@ identityObjectId: %d", identity, identity.GetIdentityURI(), identity.GetObjectId().IntegerValue());
 			}
 			ThreadPool.QueueUserWorkItem( delegate 
 				{
@@ -99,13 +106,13 @@ namespace HopSampleApp
 						break;
 					case HOPIdentityStates.HOPIdentityStateWaitingAttachmentOfDelegate :
 						{
-							LoginManager.SharedLoginManager().AttachDelegateForIdentityForceAttach(identity, false);
+							LoginManager.SharedLoginManager().attachDelegateForIdentityForceAttach(identity, false);
 						}
 						break;
 					case HOPIdentityStates.HOPIdentityStateWaitingForBrowserWindowToBeLoaded :
 						{
 							webLoginViewController = this.GetLoginWebViewForIdentityCreate(identity, true);
-							if (LoginManager.SharedLoginManager().IsLogin() || LoginManager.SharedLoginManager().IsAssociation())
+							if (LoginManager.SharedLoginManager().IsLogin || LoginManager.SharedLoginManager().IsAssociation)
 							{
 								this.LoginDelegate.OnOpeningLoginPage();
 							}
@@ -121,7 +128,7 @@ namespace HopSampleApp
 							webLoginViewController = this.GetLoginWebViewForIdentityCreate(identity, false);
 							this.LoginDelegate.OnLoginWebViewVisible(webLoginViewController);
 							//Notify core that identity login web view is visible now
-							identity.NotifyBrowserWindowVisible();
+							identity.notifyBrowserWindowVisible();
 						}
 						break;
 					case HOPIdentityStates.HOPIdentityStateWaitingForBrowserWindowToClose :
@@ -129,11 +136,11 @@ namespace HopSampleApp
 							webLoginViewController = this.GetLoginWebViewForIdentityCreate(identity, false);
 							this.LoginDelegate.OnIdentityLoginWebViewCloseForIdentityURI(webLoginViewController, identity.GetIdentityURI());
 							//Notify core that identity login web view is closed
-							identity.NotifyBrowserWindowClosed();
-							if (this.IdentityMutexOwner.GetObjectId().IntValue() == identity.GetObjectId().IntValue())
+							identity.notifyBrowserWindowClosed();
+							if (this.IdentityMutexOwner.getObjectId() == identity.getObjectId())
 							{
 								this.IdentityMutexOwner = null;
-								OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity releases web view visibility mutex. identityURI: %@", identity, identity.GetIdentityURI());
+								//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity releases web view visibility mutex. identityURI: %@", identity, identity.GetIdentityURI());
 								pthread_mutex_unlock(mutexVisibleWebView);
 							}
 							this.RemoveLoginWebViewForIdentity(identity);
@@ -144,13 +151,13 @@ namespace HopSampleApp
 						#if APNS_ENABLED
 						APNSInboxManager.SharedAPNSInboxManager().HandleNewMessages();
 						#endif
-						if (LoginManager.SharedLoginManager().IsLogin() || LoginManager.SharedLoginManager().IsAssociation()) LoginManager.SharedLoginManager().OnIdentityAssociationFinished(identity);
+						if (LoginManager.SharedLoginManager().IsLogin || LoginManager.SharedLoginManager().IsAssociation) LoginManager.SharedLoginManager().onIdentityAssociationFinished(identity);
 						break;
 					case HOPIdentityStates.HOPIdentityStateShutdown :
 						{
-							HOPIdentityStates identityState = identity.GetState();
+							HOPIdentityStates identityState = identity.getState();
 							if (identityState.LastErrorCode) this.LoginDelegate.OnIdentityLoginError(identityState.LastErrorReason);
-							identity.DestroyCoreObject();
+							identity.destroyCoreObject();
 							this.LoginDelegate.OnIdentityLoginShutdown();
 						}
 						break;
@@ -162,16 +169,16 @@ namespace HopSampleApp
 		//
 		void OnIdentityPendingMessageForInnerBrowserWindowFrame(HOPIdentity identity)
 		{
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity: pending message for inner browser window frame.", identity);
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity: pending message for inner browser window frame.", identity);
 			ThreadPool.QueueUserWorkItem( delegate 
 				{
 					//Get login web view for specified identity
 					WebLoginViewController webLoginViewController = this.GetLoginWebViewForIdentityCreate(identity, false);
 					if (webLoginViewController)
 					{
-						string jsMethod =String.Format("sendBundleToJS({0})",identity.GetNextMessageForInnerBrowerWindowFrame()) ;
+						string jsMethod =String.Format("sendBundleToJS({0})",identity.getNextMessageForInnerBrowerWindowFrame()) ;
 						//Pass JSON message to java script
-						webLoginViewController.PassMessageToJS(jsMethod);
+						webLoginViewController.passMessageToJS(jsMethod);
 					}
 
 				});
@@ -179,7 +186,7 @@ namespace HopSampleApp
 		//
 		void OnIdentityRolodexContactsDownloaded(HOPIdentity identity)
 		{
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity rolodex contacts are downloaded.", identity);
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity rolodex contacts are downloaded.", identity);
 			//Remove activity indicator
 			ActivityIndicatorViewController.SharedActivityIndicator().ShowActivityIndicatorWithTextInView(false, null, null);
 			if (identity)
@@ -190,12 +197,12 @@ namespace HopSampleApp
 				string downloadedVersion;
 				ArrayList rolodexContacts;
 				//Get downloaded rolodex contacts
-				bool rolodexContactsObtained = identity.GetDownloadedRolodexContactsOutVersionDownloadedOutRolodexContacts(flushAllRolodexContacts, downloadedVersion, rolodexContacts);
-				OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Identity URI: %@ - Total number of rolodex contacts: %d", identity.GetIdentityURI(), rolodexContacts.Count);
+				bool rolodexContactsObtained = identity.getDownloadedRolodexContactsOutVersionDownloadedOutRolodexContacts (flushAllRolodexContacts, downloadedVersion, rolodexContacts);
+				//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Identity URI: %@ - Total number of rolodex contacts: %d", identity.GetIdentityURI(), rolodexContacts.Count);
 				if (downloadedVersion.Length() > 0) associatedIdentity.DownloadedVersion = downloadedVersion;
 
 				//Stop timer that is started when flushAllRolodexContacts is received
-				identity.StopTimerForContactsDeletion();
+				identity.stopTimerForContactsDeletion();
 				if (rolodexContactsObtained)
 				{
 					//Unmark all received contacts, that were earlier set for deletion 
@@ -212,7 +219,7 @@ namespace HopSampleApp
 				{
 					//Get all rolodex contacts that are alredy in the database
 					ArrayList allUserRolodexContacts = HOPModelManager.SharedModelManager().GetRolodexContactsForHomeUserIdentityURIOpenPeerContacts(identity.GetIdentityURI(), false);
-					identity.StartTimerForContactsDeletion();
+					identity.startTimerForContactsDeletion ();
 					allUserRolodexContacts.SetValueForKey(NSNumber.NumberWithBool(true), "readyForDeletion");
 					//[[HOPModelManager sharedModelManager] saveContext];
 				}
@@ -225,13 +232,13 @@ namespace HopSampleApp
 		//
 		void OnNewIdentity(HOPIdentity identity)
 		{
-			OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity: Handling a new identity with the uri:%@", identity, identity.GetIdentityURI());
-			LoginManager.SharedLoginManager().AttachDelegateForIdentityForceAttach(identity, true);
+			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity: Handling a new identity with the uri:%@", identity, identity.GetIdentityURI());
+			LoginManager.SharedLoginManager().attachDelegateForIdentityForceAttach(identity, true);
 		}
 
 		void RemoveAllWebViewControllers()
 		{
-			this.LoginWebViewsDictionary.RemoveAllObjects();
+			this.LoginWebViewsDictionary.Clear();
 		}
 	}
 }
