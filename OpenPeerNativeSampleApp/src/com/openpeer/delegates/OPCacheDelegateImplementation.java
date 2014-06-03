@@ -3,6 +3,7 @@ package com.openpeer.delegates;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.format.Time;
+import android.util.Log;
 
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.openpeernativesampleapp.OpenPeerApplication;
@@ -22,6 +23,7 @@ public class OPCacheDelegateImplementation extends OPCacheDelegate{
 
 	@Override
 	public void store(String cookieNamePath, Time expires, String str) {
+		Log.d("OPCacheDelegateImplementation","cookieNamePath "+cookieNamePath + " expires "+expires + " value "+str);
 		// TODO connect with shared preferences
 		SharedPreferences sharedPref = OpenPeerApplication.getAppContext().getSharedPreferences(
 				OpenPeerApplication.getAppContext().getString( R.string.preference_file_key), Context.MODE_PRIVATE);

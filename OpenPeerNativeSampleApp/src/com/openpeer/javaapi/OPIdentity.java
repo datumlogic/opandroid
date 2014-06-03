@@ -71,4 +71,9 @@ public class OPIdentity {
 	public native OPDownloadedRolodexContacts getDownloadedRolodexContacts();
 	
 	public native void cancel();
+	public String toString(){
+		return super.toString()+ " identityUri " + getIdentityURI()+" innerBrowserWindowFrameURL " + 
+				getInnerBrowserWindowFrameURL() + " identityProviderDomain "+getIdentityProviderDomain()
+				+ " state " + getState(0,"");
+	}
 }
