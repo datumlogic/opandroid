@@ -28,13 +28,15 @@ public class OPTestConversationThread {
 
 			for(OPIdentityContact idContact : updated)
 			{
-				if (idContact.getName().contains("Kocic"))
+				Log.d("output","OPTestConversationThread identityContact "+idContact);
+//				if (idContact.getName().contains("Kocic"))
+				if(null!=idContact.getPeerFilePublic())
 				{
 					callContacts.add(idContact);
 					OPConversationThreadDelegate delegate = new OPConversationThreadDelegateImplementation();
 					LoginManager.mCallbackHandler.registerConversationThreadDelegate(delegate);
-					LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, callContacts);
 				}
+				LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, callContacts);
 			}
 
 

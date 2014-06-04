@@ -84,7 +84,7 @@ public class OPIdentityContact extends OPRolodexContact {
 	}
 
 	public String toString() {
-		return super.toString() + " identityProofBundle "
+		return super.toString() + " peerFilePublic "+mPeerFilePublic+" identityProofBundle "
 				+ mIdentityProofBundleEl + " mStableID " + mStableID
 				+ " mExpires " + mExpires;
 	}
