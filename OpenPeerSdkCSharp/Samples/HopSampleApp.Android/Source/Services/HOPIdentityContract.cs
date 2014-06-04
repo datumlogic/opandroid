@@ -16,11 +16,11 @@ namespace HopSampleApp
 	class HOPIdentityContract
 	{
 	}
-	public class HOPIdentityState
+	public  class HOPIdentityState
 	{
 		public HOPIdentityStates State {get; set;}
 
-		public ushort LastErrorCode {get; set;}
+		public short LastErrorCode {get; set;}
 
 		public string LastErrorReason {get; set;}
 
@@ -53,6 +53,18 @@ namespace HopSampleApp
 		public HOPIdentityState getState()
 		{
 			Console.WriteLine ("Empty");
+			//WORD lastErrorCode;
+			string lastErrorCode;
+
+			byte[] lastErrorReason;
+
+			// zsLib::String lastErrorReason;
+			HOPIdentityStates state = (HOPIdentityStates)identityPtr.getState(lastErrorCode, lastErrorReason);
+			HOPIdentityState ret = new HOPIdentityState();
+			ret.State= state;
+			ret.LastErrorCode = lastErrorCode;
+			ret.LastErrorReason = Encoding.UTF8.GetString(lastErrorCode);// NSString.stringWithCStringEncoding(lastErrorReason, NSUTF8StringEncoding);
+			return ret;
 		}
 		public static bool isDelegateAttached()
 		{
@@ -72,7 +84,7 @@ namespace HopSampleApp
 			/* logic hire */
 			Console.WriteLine ("Empty");
 		}
-		public static string getIdentityURI()
+		public string getIdentityURI()
 		{
 			string ret = null;
 			/* logic hire   */

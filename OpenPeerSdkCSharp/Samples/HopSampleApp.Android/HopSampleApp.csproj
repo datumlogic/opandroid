@@ -104,6 +104,8 @@
     <Compile Include="Source\Login\LoginManager.cs" />
     <Compile Include="Source\Login\WebLoginViewController.cs" />
     <Compile Include="Source\Model\Session.cs" />
+    <Compile Include="Source\OPDelegates\Delegates.cs" />
+    <Compile Include="Source\Services\HTTPDownloader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

@@ -32,7 +32,7 @@ namespace HopSampleApp
 		{
 			Console.WriteLine ("Empty");
 		}
-		void openLoginUrl(string url)
+		public void openLoginUrl(string url)
 		{
 			Console.WriteLine ("Empty");
 		}

@@ -42,10 +42,15 @@ namespace HopSampleApp
 	{
 		protected Mutex mutexVisibleWebView;
 		public Dictionary<string,object> LoginWebViewsDictionary {get; set;}
-
 		public HOPIdentity IdentityMutexOwner {get; set;}
-		//public LoginEventsDelegate LoginDelegate {get; set;}//need fix
+		public LoginEventsDelegate LoginDelegate {get; set;}
 		void removeAllWebViewControllers();
+
+		public IdentityDelegate()
+		{
+			this.LoginWebViewsDictionary=new Dictionary<string,object>();
+			mutexVisibleWebView=new Mutex();
+		}
 
 		WebLoginViewController GetLoginWebViewForIdentityCreate(HOPIdentity identity, bool create)
 		{
@@ -82,6 +87,7 @@ namespace HopSampleApp
 		void RemoveLoginWebViewForIdentity(HOPIdentity identity)
 		{
 			this.LoginWebViewsDictionary.Remove(identity.getObjectId());
+
 		}
 		//
 		void IdentityStateChanged(HOPIdentity identity, HOPIdentityStates state)
@@ -92,6 +98,7 @@ namespace HopSampleApp
 			{
 				//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity tries to obtain web view visibility mutex. identityURI: %@ identityObjectId: %d", identity, identity.GetIdentityURI(), identity.GetObjectId().IntegerValue());
 				lock(mutexVisibleWebView);
+
 				this.IdentityMutexOwner = identity;
 				//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity owns web view visibility mutex. identityURI: %@ identityObjectId: %d", identity, identity.GetIdentityURI(), identity.GetObjectId().IntegerValue());
 			}
@@ -114,19 +121,19 @@ namespace HopSampleApp
 							webLoginViewController = this.GetLoginWebViewForIdentityCreate(identity, true);
 							if (LoginManager.SharedLoginManager().IsLogin || LoginManager.SharedLoginManager().IsAssociation)
 							{
-								this.LoginDelegate.OnOpeningLoginPage();
+								this.LoginDelegate.onOpeningLoginPage();
 							}
-							if (LoginManager.SharedLoginManager().PreloadedWebLoginViewController() != webLoginViewController)
+							if (LoginManager.SharedLoginManager().PreloadedWebLoginViewController != webLoginViewController)
 							{
 								//Open identity login web page
-								webLoginViewController.OpenLoginUrl(Settings.SharedSettings().GetOuterFrameURL());
+								webLoginViewController.openLoginUrl(Settings.SharedSettings().GetOuterFrameURL());
 							}
 						}
 						break;
 					case HOPIdentityStates.HOPIdentityStateWaitingForBrowserWindowToBeMadeVisible :
 						{
 							webLoginViewController = this.GetLoginWebViewForIdentityCreate(identity, false);
-							this.LoginDelegate.OnLoginWebViewVisible(webLoginViewController);
+							this.LoginDelegate.onLoginWebViewVisible(webLoginViewController);
 							//Notify core that identity login web view is visible now
 							identity.notifyBrowserWindowVisible();
 						}
@@ -134,20 +141,21 @@ namespace HopSampleApp
 					case HOPIdentityStates.HOPIdentityStateWaitingForBrowserWindowToClose :
 						{
 							webLoginViewController = this.GetLoginWebViewForIdentityCreate(identity, false);
-							this.LoginDelegate.OnIdentityLoginWebViewCloseForIdentityURI(webLoginViewController, identity.GetIdentityURI());
+							this.LoginDelegate.onIdentityLoginWebViewCloseForIdentityURI(webLoginViewController, identity.getIdentityURI());
 							//Notify core that identity login web view is closed
 							identity.notifyBrowserWindowClosed();
 							if (this.IdentityMutexOwner.getObjectId() == identity.getObjectId())
 							{
 								this.IdentityMutexOwner = null;
 								//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "<%p> Identity releases web view visibility mutex. identityURI: %@", identity, identity.GetIdentityURI());
-								pthread_mutex_unlock(mutexVisibleWebView);
+								//pthread_mutex_unlock(mutexVisibleWebView);
+								mutexVisibleWebView.ReleaseMutex();
 							}
 							this.RemoveLoginWebViewForIdentity(identity);
 						}
 						break;
 					case HOPIdentityStates.HOPIdentityStateReady :
-						this.LoginDelegate.OnIdentityLoginFinished();
+						this.LoginDelegate.onIdentityLoginFinished();
 						#if APNS_ENABLED
 						APNSInboxManager.SharedAPNSInboxManager().HandleNewMessages();
 						#endif
@@ -156,9 +164,10 @@ namespace HopSampleApp
 					case HOPIdentityStates.HOPIdentityStateShutdown :
 						{
 							HOPIdentityStates identityState = identity.getState();
-							if (identityState.LastErrorCode) this.LoginDelegate.OnIdentityLoginError(identityState.LastErrorReason);
+							if (identityState.LastErrorCode) this.LoginDelegate.onIdentityLoginError(identityState.LastErrorReason);
 							identity.destroyCoreObject();
-							this.LoginDelegate.OnIdentityLoginShutdown();
+							this.LoginDelegate.onIdentityLoginShutdown();
+
 						}
 						break;
 					default :
