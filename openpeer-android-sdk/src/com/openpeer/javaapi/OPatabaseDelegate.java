@@ -2,8 +2,9 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
-public interface DatabaseInterface {
-	public DatabaseInterface getInstance();
+import android.content.Context;
+
+public interface OPatabaseDelegate {
 	public OPAccount getAccount();
 	public List<OPIdentity> getIdentities();
 	public List<OPContact> getContacts();

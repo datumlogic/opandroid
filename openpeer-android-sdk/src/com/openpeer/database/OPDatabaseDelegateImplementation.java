@@ -2,22 +2,40 @@ package com.openpeer.database;
 
 import java.util.List;
 
-import com.openpeer.javaapi.DatabaseInterface;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.openpeer.javaapi.OPatabaseDelegate;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
 
-public class DatabaseImplementation implements DatabaseInterface {
+public class OPDatabaseDelegateImplementation implements OPatabaseDelegate {
+	private static OPDatabaseDelegateImplementation instance;
+	OPDatabaseHelper mOpenHelper;
+	private SQLiteDatabase mDatabase;
 
-	@Override
-	public DatabaseInterface getInstance() {
-		// TODO Auto-generated method stub
-		return null;
+	private OPDatabaseDelegateImplementation() {
+
+	}
+	private OPDatabaseDelegateImplementation(Context context) {
+		mOpenHelper = new OPDatabaseHelper(context,
+				OPDatabaseHelper.DATABASE_NAME,              // the name of the database)
+                null,                // uses the default SQLite cursor
+                OPDatabaseHelper.DATABASE_VERSION  );
+	}
+	public static OPatabaseDelegate getInstance(Context context) {
+		if (instance == null) {
+			instance = new OPDatabaseDelegateImplementation(context);
+		}
+		return instance;
 	}
 
 	@Override
 	public OPAccount getAccount() {
-		// TODO Auto-generated method stub
+		mDatabase = mOpenHelper.getReadableDatabase();
+		
+		//TODO: how am i supposed to construct a native account object?
 		return null;
 	}
 
