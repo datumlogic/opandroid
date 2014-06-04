@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package com.openpeer.database;
+=======
+package com.openpeer.sample.app.data;
+>>>>>>> 4c7811b0de1533825310200b707b83bf633e8bcc
 
 import android.provider.BaseColumns;
 
