@@ -752,7 +752,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_addContact
 		for( int i=0; i<listItemsCount; ++i )
 		{
 			// Call "java.util.List.get" method and get Contact object by index.
-			jobject contactProfileInfoObject = jni_env->CallObjectMethod( contactProfileInfos, listGetMethodID, i - 1 );
+			jobject contactProfileInfoObject = jni_env->CallObjectMethod( contactProfileInfos, listGetMethodID, i );
 			if( contactProfileInfoObject != NULL )
 			{
 				//Fetch OPContactProfileInfo class
@@ -761,10 +761,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_addContact
 				jmethodID getContactMethodID = jni_env->GetMethodID( contactProfileInfoClass, "getContact", "()Lcom/openpeer/javaapi/OPContact;" );
 
 				// Call "getContact method to fetch contact from Contact profile info
-				jobject contactObject = jni_env->CallObjectMethod( contactProfileInfoClass, getContactMethodID );
-
-				IContactPtr contact = contactMap.find(contactObject)->second;
-
+				jobject contactObject = jni_env->CallObjectMethod( contactProfileInfoObject, getContactMethodID );
+				IContactPtr contact = OpenPeerCoreManager::getContactFromList(contactObject);
 				ContactProfileInfo contactProfileInfo;
 				contactProfileInfo.mContact = contact;
 				//todo add profile bundle to contact profile info
@@ -820,7 +818,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
 		for( int i=0; i<listItemsCount; ++i )
 		{
 			// Call "java.util.List.get" method and get Contact object by index.
-			jobject contactObject = jni_env->CallObjectMethod( contactsToRemove, listGetMethodID, i - 1 );
+			jobject contactObject = jni_env->CallObjectMethod( contactsToRemove, listGetMethodID, i);
 			if( contactObject != NULL )
 			{
 				IContactPtr contact = contactMap.find(contactObject)->second;

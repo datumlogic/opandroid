@@ -7,6 +7,7 @@ import com.openpeer.delegates.OPCallDelegateImplementation;
 import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -16,24 +17,49 @@ import android.util.Log;
 
 public class OPTestConversationThread {
 
+	public static List<OPIdentityContact> selfContacts = new ArrayList<OPIdentityContact>();
 	public static List<OPIdentityContact> callContacts = new ArrayList<OPIdentityContact>();
 	public static List<OPContact> contacts = new ArrayList<OPContact>();
+	public static List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
 	public static boolean isCall = false;
 	public static boolean execute ()
 	{
 		try
 		{
 			Log.d("output", "Conversation thread test started...");
+			OPIdentityContact self = LoginManager.mIdentity.getSelfIdentityContact();
+			selfContacts.add(self);
+
+			OPConversationThreadDelegate delegate = new OPConversationThreadDelegateImplementation();
+			LoginManager.mCallbackHandler.registerConversationThreadDelegate(delegate);
+			LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, selfContacts);
+
+
 			List<OPIdentityContact> updated = LoginManager.mIdentityLookup.getUpdatedIdentities();
 
 			for(OPIdentityContact idContact : updated)
 			{
-				if (idContact.getName().contains("Kocic"))
+				if (idContact.getName().toLowerCase().contains("sire"))
 				{
+					Log.d("output", "ID contact name = " + idContact.getName());
+					Log.d("output", "ID contact peerFile = " + idContact.getPeerFilePublic().peerFileString);
+					Log.d("output", "ID contact identity URI = " + idContact.getIdentityURI());
+					Log.d("output", "ID contact profile URL = " + idContact.getProfileURL());
+					Log.d("output", "ID contact V profile URL = " + idContact.getVProfileURL());
 					callContacts.add(idContact);
-					OPConversationThreadDelegate delegate = new OPConversationThreadDelegateImplementation();
-					LoginManager.mCallbackHandler.registerConversationThreadDelegate(delegate);
-					LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, callContacts);
+
+
+					OPContactProfileInfo info = new OPContactProfileInfo();
+					OPContact newContact = OPContact.createFromPeerFilePublic(LoginManager.mAccount, idContact.getPeerFilePublic().peerFileString);
+
+					info.setIdentityContacts(callContacts);
+					info.setContact(newContact);
+
+					contactProfiles.add(info);
+
+					LoginManager.mConvThread.addContacts(contactProfiles);
+
+
 				}
 			}
 
@@ -54,27 +80,38 @@ public class OPTestConversationThread {
 		{
 			Log.d("output", "Call test started...");
 
-			//LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "text/x-application-hookflash-message-text", message, false);
+			LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "text/x-application-hookflash-message-text", message, false);
 
-			if(!isCall)
-			{
-				contacts = LoginManager.mConvThread.getContacts();
-				LoginManager.mCallDelegate = new OPCallDelegateImplementation();
-				Log.d("output", "contact sizr = " + contacts.size());
-				Log.d("output", contacts.get(0).getPeerURI());
-				Log.d("output", contacts.get(0).getPeerFilePublic());
-				Log.d("output", "stable Id = " + contacts.get(0).getStableID());
-				List<OPIdentityContact> identityContactList = new ArrayList<OPIdentityContact>();
-				identityContactList = LoginManager.mConvThread.getIdentityContactList(contacts.get(0));
-				Log.d("output", "contact sizr = " + identityContactList.size());
-				Log.d("output", identityContactList.get(0).getName());
-				Log.d("output", identityContactList.get(0).getIdentityURI());
-				
-				LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
-				LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, contacts.get(0), true, false);
-				isCall = true;
-				Log.d("output", "Call test PASSED");	
-			}
+						if(!isCall)
+						{
+							contacts = LoginManager.mConvThread.getContacts();
+
+							Log.d("output", "AFTER ADD contacts size = " + contacts.size());
+							OPContact callContact = new OPContact();
+							
+							for (OPContact iter : contacts)
+							{
+								if (iter.isSelf())
+								{
+									Log.d("output", "Evo jedan je self = " + iter.getPeerURI());
+								}
+								else
+								{
+									callContact = iter;
+									Log.d("output", "ovaj nije self = " + iter.getPeerURI());
+								}
+							}
+							LoginManager.mCallDelegate = new OPCallDelegateImplementation();
+
+							Log.d("output", "java contact peer uri = "+callContact.getPeerURI());
+							Log.d("output", "java contact peer file = "+callContact.getPeerFilePublic());
+							Log.d("output", "stable Id = " + callContact.getStableID());
+							
+							LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
+							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
+							isCall = true;
+							Log.d("output", "Call test PASSED");	
+						}
 			return true;
 		}
 		catch (Exception e)
