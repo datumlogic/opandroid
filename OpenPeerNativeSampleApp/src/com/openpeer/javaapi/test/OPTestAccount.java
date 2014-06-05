@@ -67,11 +67,11 @@ public class OPTestAccount {
 			peerFilePrivateSecret = account.getPeerFilePrivateSecret();
 			if(peerFilePrivateSecret.length == 0)
 			{
-				Log.d("output", "Account test FAILED peerFilePrivateSecret = " + peerFilePrivateSecret.toString());
+				Log.d("output", "Account test FAILED peerFilePrivateSecret = " + new String(peerFilePrivateSecret));
 				return false;
 			}
 			Log.d("output", "Account test peerFilePrivateSecret = " + peerFilePrivateSecret.toString());
-			Log.d("output", "Account test peerFilePrivateSecret = " + Arrays.toString(peerFilePrivateSecret));
+			Log.d("output", "Account test peerFilePrivateSecret = " + new String(peerFilePrivateSecret));
 			
 			List<OPIdentity> identities = account.getAssociatedIdentities();
 			if(identities.size() == 0)
@@ -83,8 +83,9 @@ public class OPTestAccount {
 			
 			Log.d("output", "Account test PASSED");
 			Log.d("output", "Calling Identity test...");
-			
-			OPTestIdentity.execute(identities.get(0));
+			for(OPIdentity identity:identities){	
+				OPTestIdentity.execute(identity);
+			}
 			return true;
 		}
 		catch (Exception e)

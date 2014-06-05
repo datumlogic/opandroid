@@ -28,13 +28,15 @@ public class OPTestConversationThread {
 
 			for(OPIdentityContact idContact : updated)
 			{
-				if (idContact.getName().contains("Kocic"))
+				Log.d("output","OPTestConversationThread identityContact "+idContact);
+//				if (idContact.getName().contains("Kocic"))
+				if(null!=idContact.getPeerFilePublic())
 				{
 					callContacts.add(idContact);
 					OPConversationThreadDelegate delegate = new OPConversationThreadDelegateImplementation();
 					LoginManager.mCallbackHandler.registerConversationThreadDelegate(delegate);
-					LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, callContacts);
 				}
+				LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, callContacts);
 			}
 
 
@@ -60,13 +62,13 @@ public class OPTestConversationThread {
 			{
 				contacts = LoginManager.mConvThread.getContacts();
 				LoginManager.mCallDelegate = new OPCallDelegateImplementation();
-				Log.d("output", "contact sizr = " + contacts.size());
+				Log.d("output", "contact size = " + contacts.size());
 				Log.d("output", contacts.get(0).getPeerURI());
 				Log.d("output", contacts.get(0).getPeerFilePublic());
 				Log.d("output", "stable Id = " + contacts.get(0).getStableID());
 				List<OPIdentityContact> identityContactList = new ArrayList<OPIdentityContact>();
 				identityContactList = LoginManager.mConvThread.getIdentityContactList(contacts.get(0));
-				Log.d("output", "contact sizr = " + identityContactList.size());
+				Log.d("output", "contact size = " + identityContactList.size());
 				Log.d("output", identityContactList.get(0).getName());
 				Log.d("output", identityContactList.get(0).getIdentityURI());
 				

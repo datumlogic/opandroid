@@ -151,7 +151,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		{
 			if (url.contains("datapass"))
 			{
-				//Log.w("JNI", url);
+				Log.w("JNI", url);
 				String data = url.substring(url.lastIndexOf("data="));
 				data = data.substring(5);
 				//Log.w("JNI", data);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
@@ -30,32 +31,37 @@ import com.openpeer.javaapi.OPMediaEngineDelegate;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackDelegate;
 
-public class CallbackHandler{
+public class CallbackHandler {
 
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// ACCOUNT DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPAccountDelegate support
+	// ///////////////////////////////////////////////////////////////////
+	// OPAccountDelegate support
 	private static OPAccount mAccount;
-	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate> ();
+	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate>();
+	private static CallbackHandler instance;
+	private static OPDatastoreDelegate sDatastoreDelegate;
+	public static CallbackHandler getInstance() {
+		if (instance == null) {
+			instance = new CallbackHandler();
+		}
+		return instance;
+	}
 
-	//Account Delegate glue methods
+	// Account Delegate glue methods
 	public static void onAccountStateChanged(int state) {
-		for (OPAccountDelegate delegate : accountDelegates)
-		{
-			if (mAccount != null && delegate != null)
-			{
-				delegate.onAccountStateChanged(mAccount, AccountStates.values()[state] );
+		for (OPAccountDelegate delegate : accountDelegates) {
+			if (mAccount != null && delegate != null) {
+				delegate.onAccountStateChanged(mAccount,
+						AccountStates.values()[state]);
 			}
 		}
 	}
 
 	public static void onAccountAssociatedIdentitiesChanged() {
 
-		for (OPAccountDelegate delegate : accountDelegates)
-		{
-			if (mAccount != null && delegate != null)
-			{
+		for (OPAccountDelegate delegate : accountDelegates) {
+			if (mAccount != null && delegate != null) {
 				delegate.onAccountAssociatedIdentitiesChanged(mAccount);
 			}
 		}
@@ -64,26 +70,22 @@ public class CallbackHandler{
 
 	public static void onAccountPendingMessageForInnerBrowserWindowFrame() {
 
-		for (OPAccountDelegate delegate : accountDelegates)
-		{
-			if (mAccount != null && delegate != null)
-			{
+		for (OPAccountDelegate delegate : accountDelegates) {
+			if (mAccount != null && delegate != null) {
 				delegate.onAccountPendingMessageForInnerBrowserWindowFrame(mAccount);
 			}
 		}
 
 	}
 
-	//Account delegate register/unregister methods
-	public boolean registerAccountDelegate(OPAccount account, OPAccountDelegate delegate)
-	{
-		if (account == null || delegate == null)
-		{
+	// Account delegate register/unregister methods
+	public boolean registerAccountDelegate(OPAccount account,
+			OPAccountDelegate delegate) {
+		if (account == null || delegate == null) {
 			return false;
 		}
 
-		if (mAccount == null)
-		{
+		if (mAccount == null) {
 			mAccount = account;
 		}
 
@@ -93,36 +95,31 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterAccountDelegate(OPAccountDelegate delegate)
-	{
+	public void unregisterAccountDelegate(OPAccountDelegate delegate) {
 		mAccount = null;
 		this.accountDelegates.remove(delegate);
 
 	}
 
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// STACK DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPStackDelegate support
-	//private OPStack mStack;
-	static ArrayList<OPStackDelegate> stackDelegates = new ArrayList<OPStackDelegate> ();
+	// ///////////////////////////////////////////////////////////////////
+	// OPStackDelegate support
+	// private OPStack mStack;
+	static ArrayList<OPStackDelegate> stackDelegates = new ArrayList<OPStackDelegate>();
 
 	public static void onStackShutdown() {
-		for (OPStackDelegate delegate : stackDelegates)
-		{
-			if (delegate != null)
-			{
+		for (OPStackDelegate delegate : stackDelegates) {
+			if (delegate != null) {
 				delegate.onStackShutdown();
 			}
 		}
 
 	}
 
-	//Stack delegate register/unregister methods
-	public boolean registerStackDelegate(OPStackDelegate delegate)
-	{
-		if (delegate == null)
-		{
+	// Stack delegate register/unregister methods
+	public boolean registerStackDelegate(OPStackDelegate delegate) {
+		if (delegate == null) {
 			return false;
 		}
 
@@ -132,36 +129,31 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterStackDelegate(OPStackDelegate delegate)
-	{
+	public void unregisterStackDelegate(OPStackDelegate delegate) {
 		this.stackDelegates.remove(delegate);
 
 	}
 
-
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// IDENTITY DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPIdentityDelegate support
+	// ///////////////////////////////////////////////////////////////////
+	// OPIdentityDelegate support
 	private static OPIdentity mIdentity;
-	static ArrayList<OPIdentityDelegate> identityDelegates = new ArrayList<OPIdentityDelegate> ();
+	static ArrayList<OPIdentityDelegate> identityDelegates = new ArrayList<OPIdentityDelegate>();
 
 	public static void onIdentityStateChanged(int state) {
 
-		for (OPIdentityDelegate delegate : identityDelegates)
-		{
-			if (mIdentity != null && delegate != null)
-			{
-				delegate.onIdentityStateChanged(mIdentity, IdentityStates.values()[state] );
+		for (OPIdentityDelegate delegate : identityDelegates) {
+			if (mIdentity != null && delegate != null) {
+				delegate.onIdentityStateChanged(mIdentity,
+						IdentityStates.values()[state]);
 			}
 		}
 	}
 
 	public static void onIdentityPendingMessageForInnerBrowserWindowFrame() {
-		for (OPIdentityDelegate delegate : identityDelegates)
-		{
-			if (mIdentity != null && delegate != null)
-			{
+		for (OPIdentityDelegate delegate : identityDelegates) {
+			if (mIdentity != null && delegate != null) {
 				delegate.onIdentityPendingMessageForInnerBrowserWindowFrame(mIdentity);
 			}
 		}
@@ -169,26 +161,22 @@ public class CallbackHandler{
 	}
 
 	public static void onIdentityRolodexContactsDownloaded() {
-		for (OPIdentityDelegate delegate : identityDelegates)
-		{
-			if (mIdentity != null && delegate != null)
-			{
+		for (OPIdentityDelegate delegate : identityDelegates) {
+			if (mIdentity != null && delegate != null) {
 				delegate.onIdentityRolodexContactsDownloaded(mIdentity);
 			}
 		}
 
 	}
 
-	//Identity delegate register/unregister methods
-	public boolean registerIdentityDelegate(OPIdentity identity, OPIdentityDelegate delegate)
-	{
-		if (identity == null || delegate == null)
-		{
+	// Identity delegate register/unregister methods
+	public boolean registerIdentityDelegate(OPIdentity identity,
+			OPIdentityDelegate delegate) {
+		if (identity == null || delegate == null) {
 			return false;
 		}
 
-		if (mIdentity == null)
-		{
+		if (mIdentity == null) {
 			mIdentity = identity;
 		}
 
@@ -198,41 +186,35 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterIdentityDelegate(OPIdentityDelegate delegate)
-	{
+	public void unregisterIdentityDelegate(OPIdentityDelegate delegate) {
 		mIdentity = null;
 		this.identityDelegates.remove(delegate);
 
 	}
 
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// CALL DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPCallDelegate support
+	// ///////////////////////////////////////////////////////////////////
+	// OPCallDelegate support
 	private static OPCall mCall;
-	static ArrayList<OPCallDelegate> callDelegates = new ArrayList<OPCallDelegate> ();
+	static ArrayList<OPCallDelegate> callDelegates = new ArrayList<OPCallDelegate>();
 
 	public static void onCallStateChanged(int state) {
 
-		for (OPCallDelegate delegate : callDelegates)
-		{
-			if (mCall != null && delegate != null)
-			{
-				delegate.onCallStateChanged(mCall, CallStates.values()[state] );
+		for (OPCallDelegate delegate : callDelegates) {
+			if (mCall != null && delegate != null) {
+				delegate.onCallStateChanged(mCall, CallStates.values()[state]);
 			}
 		}
 	}
 
-	//Call delegate register/unregister methods
-	public boolean registerCallDelegate(OPCall call, OPCallDelegate delegate)
-	{
-		if (call == null || delegate == null)
-		{
+	// Call delegate register/unregister methods
+	public boolean registerCallDelegate(OPCall call, OPCallDelegate delegate) {
+		if (call == null || delegate == null) {
 			return false;
 		}
 
-		if (mCall == null)
-		{
+		if (mCall == null) {
 			mCall = call;
 		}
 
@@ -242,111 +224,100 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterCallDelegate(OPCallDelegate delegate)
-	{
+	public void unregisterCallDelegate(OPCallDelegate delegate) {
 		mCall = null;
 		this.callDelegates.remove(delegate);
 
 	}
 
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// CONVERSATION THREAD DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPConversationThreadDelegate support
-	//private static OPConversationThread mConversationThread;
-	static ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate> ();
+	// ///////////////////////////////////////////////////////////////////
+	// OPConversationThreadDelegate support
+	// private static OPConversationThread mConversationThread;
+	static ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate>();
 
 	public static void onConversationThreadNew(OPConversationThread convThread) {
-		//TODO: Fix for creating new conversation thread object 
-		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
-		{
-			if (convThread != null && delegate != null)
-			{
-				//mConversationThread = convThread;
+		// TODO: Fix for creating new conversation thread object
+		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
+			if (convThread != null && delegate != null) {
+				// mConversationThread = convThread;
 				delegate.onConversationThreadNew(convThread);
-			}
-			else
-			{
-				Log.e("openpeer-android-sdk", "No conversation thread listener available!!!");
+			} else {
+				Log.e("openpeer-android-sdk",
+						"No conversation thread listener available!!!");
 			}
 		}
 	}
 
-	public static void onConversationThreadContactsChanged(OPConversationThread convThread) { 
-		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
-		{
-			if (convThread != null && delegate != null)
-			{
+	public static void onConversationThreadContactsChanged(
+			OPConversationThread convThread) {
+		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
+			if (convThread != null && delegate != null) {
 				delegate.onConversationThreadContactsChanged(convThread);
-			}
-			else
-			{
-				Log.e("openpeer-android-sdk", "No conversation thread or listener available!!!");
-			}
-		}
-	}
-
-	public static void onConversationThreadContactStateChanged(OPConversationThread convThread, OPContact contact, int state) { 
-		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
-		{
-			if (convThread != null && delegate != null)
-			{
-				delegate.onConversationThreadContactStateChanged(convThread, contact, ContactStates.values()[state]);
-			}
-			else
-			{
-				Log.e("openpeer-android-sdk", "No conversation thread or listener available!!!");
+			} else {
+				Log.e("openpeer-android-sdk",
+						"No conversation thread or listener available!!!");
 			}
 		}
 	}
 
-	public static void onConversationThreadMessage(OPConversationThread convThread, String messageID) { 
-		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
-		{
-			if (convThread != null && delegate != null)
-			{
+	public static void onConversationThreadContactStateChanged(
+			OPConversationThread convThread, OPContact contact, int state) {
+		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
+			if (convThread != null && delegate != null) {
+				delegate.onConversationThreadContactStateChanged(convThread,
+						contact, ContactStates.values()[state]);
+			} else {
+				Log.e("openpeer-android-sdk",
+						"No conversation thread or listener available!!!");
+			}
+		}
+	}
+
+	public static void onConversationThreadMessage(
+			OPConversationThread convThread, String messageID) {
+		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
+			if (convThread != null && delegate != null) {
 				delegate.onConversationThreadMessage(convThread, messageID);
-			}
-			else
-			{
-				Log.e("openpeer-android-sdk", "No conversation thread or listener available!!!");
-			}
-		}
-	}
-
-	public static void onConversationThreadMessageDeliveryStateChanged(OPConversationThread convThread, String messageID, int state) { 
-		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
-		{
-			if (convThread != null && delegate != null)
-			{
-				delegate.onConversationThreadMessageDeliveryStateChanged(convThread, messageID, MessageDeliveryStates.values()[state]);
-			}
-			else
-			{
-				Log.e("openpeer-android-sdk", "No conversation thread or listener available!!!");
+			} else {
+				Log.e("openpeer-android-sdk",
+						"No conversation thread or listener available!!!");
 			}
 		}
 	}
 
-	public static void onConversationThreadPushMessage(OPConversationThread convThread, String messageID, OPContact contact) { 
-		for (OPConversationThreadDelegate delegate : conversationThreadDelegates)
-		{
-			if (convThread != null && delegate != null)
-			{
-				delegate.onConversationThreadPushMessage(convThread, messageID, contact);
-			}
-			else
-			{
-				Log.e("openpeer-android-sdk", "No conversation thread or listener available!!!");
+	public static void onConversationThreadMessageDeliveryStateChanged(
+			OPConversationThread convThread, String messageID, int state) {
+		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
+			if (convThread != null && delegate != null) {
+				delegate.onConversationThreadMessageDeliveryStateChanged(
+						convThread, messageID,
+						MessageDeliveryStates.values()[state]);
+			} else {
+				Log.e("openpeer-android-sdk",
+						"No conversation thread or listener available!!!");
 			}
 		}
 	}
 
-	//Conversation Thread delegate register/unregister methods
-	public boolean registerConversationThreadDelegate(OPConversationThreadDelegate delegate)
-	{
-		if (delegate == null)
-		{
+	public static void onConversationThreadPushMessage(
+			OPConversationThread convThread, String messageID, OPContact contact) {
+		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
+			if (convThread != null && delegate != null) {
+				delegate.onConversationThreadPushMessage(convThread, messageID,
+						contact);
+			} else {
+				Log.e("openpeer-android-sdk",
+						"No conversation thread or listener available!!!");
+			}
+		}
+	}
+
+	// Conversation Thread delegate register/unregister methods
+	public boolean registerConversationThreadDelegate(
+			OPConversationThreadDelegate delegate) {
+		if (delegate == null) {
 			return false;
 		}
 
@@ -356,23 +327,20 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterConversationThreadDelegate(OPCallDelegate delegate)
-	{
+	public void unregisterConversationThreadDelegate(OPCallDelegate delegate) {
 		this.conversationThreadDelegates.remove(delegate);
 
 	}
 
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// CACHE DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPCacheDelegate support
+	// ///////////////////////////////////////////////////////////////////
+	// OPCacheDelegate support
 	static OPCacheDelegate cacheDelegate;
 
-	public static String fetch (String cookieNamePath)
-	{
+	public static String fetch(String cookieNamePath) {
 		String ret = "";
-		if (cacheDelegate != null)
-		{
+		if (cacheDelegate != null) {
 			ret = cacheDelegate.fetch(cookieNamePath);
 		}
 		return ret;
@@ -380,8 +348,7 @@ public class CallbackHandler{
 
 	public static void store(String cookieNamePath, int time, String dataToStore) {
 
-		if (cacheDelegate != null)
-		{
+		if (cacheDelegate != null) {
 			Time t = new Time();
 			cacheDelegate.store(cookieNamePath, t, dataToStore);
 		}
@@ -389,17 +356,14 @@ public class CallbackHandler{
 
 	public static void clear(String cookieNamePath) {
 
-		if (cacheDelegate != null)
-		{
+		if (cacheDelegate != null) {
 			cacheDelegate.clear(cookieNamePath);
 		}
 	}
 
-	//Cache delegate register/unregister methods
-	public boolean registerCacheDelegate(OPCacheDelegate delegate)
-	{
-		if (delegate == null)
-		{
+	// Cache delegate register/unregister methods
+	public boolean registerCacheDelegate(OPCacheDelegate delegate) {
+		if (delegate == null) {
 			return false;
 		}
 
@@ -408,38 +372,33 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterCacheDelegate(OPCacheDelegate delegate)
-	{
+	public void unregisterCacheDelegate(OPCacheDelegate delegate) {
 		cacheDelegate = null;
 	}
 
-
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// IDENTITY LOOKUP DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPIdentityLookupDelegate support
+	// ///////////////////////////////////////////////////////////////////
+	// OPIdentityLookupDelegate support
 	private static OPIdentityLookup mIdentityLookup;
 	static OPIdentityLookupDelegate identityLookupDelegate;
 
 	public static void onIdentityLookupCompleted() {
 
-		if (mIdentityLookup != null && identityLookupDelegate != null)
-		{
-			identityLookupDelegate.onIdentityLookupCompleted(mIdentityLookup );
+		if (mIdentityLookup != null && identityLookupDelegate != null) {
+			identityLookupDelegate.onIdentityLookupCompleted(mIdentityLookup);
 		}
 
 	}
 
-	//Identity lookup delegate register/unregister methods
-	public boolean registerIdentityLookupDelegate(OPIdentityLookup identityLookup, OPIdentityLookupDelegate delegate)
-	{
-		if (identityLookup == null || delegate == null)
-		{
+	// Identity lookup delegate register/unregister methods
+	public boolean registerIdentityLookupDelegate(
+			OPIdentityLookup identityLookup, OPIdentityLookupDelegate delegate) {
+		if (identityLookup == null || delegate == null) {
 			return false;
 		}
 
-		if (mIdentityLookup == null)
-		{
+		if (mIdentityLookup == null) {
 			mIdentityLookup = identityLookup;
 		}
 		identityLookupDelegate = delegate;
@@ -447,37 +406,34 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterIdentityLookupDelegate(OPIdentityLookupDelegate delegate)
-	{
+	public void unregisterIdentityLookupDelegate(
+			OPIdentityLookupDelegate delegate) {
 		mIdentityLookup = null;
 		identityLookupDelegate = null;
 
 	}
 
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// MEDIA ENGINE DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPMediaEngineDelegate support
+	// ///////////////////////////////////////////////////////////////////
+	// OPMediaEngineDelegate support
 	private OPMediaEngine mMediaEngine;
-	ArrayList<OPMediaEngineDelegate> mediaEngineDelegates = new ArrayList<OPMediaEngineDelegate> ();
+	ArrayList<OPMediaEngineDelegate> mediaEngineDelegates = new ArrayList<OPMediaEngineDelegate>();
 
 	public void onMediaEngineAudioRouteChanged(int audioRoute) {
 
-		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
-		{
-			if (mMediaEngine != null && delegate != null)
-			{
-				delegate.onMediaEngineAudioRouteChanged( OutputAudioRoutes.values()[audioRoute]);
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates) {
+			if (mMediaEngine != null && delegate != null) {
+				delegate.onMediaEngineAudioRouteChanged(OutputAudioRoutes
+						.values()[audioRoute]);
 			}
 		}
 	}
 
 	public void onMediaEngineAudioSessionInterruptionBegan() {
 
-		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
-		{
-			if (mMediaEngine != null && delegate != null)
-			{
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates) {
+			if (mMediaEngine != null && delegate != null) {
 				delegate.onMediaEngineAudioSessionInterruptionBegan();
 			}
 		}
@@ -485,10 +441,8 @@ public class CallbackHandler{
 
 	public void onMediaEngineAudioSessionInterruptionEnded() {
 
-		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
-		{
-			if (mMediaEngine != null && delegate != null)
-			{
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates) {
+			if (mMediaEngine != null && delegate != null) {
 				delegate.onMediaEngineAudioSessionInterruptionEnded();
 			}
 		}
@@ -496,10 +450,8 @@ public class CallbackHandler{
 
 	public void onMediaEngineFaceDetected() {
 
-		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
-		{
-			if (mMediaEngine != null && delegate != null)
-			{
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates) {
+			if (mMediaEngine != null && delegate != null) {
 				delegate.onMediaEngineFaceDetected();
 			}
 		}
@@ -507,25 +459,21 @@ public class CallbackHandler{
 
 	public void onMediaEngineVideoCaptureRecordStopped() {
 
-		for (OPMediaEngineDelegate delegate : mediaEngineDelegates)
-		{
-			if (mMediaEngine != null && delegate != null)
-			{
+		for (OPMediaEngineDelegate delegate : mediaEngineDelegates) {
+			if (mMediaEngine != null && delegate != null) {
 				delegate.onMediaEngineVideoCaptureRecordStopped();
 			}
 		}
 	}
 
-	//Media engine delegate register/unregister methods
-	public boolean registerMediaEngineDelegate(OPMediaEngine mediaEngine, OPMediaEngineDelegate delegate)
-	{
-		if (mediaEngine == null || delegate == null)
-		{
+	// Media engine delegate register/unregister methods
+	public boolean registerMediaEngineDelegate(OPMediaEngine mediaEngine,
+			OPMediaEngineDelegate delegate) {
+		if (mediaEngine == null || delegate == null) {
 			return false;
 		}
 
-		if (mMediaEngine == null)
-		{
+		if (mMediaEngine == null) {
 			mMediaEngine = mediaEngine;
 		}
 
@@ -535,164 +483,122 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterMediaEngineDelegate(OPMediaEngineDelegate delegate)
-	{
+	public void unregisterMediaEngineDelegate(OPMediaEngineDelegate delegate) {
 		mMediaEngine = null;
 		this.mediaEngineDelegates.remove(delegate);
 
 	}
 
-
-	/////////////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////////////
 	// SETTINGS DELEGATE GLUE
-	/////////////////////////////////////////////////////////////////////
-	//OPCacheDelegate support
-	//private OPCache mCache;
+	// ///////////////////////////////////////////////////////////////////
+	// OPCacheDelegate support
+	// private OPCache mCache;
 	static OPSettingsDelegate settingsDelegate;
 
-	public static String getString(String key) 
-	{
+	public static String getString(String key) {
 
 		String ret = null;
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			ret = settingsDelegate.getString(key);
 		}
 		return ret;
 	}
 
-	public static long getInt(String key) 
-	{
+	public static long getInt(String key) {
 		long ret = 0;
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			ret = settingsDelegate.getInt(key);
 		}
 		return ret;
 	}
 
-	public static long getUInt(String key) 
-	{
+	public static long getUInt(String key) {
 		long ret = 0;
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			ret = settingsDelegate.getUInt(key);
 		}
 		return ret;
 	}
 
-	public static boolean getBool(String key) 
-	{
+	public static boolean getBool(String key) {
 		boolean ret = false;
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			ret = settingsDelegate.getBool(key);
 		}
 		return ret;
 	}
 
-	public static float getFloat(String key) 
-	{
+	public static float getFloat(String key) {
 		float ret = 0;
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			ret = settingsDelegate.getFloat(key);
 		}
 		return ret;
 	}
 
-	public static double getUIntSetting(String key) 
-	{
+	public static double getUIntSetting(String key) {
 		double ret = 0;
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			ret = settingsDelegate.getDouble(key);
 		}
 		return ret;
 	}
 
-	public static void setString(
-			String key,
-			String value
-			) {
+	public static void setString(String key, String value) {
 
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			settingsDelegate.setString(key, value);
 		}
 	}
 
-	public static void setInt(String key,
-			long value
-			) {
+	public static void setInt(String key, long value) {
 
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			settingsDelegate.setInt(key, value);
 		}
 	}
 
-	public static void setUInt(String key,
-			long value
-			) {
+	public static void setUInt(String key, long value) {
 
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			settingsDelegate.setUInt(key, value);
 		}
 	}
-	public static void setBool(
-			String key,
-			boolean value
-			) {
 
-		if (settingsDelegate != null)
-		{
+	public static void setBool(String key, boolean value) {
+
+		if (settingsDelegate != null) {
 			settingsDelegate.setBool(key, value);
 		}
 	}
 
-	public static void setFloat(
-			String key,
-			float value
-			) {
+	public static void setFloat(String key, float value) {
 
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			settingsDelegate.setFloat(key, value);
 		}
 	}
 
-	public static void setDouble(
-			String key,
-			double value
-			) 
-	{
+	public static void setDouble(String key, double value) {
 
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			settingsDelegate.setDouble(key, value);
 		}
 
 	}
 
-	public static void clearSettings(
-			String key
-			) 
-	{
+	public static void clearSettings(String key) {
 
-		if (settingsDelegate != null)
-		{
+		if (settingsDelegate != null) {
 			settingsDelegate.clear(key);
 		}
 
 	}
 
-	//Settings delegate register/unregister methods
-	public boolean registerSettingsDelegate(OPSettingsDelegate delegate)
-	{
-		if (delegate == null)
-		{
+	// Settings delegate register/unregister methods
+	public boolean registerSettingsDelegate(OPSettingsDelegate delegate) {
+		if (delegate == null) {
 			return false;
 		}
 
@@ -702,8 +608,10 @@ public class CallbackHandler{
 		return true;
 	}
 
-	public void unregisterSettingsDelegate(OPSettingsDelegate delegate)
-	{
+	public void unregisterSettingsDelegate(OPSettingsDelegate delegate) {
 		settingsDelegate = null;
+	}
+	public void registerDatastoreDelegate(OPDatastoreDelegate datastoreDelegate){
+		this.sDatastoreDelegate = datastoreDelegate;
 	}
 }

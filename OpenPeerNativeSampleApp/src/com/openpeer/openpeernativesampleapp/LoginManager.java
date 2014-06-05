@@ -33,11 +33,14 @@ import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPMediaEngineDelegate;
 
 public class LoginManager {
+	private static String TAG = LoginManager.class.getSimpleName();
 	
 	public static CallbackHandler mCallbackHandler = new CallbackHandler();
 	public static Context mContext;
 
 	public static void LoginWithFacebook (){
+		Log.d(TAG,"LoginWithFacebook START");
+
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
 		stackMessageQueue = OPStackMessageQueue.singleton(); 
 		//stackMessageQueue = new OPStackMessageQueue();
@@ -64,6 +67,7 @@ public class LoginManager {
 		//TODO: After interception is done, we can call setup
 		
 		stack.setup(null, null);
+		Log.d(TAG,"LoginWithFacebook END");
 	}
 	
 	
@@ -236,6 +240,8 @@ public class LoginManager {
 
 
 	public static void AccountLogin() {
+		Log.d(TAG,"AccountLogin START");
+
 		// TODO Auto-generated method stub
 		long stableId = 0;
 		if (mAccount == null)
@@ -255,6 +261,8 @@ public class LoginManager {
 			stableId = mAccount.getStableID();
 			
 		}
+		Log.d(TAG,"AccountLogin END");
+
 		
 	}
 
@@ -262,8 +270,11 @@ public class LoginManager {
 
 	public static void startAccountLogin() {
 		// TODO Auto-generated method stub
+		Log.d(TAG,"startAccountLogin START");
 		if(mLoginHandler!=null)
 	    	  mLoginHandler.onLoadOuterFrameHandle("http://jsouter-v1-rel-dev2-i.hcs.io/grant.html");
+		Log.d(TAG,"startAccountLogin END");
+
 	}
 
 
