@@ -18,6 +18,7 @@ public class OpenPeerApplication extends Application {
         super.onCreate();
         //Initialize openpeer sdk
         graph = ObjectGraph.create(getModules().toArray());
+        OPHelper.getInstance().init(this);
 
     }
     protected List<Object> getModules() {
