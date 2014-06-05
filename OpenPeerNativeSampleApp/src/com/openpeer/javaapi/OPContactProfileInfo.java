@@ -1,10 +1,12 @@
 package com.openpeer.javaapi;
 
+import java.util.List;
+
 
 public class OPContactProfileInfo {
 
 	private OPContact mContact;
-	private String mProfileBundle;
+	private List<OPIdentityContact> mIdentityContacts;
 	
 	public OPContact getContact() {
 		return mContact;
@@ -12,10 +14,10 @@ public class OPContactProfileInfo {
 	public void setContact(OPContact mContact) {
 		this.mContact = mContact;
 	}
-	public String getProfileBundle() {
-		return mProfileBundle;
+	public List<OPIdentityContact> getIdentityContacts() {
+		return mIdentityContacts;
 	}
-	public void setProfileBundle(String mProfileBundle) {
-		this.mProfileBundle = mProfileBundle;
+	public void setIdentityContacts(List<OPIdentityContact> contacts) {
+		this.mIdentityContacts = contacts;
 	}
 }

@@ -436,7 +436,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
 		for( int i=0; i<listItemsCount; ++i )
 		{
 			// Call "java.util.List.get" method and get IdentParams object by index.
-			jobject identityObject = jni_env->CallObjectMethod( identitiesToRemove, listGetMethodID, i - 1 );
+			jobject identityObject = jni_env->CallObjectMethod( identitiesToRemove, listGetMethodID, i );
 			if( identityObject != NULL )
 			{
 				IIdentityPtr identity = identityMap.find(identityObject)->second;
