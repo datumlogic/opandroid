@@ -1,11 +1,5 @@
 package com.openpeer.javaapi;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.util.Log;
-
-import com.openpeer.openpeernativesampleapp.LoginManager;
 
 
 public class OPContact {

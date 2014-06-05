@@ -6,11 +6,14 @@ import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPRolodexContact;
+import com.openpeer.model.OPHomeUser;
 
 import android.content.Context;
 
 public interface OPDatastoreDelegate {
 	public OPAccount getAccount();
+	public OPHomeUser getHomeUser();
+	public boolean saveHomeUser(OPHomeUser user);
 
 	public List<OPIdentity> getIdentities();
 

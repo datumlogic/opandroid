@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.javaapi.AccountStates;
-import com.openpeer.javaapi.OPatabaseDelegate;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
@@ -40,7 +40,7 @@ public class CallbackHandler {
 	private static OPAccount mAccount;
 	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate>();
 	private static CallbackHandler instance;
-	private static OPatabaseDelegate sDatabaseDelegate;
+	private static OPDatastoreDelegate sDatastoreDelegate;
 	public static CallbackHandler getInstance() {
 		if (instance == null) {
 			instance = new CallbackHandler();
@@ -611,7 +611,7 @@ public class CallbackHandler {
 	public void unregisterSettingsDelegate(OPSettingsDelegate delegate) {
 		settingsDelegate = null;
 	}
-	public void registerDatabaseDelegate(OPatabaseDelegate databaseDelegate){
-		this.sDatabaseDelegate = databaseDelegate;
+	public void registerDatastoreDelegate(OPDatastoreDelegate datastoreDelegate){
+		this.sDatastoreDelegate = datastoreDelegate;
 	}
 }
