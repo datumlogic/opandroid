@@ -1,4 +1,4 @@
-package com.openpeer.database;
+package com.openpeer.datastore;
 
 
 import android.content.Context;

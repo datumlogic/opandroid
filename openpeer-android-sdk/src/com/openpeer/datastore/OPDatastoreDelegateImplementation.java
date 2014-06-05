@@ -1,32 +1,42 @@
-package com.openpeer.database;
+package com.openpeer.datastore;
 
 import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.openpeer.javaapi.OPatabaseDelegate;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
 
-public class OPDatabaseDelegateImplementation implements OPatabaseDelegate {
-	private static OPDatabaseDelegateImplementation instance;
+/**
+ * The data being stored in preference:
+ * -- Relogin information for account
+ * -- stableId
+ * 
+ * The data being stored in database
+ * Contacts
+ * Conversation history
+ * Call history
+ *
+ */
+public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
+	private static OPDatastoreDelegateImplementation instance;
 	OPDatabaseHelper mOpenHelper;
 	private SQLiteDatabase mDatabase;
 
-	private OPDatabaseDelegateImplementation() {
+	private OPDatastoreDelegateImplementation() {
 
 	}
-	private OPDatabaseDelegateImplementation(Context context) {
+	private OPDatastoreDelegateImplementation(Context context) {
 		mOpenHelper = new OPDatabaseHelper(context,
 				OPDatabaseHelper.DATABASE_NAME,              // the name of the database)
                 null,                // uses the default SQLite cursor
                 OPDatabaseHelper.DATABASE_VERSION  );
 	}
-	public static OPatabaseDelegate getInstance(Context context) {
+	public static OPDatastoreDelegate getInstance(Context context) {
 		if (instance == null) {
-			instance = new OPDatabaseDelegateImplementation(context);
+			instance = new OPDatastoreDelegateImplementation(context);
 		}
 		return instance;
 	}
@@ -46,8 +56,13 @@ public class OPDatabaseDelegateImplementation implements OPatabaseDelegate {
 	}
 
 	@Override
-	public List<OPContact> getContacts() {
+	public List<OPRolodexContact> getContacts() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<OPContact> getOPContacts(String identityId){
 		return null;
 	}
 
