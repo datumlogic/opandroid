@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using Android.App;
@@ -14,6 +15,10 @@ namespace HopSampleApp
 	 // Singleton Pattern only for translation
 	class ContactsManager
 	{
+		public ArrayList IdentityLookupsArray {get; set;}
+
+		public ArrayList SetOfIdentitiesWhoseContactsDownloadInProgress {get; set;}
+
 		private static ContactsManager instance;
 		private ContactsManager()
 		{
@@ -25,9 +30,59 @@ namespace HopSampleApp
 				instance = new ContactsManager();
 			return instance;
 		}
-		public void UpdateContactsWithDataFromLookup (object somevalue)
+
+		public void loadAddressBookContacts()
 		{
-			/*code*/ 
+
+		}
+
+		public void loadContacts()
+		{
+
+		}
+
+		public void refreshExisitngContacts()
+		{
+
+		}
+
+		public void refreshRolodexContacts()
+		{
+
+		}
+
+		public void identityLookupForContactsIdentityServiceDomain(ArrayList contacts, string identityServiceDomain)
+		{
+
+		}
+
+		public void updateContactsWithDataFromLookup(HOPIdentityLookup identityLookup)
+		{
+
+		}
+
+		public bool checkIsContactValid(HOPContact contact)
+		{
+
+		}
+
+		public ArrayList getBaseURIsForStableId(string stableID)
+		{
+
+		}
+
+		//string createProfileBundleForCommunicationWithContact(HOPRolodexContact targetContact);
+
+		//HOPRolodexContact getRolodexContactByProfileBundleCoreContact(string profileBundle, HOPContact coreContact);
+
+		public ArrayList getIdentityContactsForHomeUser()
+		{
+
+		}
+
+		public void removeAllContacts()
+		{
+
 		}
 	}
 }

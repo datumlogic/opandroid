@@ -73,7 +73,7 @@ namespace HopSampleApp
 			Console.WriteLine ("Empty");
 			return ret;
 		}
-		public static void attachDelegateRedirectionURL(HOPIdentityDelegate inIdentityDelegate, string redirectionURL)
+		public static void attachDelegateRedirectionURL(IdentityDelegate inIdentityDelegate, string redirectionURL)
 		{
 			/* logic hire   */
 			Console.WriteLine ("Empty");

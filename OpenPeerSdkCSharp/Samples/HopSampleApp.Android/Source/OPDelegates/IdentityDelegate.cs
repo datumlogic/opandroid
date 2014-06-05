@@ -126,7 +126,7 @@ namespace HopSampleApp
 							if (LoginManager.SharedLoginManager().PreloadedWebLoginViewController != webLoginViewController)
 							{
 								//Open identity login web page
-								webLoginViewController.openLoginUrl(Settings.SharedSettings().GetOuterFrameURL());
+								webLoginViewController.openLoginUrl(Settings.SharedSettings().getOuterFrameURL());
 							}
 						}
 						break;
@@ -220,7 +220,7 @@ namespace HopSampleApp
 					//Check if there are more contacts marked for deletion
 					ArrayList contactsToDelete = HOPModelManager.SharedModelManager().GetAllRolodexContactsMarkedForDeletionForHomeUserIdentityURI(identity.GetIdentityURI());
 					//If there is more contacts for deletion start timer again. If update for marked contacts is not received before timer expire, delete all marked contacts
-					if (contactsToDelete.Count > 0) identity.StartTimerForContactsDeletion();
+					if (contactsToDelete.Count > 0) identity.startTimerForContactsDeletion();
 
 					OpenPeer.SharedOpenPeer().MainViewController().ContactsTableViewController().OnContactsLoaded();
 				}
@@ -234,7 +234,7 @@ namespace HopSampleApp
 				}
 
 				HOPModelManager.SharedModelManager().SaveContext();
-				ContactsManager.SharedContactsManager().SetOfIdentitiesWhoseContactsDownloadInProgress().RemoveObject(identity.GetIdentityURI());
+				ContactsManager.SharedContactsManager().SetOfIdentitiesWhoseContactsDownloadInProgress.Remove(identity.getIdentityURI());
 			}
 
 		}

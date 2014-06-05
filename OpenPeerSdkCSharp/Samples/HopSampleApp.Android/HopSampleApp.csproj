@@ -106,6 +106,9 @@
     <Compile Include="Source\Model\Session.cs" />
     <Compile Include="Source\OPDelegates\Delegates.cs" />
     <Compile Include="Source\Services\HTTPDownloader.cs" />
+    <Compile Include="Source\Settings\Settings.cs" />
+    <Compile Include="Source\Settings\HOPSettings.cs" />
+    <Compile Include="Source\Services\HOPUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -281,6 +284,7 @@
     <Folder Include="Source\OPDelegates\" />
     <Folder Include="Source\Login\" />
     <Folder Include="Source\Model\" />
+    <Folder Include="Source\Settings\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">

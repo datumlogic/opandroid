@@ -57,10 +57,11 @@ namespace HopSampleApp
 			Console.WriteLine ("Empty");
 		}
 		//need fix
+		/*
 		Session getSessionForContact(HOPRolodexContact contact)
 		{
 			Console.WriteLine ("Empty");
-		}
+		}*/
 		Session getSessionForSessionId(string sessionId)
 		{
 			Console.WriteLine ("Empty");
