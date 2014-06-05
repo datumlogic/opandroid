@@ -37,6 +37,11 @@ public class OPTestIdentityLookup {
 				Log.d("output", "Identity lookup test mIdentity = " + mIdentity.toString());
 				if(!isContactsDownloaded)
 				{
+					long start=System.currentTimeMillis();
+					Log.d("output","refresh rolodex "+System.currentTimeMillis());
+					mIdentity.refreshRolodexContacts();
+					Log.d("output","done refresh rolodex duration "+(System.currentTimeMillis()-start));
+
 					Log.d("output", "Identity lookup test is preparing, please wait...");
 					mIdentity.startRolodexDownload("");
 					return false;
