@@ -81,38 +81,39 @@ public class OPTestConversationThread {
 		{
 			Log.d("output", "Call test started...");
 
-			LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "text/x-application-hookflash-message-text", message, false);
 
-						if(!isCall)
-						{
-							contacts = LoginManager.mConvThread.getContacts();
 
-							Log.d("output", "AFTER ADD contacts size = " + contacts.size());
-							OPContact callContact = new OPContact();
-							
-							for (OPContact iter : contacts)
-							{
-								if (iter.isSelf())
-								{
-									Log.d("output", "Evo jedan je self = " + iter.getPeerURI());
-								}
-								else
-								{
-									callContact = iter;
-									Log.d("output", "ovaj nije self = " + iter.getPeerURI());
-								}
-							}
-							LoginManager.mCallDelegate = new OPCallDelegateImplementation();
+			if(!isCall)
+			{
+				LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "text/x-application-hookflash-message-text", message, false);
+				contacts = LoginManager.mConvThread.getContacts();
 
-							Log.d("output", "java contact peer uri = "+callContact.getPeerURI());
-							Log.d("output", "java contact peer file = "+callContact.getPeerFilePublic());
-							Log.d("output", "stable Id = " + callContact.getStableID());
-							
-							LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
-							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
-							isCall = true;
-							Log.d("output", "Call test PASSED");	
-						}
+				Log.d("output", "AFTER ADD contacts size = " + contacts.size());
+				OPContact callContact = new OPContact();
+
+				for (OPContact iter : contacts)
+				{
+					if (iter.isSelf())
+					{
+						Log.d("output", "Evo jedan je self = " + iter.getPeerURI());
+					}
+					else
+					{
+						callContact = iter;
+						Log.d("output", "ovaj nije self = " + iter.getPeerURI());
+					}
+				}
+				LoginManager.mCallDelegate = new OPCallDelegateImplementation();
+
+				Log.d("output", "java contact peer uri = "+callContact.getPeerURI());
+				Log.d("output", "java contact peer file = "+callContact.getPeerFilePublic());
+				Log.d("output", "stable Id = " + callContact.getStableID());
+
+				LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
+				LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
+				isCall = true;
+				Log.d("output", "Call test PASSED");	
+			}
 			return true;
 		}
 		catch (Exception e)

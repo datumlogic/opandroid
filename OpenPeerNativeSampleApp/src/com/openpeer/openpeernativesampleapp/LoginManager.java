@@ -25,6 +25,7 @@ import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupDelegate;
+import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
@@ -45,6 +46,8 @@ public class LoginManager {
 		stackMessageQueue = OPStackMessageQueue.singleton(); 
 		//stackMessageQueue = new OPStackMessageQueue();
 		//stackMessageQueue.interceptProcessing(null);
+		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
+		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 		OPLogger.installTelnetLogger(59999, 60, true);
 		stack = OPStack.singleton();
 		

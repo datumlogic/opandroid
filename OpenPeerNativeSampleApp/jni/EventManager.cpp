@@ -408,15 +408,14 @@ void EventManager::onConversationThreadMessageDeliveryStateChanged(
 	{
 		return;
 	}
-	for(std::map<jobject, IConversationThreadPtr>::iterator iter = conversationThreadMap.begin();
-			iter != conversationThreadMap.end(); ++iter)
-	{
-		if (iter->second == conversationThread)
-		{
-			object = iter->first;
-			break;
-		}
-	}
+
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong convThread = (jlong) conversationThread.get();
+	jni_env->SetLongField(object, fid, convThread);
 
 	jstring messageIDStr = jni_env->NewStringUTF(messageID);
 
