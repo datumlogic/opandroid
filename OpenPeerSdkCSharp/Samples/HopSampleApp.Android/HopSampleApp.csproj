@@ -109,6 +109,7 @@
     <Compile Include="Source\Settings\Settings.cs" />
     <Compile Include="Source\Settings\HOPSettings.cs" />
     <Compile Include="Source\Services\HOPUtility.cs" />
+    <Compile Include="Source\Settings\IsolatedStorageSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

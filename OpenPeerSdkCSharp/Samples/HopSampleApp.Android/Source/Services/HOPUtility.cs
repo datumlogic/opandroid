@@ -41,13 +41,13 @@ namespace HopSampleApp
 		static string getBaseIdentityURIFromURI(string identityURI)
 		{
 			string ret = "";
-			ArrayList identityParts = identityURI.Split("/");
+			ArrayList identityParts =new ArrayList( identityURI.Split("/".ToCharArray()));
 			if (identityParts.Count > 3)
 			{
 				int maxCount = identityParts.Count - 1;
 				for (int i = 0; i < maxCount; i++)
 				{
-					ret = new StringBuilder (ret).Append (String.Format("{0}/",identityParts.IndexOf(i))).ToString ();
+					ret = new StringBuilder(ret).Append(String.Format("{0}/", identityParts[i])).ToString();
 				}
 
 			}
@@ -86,7 +86,7 @@ namespace HopSampleApp
 			return ret;
 		}
 
-		static string hashString(string stringToHash)
+		public static string hashString(string stringToHash)
 		{
 			string ret = null;
 			if (stringToHash.Length > 0)

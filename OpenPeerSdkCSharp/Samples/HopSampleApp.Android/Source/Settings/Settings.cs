@@ -102,24 +102,33 @@ namespace HopSampleApp
 		private Settings()
 		{
 			//need to make IsolatedStorageSettings for android
-			/*
-			if (NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyMediaAEC)) this.isMediaAECOn = NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyMediaAEC).boolValue();
 
-			if (NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyMediaAGC)) this.isMediaAGCOn = NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyMediaAGC).boolValue();
+			if (IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.settingsKeyMediaAEC) !=false)
+				this.IsMediaAECOn =IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.settingsKeyMediaAEC);
 
-			if (NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyMediaNS)) this.isMediaNSOn = NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyMediaNS).boolValue();
+			if (IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.settingsKeyMediaAGC) !=false)
+				this.IsMediaAGCOn = IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.settingsKeyMediaAGC);
 
-			if (NSUserDefaults.standardUserDefaults().objectForKey(archiveRemoteSessionActivationMode)) this.isRemoteSessionActivationModeOn = NSUserDefaults.standardUserDefaults().objectForKey(archiveRemoteSessionActivationMode).boolValue();
+			if (IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.settingsKeyMediaNS) !=false)
+				this.IsMediaNSOn = IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.settingsKeyMediaNS);
 
-			if (NSUserDefaults.standardUserDefaults().objectForKey(archiveFaceDetectionMode)) this.isFaceDetectionModeOn = NSUserDefaults.standardUserDefaults().objectForKey(archiveFaceDetectionMode).boolValue();
+			if (IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.archiveRemoteSessionActivationMode) !=false)
+				this.IsRemoteSessionActivationModeOn = IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.archiveRemoteSessionActivationMode);
 
-			if (NSUserDefaults.standardUserDefaults().objectForKey(archiveRedialMode)) this.isRedialModeOn = NSUserDefaults.standardUserDefaults().objectForKey(archiveRedialMode).boolValue();
+			if (IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.archiveFaceDetectionMode) !=false)
+				this.IsFaceDetectionModeOn = IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.archiveFaceDetectionMode);
 
-			if (NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyStdOutLogger)) this.enabledStdLogger = NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyStdOutLogger).boolValue();
+			if (IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.archiveRedialMode) !=false)
+				this.IsRedialModeOn = IsolatedStorageSettings.ApplicationSettings.ContainsKey(AppConsts.archiveRedialMode);
 
-			this.appModulesLoggerLevel = NSUserDefaults.standardUserDefaults().objectForKey(archiveModulesLogLevels).mutableCopy();
-			if (!this.appModulesLoggerLevel) this.appModulesLoggerLevel = new NSMutableDictionary();
-			*/
+			if (IsolatedStorageSettings.ApplicationSettings.ContainsKey (AppConsts.settingsKeyStdOutLogger) !=false)
+				this.EnabledStdLogger = IsolatedStorageSettings.ApplicationSettings.ContainsKey (AppConsts.settingsKeyStdOutLogger);
+					
+
+			//this.AppModulesLoggerLevel = NSUserDefaults.standardUserDefaults().objectForKey(archiveModulesLogLevels).mutableCopy();
+			if (!this.AppModulesLoggerLevel) 
+				this.AppModulesLoggerLevel = new Dictionary<string,object>();
+
 		}
 		public static Settings SharedSettings()
 		{
@@ -205,7 +214,7 @@ namespace HopSampleApp
 			if (key.Length > 0)
 			{
 				key = new StringBuilder(key).Append(AppConsts.archiveEnabled).ToString();
-				//ret = NSUserDefaults.standardUserDefaults().boolForKey(key);
+				ret = IsolatedStorageSettings.ApplicationSettings.ContainsKey (key);
 			}
 
 			return ret;
@@ -226,8 +235,8 @@ namespace HopSampleApp
 			string key = this.getArchiveKeyForLoggerType(type);
 			if (key.Length > 0)
 			{
-				//key = new StringBuilder (key).Append (AppConsts.archiveServer).ToString ();
-				//ret = NSUserDefaults.standardUserDefaults().objectForKey(key);
+				key = new StringBuilder (key).Append (AppConsts.archiveServer).ToString ();
+				ret = IsolatedStorageSettings.ApplicationSettings.StringForKey (key);
 			}
 
 			return ret;
@@ -250,7 +259,7 @@ namespace HopSampleApp
 			if (key.Length > 0)
 			{
 				key = new StringBuilder (key).Append (AppConsts.archiveColorized).ToString ();
-				//ret = NSUserDefaults.standardUserDefaults().boolForKey(key);
+				ret = IsolatedStorageSettings.ApplicationSettings.ContainsKey (key);
 			}
 
 			return ret;
@@ -488,7 +497,8 @@ namespace HopSampleApp
 		//
 		public bool isQRSettingsResetEnabled()
 		{
-			return NSUserDefaults.standardUserDefaults().boolForKey(settingsKeyRemoveSettingsAppliedByQRCode);
+			return IsolatedStorageSettings.ApplicationSettings.ContainsKey (AppConsts.settingsKeyRemoveSettingsAppliedByQRCode);
+
 		}
 		public void enableQRSettingsReset(bool enable)
 		{
@@ -497,47 +507,47 @@ namespace HopSampleApp
 
 		public string getOuterFrameURL()
 		{
-			//need fix
-			return NSUserDefaults.standardUserDefaults().stringForKey(settingsKeyOuterFrameURL);
+			return IsolatedStorageSettings.ApplicationSettings.StringForKey (AppConsts.settingsKeyOuterFrameURL);
+
 		}
 		public string getNamespaceGrantServiceURL()
 		{
-			//need fix
-			return NSUserDefaults.standardUserDefaults().stringForKey(settingsKeyGrantServiceURL);
+			return IsolatedStorageSettings.ApplicationSettings.StringForKey (AppConsts.settingsKeyGrantServiceURL);
+
 		}
 		public string getIdentityProviderDomain()
 		{
-			//need fix
-			return NSUserDefaults.standardUserDefaults().stringForKey(settingsKeyIdentityProviderDomain);
+			return IsolatedStorageSettings.ApplicationSettings.StringForKey (AppConsts.settingsKeyIdentityProviderDomain);
+
 		}
 		public string getIdentityFederateBaseURI()
 		{
-			//need fix
-			return NSUserDefaults.standardUserDefaults().stringForKey(settingsKeyIdentityFederateBaseURI);
+			return IsolatedStorageSettings.ApplicationSettings.StringForKey (AppConsts.settingsKeyIdentityFederateBaseURI);
+
 		}
 
 		public string getLockBoxServiceDomain()
 		{
-			//need fix
-			return NSUserDefaults.standardUserDefaults().stringForKey(settingsKeyLockBoxServiceDomain);
+			return IsolatedStorageSettings.ApplicationSettings.StringForKey (AppConsts.settingsKeyLockBoxServiceDomain);
+
 		}
 		public string getDefaultOutgoingTelnetServer()
 		{
-			//need fix
-			return NSUserDefaults.standardUserDefaults().stringForKey(settingsKeyOutgoingTelnetLogger);
+			return IsolatedStorageSettings.ApplicationSettings.StringForKey (AppConsts.settingsKeyOutgoingTelnetLogger);
+
 		}
 
 		public bool isAppDataSet()
 		{
 			//need fix
 			bool ret = true;
-			ret &= NSUserDefaults.standardUserDefaults().objectForKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyAppId)).length() != 0;
-			ret &= NSUserDefaults.standardUserDefaults().objectForKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyAppIdSharedSecret)).length() != 0;
-			ret &= NSUserDefaults.standardUserDefaults().objectForKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyAppName)).length() != 0;
-			ret &= NSUserDefaults.standardUserDefaults().objectForKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyAppURL)).length() != 0;
-			ret &= NSUserDefaults.standardUserDefaults().objectForKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyAppImageURL)).length() != 0;
+			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey (HOPSettings.sharedSettings ().getCoreKeyForAppKey (AppConsts.settingsKeyAppId));
+			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppIdSharedSecret));
+			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppName));
+			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppURL));
+			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppImageURL));
 			#if APNS_ENABLED
-			ret &= NSUserDefaults.standardUserDefaults().objectForKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyUrbanAirShipAPIPushURL)).length() != 0;
+			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyUrbanAirShipAPIPushURL));
 			#endif
 			return ret;
 		}
@@ -571,8 +581,10 @@ namespace HopSampleApp
 		{
 			//need fix
 			ArrayList ret = new ArrayList();
-			//if (NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyAppId).length() == 0) ret.Add(AppConsts.settingsKeyAppId);
-			//if (NSUserDefaults.standardUserDefaults().objectForKey(settingsKeyAppIdSharedSecret).length() == 0) ret.Add(AppConsts.settingsKeyAppIdSharedSecret);
+			if (IsolatedStorageSettings.ApplicationSettings.StringForKey(AppConsts.settingsKeyAppId).Length == 0)
+				ret.Add(AppConsts.settingsKeyAppId);
+			if (IsolatedStorageSettings.ApplicationSettings.StringForKey(AppConsts.settingsKeyAppIdSharedSecret).Length== 0)
+				ret.Add(AppConsts.settingsKeyAppIdSharedSecret);
 			return ret;
 		}
 
@@ -672,9 +684,9 @@ namespace HopSampleApp
 		}
 		public void snapshotCurrentSettings()
 		{
-			//NSDictionary currentSettings = HOPSettings.sharedSettings ().getCurrentSettingsDictionary ();
-			//if (currentSettings.count () > 0)
-			//	NSUserDefaults.standardUserDefaults ().setObjectForKey (currentSettings, settingsKeySettingsSnapshot);
+			//Dictionary<string,object> currentSettings = HOPSettings.sharedSettings ().getCurrentSettingsDictionary ();
+			//if (currentSettings.Count > 0)
+			//NSUserDefaults.standardUserDefaults ().setObjectForKey (currentSettings, settingsKeySettingsSnapshot);
 		}
 		/*
 		void storeQRSettings(NSDictionary inDictionary)

@@ -49,7 +49,7 @@ namespace HopSampleApp
 
 		void OnIdentityLookupCompleted(HOPIdentityLookup lookup)
 		{
-			ContactsManager.SharedContactsManager().UpdateContactsWithDataFromLookup(lookup);
+			ContactsManager.SharedContactsManager().updateContactsWithDataFromLookup(lookup);
 		}
 
 	}
