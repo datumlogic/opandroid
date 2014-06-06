@@ -1,9 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -36,11 +34,11 @@ namespace HopSampleApp
 			}
 			set
 			{
-				Add(key, value);
+				AddSettings(key, value);
 			}
 		}
 
-		public void Add(string key, object value)
+		public void AddSettings(string key, object value)
 		{
 			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
 			var prefEditor = prefs.Edit();
@@ -48,14 +46,31 @@ namespace HopSampleApp
 			prefEditor.Commit();
 		}
 
+		public void AddSettingsToSpecificSettings(string settings_name,string key, object value)
+		{
+			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
+			var prefEditor = prefs.Edit();
+			prefEditor.PutString(key, Convert.ToString(value));
+			prefEditor.Commit();
+		}
 		public bool ContainsKey(string key)
 		{
 			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
 			return prefs.Contains(key);
 		}
+		public bool ContainsKey(string key,string settings_name)
+		{
+			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
+			return prefs.Contains(key);
+		}
 		public string StringForKey(string key)
 		{
 			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
+			return prefs.GetString (key);
+		}
+		public string StringForKey(string key,string settings_name)
+		{
+			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
 			return prefs.GetString (key);
 		}
 		public void RemoveSettingByKey(string key)
@@ -66,10 +81,36 @@ namespace HopSampleApp
 			edit_prefs.Commit ();
 
 		}
-		public void Save()
+		public void RemoveSettingByKey(string key,string settings_name)
 		{
+			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
+			var edit_prefs = prefs.Edit ();
+			edit_prefs.Remove (key);
+			edit_prefs.Commit ();
 
 		}
+		public void RemoveSettings(string key,string settings_name)
+		{
+			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
+			var edit_prefs = prefs.Edit ();
+			edit_prefs.Remove (key);
+			edit_prefs.Commit ();
+
+		}
+		public void SettingsLoadInDictionary(Dictionary<string,object> dic,string settings_name)
+		{
+
+			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
+			var list = prefs.All;
+			foreach (var item in list) 
+			{
+				dic.Add (item.ToString(),null);
+				Console.WriteLine (item.Value);
+			}
+		}
+
+
+
 	}
 }
 
