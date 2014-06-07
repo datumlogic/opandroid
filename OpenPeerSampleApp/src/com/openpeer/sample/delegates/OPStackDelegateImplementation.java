@@ -1,6 +1,6 @@
-package com.openpeer.delegates;
+package com.openpeer.sample.delegates;
 
-import com.openpeer.javaapi.OPStackDelegate;;
+import com.openpeer.javaapi.OPStackDelegate;
 
 public class OPStackDelegateImplementation extends OPStackDelegate {
 
