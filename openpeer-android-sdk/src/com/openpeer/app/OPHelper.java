@@ -11,6 +11,7 @@ import com.openpeer.delegates.OPCacheDelegateImplementation;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPLogger;
+import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
@@ -48,6 +49,7 @@ public class OPHelper {
 		OPLogger.installTelnetLogger(59999, 60, true);
 	}
 	public void init() {
+		OPMediaEngine.init(mContext);
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
 		OPStackMessageQueue stackMessageQueue = OPStackMessageQueue.singleton(); 
 //		stackMessageQueue = new OPStackMessageQueue();
