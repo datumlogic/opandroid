@@ -4,8 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.provider.Settings.Secure;
-import android.text.format.Time;
 import android.util.Log;
 
 import com.openpeer.delegates.CallbackHandler;
@@ -26,15 +24,15 @@ public class OPHelper {
 	private static final String TAG = OPHelper.class.getSimpleName();
 	private static OPHelper instance;
 	Context mContext;
-	static {
-		try {
-			System.loadLibrary("z_shared");
-			System.loadLibrary("openpeer");
-
-		} catch (UnsatisfiedLinkError use) {
-			use.printStackTrace();
-		}
-	}
+//	static {
+//		try {
+//			System.loadLibrary("z_shared");
+//			System.loadLibrary("openpeer");
+//
+//		} catch (UnsatisfiedLinkError use) {
+//			use.printStackTrace();
+//		}
+//	}
 	private OPHelper(Context context) {
 		mContext = context;
 	}
@@ -55,7 +53,9 @@ public class OPHelper {
 //		stackMessageQueue = new OPStackMessageQueue();
 //		stackMessageQueue.interceptProcessing(null);
 		OPStack stack = OPStack.singleton();
-		
+		if(OPSdkConfig.debug){
+			enableTelnetLogging();
+		}
 		//		
 		OPCacheDelegate cacheDelegate =  OPCacheDelegateImplementation.getInstance(mContext);
 		CallbackHandler.getInstance().registerCacheDelegate(cacheDelegate);
@@ -70,9 +70,7 @@ public class OPHelper {
 		OPSettings.apply(forceDashSettings);
 		
 		OPSettings.apply(OPSdkConfig.getInstance(mContext).getAPPSettingsString());
-		
-		//TODO: After interception is done, we can call setup
-		
+				
 		stack.setup(null, null);
 	}
 	
@@ -108,4 +106,5 @@ public class OPHelper {
             return "";
         }
 	}
+	
 }

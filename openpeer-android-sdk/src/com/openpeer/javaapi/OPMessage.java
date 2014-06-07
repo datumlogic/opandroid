@@ -32,5 +32,9 @@ public class OPMessage {
 	public void setTime(Time mTime) {
 		this.mTime = mTime;
 	}
+	
+	public String toString(){
+		return super.toString()+" from "+mFrom + " messageType "+mMessageType +" message "+mMessage;
+	}
 
 }

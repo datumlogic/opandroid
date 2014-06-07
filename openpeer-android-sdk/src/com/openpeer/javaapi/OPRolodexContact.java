@@ -4,12 +4,20 @@ import java.util.List;
 
 public class OPRolodexContact {
 
-	class OPAvatar {
+	public class OPAvatar {
 		private String mName;
 		private String mURL;
 		private int mWidth;
 		private int mHeight;
 		
+		public OPAvatar(String mName, String mURL, int mWidth, int mHeight) {
+			super();
+			this.mName = mName;
+			this.mURL = mURL;
+			this.mWidth = mWidth;
+			this.mHeight = mHeight;
+		}
+
 		OPAvatar()
 		{
 			
@@ -45,7 +53,7 @@ public class OPRolodexContact {
 		
 	};
 	
-	enum Dispositions
+	public enum Dispositions
     {
       Disposition_NA,
       Disposition_Update,
@@ -67,6 +75,21 @@ public class OPRolodexContact {
 
     private List<OPAvatar> mAvatars;
 
+    public OPRolodexContact(Dispositions mDisposition, String mIdentityURI,
+			String mIdentityProvider, String mName, String mProfileURL,
+			String mVProfileURL, List<OPAvatar> mAvatars) {
+		super();
+		this.mDisposition = mDisposition;
+		this.mIdentityURI = mIdentityURI;
+		this.mIdentityProvider = mIdentityProvider;
+		this.mName = mName;
+		this.mProfileURL = mProfileURL;
+		this.mVProfileURL = mVProfileURL;
+		this.mAvatars = mAvatars;
+	}
+	public OPRolodexContact(){
+    	
+    }
 	public Dispositions getDisposition() {
 		return mDisposition;
 	}
@@ -121,6 +144,16 @@ public class OPRolodexContact {
 
 	public void setAvatars(List<OPAvatar> mAvatars) {
 		this.mAvatars = mAvatars;
+	}
+	
+	void copy(OPRolodexContact contact){
+		this.mAvatars = contact.mAvatars;
+		this.mDisposition = contact.mDisposition;
+		this.mIdentityProvider = contact.mIdentityProvider;
+		this.mIdentityURI = contact.mIdentityURI;
+		this.mName = contact.mName;
+		this.mProfileURL = contact.mProfileURL;
+		this.mVProfileURL = contact.mVProfileURL;
 	}
 	
 	public String toString(){

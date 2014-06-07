@@ -20,7 +20,7 @@ public class OPIdentityContact extends OPRolodexContact {
 	}
 
 	public OPIdentityContact(OPRolodexContact rolodexContact) {
-
+		copy(rolodexContact);
 	}
 
 	public boolean hasData() {

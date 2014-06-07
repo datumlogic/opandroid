@@ -41,6 +41,7 @@ public class CallbackHandler {
 	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate>();
 	private static CallbackHandler instance;
 	private static OPDatastoreDelegate sDatastoreDelegate;
+	private CallbackHandler(){}
 	public static CallbackHandler getInstance() {
 		if (instance == null) {
 			instance = new CallbackHandler();

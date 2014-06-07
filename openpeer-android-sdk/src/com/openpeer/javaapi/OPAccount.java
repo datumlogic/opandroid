@@ -87,5 +87,8 @@ public class OPAccount {
 
     public native String getNextMessageForInnerBrowerWindowFrame();
     public native void handleMessageFromInnerBrowserWindowFrame(String unparsedMessage);
- 
+    public String toString(){
+    	return super.toString() + "reloginInfo "+this.getReloginInformation() + 
+    			" peerFilePrivate "+this.getPeerFilePrivate() + " stableId "+ this.getStableID();
+    }
 }
