@@ -52,15 +52,16 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	@Override
 	public OPAccount getAccount() {
-		// mDatabase = mOpenHelper.getReadableDatabase();
-
-		// TODO: how am i supposed to construct a native account object?
 		return null;
 	}
 
 	@Override
 	public List<OPIdentity> getIdentities() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public OPIdentity getIdentity(){
 		return null;
 	}
 
@@ -77,8 +78,12 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	@Override
 	public boolean saveOrUpdateAccount(OPAccount account) {
-		// TODO Auto-generated method stub
-		return false;
+		SharedPreferences.Editor editor = mPreferenceStore.edit();
+		editor.putString(PREF_KEY_RELOGIN_INFO, account.getReloginInformation());
+		editor.putLong(PREF_KEY_HOMEUSER_STABLEID, account.getStableID());
+		//TODO: do we need store peerfileprivate and key? what does the client app need it for?
+		editor.apply();
+		return true;
 	}
 
 	@Override

@@ -16,6 +16,7 @@ public interface OPDatastoreDelegate {
 	public boolean saveHomeUser(OPHomeUser user);
 
 	public List<OPIdentity> getIdentities();
+	public OPIdentity getIdentity();
 
 	/**
 	 * Retrieve stored OpenPeer contacts for identity
