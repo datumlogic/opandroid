@@ -17,8 +17,9 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DatabaseContracts.SQL_CREATE_CONTACT);
-        //TODO add other tables
+    	db.execSQL(DatabaseContracts.SQL_CREATE_IDENTITY);
+    	db.execSQL(DatabaseContracts.SQL_CREATE_CONTACT);
+    	db.execSQL(DatabaseContracts.SQL_CREATE_AVATAR);
     }
 
     @Override
@@ -30,4 +31,5 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         super.onDowngrade(db, oldVersion, newVersion);
     }
+    
 }

@@ -2,15 +2,17 @@ package com.openpeer.datastore;
 
 import java.util.List;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.model.OPHomeUser;
+import static com.openpeer.datastore.DatabaseContracts.*;
 
 /**
  * The data being stored in preference: -- Relogin information for account --
@@ -39,19 +41,32 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				OPDatabaseHelper.DATABASE_NAME, // the name of the database)
 				null, // uses the default SQLite cursor
 				OPDatabaseHelper.DATABASE_VERSION);
+		mDatabase = mOpenHelper.getWritableDatabase();
+
 		mPreferenceStore = context.getSharedPreferences(PREF_DATASTORE,
 				Context.MODE_PRIVATE);
 	}
 
-	public static OPDatastoreDelegate getInstance(Context context) {
+	public static OPDatastoreDelegateImplementation getInstance() {
 		if (instance == null) {
-			instance = new OPDatastoreDelegateImplementation(context);
+			instance = new OPDatastoreDelegateImplementation();
 		}
 		return instance;
 	}
 
+	public void init(Context context) {
+		mOpenHelper = new OPDatabaseHelper(context,
+				OPDatabaseHelper.DATABASE_NAME, // the name of the database)
+				null, // uses the default SQLite cursor
+				OPDatabaseHelper.DATABASE_VERSION);
+		mDatabase = mOpenHelper.getWritableDatabase();
+
+		mPreferenceStore = context.getSharedPreferences(PREF_DATASTORE,
+				Context.MODE_PRIVATE);
+	}
+
 	@Override
-	public OPAccount getAccount() {
+	public String getReloginInfo() {
 		return null;
 	}
 
@@ -60,19 +75,20 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
-	public OPIdentity getIdentity(){
+	public OPIdentity getIdentity() {
 		return null;
 	}
 
 	@Override
-	public List<OPRolodexContact> getRolodexContacts(String identityId) {
-		// TODO Auto-generated method stub
+	public List<OPRolodexContact> getContacts(String identityId) {
+
 		return null;
 	}
 
 	@Override
-	public List<OPContact> getOPContacts(String identityId) {
+	public List<OPRolodexContact> getOPContacts(String identityId) {
 		return null;
 	}
 
@@ -81,33 +97,58 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		SharedPreferences.Editor editor = mPreferenceStore.edit();
 		editor.putString(PREF_KEY_RELOGIN_INFO, account.getReloginInformation());
 		editor.putLong(PREF_KEY_HOMEUSER_STABLEID, account.getStableID());
-		//TODO: do we need store peerfileprivate and key? what does the client app need it for?
+		// TODO: do we need store peerfileprivate and key? what does the client
+		// app need it for?
 		editor.apply();
 		return true;
 	}
 
 	@Override
-	public boolean saveOrUpdateIdentities(List<OPIdentity> identies) {
+	public boolean saveOrUpdateIdentities(List<OPIdentity> identies,
+			long accountId) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean saveOrUpdateContacst(List<OPContact> contacts) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean saveOrUpdateContacts(List<OPRolodexContact> contacts,
+			long identityId) {
+
+		return true;
 	}
 
 	@Override
-	public boolean saveOrUpdateIdentity(OPIdentity identy) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean saveOrUpdateIdentity(OPIdentity identity, long accountId) {
+		ContentValues values = new ContentValues();
+		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_ID,
+				identity.getStableID());
+		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_PROVIDER,
+				identity.getIdentityProviderDomain());
+		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_URI,
+				identity.getIdentityURI());
+		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
+				IdentityEntry.TABLE_NAME, null, values,
+				SQLiteDatabase.CONFLICT_REPLACE);
+
+		return rowId != 0;
 	}
 
 	@Override
-	public boolean saveOrUpdateContact(OPContact contact) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean saveOrUpdateContact(OPRolodexContact contact, long identityId) {
+		ContentValues values = new ContentValues();
+		if (contact instanceof OPIdentityContact) {
+			values.put(ContactEntry.COLUMN_NAME_CONTACT_ID,
+					((OPIdentityContact) contact).getStableID());
+		}
+
+		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
+				DatabaseContracts.ContactEntry.TABLE_NAME, null, values,
+				SQLiteDatabase.CONFLICT_REPLACE);
+		if (rowId != 0) {
+			// insert or update avatar
+		}
+
+		return rowId != 0;
 	}
 
 	@Override

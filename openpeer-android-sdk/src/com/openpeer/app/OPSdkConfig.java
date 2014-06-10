@@ -50,11 +50,9 @@ public class OPSdkConfig {
 
 	}
 
-	public static OPSdkConfig getInstance(Context context) {
+	public static OPSdkConfig getInstance() {
 		if (instance == null) {
 			instance = new OPSdkConfig();
-			instance.mContext = context;
-			instance.init(context);
 		}
 		return instance;
 	}
@@ -132,6 +130,7 @@ public class OPSdkConfig {
 		 * package. AssetManager Provides access to an application's raw asset
 		 * files;
 		 */
+		instance.mContext = context;
 		AssetManager assetManager = context.getAssets();
 		/**
 		 * Open an asset using ACCESS_STREAMING mode. This

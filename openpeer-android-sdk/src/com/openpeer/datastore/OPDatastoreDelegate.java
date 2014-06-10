@@ -3,7 +3,6 @@ package com.openpeer.datastore;
 import java.util.List;
 
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.model.OPHomeUser;
@@ -11,7 +10,7 @@ import com.openpeer.model.OPHomeUser;
 import android.content.Context;
 
 public interface OPDatastoreDelegate {
-	public OPAccount getAccount();
+	public String getReloginInfo();
 	public OPHomeUser getHomeUser();
 	public boolean saveHomeUser(OPHomeUser user);
 
@@ -26,7 +25,7 @@ public interface OPDatastoreDelegate {
 	 *            returned
 	 * @return list of OpenPeer contacts for specific identity
 	 */
-	public List<OPContact> getOPContacts(String identityId);
+	public List<OPRolodexContact> getOPContacts(String identityId);
 
 	/**
 	 * Retrieve stored rolodex contacts for identity
@@ -36,17 +35,17 @@ public interface OPDatastoreDelegate {
 	 *            returned
 	 * @return list of Rolodex contacts for specific identity
 	 */
-	public List<OPRolodexContact> getRolodexContacts(String identityId);
+	public List<OPRolodexContact> getContacts(String identityId);
 
 	public boolean saveOrUpdateAccount(OPAccount account);
 
-	public boolean saveOrUpdateIdentities(List<OPIdentity> identies);
+	public boolean saveOrUpdateIdentities(List<OPIdentity> identies, long accountId);
 
-	public boolean saveOrUpdateContacst(List<OPContact> contacts);
+	public boolean saveOrUpdateContacts(List<OPRolodexContact> contacts, long identityId);
 
-	public boolean saveOrUpdateIdentity(OPIdentity identy);
+	public boolean saveOrUpdateIdentity(OPIdentity identy, long accountId);
 
-	public boolean saveOrUpdateContact(OPContact contact);
+	public boolean saveOrUpdateContact(OPRolodexContact contact, long identityId);
 
 	public boolean deleteIdentity(String id);
 
