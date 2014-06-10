@@ -43,6 +43,7 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
 		// The "selfContact" of the identity
 		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
+		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
 
 		// TODO add other columns
 	}
@@ -72,7 +73,8 @@ public class DatabaseContracts {
 			+ IdentityEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE
 			+ COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_URI + TEXT_TYPE
 			+ COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_CONTACT_ID
-			+ INTEGER_TYPE +
+			+ INTEGER_TYPE + COMMA_SEP
+			+ IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION + TEXT_TYPE +
 			// ... Any other options for the CREATE command
 			" )";
 	public static final String SQL_CREATE_AVATAR = "CREATE TABLE "

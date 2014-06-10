@@ -46,9 +46,8 @@ public class OPCacheDelegateImplementation extends OPCacheDelegate {
 
 	@Override
 	public void store(String cookieNamePath, Time expires, String str) {
-		Log.d("OPCacheDelegateImplementation", "cookieNamePath "
-				+ cookieNamePath + " expires " + expires + " value " + str);
-		// TODO connect with shared preferences
+//		Log.d("OPCacheDelegateImplementation", "cookieNamePath "
+//				+ cookieNamePath + " expires " + expires + " value " + str);
 		SharedPreferences.Editor editor = getPreference().edit();
 		editor.putString(cookieNamePath, str);
 		editor.apply();

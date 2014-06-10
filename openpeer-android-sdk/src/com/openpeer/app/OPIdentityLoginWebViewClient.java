@@ -14,6 +14,11 @@ import android.webkit.WebViewClient;
 public class OPIdentityLoginWebViewClient extends WebViewClient {
 
 	OPIdentity mIdentity;
+
+	public void setIdentity(OPIdentity identity) {
+		mIdentity = identity;
+	}
+
 	boolean mInnerFrameLoaded;
 
 	public OPIdentityLoginWebViewClient(OPIdentity identity) {
@@ -46,7 +51,7 @@ public class OPIdentityLoginWebViewClient extends WebViewClient {
 	@Override
 	public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
 		if (url.contains("datapass")) {
-			Log.w("login", "url to intercept "+url);
+			Log.w("login", "url to intercept " + url);
 			String data = url.substring(url.lastIndexOf("data="));
 			data = data.substring(5);
 			// Log.w("JNI", data);

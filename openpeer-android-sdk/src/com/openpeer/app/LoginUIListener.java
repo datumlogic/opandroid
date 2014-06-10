@@ -10,4 +10,8 @@ public interface LoginUIListener {
 	public void onIdentityLoginWebViewMadeVisible();
 
 	public void onAccountLoginWebViewMadeVisible();
+
+	public void onIdentityLoginWebViewClose();
+
+	public void onAccountLoginWebViewMadeClose();
 }

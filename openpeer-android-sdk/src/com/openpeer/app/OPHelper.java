@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.util.Log;
 
+import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
@@ -39,13 +40,10 @@ public class OPHelper {
 	// use.printStackTrace();
 	// }
 	// }
-	private OPHelper(Context context) {
-		mContext = context;
-	}
 
-	public static OPHelper getInstance(Context context) {
+	public static OPHelper getInstance() {
 		if (instance == null) {
-			instance = new OPHelper(context);
+			instance = new OPHelper();
 		}
 		return instance;
 	}
@@ -54,8 +52,17 @@ public class OPHelper {
 		OPLogger.installTelnetLogger(59999, 60, true);
 	}
 
-	public void init() {
+	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
+		mContext = context;
 		OPMediaEngine.init(mContext);
+		if (datastoreDelegate != null) {
+			OPDataManager.getInstance().registerDatastoreDelegate(
+					datastoreDelegate);
+		} else {
+			OPDataManager.getInstance().registerDatastoreDelegate(
+					OPDatastoreDelegateImplementation.getInstance().init(
+							mContext));
+		}
 		// TODO: Add delegate when implement mechanism to post events to the
 		// android GUI thread
 		OPStackMessageQueue stackMessageQueue = OPStackMessageQueue.singleton();
@@ -83,7 +90,7 @@ public class OPHelper {
 		OPSettings.apply(OPSdkConfig.getInstance().getAPPSettingsString());
 
 		stack.setup(null, null);
-		OPDatastoreDelegateImplementation.getInstance().init(mContext);
+
 	}
 
 	private String createHttpSettings() {

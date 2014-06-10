@@ -50,6 +50,7 @@ public interface OPDatastoreDelegate {
 	public boolean deleteIdentity(String id);
 
 	public boolean deleteContact(String id);
+	public String getDownloadedContactsVersion(long identityId);
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);
 	 * public boolean saveCallRecord(OPConversationRecord record);

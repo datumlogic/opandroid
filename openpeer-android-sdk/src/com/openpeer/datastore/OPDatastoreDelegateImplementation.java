@@ -5,6 +5,7 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.openpeer.javaapi.OPAccount;
@@ -54,7 +55,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		return instance;
 	}
 
-	public void init(Context context) {
+	public OPDatastoreDelegateImplementation init(Context context) {
 		mOpenHelper = new OPDatabaseHelper(context,
 				OPDatabaseHelper.DATABASE_NAME, // the name of the database)
 				null, // uses the default SQLite cursor
@@ -63,6 +64,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 		mPreferenceStore = context.getSharedPreferences(PREF_DATASTORE,
 				Context.MODE_PRIVATE);
+		return this;// fluent API
+
 	}
 
 	@Override
@@ -182,4 +185,21 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		return true;
 	}
 
+	public String getDownloadedContactsVersion(long identityId) {
+		String version = null;
+		Cursor cursor = mOpenHelper
+				.getWritableDatabase()
+				.query(IdentityEntry.TABLE_NAME,
+						new String[] { IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION },
+						"where " + IdentityEntry.COLUMN_NAME_IDENTITY_ID + "="
+								+ identityId, null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+			version = cursor
+					.getString(cursor
+							.getColumnIndex(IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION));
+		}
+		return version;
+
+	}
 }
