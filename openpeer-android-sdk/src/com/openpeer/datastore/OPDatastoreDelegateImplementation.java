@@ -1,5 +1,6 @@
 package com.openpeer.datastore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -12,6 +13,7 @@ import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
+import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.model.OPHomeUser;
 import static com.openpeer.datastore.DatabaseContracts.*;
 
@@ -26,6 +28,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	private static final String PREF_DATASTORE = "model_data";
 	private static final String PREF_KEY_RELOGIN_INFO = "relogin_info";
 	private static final String PREF_KEY_HOMEUSER_STABLEID = "homeuser_stable_id";
+	static final String WHERE_CLAUSE = "where ";
 
 	private static OPDatastoreDelegateImplementation instance;
 	OPDatabaseHelper mOpenHelper;
@@ -70,7 +73,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	@Override
 	public String getReloginInfo() {
-		return null;
+		return mPreferenceStore.getString(PREF_KEY_RELOGIN_INFO, null);
 	}
 
 	@Override
@@ -85,13 +88,60 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public List<OPRolodexContact> getContacts(String identityId) {
+	public List<OPRolodexContact> getContacts(long identityId) {
+
+		Cursor cursor = mOpenHelper.getWritableDatabase().query(
+				ContactEntry.TABLE_NAME,
+				null,
+				"where " + ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
+						+ "=" + identityId, null, null, null, null);
+		if (cursor != null) {
+			List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
+
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				OPRolodexContact contact = new OPRolodexContact(
+						cursor.getString(cursor
+								.getColumnIndex(ContactEntry.COLUMN_NAME_CONTACT_NAME)),
+						cursor.getString(cursor
+								.getColumnIndex(ContactEntry.COLUMN_NAME_URL)));
+				Cursor avatarCursor = mOpenHelper.getWritableDatabase().query(
+						AvatarEntry.TABLE_NAME,
+						null,
+						"where " + AvatarEntry.COLUMN_NAME_CONTACT_ID + "="
+								+ contact.getId(), null, null, null, null);
+				if (avatarCursor != null) {
+					List<OPAvatar> avatars = new ArrayList<OPAvatar>();
+					avatarCursor.moveToFirst();
+					while (!avatarCursor.isAfterLast()) {
+						OPAvatar avatar = new OPAvatar(
+								cursor.getString(cursor
+										.getColumnIndex(AvatarEntry.COLUMN_NAME_AVATAR_NAME)),
+								cursor.getString(cursor
+										.getColumnIndex(AvatarEntry.COLUMN_NAME_AVATAR_URL)),
+								0, 0);
+						avatars.add(avatar);
+					}
+					avatarCursor.close();
+					contact.setAvatars(avatars);
+				}
+				contacts.add(contact);
+				cursor.moveToNext();
+			}
+			cursor.close();
+			return contacts;
+		}
 
 		return null;
 	}
 
 	@Override
 	public List<OPRolodexContact> getOPContacts(String identityId) {
+		String rawQuery = "select * from "
+				+ IdentityContactEntry.TABLE_NAME
+				+ " ic left join "
+				+ ContactEntry.TABLE_NAME
+				+ " c on ic.associated_identity_id=c.associated_identity_id where c.associated_identity_id=identityId";
 		return null;
 	}
 
@@ -107,16 +157,21 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public boolean saveOrUpdateIdentities(List<OPIdentity> identies,
+	public boolean saveOrUpdateIdentities(List<OPIdentity> identities,
 			long accountId) {
-		// TODO Auto-generated method stub
-		return false;
+		for (OPIdentity identity : identities) {
+			saveOrUpdateIdentity(identity, accountId);
+		}
+
+		return true;
 	}
 
 	@Override
 	public boolean saveOrUpdateContacts(List<OPRolodexContact> contacts,
 			long identityId) {
-
+		for (OPRolodexContact contact : contacts) {
+			saveOrUpdateContact(contact, identityId);
+		}
 		return true;
 	}
 
@@ -143,26 +198,89 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			values.put(ContactEntry.COLUMN_NAME_CONTACT_ID,
 					((OPIdentityContact) contact).getStableID());
 		}
+		values.put(ContactEntry.COLUMN_NAME_CONTACT_NAME, contact.getName());
+		values.put(ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID, identityId);
+		values.put(ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER, identityId);
+		values.put(ContactEntry.COLUMN_NAME_URL, contact.getProfileURL());
+		values.put(ContactEntry.COLUMN_NAME_VPROFILE_URL,
+				contact.getVProfileURL());
 
 		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
 				DatabaseContracts.ContactEntry.TABLE_NAME, null, values,
 				SQLiteDatabase.CONFLICT_REPLACE);
-		if (rowId != 0) {
+		if (rowId != 0 && contact.getAvatars() != null) {
 			// insert or update avatar
+			for (OPAvatar avatar : contact.getAvatars()) {
+				ContentValues avatarValues = new ContentValues();
+				avatarValues.put(AvatarEntry.COLUMN_NAME_CONTACT_ID,
+						contact.getStableID());
+				avatarValues.put(AvatarEntry.COLUMN_NAME_AVATAR_NAME,
+						avatar.getName());
+				avatarValues.put(AvatarEntry.COLUMN_NAME_AVATAR_URL,
+						avatar.getURL());
+				long avatarRowId = mOpenHelper.getWritableDatabase()
+						.insertWithOnConflict(AvatarEntry.TABLE_NAME, null,
+								avatarValues, SQLiteDatabase.CONFLICT_REPLACE);
+			}
+		}
+		if (contact instanceof OPIdentityContact) {
+			OPIdentityContact ic = (OPIdentityContact) contact;
+			ContentValues icValues = new ContentValues();
+
+			icValues.put(IdentityContactEntry.COLUMN_NAME_STABLE_ID,
+					ic.getStableID());
+			icValues.put(
+					IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID,
+					identityId);
+			icValues.put(IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC,
+					ic.getPeerFilePublic().peerFileString);
+
+			icValues.put(
+					IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE,
+					ic.getIdentityProofBundle());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_PRORITY,
+					ic.getPriority());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME, ic
+					.getLastUpdated().toMillis(false));
+			icValues.put(IdentityContactEntry.COLUMN_NAME_EXPIRE, ic
+					.getExpires().toMillis(false));
+			long _rowId = mOpenHelper.getWritableDatabase()
+					.insertWithOnConflict(IdentityContactEntry.TABLE_NAME,
+							null, icValues, SQLiteDatabase.CONFLICT_REPLACE);
 		}
 
 		return rowId != 0;
 	}
 
 	@Override
-	public boolean deleteIdentity(String id) {
-		// TODO Auto-generated method stub
+	public boolean deleteIdentity(long id) {
+
+		mOpenHelper.getWritableDatabase().delete(IdentityEntry.TABLE_NAME,
+				"where " + IdentityEntry.COLUMN_NAME_IDENTITY_ID + "=" + id,
+				null);
+		mOpenHelper
+				.getWritableDatabase()
+				.delete(IdentityContactEntry.TABLE_NAME,
+						"where "
+								+ IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
+								+ "=" + id, null);
+		mOpenHelper.getWritableDatabase().delete(
+				ContactEntry.TABLE_NAME,
+				"where " + ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
+						+ "=", null);
 		return false;
 	}
 
 	@Override
-	public boolean deleteContact(String id) {
-		// TODO Auto-generated method stub
+	public boolean deleteContact(OPRolodexContact contact) {
+		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
+				WHERE_CLAUSE + ContactEntry.COLUMN_NAME_URL, null);
+		if (contact instanceof OPIdentityContact) {
+			mOpenHelper.getWritableDatabase().delete(
+					IdentityContactEntry.TABLE_NAME,
+					WHERE_CLAUSE + IdentityContactEntry.COLUMN_NAME_STABLE_ID,
+					null);
+		}
 		return false;
 	}
 

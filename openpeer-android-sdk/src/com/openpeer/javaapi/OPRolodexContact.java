@@ -4,12 +4,12 @@ import java.util.List;
 
 public class OPRolodexContact {
 
-	public class OPAvatar {
+	public static class OPAvatar {
 		private String mName;
 		private String mURL;
 		private int mWidth;
 		private int mHeight;
-		
+
 		public OPAvatar(String mName, String mURL, int mWidth, int mHeight) {
 			super();
 			this.mName = mName;
@@ -18,68 +18,71 @@ public class OPRolodexContact {
 			this.mHeight = mHeight;
 		}
 
-		OPAvatar()
-		{
-			
+		OPAvatar() {
+
 		}
-		
+
 		public String getName() {
 			return mName;
 		}
+
 		public void setName(String mName) {
 			this.mName = mName;
 		}
+
 		public String getURL() {
 			return mURL;
 		}
+
 		public void setURL(String mURL) {
 			this.mURL = mURL;
 		}
+
 		public int getWidth() {
 			return mWidth;
 		}
+
 		public void setWidth(int mWidth) {
 			this.mWidth = mWidth;
 		}
+
 		public int getHeight() {
 			return mHeight;
 		}
+
 		public void setHeight(int mHeight) {
 			this.mHeight = mHeight;
 		}
-		public String toString(){
-			return super.toString() + " Name "+mName+" URL "+mURL+" Width "+ mWidth + " Height "+mHeight;
+
+		public String toString() {
+			return super.toString() + " Name " + mName + " URL " + mURL
+					+ " Width " + mWidth + " Height " + mHeight;
 		}
-		
+
 	};
-	
-	public enum Dispositions
-    {
-      Disposition_NA,
-      Disposition_Update,
-      Disposition_Remove;
-      
-      Dispositions ()
-      {
-      }
 
-    };
-    
-    private Dispositions mDisposition;
-    private String mIdentityURI;
-    private String mIdentityProvider;
+	public enum Dispositions {
+		Disposition_NA, Disposition_Update, Disposition_Remove;
 
-    private String mName;
-    private String mProfileURL;
-    private String mVProfileURL;
+		Dispositions() {
+		}
 
-    private List<OPAvatar> mAvatars;
+	};
 
-    public OPRolodexContact(Dispositions mDisposition, String mIdentityURI,
-			String mIdentityProvider, String mName, String mProfileURL,
-			String mVProfileURL, List<OPAvatar> mAvatars) {
+	private Dispositions mDisposition;
+	private String mIdentityURI;
+	private String mIdentityProvider;
+
+	private String mName;
+	private String mProfileURL;
+	private String mVProfileURL;
+
+	private List<OPAvatar> mAvatars;
+
+	public OPRolodexContact(String mIdentityURI, String mIdentityProvider,
+			String mName, String mProfileURL, String mVProfileURL,
+			List<OPAvatar> mAvatars) {
 		super();
-		this.mDisposition = mDisposition;
 		this.mIdentityURI = mIdentityURI;
 		this.mIdentityProvider = mIdentityProvider;
 		this.mName = mName;
@@ -87,9 +90,22 @@ public class OPRolodexContact {
 		this.mVProfileURL = mVProfileURL;
 		this.mAvatars = mAvatars;
 	}
-	public OPRolodexContact(){
-    	
-    }
+
+	public long getId() {
+		// for now just use the profileURL, may need better algorithm
+		return mIdentityURI.hashCode();
+	}
+
+	public OPRolodexContact(String name, String profileURL) {
+		super();
+		this.mName = name;
+		this.mProfileURL = profileURL;
+	}
+
+	public OPRolodexContact() {
+
+	}
+
 	public Dispositions getDisposition() {
 		return mDisposition;
 	}
@@ -145,8 +161,8 @@ public class OPRolodexContact {
 	public void setAvatars(List<OPAvatar> mAvatars) {
 		this.mAvatars = mAvatars;
 	}
-	
-	void copy(OPRolodexContact contact){
+
+	void copy(OPRolodexContact contact) {
 		this.mAvatars = contact.mAvatars;
 		this.mDisposition = contact.mDisposition;
 		this.mIdentityProvider = contact.mIdentityProvider;
@@ -155,9 +171,10 @@ public class OPRolodexContact {
 		this.mProfileURL = contact.mProfileURL;
 		this.mVProfileURL = contact.mVProfileURL;
 	}
-	
-	public String toString(){
-		return super.toString() + " ProfileURL "+mProfileURL + " Name "+mName+" identityUrl "+mIdentityURI
-				+ " IdentityProvider " + mIdentityProvider + " Disposition " + mDisposition;
+
+	public String toString() {
+		return super.toString() + " ProfileURL " + mProfileURL + " Name "
+				+ mName + " identityUrl " + mIdentityURI + " IdentityProvider "
+				+ mIdentityProvider + " Disposition " + mDisposition;
 	}
 }

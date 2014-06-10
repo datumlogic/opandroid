@@ -35,7 +35,7 @@ public interface OPDatastoreDelegate {
 	 *            returned
 	 * @return list of Rolodex contacts for specific identity
 	 */
-	public List<OPRolodexContact> getContacts(String identityId);
+	public List<OPRolodexContact> getContacts(long identityId);
 
 	public boolean saveOrUpdateAccount(OPAccount account);
 
@@ -47,9 +47,9 @@ public interface OPDatastoreDelegate {
 
 	public boolean saveOrUpdateContact(OPRolodexContact contact, long identityId);
 
-	public boolean deleteIdentity(String id);
+	public boolean deleteIdentity(long id);
 
-	public boolean deleteContact(String id);
+	public boolean deleteContact(OPRolodexContact id);
 	public String getDownloadedContactsVersion(long identityId);
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);

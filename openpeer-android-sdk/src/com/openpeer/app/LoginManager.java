@@ -161,7 +161,7 @@ public class LoginManager {
 		@Override
 		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 			// TODO Auto-generated method stub
-			ContactsManager.getInstance().onDownloadedRolodexContacts(identity);
+			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
 		}
 
 		public void passMessageToJS(final String msg) {

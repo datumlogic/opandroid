@@ -26,11 +26,23 @@ public class OPDataManager {
 	private Hashtable<Long, String> downloadedIdentityContactVersions;
 	private String mReloginInfo;
 
+	public String getReloginInfo() {
+		return mReloginInfo;
+	}
+
 	public static OPDataManager getInstance() {
 		if (instance == null) {
 			instance = new OPDataManager();
 		}
 		return instance;
+	}
+	
+	public void init(OPDatastoreDelegate delegate){
+		assert(delegate!=null);
+		mReloginInfo = delegate.getReloginInfo();
+		if(mReloginInfo!=null){
+			//Read idenities and contacts
+		}
 	}
 
 	/**
