@@ -5,10 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.openpeer.app.LoginManager;
 import com.openpeer.app.LoginUIListener;
+import com.openpeer.app.OPDataManager;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 
 public class LoginFragment extends BaseFragment implements LoginUIListener {
@@ -41,17 +43,17 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 		setupWebView(mAccountLoginWebView);
 
 		setupWebView(mIdentityLoginWebView);
-		if (OPDatastoreDelegateImplementation.getInstance().getReloginInfo() == null) {
+		if (OPDataManager.getInstance().getReloginInfo() == null) {
 			Log.d("test", "logging in");
 
-			LoginManager loginManager = new LoginManager(this, mAccountLoginWebView,
-					mIdentityLoginWebView);
+			LoginManager loginManager = new LoginManager(this,
+					mAccountLoginWebView, mIdentityLoginWebView);
 			loginManager.login();
 		} else {
 			Log.d("test", "re-logging in");
 
-			LoginManager loginManager = new LoginManager(this, mAccountLoginWebView,
-					mIdentityLoginWebView);
+			LoginManager loginManager = new LoginManager(this,
+					mAccountLoginWebView, mIdentityLoginWebView);
 			loginManager.relogin(OPDatastoreDelegateImplementation
 					.getInstance().getReloginInfo());
 		}
@@ -59,6 +61,10 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 	}
 
 	void setupWebView(WebView view) {
+		WebSettings webSettings = view.getSettings();
+		webSettings.setJavaScriptEnabled(true);
+		webSettings.setDomStorageEnabled(true);
+		webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
 	}
 
@@ -66,6 +72,9 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 	@Override
 	public void onStartIdentityLogin() {
 		progressView.setVisibility(View.GONE);
+		mAccountLoginWebView.setVisibility(View.GONE);
+
+		mIdentityLoginWebView.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -83,12 +92,22 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 	public void onIdentityLoginWebViewMadeVisible() {
 		mIdentityLoginWebView.setVisibility(View.VISIBLE);
 		mAccountLoginWebView.setVisibility(View.GONE);
+		progressView.setVisibility(View.GONE);
+
 	}
 
 	@Override
 	public void onAccountLoginWebViewMadeVisible() {
+		progressView.setVisibility(View.GONE);
 		mIdentityLoginWebView.setVisibility(View.GONE);
 		mAccountLoginWebView.setVisibility(View.VISIBLE);
+	}
+	public void onIdentityLoginWebViewClose(){
+		mIdentityLoginWebView.setVisibility(View.GONE);
+	}
+
+	public void onAccountLoginWebViewMadeClose(){
+		mAccountLoginWebView.setVisibility(View.GONE);
 	}
 	/* END implementation of LoginUIListener */
 
