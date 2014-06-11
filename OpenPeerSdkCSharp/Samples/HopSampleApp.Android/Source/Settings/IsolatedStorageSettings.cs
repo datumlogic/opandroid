@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Android.App;
 using Android.Content;
-//using System.Windows;
 using Android.OS;
 using System.IO;
 using Android.Runtime;
@@ -40,6 +39,8 @@ namespace HopSampleApp
 			}
 		}
 
+		#region Adding to SharedPreferences
+
 		public void AddSettings(string key, object value)
 		{
 			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
@@ -55,16 +56,24 @@ namespace HopSampleApp
 			prefEditor.PutString(key, Convert.ToString(value));
 			prefEditor.Commit();
 		}
+		#endregion
+
+		#region Checking is there a value in SharedPreferences
+
 		public bool ContainsKey(string key)
 		{
 			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
 			return prefs.Contains(key);
 		}
+
 		public bool ContainsKey(string key,string settings_name)
 		{
 			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
 			return prefs.Contains(key);
 		}
+		#endregion
+
+		#region Getting strings from SharedPreferences
 
 		public string StringForKey(string key)
 		{
@@ -77,6 +86,10 @@ namespace HopSampleApp
 			var prefs = Application.Context.GetSharedPreferences (settings_name, FileCreationMode.Private);
 			return prefs.GetString (key,null);
 		}
+		#endregion
+
+		#region Remove
+
 		public void RemoveSettingByKey(string key)
 		{
 			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
@@ -85,6 +98,7 @@ namespace HopSampleApp
 			edit_prefs.Commit ();
 
 		}
+
 		public void RemoveSettingByKey(string key,string settings_name)
 		{
 			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
@@ -101,6 +115,10 @@ namespace HopSampleApp
 			edit_prefs.Commit ();
 
 		}
+		#endregion
+
+		#region Loading SharedPreferences to Dictionary
+
 		public void SettingsLoadInDictionary(Dictionary<string,object> dic,string settings_name)
 		{
 
@@ -113,6 +131,7 @@ namespace HopSampleApp
 			}
 		}
 
+		#endregion
 
 
 	}

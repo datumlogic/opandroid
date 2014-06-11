@@ -43,6 +43,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Android.Hardware;
+using HopSampleApp.Enums;
 using Mono;
 
 
@@ -51,6 +52,8 @@ namespace HopSampleApp
 
 	public static class Utility
 	{
+
+		#region Base 64 Encription (Encoding/Decoding)
 
 		//Base 64 Encoding.
 		public static string base64Encode(string data)
@@ -67,6 +70,7 @@ namespace HopSampleApp
 				throw new Exception("Error in base64Encode" + e.Message);
 			}
 		}
+
 		//Base 64 Decoding.
 		public static string base64Decode(string data)
 		{
@@ -87,13 +91,17 @@ namespace HopSampleApp
 				throw new Exception("Error in base64Decode" + e.Message);
 			}
 		}
+		#endregion
+
+		#region Device Informacion
+
 		//Get Device os info.
 		public static string GetDeviceOs()
 		{
 			try
 			{
 				string deviceOs = String.Format ("{0} {1}",Build.VERSION.Release,System.Environment.OSVersion);
-			    return deviceOs;
+				return deviceOs;
 			}
 			catch(Exception error)
 			{
@@ -103,38 +111,6 @@ namespace HopSampleApp
 
 		}
 
-		/*
-		public static string GetUserAgentName()
-		{
-			string developerId = NSBundle.MainBundle().InfoDictionary().ObjectForKey("Hookflash Developer ID");
-			string appName = NSBundle.MainBundle().InfoDictionary().ObjectForKey("CFBundleName");
-			string appVersion = NSBundle.MainBundle().InfoDictionary().ObjectForKey("CFBundleVersion");
-			string appOs = UIDevice.CurrentDevice().SystemName();
-			string appVersionOs = UIDevice.CurrentDevice().SystemVersion();
-			string deviceModel = UIDevice.CurrentDevice().Model();
-			string model = null;
-			if (deviceModel.HasPrefix("iPhone") || deviceModel.HasPrefix("iPod")) model = "iPhone";
-			else if (deviceModel.HasPrefix("iPad")) model = "iPad";
-
-			string userAgent = NSString.StringWithFormat("%@/%@ (%@ %@;%@) HOPID/1.0 (%@)", appName, appVersion, appOs, appVersionOs, model, developerId);
-			return userAgent;
-		}
-		*/
-
-		//Remove Cookies And Clear Credentials.
-		public static void RemoveCookiesAndClearCredentials()
-		{
-			try
-			{
-				Android.Webkit.CookieSyncManager.CreateInstance (Android.App.Application.Context);
-		        Android.Webkit.CookieManager.Instance.RemoveAllCookie ();
-			}
-			catch(Exception error)
-			{
-				throw new Exception(String.Format("RemoveCookiesAndClearCredentials Error:{0}",error.Message));
-
-			}
-		}
 		//Get device manufacturer
 		public static string GetManufacturer()
 		{
@@ -148,68 +124,50 @@ namespace HopSampleApp
 				throw new Exception(String.Format("GetManufacturer Error:{0}",error.Message));
 			}
 		}
+
 		//Get device platform.
 		public static string GetPlatform()
 		{
 			try{
-			var platformID = Android.OS.Build.VERSION.SdkInt.ToString();
-			switch (platformID)
-			{
-			case "3":
-				return "Cupcake (API 3 Android 1.5)";
-				break;
-			case "4":
-				return "Donut (API 4  Android 1.6)";
-				break;
-			case "5":
-				return "Eclair  (API 5 Android 2.0)";
-				break;
-
-			case "6":
-				return "Eclair (API 6 Android 2.0.1)";
-				break;
-			case "7":
-				return "Eclair (API 7 Android 2.1) ";
-				break;
-			case "8":
-				return"Froyo (API 8  Android 2.2–2.2.3)";
-				break;
-			case "9":
-				return "Gingerbread (API 9  Android 2.3–2.3.2)";
-				break;
-			case "10":
-				return "Gingerbread (API 10 Android 2.3.3–2.3.7)";
-				break;
-			case "11":
-				return "Honeycomb (API 11 Android 3.0)";
-				break;
-			case "12":
-				return "Honeycomb (API 12 Android 3.1)";
-				break;
-			case "13":
-				return "Honeycomb (API 13  Android 3.2 )";
-				break;
-			case "14":
-				return "Ice Cream Sandwich (API 14 Android 4.0–4.0.2 )";
-				break;
-			case "15":
-				return "Ice Cream Sandwich (api 15 Android 4.0.3–4.0.4 )";
-				break;
-			case "16":
-				return "Jelly Bean (API 16 Android 4.1)";
-				break;
-			case "17":
-				return "Jelly Bean (API 17 Android 4.2)";
-				break;
-			case "18":
-				return "Jelly Bean (API 18 Android 4.3)";
-				break;
-			case "19":
-				return "KitKat (API 19 Android 4.4)";
-				break;
-			default:
-				return "Unknown";
-				break;
+				int platformID = (int)Android.OS.Build.VERSION.SdkInt;
+				switch (platformID)
+				{
+				case 3:
+					return "Cupcake (API 3 Android 1.5)".ToString();
+				case 4:
+					return "Donut (API 4  Android 1.6)".ToString();
+				case 5:
+					return "Eclair  (API 5 Android 2.0)".ToString();
+				case 6:
+					return "Eclair (API 6 Android 2.0.1)".ToString();
+				case 7:
+					return "Eclair (API 7 Android 2.1)".ToString();
+				case 8:
+					return"Froyo (API 8  Android 2.2–2.2.3)".ToString();
+				case 9:
+					return "Gingerbread (API 9  Android 2.3–2.3.2)".ToString();
+				case 10:
+					return "Gingerbread (API 10 Android 2.3.3–2.3.7)".ToString();
+				case 11:
+					return "Honeycomb (API 11 Android 3.0)".ToString();
+				case 12:
+					return "Honeycomb (API 12 Android 3.1)".ToString();
+				case 13:
+					return "Honeycomb (API 13  Android 3.2)".ToString();
+				case 14:
+					return "Ice Cream Sandwich (API 14 Android 4.0–4.0.2)".ToString();
+				case 15:
+					return "Ice Cream Sandwich (api 15 Android 4.0.3–4.0.4)".ToString();
+				case 16:
+					return "Jelly Bean (API 16 Android 4.1)".ToString();
+				case 17:
+					return "Jelly Bean (API 17 Android 4.2)".ToString();
+				case 18:
+					return "Jelly Bean (API 18 Android 4.3)".ToString();
+				case 19:
+					return "KitKat (API 19 Android 4.4)".ToString();
+				default:
+					return "Unknown Platform".ToString();
 				}
 			}
 			catch(Exception error)
@@ -217,6 +175,7 @@ namespace HopSampleApp
 				throw new Exception(String.Format("GetPlatform Error:{0}",error.Message));
 			}
 		}
+
 		public static string GetDeviceModelName()
 		{
 			try
@@ -228,6 +187,45 @@ namespace HopSampleApp
 				throw new Exception(String.Format("GetDeviceModelName Error:{0}",error.Message));
 			}
 		}
+
+		//Count number of cameras that current device have. 
+		public static int GetNumberOfDeviceCameras()
+		{
+			try
+			{
+				return Camera.NumberOfCameras;
+			}
+			catch(Exception error)
+			{
+				throw new Exception (String.Format ("GetNumberOfDeviceCameras Error:{0}", error.Message));
+			}
+		}
+
+
+
+		//Check if current device have camera.
+		public static bool HasCamera()
+		{
+			try
+			{
+				int NumberOfCammera = Camera.NumberOfCameras;
+				if (NumberOfCammera > 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			catch(Exception error)
+			{
+				throw new Exception (String.Format ("HasCamera Error:{0}",error.Message));
+			}
+
+		}
+
+
 		//Get device model full name
 		public static string GetDeviceFullNameOfModel()
 		{
@@ -273,9 +271,10 @@ namespace HopSampleApp
 
 
 		}
+		#endregion
+			
 
-
-
+		#region Methods for Various checks
 		//Get GUID string.
 		public static string GetGUIDstring()
 		{
@@ -291,50 +290,50 @@ namespace HopSampleApp
 			}
 
 		}
-		/*
-		//need sdk for fix
+
+		//Get Call states as string
 		public static string GetCallStateAsString(HOPCallStates callState)
 		{
 			string res = null;
 			switch (callState)
 			{
-			case HOPCallStateNone :
+			case HOPCallStates.HOPCallStateNone :
 				break;
-			case HOPCallStatePreparing :
-				res = NSLocalizedString("preparing", "");
+			case HOPCallStates.HOPCallStatePreparing :
+				res = "preparing";
 				break;
-			case HOPCallStateIncoming :
-				res = NSLocalizedString("incoming", "");
+			case HOPCallStates.HOPCallStateIncoming :
+				res = "incoming";
 				break;
-			case HOPCallStatePlaced :
-				res = NSLocalizedString("placed", "");
+			case HOPCallStates.HOPCallStatePlaced :
+				res = "placed";
 				break;
-			case HOPCallStateEarly :
-				res = NSLocalizedString("early", "");
+			case HOPCallStates.HOPCallStateEarly :
+				res = "early";
 				break;
-			case HOPCallStateRinging :
-				res = NSLocalizedString("ringing", "");
+			case HOPCallStates.HOPCallStateRinging :
+				res = "ringing";
 				break;
-			case HOPCallStateRingback :
-				res = NSLocalizedString("ringback", "");
+			case HOPCallStates.HOPCallStateRingback :
+				res = "ringback";
 				break;
-			case HOPCallStateOpen :
-				res = NSLocalizedString("open", "");
+			case HOPCallStates.HOPCallStateOpen :
+				res = "open";
 				break;
-			case HOPCallStateActive :
-				res = NSLocalizedString("active", "");
+			case HOPCallStates.HOPCallStateActive :
+				res = "active";
 				break;
-			case HOPCallStateInactive :
-				res = NSLocalizedString("inactive", "");
+			case HOPCallStates.HOPCallStateInactive :
+				res = "inactive";
 				break;
-			case HOPCallStateHold :
-				res = NSLocalizedString("hold", "");
+			case HOPCallStates.HOPCallStateHold :
+				res = "hold";
 				break;
-			case HOPCallStateClosing :
-				res = NSLocalizedString("closing", "");
+			case HOPCallStates.HOPCallStateClosing :
+				res = "closing";
 				break;
-			case HOPCallStateClosed :
-				res = NSLocalizedString("closed", "");
+			case HOPCallStates.HOPCallStateClosed :
+				res = "closed";
 				break;
 			default :
 				return null;
@@ -342,30 +341,30 @@ namespace HopSampleApp
 
 			return res;
 		}
-		*/
 
-		/*
-		//need sdk for fix
+		//Get Message Delivery state as string
 		public static string GetMessageDeliveryStateAsString(HOPConversationThreadMessageDeliveryStates messageState)
 		{
 			string res = null;
 			switch (messageState)
 			{
-			case HOPConversationThreadMessageDeliveryStateDiscovering :
-				res = NSLocalizedString("discovering", "");
+			case HOPConversationThreadMessageDeliveryStates.HOPConversationThreadMessageDeliveryStateDiscovering:
+				res = "discovering";
 				break;
-			case HOPConversationThreadMessageDeliveryStateUserNotAvailable :
-				res = NSLocalizedString("user not available", "");
+			case HOPConversationThreadMessageDeliveryStates.HOPConversationThreadMessageDeliveryStateUserNotAvailable:
+				res = "user not available";
 				break;
-			case HOPConversationThreadMessageDeliveryStateDelivered :
-				res = NSLocalizedString("delivered", "");
+			case HOPConversationThreadMessageDeliveryStates.HOPConversationThreadMessageDeliveryStateDelivered:
+				res = "delivered";
+				break;
+			default:
 				break;
 			}
 
 			return res;
 		}
 
-		*/
+
 
 		/*
 		//need fix
@@ -382,44 +381,38 @@ namespace HopSampleApp
 		}
 		*/
 
+		/*
+		public static string GetUserAgentName()
+		{
+			string developerId = NSBundle.MainBundle().InfoDictionary().ObjectForKey("Hookflash Developer ID");
+			string appName = NSBundle.MainBundle().InfoDictionary().ObjectForKey("CFBundleName");
+			string appVersion = NSBundle.MainBundle().InfoDictionary().ObjectForKey("CFBundleVersion");
+			string appOs = UIDevice.CurrentDevice().SystemName();
+			string appVersionOs = UIDevice.CurrentDevice().SystemVersion();
+			string deviceModel = UIDevice.CurrentDevice().Model();
+			string model = null;
+			if (deviceModel.HasPrefix("iPhone") || deviceModel.HasPrefix("iPod")) model = "iPhone";
+			else if (deviceModel.HasPrefix("iPad")) model = "iPad";
 
-		//Count number of cameras that current device have. 
-		public static int GetNumberOfDeviceCameras()
+			string userAgent = NSString.StringWithFormat("%@/%@ (%@ %@;%@) HOPID/1.0 (%@)", appName, appVersion, appOs, appVersionOs, model, developerId);
+			return userAgent;
+		}
+		*/
+
+		//Remove Cookies And Clear Credentials.
+		public static void RemoveCookiesAndClearCredentials()
 		{
 			try
 			{
-				return Camera.NumberOfCameras;
+				Android.Webkit.CookieSyncManager.CreateInstance (Android.App.Application.Context);
+				Android.Webkit.CookieManager.Instance.RemoveAllCookie ();
 			}
 			catch(Exception error)
 			{
-				throw new Exception (String.Format ("GetNumberOfDeviceCameras Error:{0}", error.Message));
+				throw new Exception(String.Format("RemoveCookiesAndClearCredentials Error:{0}",error.Message));
+
 			}
 		}
-
-
-
-		//Check if current device have camera.
-		public static bool HasCamera()
-		{
-			try
-			{
-				int NumberOfCammera = Camera.NumberOfCameras;
-			    if (NumberOfCammera > 0)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			catch(Exception error)
-			{
-				throw new Exception (String.Format ("HasCamera Error:{0}",error.Message));
-			}
-
-		}
-
 
 		//Check if is url valid using regular expression.
 		public static bool IsValidURL(string candidate)
@@ -490,12 +483,6 @@ namespace HopSampleApp
 				throw new Exception(String.Format("DateFromTimeString Error:{0}",error.Message));
 			}
 		}
-		public static string Proba()
-		{
-			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);  
-			var somePref = prefs.GetString("APPSETTINGS", null);
-			return somePref;
-		}
 
 		//Check if app setting need to be updated.
 		public static bool IsAppUpdated()
@@ -523,7 +510,7 @@ namespace HopSampleApp
 				throw new Exception (String.Format ("IsAppUpdated Error:{0}", error.Message));
 			}
 		}
-
+		#endregion
 
 
 	}

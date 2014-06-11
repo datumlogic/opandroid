@@ -35,11 +35,12 @@ using Android.Views;
 using Android.Widget;
 using System.Threading;
 using System.Threading.Tasks;
+using HopSampleApp.Enums;
 namespace HopSampleApp
 {
 	//Only for translation
-	public class HOPConversationThreadContactStates{}
-	public class HOPConversationThreadMessageDeliveryStates{}
+
+
 	public class HOPContact{}
 	public class HOPMessage{}
 

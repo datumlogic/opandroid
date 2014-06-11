@@ -444,22 +444,16 @@ namespace HopSampleApp
 			{
 			case HOPLoggerLevels.HOPLoggerLevelNone :
 				return "NONE";
-						//break;
 			case HOPLoggerLevels.HOPLoggerLevelBasic :
 				return "BASIC";
-						//break;
 			case HOPLoggerLevels.HOPLoggerLevelDetail :
 				return "DETAIL";
-						//break;
 			case HOPLoggerLevels.HOPLoggerLevelDebug :
 				return "DEBUG";
-						//break;
 			case HOPLoggerLevels.HOPLoggerLevelTrace :
 				return "TRACE";
-						//break;
 			case HOPLoggerLevels.HOPLoggerLevelInsane :
 				return "INSANE";
-						//break;
 			default :
 				break;
 			}
@@ -693,7 +687,8 @@ namespace HopSampleApp
 		void storeQRSettings(NSDictionary inDictionary)
 		{
 			NSUserDefaults.standardUserDefaults().setObjectForKey(inDictionary, settingsKeyAppliedQRSettings);
-		}
+		}*/
+		/*
 		void removeAppliedQRSettings()
 		{
 			//Load applied QR settings
