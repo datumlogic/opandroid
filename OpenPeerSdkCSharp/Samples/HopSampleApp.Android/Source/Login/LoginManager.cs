@@ -15,18 +15,16 @@ namespace HopSampleApp
 	//Singletron class just for translation
 	class LoginManager
 	{
-		public Dictionary<string,object> AssociatingIdentitiesDictionary { get; set; }
-		public WebLoginViewController PreloadedWebLoginViewController {get; set;}
-		public bool IsLogin { get; set; }
+		public  Dictionary<string,object> AssociatingIdentitiesDictionary { get; set; }
+		//public static WebLoginViewController PreloadedWebLoginViewController {get; set;}
+		public  bool IsLogin { get; set; }
 		public bool IsAssociation {get; set;}
 
 
 		private static LoginManager instance;
 		private LoginManager()
-		{ 
-			this.IsLogin = false;
-			this.IsAssociation = false;
-			this.AssociatingIdentitiesDictionary = new Dictionary<string,object>();
+		{
+
 
 		}
 		public static LoginManager SharedLoginManager()
@@ -35,16 +33,11 @@ namespace HopSampleApp
 				instance = new LoginManager();
 			return instance;
 		}
+
+
 		//
-		public static TValue ObjectForKey<TKey,TValue>(this Dictionary<TKey,TValue> dictionary, TKey key)
-		{
-			TValue val = default(TValue);
-			dictionary.TryGetValue(key,out val);
-			return val;
-		}
-		//
-		void login()
-		{
+		public  void login()
+		{/*
 			//If peer file doesn't exists, show login view, otherwise start relogin
 			if (!HOPModelManager.sharedModelManager().getLastLoggedInHomeUser())
 			{
@@ -54,11 +47,11 @@ namespace HopSampleApp
 			{
 				this.startRelogin();
 			}
-
+			*/
 		}
 		//
-		void clearIdentities()
-		{
+		public  void clearIdentities()
+		{/*
 			ArrayList associatedIdentities = HOPAccount.sharedAccount().getAssociatedIdentities();
 			foreach (HOPIdentity identity in associatedIdentities)
 			{
@@ -68,18 +61,12 @@ namespace HopSampleApp
 			{
 				identity.cancel();
 			}
-			this.AssociatingIdentitiesDictionary.Clear ();
-
+			this.AssociatingIdentitiesDictionary.Clear ();*/
 		}
-
-		/**
-        
-           Logout from the current account.
-        
-           */
-		void logout()
+		//Logout from the current account.
+		public void logout()
 		{
-
+			/*
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Logout started");
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelInsane, "Remove cookies");
 			//Delete all cookies.
@@ -110,7 +97,7 @@ namespace HopSampleApp
 			HOPModelManager.sharedModelManager().clearSessionRecords();
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelInsane, "Release all core objects");
 			HOPStack.sharedStack().doLogoutCleanup();
-
+			*/
 		}
 		//
 		/**
@@ -118,15 +105,16 @@ namespace HopSampleApp
            Logout from the current account.
         
            */
-		void startAccount()
+		public  void startAccount()
 		{
 			//HOPAccount.sharedAccount().loginWithAccountDelegateConversationThreadDelegateCallDelegateNamespaceGrantOuterFrameURLUponReloadGrantIDLockboxServiceDomainForceCreateNewLockboxAccount((HOPAccountDelegate)OpenPeer.sharedOpenPeer().accountDelegate(), (HOPConversationThreadDelegate)OpenPeer.sharedOpenPeer().conversationThreadDelegate(), (HOPCallDelegate)OpenPeer.sharedOpenPeer().callDelegate(), Settings.sharedSettings().getOuterFrameURL(), UUIDManager.sharedUUIDManager().getUUID(), Settings.sharedSettings().getIdentityProviderDomain(), false);
 		}
 
-		void startLogin()
+		public void startLogin()
 		{
-			this.startLoginUsingIdentityURI(Settings.sharedSettings().getIdentityFederateBaseURI());
+			startLoginUsingIdentityURI(Settings.SharedSettings().getIdentityFederateBaseURI());
 			this.IsLogin = true;
+
 		}
 
 		/**
@@ -139,7 +127,7 @@ namespace HopSampleApp
 
 		public static void startLoginUsingIdentityURI(string identityURI)
 		{
-
+			/*
 			if (!this.AssociatingIdentitiesDictionary.TryGetValue(identityURI))
 			{
 				//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Identity login started for uri: %@", identityURI);
@@ -158,7 +146,7 @@ namespace HopSampleApp
 					this.AssociatingIdentitiesDictionary.setObjectForKey(hopIdentity, identityURI);
 				}
 
-			}
+			}*/
 
 		}
 		//
@@ -167,8 +155,9 @@ namespace HopSampleApp
            Initiates relogin procedure.
         
            */
-		void startRelogin()
+		public void startRelogin()
 		{
+			/*
 			bool reloginStarted = false;
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Relogin started");
 			OpenPeer.sharedOpenPeer().mainViewController().onRelogin();
@@ -180,12 +169,12 @@ namespace HopSampleApp
 			}
 
 			if (!reloginStarted)
-				//OPLog(HOPLoggerSeverityError, HOPLoggerLevelDebug, "Relogin has failed");
+				//OPLog(HOPLoggerSeverityError, HOPLoggerLevelDebug, "Relogin has failed");*/
 
 		}
 
-		public void preloadLoginWebPage()
-		{
+		public static  void preloadLoginWebPage()
+		{/*
 			if (!this.PreloadedWebLoginViewController)
 			{
 				this.PreloadedWebLoginViewController = new WebLoginViewController ();
@@ -193,7 +182,7 @@ namespace HopSampleApp
 
 			}
 
-			this.PreloadedWebLoginViewController.openLoginUrl(Settings.sharedSettings().getOuterFrameURL());
+			this.PreloadedWebLoginViewController.openLoginUrl(Settings.sharedSettings().getOuterFrameURL());*/
 		}
 
 		/**
@@ -204,7 +193,7 @@ namespace HopSampleApp
         
            */
 		public void onIdentityAssociationFinished(HOPIdentity identity)
-		{
+		{/*
 			string relogininfo = HOPAccount.sharedAccount().getReloginInformation();
 			if (relogininfo.length() > 0)
 			{
@@ -234,11 +223,11 @@ namespace HopSampleApp
 				this.AssociatingIdentitiesDictionary.Clear ();
 			}
 
-			this.onUserLoggedIn();
+			this.onUserLoggedIn();*/
 		}
 		//
 		public void attachDelegateForIdentityForceAttach(HOPIdentity identity, bool forceAttach)
-		{
+		{/*
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Attach delegate for identity with URI: %@", identity.getIdentityURI());
 			if (!identity.isDelegateAttached() || forceAttach)
 			{
@@ -247,7 +236,7 @@ namespace HopSampleApp
 				this.onIdentityAssociationFinished(identity);
 				string redirectAfterLoginCompleteURL = NSString.stringWithFormat("%@?reload=true", Settings.sharedSettings().getOuterFrameURL());
 				identity.attachDelegateRedirectionURL((HOPIdentityDelegate)OpenPeer.sharedOpenPeer().identityDelegate(), redirectAfterLoginCompleteURL);
-			}
+			}*/
 
 		}
 		//
@@ -256,119 +245,84 @@ namespace HopSampleApp
            Handles SDK event after login is successful.
         
            */
-        void onUserLoggedIn()
-        {
+		public void onUserLoggedIn()
+		{/*
 			// OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "onUserLoggedIn");
-            //Wait till identity association is not completed
-            if (HOPAccount.sharedAccount().getState().state == HOPAccountStateReady && this.associatingIdentitiesDictionary.count() == 0)
-            {
+			//Wait till identity association is not completed
+			if (HOPAccount.sharedAccount().getState().state == HOPAccountStateReady && this.associatingIdentitiesDictionary.count() == 0)
+			{
 				// OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "User is successfully logged in.");
-                if (!OpenPeer.sharedOpenPeer().appEnteredForeground())
-                {
-                    ArrayList associatedIdentites = HOPAccount.sharedAccount().getAssociatedIdentities();
-                    foreach (HOPIdentity identity in associatedIdentites)
-                    {
-                        if (!identity.isDelegateAttached())
-                        {
+				if (!OpenPeer.sharedOpenPeer().appEnteredForeground())
+				{
+					ArrayList associatedIdentites = HOPAccount.sharedAccount().getAssociatedIdentities();
+					foreach (HOPIdentity identity in associatedIdentites)
+					{
+						if (!identity.isDelegateAttached())
+						{
 							string redirectAfterLoginCompleteURL = String.Format("{0}?reload=true", Settings.sharedSettings().getOuterFrameURL());
 							identity.attachDelegateRedirectionURL((IdentityDelegate)OpenPeer.sharedOpenPeer().identityDelegate(), redirectAfterLoginCompleteURL);
-                        }
+						}
 
-                    }
-                    //Check if it is logged in a new user
-                    HOPHomeUser previousLoggedInHomeUser = HOPModelManager.sharedModelManager().getLastLoggedInHomeUser();
-                    HOPHomeUser homeUser = HOPModelManager.sharedModelManager().getHomeUserByStableID(HOPAccount.sharedAccount().getStableID());
-                    if (homeUser)
-                    {
-                        //If is previous logged in user is different update loggedIn flag
-                        if (!homeUser.loggedIn.boolValue())
-                        {
-                            if (previousLoggedInHomeUser) previousLoggedInHomeUser.loggedIn = false;
+					}
+					//Check if it is logged in a new user
+					HOPHomeUser previousLoggedInHomeUser = HOPModelManager.sharedModelManager().getLastLoggedInHomeUser();
+					HOPHomeUser homeUser = HOPModelManager.sharedModelManager().getHomeUserByStableID(HOPAccount.sharedAccount().getStableID());
+					if (homeUser)
+					{
+						//If is previous logged in user is different update loggedIn flag
+						if (!homeUser.loggedIn.boolValue())
+						{
+							if (previousLoggedInHomeUser) previousLoggedInHomeUser.loggedIn = false;
 
-                            homeUser.loggedIn = NSNumber.numberWithBool(true);
-                            HOPModelManager.sharedModelManager().saveContext();
-                        }
+							homeUser.loggedIn = NSNumber.numberWithBool(true);
+							HOPModelManager.sharedModelManager().saveContext();
+						}
 
-                    }
+					}
 
-                    //Not yet ready for association
-                    /*if ((self.isLogin || self.isAssociation) && ([associatedIdentites count] < 2))
-                    
-                       {
-                    
-                       self.isLogin = NO;
-                    
-                       
-                    
-                       HOPIdentity* identity = [associatedIdentites objectAtIndex:0];
-                    
-                       
-                    
-                       NSString* message = @"Do you want to associate federated account?";
-                    
-                       
-                    
-                       if ([[identity getBaseIdentityURI] isEqualToString:identityFacebookBaseURI])
-                    
-                       message = @"Do you want to associate federated account?";
-                    
-                       else
-                    
-                       message = @"Do you want to associate facebook account?";
-                    
-                       
-                    
-                       UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Identity association" message:message delegate:self cancelButtonTitle:@"NO" otherButtonTitles:@"YES", nil];
-                    
-                       
-                    
-                       [alert show];
-                    
-                       }
-                    
-                       else*/
+					//Not yet ready for association
 
-                    {
-                        OpenPeer.sharedOpenPeer().mainViewController().onLoginFinished();
-                        //Start loading contacts.
+					{
+						OpenPeer.sharedOpenPeer().mainViewController().onLoginFinished();
+						//Start loading contacts.
 						ContactsManager.sharedContactsManager().loadContacts();
-                    }
-                }
-                else
-                {
-                    SessionManager.sharedSessionManager().recreateExistingSessions();
-                }
+					}
+				}
+				else
+				{
+					SessionManager.sharedSessionManager().recreateExistingSessions();
+				}
 
-                #ifdef APNS_ENABLED
-                    APNSInboxManager.sharedAPNSInboxManager().getAllMessages();
-                #endif
+				#if APNS_ENABLED
+				APNSInboxManager.sharedAPNSInboxManager().getAllMessages();
+				#endif
 
-                //Login finished. Remove activity indicator
-                ActivityIndicatorViewController.sharedActivityIndicator().showActivityIndicatorWithTextInView(false, null, null);
-            }
-            else
-            {
-				int o = this.AssociatingIdentitiesDictionary.Count();
-                if (o > 0)
-                {
+				//Login finished. Remove activity indicator
+				ActivityIndicatorViewController.sharedActivityIndicator().showActivityIndicatorWithTextInView(false, null, null);
+			}
+			else
+			{
+				int op = this.AssociatingIdentitiesDictionary.Count();
+				if (op > 0)
+				{
 					// OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "onUserLoggedIn - NOT Ready because of associatingIdentitiesDictionary is not empty: %d", o);
-                }
-                else
-                {
+				}
+				else
+				{
 					// OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "onUserLoggedIn - NOT Ready because account is not in ready state");
-                }
+				}
 
-            }
+			}*/
 
-        }
+		}
 
-        void onUserLogOut()
-        {
+		public void onUserLogOut()
+		{
 			// OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Logout finished");
-            OpenPeer.sharedOpenPeer().finishPreSetup();
-        }
+			// OpenPeer.sharedOpenPeer().finishPreSetup();
+		}
 
-        /**
+		/**
         
            Retrieves info if an identity with specified URI is associated or not.
         
@@ -377,22 +331,23 @@ namespace HopSampleApp
            @return YES if associated, otherwise NO
         
            */
-        bool isAssociatedIdentity(string inBaseIdentityURI)
-        {
-            bool ret = false;
-            HOPHomeUser homeUser = HOPModelManager.sharedModelManager().getLastLoggedInHomeUser();
-            if (homeUser)
-            {
-                HOPAssociatedIdentity associatedIdentity = HOPModelManager.sharedModelManager().getAssociatedIdentityBaseIdentityURIHomeUserStableId(inBaseIdentityURI, homeUser.stableId);
-                if (associatedIdentity) ret = true;
+		public bool isAssociatedIdentity(string inBaseIdentityURI)
+		{
+			bool ret = false;
+			//HOPHomeUser homeUser = HOPModelManager.sharedModelManager().getLastLoggedInHomeUser();
+			// if (homeUser)
+			//{
+			//   HOPAssociatedIdentity associatedIdentity = HOPModelManager.sharedModelManager().getAssociatedIdentityBaseIdentityURIHomeUserStableId(inBaseIdentityURI, homeUser.stableId);
+			//   if (associatedIdentity) ret = true;
 
-            }
+			// }
 
-            return ret;
-        }
+			return ret;
+		}
 
-        bool isUserFullyLoggedIn()
-        {
+		public bool isUserFullyLoggedIn()
+		{
+			/*
             bool ret = false;
             ret = HOPAccount.sharedAccount().getState().state == HOPAccountStateReady;
             if (ret)
@@ -409,11 +364,12 @@ namespace HopSampleApp
                 }
             }
 
-            return ret;
-        }
+            return ret;*/
+			return false;
+		}
 
-       
-        void alertViewClickedButtonAtIndex(UIAlertView alertView, int buttonIndex)
+		/*
+		public static void alertViewClickedButtonAtIndex(UIAlertView alertView, int buttonIndex)
         {
             if (buttonIndex != alertView.cancelButtonIndex)
             {
@@ -437,9 +393,9 @@ namespace HopSampleApp
                 ContactsManager.sharedContactsManager().loadContacts();
             }
 
-        }
+		}*/
 
-	
+
 
 	}
 }

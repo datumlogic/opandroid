@@ -110,6 +110,10 @@
     <Compile Include="Source\Settings\HOPSettings.cs" />
     <Compile Include="Source\Services\HOPUtility.cs" />
     <Compile Include="Source\Settings\IsolatedStorageSettings.cs" />
+    <Compile Include="Source\Services\HOPAssociatedIdentity.cs" />
+    <Compile Include="Source\Services\ActivityIndicatorViewController.cs" />
+    <Compile Include="Source\Services\HOPHomeUser.cs" />
+    <Compile Include="Source\Services\HOPModelManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

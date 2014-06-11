@@ -92,13 +92,13 @@ namespace HopSampleApp
 
 		public bool EnabledStdLogger {get; set;}
 
-		public Dictionary<string,object> AppModulesLoggerLevel {get; set;}
+		public Dictionary<string,string> AppModulesLoggerLevel {get; set;}
 
 		public Dictionary<string,object> TelnetLoggerSettings {get; set;}
 
 		public Dictionary<string,object> OutgoingTelnetLoggerSettings {get; set;}
 
-		private Settings instance;
+		private static Settings instance;
 		private Settings()
 		{
 			//need to make IsolatedStorageSettings for android
@@ -126,8 +126,8 @@ namespace HopSampleApp
 					
 
 			//this.AppModulesLoggerLevel = NSUserDefaults.standardUserDefaults().objectForKey(archiveModulesLogLevels).mutableCopy();
-			if (!this.AppModulesLoggerLevel) 
-				this.AppModulesLoggerLevel = new Dictionary<string,object>();
+			if (this.AppModulesLoggerLevel !=null) 
+				this.AppModulesLoggerLevel = new Dictionary<string,string>();
 
 		}
 		public static Settings SharedSettings()
@@ -236,7 +236,7 @@ namespace HopSampleApp
 			if (key.Length > 0)
 			{
 				key = new StringBuilder (key).Append (AppConsts.archiveServer).ToString ();
-				ret = IsolatedStorageSettings.ApplicationSettings.StringForKey (key);
+				ret = IsolatedStorageSettings.ApplicationSettings.StringForKey(key).ToString();
 			}
 
 			return ret;
@@ -279,8 +279,9 @@ namespace HopSampleApp
 		public HOPLoggerLevels getLoggerLevelForAppModuleKey (string moduleKey)
 		{
 			HOPLoggerLevels ret =HOPLoggerLevels.HOPLoggerLevelNone;
-			int retNumber = this.AppModulesLoggerLevel.TryGetValue(moduleKey);
-			if (retNumber) ret = (HOPLoggerLevels)retNumber;
+
+			int retNumber =Convert.ToInt32(this.AppModulesLoggerLevel.FirstOrDefault(x=>x.Value.Contains(moduleKey)).Key);
+			if (retNumber !=0) ret = (HOPLoggerLevels)retNumber;
 
 			return ret;
 		}
@@ -289,7 +290,7 @@ namespace HopSampleApp
 		public void setLoggerLevelForAppModule(HOPLoggerLevels level, Modules module)
 		{
 			string archiveString = this.getArchiveStringForModule(module);
-			this.AppModulesLoggerLevel.Add (Convert.ToInt32 (level), archiveString);
+			this.AppModulesLoggerLevel.Add(getStringForLogLevel(level),archiveString);
 			this.saveModuleLogLevels();
 		}
 
@@ -443,22 +444,22 @@ namespace HopSampleApp
 			{
 			case HOPLoggerLevels.HOPLoggerLevelNone :
 				return "NONE";
-				break;
+						//break;
 			case HOPLoggerLevels.HOPLoggerLevelBasic :
 				return "BASIC";
-				break;
+						//break;
 			case HOPLoggerLevels.HOPLoggerLevelDetail :
 				return "DETAIL";
-				break;
+						//break;
 			case HOPLoggerLevels.HOPLoggerLevelDebug :
 				return "DEBUG";
-				break;
+						//break;
 			case HOPLoggerLevels.HOPLoggerLevelTrace :
 				return "TRACE";
-				break;
+						//break;
 			case HOPLoggerLevels.HOPLoggerLevelInsane :
 				return "INSANE";
-				break;
+						//break;
 			default :
 				break;
 			}
@@ -566,13 +567,13 @@ namespace HopSampleApp
 		public bool isAppSettingsSetForPath(string path)
 		{
 			bool ret = true;
-			Dictionary<string,object> customerSpecificDict = new Dictionary<string, object> ().Contains (path);
+			Dictionary<string,object> customerSpecificDict = new Dictionary<string, object> ();//.Contains (path);
 			if (customerSpecificDict.Count > 0)
 			{
-				string appID = customerSpecificDict.TryGetValue(AppConsts.settingsKeyAppId);
-				string appSecret = customerSpecificDict.TryGetValue(AppConsts.settingsKeyAppIdSharedSecret);
-				string appName = customerSpecificDict.TryGetValue(AppConsts.settingsKeyAppName);
-				if (appID.Length == 0 || appSecret.Length == 0 || appName.Length == 0) ret = false;
+				//string appID = customerSpecificDict.GetObjectData(AppConsts.settingsKeyAppId);
+				//string appSecret = customerSpecificDict.GetObjectData(AppConsts.settingsKeyAppIdSharedSecret);
+				//string appName = customerSpecificDict.GetObjectData(AppConsts.settingsKeyAppName);
+				//if (appID.Length == 0 || appSecret.Length == 0 || appName.Length == 0) ret = false;
 			}
 			return ret;
 		}
@@ -673,11 +674,11 @@ namespace HopSampleApp
 		}*/
 		public void updateDeviceInfo()
 		{
-			string deviceId = HOPUtility.hashString(Utility.GetGUIDstring);
+			string deviceId = HOPUtility.hashString(Utility.GetGUIDstring());
 			if (deviceId.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(deviceId, "openpeer/calculated/device-id");
-			string str = Utility.GetDeviceOs;
+			string str = Utility.GetDeviceOs();
 			if (str.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(str, "openpeer/calculated/os");
-			string system = Utility.GetPlatform;
+			string system = Utility.GetPlatform();
 			if (system.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(system, "openpeer/calculated/system");
 			//string userAgent = Utility.getUserAgentName();
 			//if (userAgent.length() > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(userAgent, HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyUserAgent));

@@ -36,10 +36,10 @@ using Android.Widget;
 
 namespace HopSampleApp
 {
-	class HOPSettings
+	class  HOPSettings
 	{
 
-		private HOPSettings instance;
+		private static HOPSettings instance;
 		private HOPSettings()
 		{
 
@@ -47,32 +47,65 @@ namespace HopSampleApp
 		public static HOPSettings sharedSettings()
 		{
 			if (instance == null)
-				instance = new Settings();
+				instance = new HOPSettings();
 			return instance;
 		}
 		//void setupWithDelegate(HOPSettingsDelegate inDelegate);
 
-		public void setup();
+		public void setup()
+		{
 
-		public bool applySettings(string jsonSettings);
+		}
 
-		public void applyDefaults();
+		public bool applySettings(string jsonSettings)
+		{
+			return false;
+		}
 
-		public void storeSettingsFromDictionary(Dictionary<string,object> inDictionary);
+		public void applyDefaults()
+		{
 
-		public void storeSettingsFromPath(string path);
+		}
 
-		public void storeAuthorizedApplicationId(string inAuthorizedApplicationId);
+		public void storeSettingsFromDictionary(Dictionary<string,object> inDictionary)
+		{
 
-		public string getAuthorizedApplicationId();
+		}
 
-		public void storeCalculatedSettingObjectKey(object theObject, string key);
+		public void storeSettingsFromPath(string path)
+		{
 
-		public void storeSettingsObjectKey(object theObject, string key);
+		}
 
-		public string getCoreKeyForAppKey(string key);
+		public void storeAuthorizedApplicationId(string inAuthorizedApplicationId)
+		{
 
-		public Dictionary<string,object> getCurrentSettingsDictionary();
+		}
+
+		public string getAuthorizedApplicationId()
+		{
+			return null;
+		}
+
+		public void storeCalculatedSettingObjectKey(object theObject, string key)
+		{
+
+		}
+
+		public void storeSettingsObjectKey(object theObject, string key)
+		{
+
+		}
+
+		public string getCoreKeyForAppKey(string key)
+		{
+			return null;
+		}
+
+		public Dictionary<string,object> getCurrentSettingsDictionary()
+		{
+			return null;
+		}
 	}
 }
 

@@ -65,7 +65,7 @@ namespace HopSampleApp
 		public static void OnMediaEngineFaceDetected()
 		{
 			ThreadPool.QueueUserWorkItem( delegate {
-				 SessionManager.SharedSessionManager().OnFaceDetected();
+				SessionManager.SharedSessionManager().onFaceDetected();
 
 			});
 		}

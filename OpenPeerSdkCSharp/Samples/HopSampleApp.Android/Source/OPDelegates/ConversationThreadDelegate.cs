@@ -106,7 +106,7 @@ namespace HopSampleApp
 		{
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Handling a new message with id %@ for conversation thread.", messageID);
 			ThreadPool.QueueUserWorkItem( delegate {
-				SessionManager.SharedSessionManager().SetLatestValidConversationThread(conversationThread);
+				SessionManager.SharedSessionManager().setLatestValidConversationThread(conversationThread);
 				/*
 				HOPMessage message = conversationThread.GetMessageForID(messageID);
 				if (message)
@@ -125,7 +125,7 @@ namespace HopSampleApp
 		void OnConversationThreadPushMessageMessageIDContact(HOPConversationThread conversationThread, string messageID, HOPContact coreContact)
 		{
 			//need fix
-
+			/*
 			//#if APNS_ENABLED
 			if (coreContact)
 			{
@@ -152,7 +152,7 @@ namespace HopSampleApp
 					}
 				}
 			}
-
+			*/
 			//#endif
 
 		}

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using Android.App;
 using Android.Content;
+//using System.Windows;
 using Android.OS;
+using System.IO;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
@@ -63,15 +65,17 @@ namespace HopSampleApp
 			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
 			return prefs.Contains(key);
 		}
+
 		public string StringForKey(string key)
 		{
 			var prefs = Application.Context.GetSharedPreferences("androidsampleapp", FileCreationMode.Private);
-			return prefs.GetString (key);
+			return prefs.GetString(key,null);
 		}
+
 		public string StringForKey(string key,string settings_name)
 		{
-			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
-			return prefs.GetString (key);
+			var prefs = Application.Context.GetSharedPreferences (settings_name, FileCreationMode.Private);
+			return prefs.GetString (key,null);
 		}
 		public void RemoveSettingByKey(string key)
 		{

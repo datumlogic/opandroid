@@ -63,12 +63,12 @@ namespace HopSampleApp
 
 		public bool checkIsContactValid(HOPContact contact)
 		{
-
+			return false;
 		}
 
 		public ArrayList getBaseURIsForStableId(string stableID)
 		{
-
+			return null;
 		}
 
 		//string createProfileBundleForCommunicationWithContact(HOPRolodexContact targetContact);
@@ -77,7 +77,7 @@ namespace HopSampleApp
 
 		public ArrayList getIdentityContactsForHomeUser()
 		{
-
+			return null;
 		}
 
 		public void removeAllContacts()

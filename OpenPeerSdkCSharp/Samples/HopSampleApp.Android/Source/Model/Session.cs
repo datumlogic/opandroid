@@ -42,7 +42,7 @@ namespace HopSampleApp
 			{
 				if (!this.ArrayMergedConversationThreads.Contains(value))
 				{
-					if (value) this.ArrayMergedConversationThreads.Add(value);
+					if (value !=null) this.ArrayMergedConversationThreads.Add(value);
 					else this.ArrayMergedConversationThreads.Clear();
 
 				}
@@ -55,7 +55,7 @@ namespace HopSampleApp
 		
 			
 
-
+		/*
 		public Session(HOPRolodexContact inContact, HOPConversationThread inConverationThread)
 		{
 			this.ParticipantsArray = new ArrayList();
@@ -66,19 +66,19 @@ namespace HopSampleApp
 			this.ArrayMergedConversationThreads = new ArrayList();
 			this.ConversationThread= inConverationThread;
 			this.SessionIdsHistory.Add(inConverationThread.GetThreadId());
-		}
+		}*/
 
 		public Session(ArrayList inContacts, HOPConversationThread inConverationThread)
 		{
 			this.ParticipantsArray = new ArrayList();
-			if (inContacts)
+			if (inContacts !=null)
 				this.ParticipantsArray=new ArrayList(inContacts);
 
 			this.MessageArray = new ArrayList();
 			this.SessionIdsHistory = new ArrayList();//NSMutableSet();
 			this.UnreadMessageArray = new ArrayList();
 			this.ConversationThread = inConverationThread;
-			this.SessionIdsHistory.Add(inConverationThread.GetThreadId);
+			this.SessionIdsHistory.Add(inConverationThread.GetThreadId());
 		}
 
 	}

@@ -11,29 +11,29 @@ using Android.Widget;
 
 namespace HopSampleApp
 {
-	public interface ChatViewControllerDelegate : object
+	public interface ChatViewControllerDelegate
 	{
 		void prepareForKeyboardShowKeyboard(Dictionary<string,object> userInfo, bool showKeyboard);
 
 	}
-	public interface VideoCallViewControllerDelegate : object
+	public interface VideoCallViewControllerDelegate
 	{
 		void hideVideo(bool hide);
 
 	}
-	public interface LoginEventsDelegate : object
+	public interface LoginEventsDelegate 
 	{
 		void onStartLoginWithidentityURI();
 
 		void onOpeningLoginPage();
 
-		void onLoginWebViewVisible(WebLoginViewController webLoginViewController);
+		//void onLoginWebViewVisible(WebLoginViewController webLoginViewController);
 
 		void onRelogin();
 
 		void onLoginFinished();
 
-		void onIdentityLoginWebViewCloseForIdentityURI(WebLoginViewController webLoginViewController, string identityURI);
+		//void onIdentityLoginWebViewCloseForIdentityURI(WebLoginViewController webLoginViewController, string identityURI);
 
 		void onIdentityLoginFinished();
 
@@ -43,11 +43,11 @@ namespace HopSampleApp
 
 		void onAccountLoginError(string error);
 
-		void onAccountLoginWebViewClose(WebLoginViewController webLoginViewController);
+		//void onAccountLoginWebViewClose(WebLoginViewController webLoginViewController);
 
 	}
 
-	public  interface HTTPDownloaderDelegate : object
+	public  interface HTTPDownloaderDelegate
 	{
 		//void httpDownloaderDownloaded(HTTPDownloader downloader, string downloaded);
 

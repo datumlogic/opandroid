@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Timers;
@@ -16,13 +17,14 @@ namespace HopSampleApp
 	class HOPIdentityContract
 	{
 	}
-	public  class HOPIdentityState
+	public   class HOPIdentityState
 	{
-		public HOPIdentityStates State {get; set;}
+		public  HOPIdentityStates State {get; set;}
 
 		public short LastErrorCode {get; set;}
 
 		public string LastErrorReason {get; set;}
+
 
 	}
 	public class HOPIdentity
@@ -33,14 +35,9 @@ namespace HopSampleApp
 
 		public Timer DeletionTimer{ get; set;}
 
-		public static object loginWithDelegateIdentityProviderDomainIdentityURIOridentityBaseURIOuterFrameURLUponReload(HOPIdentityDelegate inIdentityDelegate, string identityProviderDomain, string identityURIOridentityBaseURI, string outerFrameURLUponReload)
-		{
-		}
+		//public  object loginWithDelegateIdentityProviderDomainIdentityURIOridentityBaseURIOuterFrameURLUponReload(IdentityDelegate inIdentityDelegate, string identityProviderDomain, string identityURIOridentityBaseURI, string outerFrameURLUponReload){	}
 		//
-		public static object loginWithDelegateIdentityProviderDomainIdentityPreauthorizedURIIdentityAccessTokenIdentityAccessSecretIdentityAccessSecretExpires(HOPIdentityDelegate inIdentityDelegate, string identityProviderDomain, string identityURI, string identityAccessToken, string identityAccessSecret, NSDate identityAccessSecretExpires)
-		{
-
-		}
+		//public  object loginWithDelegateIdentityProviderDomainIdentityPreauthorizedURIIdentityAccessTokenIdentityAccessSecretIdentityAccessSecretExpires(IdentityDelegate inIdentityDelegate, string identityProviderDomain, string identityURI, string identityAccessToken, string identityAccessSecret, DateTime identityAccessSecretExpires){}
 		//
 		public int getObjectId()
 		{
@@ -59,12 +56,12 @@ namespace HopSampleApp
 			byte[] lastErrorReason;
 
 			// zsLib::String lastErrorReason;
-			HOPIdentityStates state = (HOPIdentityStates)identityPtr.getState(lastErrorCode, lastErrorReason);
-			HOPIdentityState ret = new HOPIdentityState();
-			ret.State= state;
-			ret.LastErrorCode = lastErrorCode;
-			ret.LastErrorReason = Encoding.UTF8.GetString(lastErrorCode);// NSString.stringWithCStringEncoding(lastErrorReason, NSUTF8StringEncoding);
-			return ret;
+			//HOPIdentityStates state = (HOPIdentityStates)identityPtr.getState(lastErrorCode, lastErrorReason);
+			//HOPIdentityState ret = new HOPIdentityState();
+			//ret.State= state;
+			//ret.LastErrorCode = lastErrorCode;
+			//ret.LastErrorReason = Encoding.UTF8.GetString(lastErrorCode);// NSString.stringWithCStringEncoding(lastErrorReason, NSUTF8StringEncoding);
+			return null;
 		}
 		public static bool isDelegateAttached()
 		{
@@ -73,17 +70,9 @@ namespace HopSampleApp
 			Console.WriteLine ("Empty");
 			return ret;
 		}
-		public static void attachDelegateRedirectionURL(IdentityDelegate inIdentityDelegate, string redirectionURL)
-		{
-			/* logic hire   */
-			Console.WriteLine ("Empty");
-		}
+		//public static void attachDelegateRedirectionURL(IdentityDelegate inIdentityDelegate, string redirectionURL){/* logic hire   */Console.WriteLine ("Empty");}
 		//
-		public static void attachDelegateAndPreauthorizedLoginIdentityAccessTokenIdentityAccessSecretIdentityAccessSecretExpires(HOPIdentityDelegate inIdentityDelegate, string identityAccessToken, string identityAccessSecret, NSDate identityAccessSecretExpires)
-		{
-			/* logic hire */
-			Console.WriteLine ("Empty");
-		}
+		//public static void attachDelegateAndPreauthorizedLoginIdentityAccessTokenIdentityAccessSecretIdentityAccessSecretExpires(IdentityDelegate inIdentityDelegate, string identityAccessToken, string identityAccessSecret, DateTime identityAccessSecretExpires){/* logic hire */Console.WriteLine ("Empty");}
 		public string getIdentityURI()
 		{
 			string ret = null;
@@ -92,7 +81,7 @@ namespace HopSampleApp
 			return ret;
 		}
 
-		public static string getBaseIdentityURI()
+		public  string getBaseIdentityURI()
 		{
 			string ret = null;
 			/* logic hire   */
@@ -100,23 +89,24 @@ namespace HopSampleApp
 			return ret;
 		}
 
-		public static string getIdentityProviderDomain()
+		public string getIdentityProviderDomain()
 		{
 			string ret = null;
 			/* logic hire */
 			Console.WriteLine ("Empty");
-    
+
 
 
 			return ret;
 		}
+		/*
 		public static HOPIdentityContract getSelfIdentityContact()
 		{
 			HOPIdentityContract ret = null;
-			/* logic hire */
+
 			Console.WriteLine ("Empty");
 			return ret;
-		}
+	    }*/
 
 		public static string getInnerBrowserWindowFrameURL()
 		{
@@ -197,7 +187,7 @@ namespace HopSampleApp
 			Console.WriteLine ("Empty");
 		}
 
-		public  bool getDownloadedRolodexContactsOutVersionDownloadedOutRolodexContacts(ref bool outFlushAllRolodexContacts, ref string outVersionDownloaded, ref ArrayList outRolodexContacts)
+		public  bool getDownloadedRolodexContactsOutVersionDownloadedOutRolodexContacts(bool outFlushAllRolodexContacts,string outVersionDownloaded,ArrayList outRolodexContacts)
 		{
 			bool ret = false;
 			/* logic hire */
@@ -291,10 +281,7 @@ namespace HopSampleApp
 		}
 
 		*/
-		public static void setLocalDelegate(IdentityDelegate inIdentityDelegate)
-		{
-			//openPeerIdentityDelegatePtr = OpenPeerIdentityDelegate::create(inIdentityDelegate);
-		}
+		//public static void setLocalDelegate(IdentityDelegate inIdentityDelegate){	}
 
 		/*
 
@@ -307,7 +294,7 @@ namespace HopSampleApp
    }*/
 		public static String log(string message)
 		{
-			string result;
+			string result="";
 			//if (identityPtr) return String("HOPIdentity [") + theString(identityPtr.getID()) + "] " + message.UTF8String();
 			//else return String("HOPIdentity: ") + message.UTF8String();
 			Console.WriteLine ("Empty");

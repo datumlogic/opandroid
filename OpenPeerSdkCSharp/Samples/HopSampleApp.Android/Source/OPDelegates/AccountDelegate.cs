@@ -47,136 +47,138 @@ namespace HopSampleApp
 	class AccountDelegate
 	{
 		WebLoginViewController _webLoginViewController;
-        public WebLoginViewController WebLoginViewController
-        {
-            get
-            {
-                if (!_webLoginViewController)
-                {
-                    _webLoginViewController = new WebLoginViewController(HOPAccount.sharedAccount());
-                    if (_webLoginViewController) _webLoginViewController.view.hidden = true;
+		public WebLoginViewController WebLoginViewController
+		{
+			get
+			{
+				if (_webLoginViewController != null) {
+					// _webLoginViewController = new WebLoginViewController(HOPAccount.sharedAccount());
+					if (_webLoginViewController !=null) {
+						//_webLoginViewController.view.hidden = true;
 
-                }
+					}
+				}
+				return _webLoginViewController;
+			}
 
-                return _webLoginViewController;
-            }
-            set
-            {
-                _webLoginViewController = value;
-            }
-        }
+			set
+			{
+				_webLoginViewController = value;
+			}
+		}
 
-        /**
-        
-           Custom getter for webLoginViewController
-        
-           */
-        //This method handles account state changes from SDK.
-        void accountStateChanged(HOPAccount account, HOPAccountStates accountState)
-        {
+		/*
+
+          // Custom getter for webLoginViewController
+
+		//This method handles account state changes from SDK.
+		void accountStateChanged(HOPAccount account, HOPAccountStates accountState)
+		{
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelDebug, "Account login state: %@", HOPAccount.stringForAccountState(accountState));
 			ThreadPool.QueueUserWorkItem( delegate 
 				{
-                switch (accountState)
-                {
+					switch (accountState)
+					{
 					case HOPAccountStates.HOPAccountStatePending:
-                    break;
+						break;
 					case HOPAccountStates.HOPAccountPendingPeerFilesGeneration:
-                    break;
+						break;
 					case HOPAccountStates.HOPAccountWaitingForAssociationToIdentity:
-                    //after creation
-                    break;
+						//after creation
+						break;
 					case HOPAccountStates.HOPAccountWaitingForBrowserWindowToBeLoaded:
-                    this.webLoginViewController.openLoginUrl(Settings.sharedSettings().getNamespaceGrantServiceURL());
-                    break;
+						this.webLoginViewController.openLoginUrl(Settings.sharedSettings().getNamespaceGrantServiceURL());
+						break;
 					case HOPAccountStates.HOPAccountWaitingForBrowserWindowToBeMadeVisible:
 
-                    {
-                        //Add login web view like main view subview
-                        if (!this.webLoginViewController.view.superview)
-                        {
-                            this.webLoginViewController.view.setFrame(OpenPeer.sharedOpenPeer().mainViewController().view.bounds);
-                            OpenPeer.sharedOpenPeer().mainViewController().showWebLoginView(this.webLoginViewController);
-                        }
+						{
+							//Add login web view like main view subview
+							if (!this.webLoginViewController.view.superview)
+							{
+								this.webLoginViewController.view.setFrame(OpenPeer.sharedOpenPeer().mainViewController().view.bounds);
+								OpenPeer.sharedOpenPeer().mainViewController().showWebLoginView(this.webLoginViewController);
+							}
 
-                        this.webLoginViewController.view.alpha = 0;
-                        this.webLoginViewController.view.hidden = false;
-                        UIView.animateWithDurationAnimations(0.7, delegate()
-                        {
-                            this.webLoginViewController.view.alpha = 1;
-                        });
-                        //Notify core that login web view is visible now
-                        account.notifyBrowserWindowVisible();
-                    }
-                    break;
+							this.webLoginViewController.view.alpha = 0;
+							this.webLoginViewController.view.hidden = false;
+							UIView.animateWithDurationAnimations(0.7, delegate()
+								{
+									this.webLoginViewController.view.alpha = 1;
+								});
+							//Notify core that login web view is visible now
+							account.notifyBrowserWindowVisible();
+						}
+						break;
 					case HOPAccountStates.HOPAccountWaitingForBrowserWindowToClose:
 
-                    {
-                        OpenPeer.sharedOpenPeer().mainViewController().closeWebLoginView(this.webLoginViewController);
-                        //Notify core that login web view is closed
-                        account.notifyBrowserWindowClosed();
-                    }
-                    break;
+						{
+							OpenPeer.sharedOpenPeer().mainViewController().closeWebLoginView(this.webLoginViewController);
+							//Notify core that login web view is closed
+							account.notifyBrowserWindowClosed();
+						}
+						break;
 					case HOPAccountStates.HOPAccountStateReady:
-                    LoginManager.sharedLoginManager().onUserLoggedIn();
+						LoginManager.sharedLoginManager().onUserLoggedIn();
 
-                    #if APNS_ENABLED
-                        APNSInboxManager.sharedAPNSInboxManager().handleNewMessages();
-                    #endif
+						#if APNS_ENABLED
+						APNSInboxManager.sharedAPNSInboxManager().handleNewMessages();
+						#endif
 
-                    break;
+						break;
 					case HOPAccountStates.HOPAccountStateShuttingDown:
-                    break;
+						break;
 					case HOPAccountStates.HOPAccountStateShutdown:
 
-                    {
+						{
 							HOPAccountState accountState = account.getState();
-                        if (accountState.errorCode && !OpenPeer.sharedOpenPeer().appEnteredForeground())
-                        {
-                            OpenPeer.sharedOpenPeer().mainViewController().onAccountLoginError(accountState.errorReason);
-                            HOPCache.sharedCache().removeCookieWithNamePath(settingsKeySettingsDownloadURL);
-                        }
-                        else
-                        {
-                            LoginManager.sharedLoginManager().onUserLogOut();
-                        }
+							if (accountState.errorCode && !OpenPeer.sharedOpenPeer().appEnteredForeground())
+							{
+								OpenPeer.sharedOpenPeer().mainViewController().onAccountLoginError(accountState.errorReason);
+								HOPCache.sharedCache().removeCookieWithNamePath(settingsKeySettingsDownloadURL);
+							}
+							else
+							{
+								LoginManager.sharedLoginManager().onUserLogOut();
+							}
 
-                        this.webLoginViewController = null;
-                    }
-                    break;
-                default :
-                    break;
-                }
+							this.webLoginViewController = null;
+						}
+						break;
+					default :
+						break;
+					}
 
-            });
-        }
+				});
+		}
 
-        void onAccountAssociatedIdentitiesChanged(HOPAccount account)
-        {
+
+		void onAccountAssociatedIdentitiesChanged(HOPAccount account)
+		{
 			// OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Account associated identities has changed.");
 			ThreadPool.QueueUserWorkItem( delegate 
 				{
 					ArrayList associatedIdentities = account.getAssociatedIdentities();
 					foreach (HOPIdentity identity in associatedIdentities)
 					{
-                    LoginManager.sharedLoginManager().attachDelegateForIdentityForceAttach(identity, false);
+						LoginManager.sharedLoginManager().attachDelegateForIdentityForceAttach(identity, false);
 					}
 				});
-        }
+		}
 
-        void onAccountPendingMessageForInnerBrowserWindowFrame(HOPAccount account)
-        {
+
+		void onAccountPendingMessageForInnerBrowserWindowFrame(HOPAccount account)
+		{
 			//OPLog(HOPLoggerSeverityInformational, HOPLoggerLevelTrace, "Account: pending message for inner browser window frame.");
 			ThreadPool.QueueUserWorkItem( delegate 
 				{
-                WebLoginViewController webLoginViewController = this.webLoginViewController();
-                if (webLoginViewController)
-                {
+					WebLoginViewController webLoginViewController = this.webLoginViewController();
+					if (webLoginViewController)
+					{
 						String jsMethod =String.Format("sendBundleToJS({0})",account.getNextMessageForInnerBrowerWindowFrame());
 						webLoginViewController.passMessageToJS(jsMethod);
-                }
+					}
 				});
-        }
+		}*/
 	}
 }
 
