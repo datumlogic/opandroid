@@ -89,42 +89,42 @@ namespace HopSampleApp
 			Console.WriteLine ("Empty");
 		}
 
-		void onCallPreparing(HOPCall call)
+		public void onCallPreparing(HOPCall call)
 		{
 		}
 
-		void onCallIncoming(HOPCall call)
-		{
-			Console.WriteLine ("Empty");
-		}
-
-		void onCallRinging(HOPCall call)
+		public void onCallIncoming(HOPCall call)
 		{
 			Console.WriteLine ("Empty");
 		}
 
-		void onCallOpened(HOPCall call)
-		{
-		}
-
-		void onCallClosing(HOPCall call)
+		public void onCallRinging(HOPCall call)
 		{
 			Console.WriteLine ("Empty");
 		}
 
-		bool setActiveCallSessionCallActive(Session inSession, bool callActive)
+		public void onCallOpened(HOPCall call)
+		{
+		}
+
+		public void onCallClosing(HOPCall call)
+		{
+			Console.WriteLine ("Empty");
+		}
+
+		 bool setActiveCallSessionCallActive(Session inSession, bool callActive)
 		{
 			bool value = false;
 			Console.WriteLine ("Empty");
 			return value;
 		}
 
-		void redialCallForSession(Session inSession)
+		 void redialCallForSession(Session inSession)
 		{
 			Console.WriteLine ("Empty");
 		}
 
-		void onCallEnded(HOPCall call)
+		public void onCallEnded(HOPCall call)
 		{
 			Console.WriteLine ("Empty");
 		}
@@ -134,34 +134,34 @@ namespace HopSampleApp
 			Console.WriteLine ("Empty");
 		}
 
-		void startVideoRecording()
+		public void startVideoRecording()
 		{
 			Console.WriteLine ("Empty");
 		}
 
-		void stopVideoRecording()
+		public void stopVideoRecording()
 		{
 			Console.WriteLine ("Empty");
 		}
 
-		bool isCallInProgress()
+		public bool isCallInProgress()
 		{
 			bool value = false;
 			Console.WriteLine ("Empty");
 			return value;
 		}
 
-		void recreateExistingSessions()
+		public void recreateExistingSessions()
 		{
 			Console.WriteLine ("Empty");
 		}
 
-		void stopAnyActiveCall()
+		public void stopAnyActiveCall()
 		{
 			Console.WriteLine ("Empty");
 		}
 
-		void clearAllSessions()
+		public void clearAllSessions()
 		{
 			Console.WriteLine ("Empty");
 		}
