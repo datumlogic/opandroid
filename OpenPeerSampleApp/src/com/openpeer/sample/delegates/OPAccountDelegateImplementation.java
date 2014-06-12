@@ -21,7 +21,7 @@ public class OPAccountDelegateImplementation extends OPAccountDelegate {
 		case AccountState_WaitingForAssociationToIdentity:
 			break;
 		case AccountState_WaitingForBrowserWindowToBeLoaded:
-			LoginManager.startAccountLogin();
+			LoginManager.loadOuterFrame();
 			break;
 		case AccountState_WaitingForBrowserWindowToBeMadeVisible:
 			LoginManager.mAccount.notifyBrowserWindowVisible();
@@ -31,7 +31,7 @@ public class OPAccountDelegateImplementation extends OPAccountDelegate {
 			break;
 		case AccountState_Ready:
 			Log.w("JNI", "READY !!!!!!!!!!!!");
-			LoginManager.onAccountStateReady();
+			LoginManager.onAccountStateReady(account);
 			break;
 			//LoginManager.loadOuterFrame();
 		}

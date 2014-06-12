@@ -30,7 +30,7 @@ public class OPIdentityDelegateImplementation extends OPIdentityDelegate {
                 break;
             case IdentityState_Ready:
                 Log.d(TAG, "onIdentityStateChanged " + "IdentityState_Ready");
-                Log.d(TAG, "onIdentityStateChanged " + identity);
+//                Log.d(TAG, "onIdentityStateChanged " + identity);
                 //LoginManager.mIdentity.;
                 break;
         }

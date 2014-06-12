@@ -1,21 +1,31 @@
 package com.openpeer.sample.login;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Context;
 import android.util.Log;
 
 import com.openpeer.app.OPSdkConfig;
 import com.openpeer.delegates.CallbackHandler;
+import com.openpeer.javaapi.AccountStates;
+import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupDelegate;
+import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPMediaEngine;
+import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.sample.delegates.OPAccountDelegateImplementation;
@@ -79,9 +89,9 @@ public class LoginManager {
 	}
 
 	public static void loadOuterFrame() {
-		if (mLoginHandler != null)
+		if (mLoginHandler != null) {
 			mLoginHandler.onLoadOuterFrameHandle(null);
-
+		}
 	}
 
 	public static void initInnerFrame() {
@@ -108,8 +118,8 @@ public class LoginManager {
 		mIdentity = new OPIdentity();
 		mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
 
-		OPSdkConfig config = OPSdkConfig.getInstance(mContext);
-		mIdentity = OPIdentity.login(mAccount, null,
+		OPSdkConfig config = OPSdkConfig.getInstance();
+		mIdentity = mIdentity.login(mAccount, null,
 				config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
 				config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
 				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
@@ -136,26 +146,10 @@ public class LoginManager {
 		}
 	}
 
-	public static void initializeContext(Context context) {
-		// TODO Auto-generated method stub
-		// OPLogger.installTelnetLogger(59999, 60, true);
-		// stackMessageQueue = OPStackMessageQueue.singleton();
-		//
-		// //stackMessageQueue.interceptProcessing(null);
-		//
-		// //TODO: After interception is done, we can call setup
-		// stack = new OPStack();
-		// stack.setup(null, null);
-		mContext = context;
-
-	}
-
 	public static void AccountLogin() {
-		Log.d(TAG, "AccountLogin START");
-
 		// TODO Auto-generated method stub
-		long stableId = 0;
-		if (mAccount == null) {
+		if (mAccount == null
+				|| mAccount.getState(0, "") == AccountStates.AccountState_Shutdown) {
 			mAccountDelegate = new OPAccountDelegateImplementation();
 			mAccount = new OPAccount();
 			mCallbackHandler
@@ -165,44 +159,25 @@ public class LoginManager {
 					"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
 					"bojanGrantID", "identity-v1-rel-lespaul-i.hcs.io", false);
 			startIdentityLogin();
-		} else {
-			stableId = mAccount.getStableID();
-
 		}
-		Log.d(TAG, "AccountLogin END");
 
 	}
 
-	public static void AccountRelogin(String reloginInfo) {
-		Log.d(TAG, "AccountLogin START");
+	public static void startAccountRelogin(String reloginInfo) {
 
-		// TODO Auto-generated method stub
-		long stableId = 0;
-		if (mAccount == null) {
-			mAccountDelegate = new OPAccountDelegateImplementation();
-			mAccount = new OPAccount();
-			mCallbackHandler
-					.registerAccountDelegate(mAccount, mAccountDelegate);
+		mAccountDelegate = new OPAccountDelegateImplementation();
+		mAccount = new OPAccount();
+		mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
 
-			mAccount = OPAccount.relogin(null, null, null,
-					"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// namespaceGrantOuterFrameURLUponReload
-					reloginInfo);
-		} else {
-			stableId = mAccount.getStableID();
-
-		}
-		Log.d(TAG, "AccountLogin END");
-
+		mAccount = OPAccount.relogin(null, null, null,
+				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// namespaceGrantOuterFrameURLUponReload
+				reloginInfo);
 	}
 
-	public static void startAccountLogin() {
-		// TODO Auto-generated method stub
-		Log.d(TAG, "startAccountLogin START");
+	public static void loadNameSpaceGrantOuterFrame() {
 		if (mLoginHandler != null)
 			mLoginHandler
 					.onLoadOuterFrameHandle("http://jsouter-v1-rel-dev2-i.hcs.io/grant.html");
-		Log.d(TAG, "startAccountLogin END");
-
 	}
 
 	public static void initNamespaceGrantInnerFrame() {
@@ -211,19 +186,47 @@ public class LoginManager {
 				.getInnerBrowserWindowFrameURL());
 	}
 
-	public static void onAccountStateReady() {
+	public static void onAccountStateReady(OPAccount account) {
 		// TODO Auto-generated method stub
-		mLoginHandler.onAccountStateReady();
+		// mLoginHandler.onAccountStateReady();
+		try {
+			AccountStates state = AccountStates.AccountState_Pending;
+			int outErrorCode = 0;
+			String outErrorReason = "";
+			state = account.getState(outErrorCode, outErrorReason);
+			if (state != AccountStates.AccountState_Ready) {
+				Log.d("TODO", "Account test FAILED state = " + state.toString());
+				// TODO: error handling
+				return;
+			}
+
+			List<OPIdentity> identities = account.getAssociatedIdentities();
+			if (identities.size() == 0) {
+				Log.d("TODO",
+						"Account test FAILED identities = "
+								+ Arrays.deepToString(identities.toArray()));
+				return;
+			}
+
+			for (OPIdentity identity : identities) {
+				if (identity.getDownloadedRolodexContacts() == null) {
+					Log.d("output",
+							"Identity lookup test is preparing, please wait...");
+					mIdentity.startRolodexDownload("");
+				} else {
+				}
+			}
+		} catch (Exception e) {
+			Log.d("TODO", "Account error " + e);
+			return;
+		}
 
 	}
 
 	public static void onDownloadedRolodexContacts(OPIdentity identity) {
 		// TODO Auto-generated method stub
-		LoginManager.mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation();
-		LoginManager.mIdentityLookup = new OPIdentityLookup();
-		mCallbackHandler.registerIdentityLookupDelegate(
-				LoginManager.mIdentityLookup,
-				LoginManager.mIdentityLookupDelegate);
+
+		identityLookup(identity);
 
 		mLoginHandler.onDownloadedRolodexContacts(identity);
 
@@ -234,5 +237,42 @@ public class LoginManager {
 		LoginManager.mIdentityLookup = lookup;
 
 		mLoginHandler.onLookupCompleted();
+	}
+
+	public static void identityLookup(OPIdentity identity) {
+		LoginManager.mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation();
+		LoginManager.mIdentityLookup = new OPIdentityLookup();
+
+		mCallbackHandler.registerIdentityLookupDelegate(
+				LoginManager.mIdentityLookup,
+				LoginManager.mIdentityLookupDelegate);
+
+		OPDownloadedRolodexContacts rolodexContacts = identity
+				.getDownloadedRolodexContacts();
+
+		List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
+
+		for (OPRolodexContact contact : rolodexContacts.getRolodexContacts()) {
+			Log.d(TAG, "contact " + contact.toString());
+			OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
+			ilInfo.initWithRolodexContact(contact);
+			inputLookupList.add(ilInfo);
+		}
+
+		mIdentityLookup = OPIdentityLookup.create(mAccount,
+				mIdentityLookupDelegate, inputLookupList, OPSdkConfig
+						.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
+	}
+
+	void registerDelegates() {
+
+	}
+
+	public static void showAccountWebview(OPAccount account) {
+		account.notifyBrowserWindowVisible();
+	}
+
+	public static void closeAccountWebview(OPAccount account) {
+		account.notifyBrowserWindowClosed();
 	}
 }

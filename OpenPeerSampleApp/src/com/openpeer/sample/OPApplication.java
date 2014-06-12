@@ -19,7 +19,7 @@ public class OPApplication extends Application {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
-		OPHelper.getInstance(this).init();
+		OPHelper.getInstance().init(this,null);
 	}
 
 }

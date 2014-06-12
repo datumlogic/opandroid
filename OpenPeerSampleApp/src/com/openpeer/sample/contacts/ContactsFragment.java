@@ -52,6 +52,8 @@ public class ContactsFragment extends Fragment implements
 		mListView.setAdapter(mAdapter);
 		if (mTest) {
 			fillTestView();
+		} else {
+			
 		}
 		return view;
 	}
@@ -120,6 +122,9 @@ public class ContactsFragment extends Fragment implements
 		mRootLayout.setRefreshing(false);
 	}
 
+	void setupContent(){
+//		mAdapter.mContacts = OPData
+	}
 	// fill in test data to the view
 	void fillTestView() {
 		// ProfileURL Name David Gotwo identityUrl
@@ -132,15 +137,12 @@ public class ContactsFragment extends Fragment implements
 		// Love identityUrl
 		mAdapter.mContacts = Arrays.asList(new OPRolodexContact[] {
 				new OPRolodexContact(
-						OPRolodexContact.Dispositions.Disposition_Update,
 						"identity://facebook.com/100003823387069",
 						"facebook.com", "David Gotwo", null, null, null),
 				new OPRolodexContact(
-						OPRolodexContact.Dispositions.Disposition_Update,
 						"identity://facebook.com/100003952283621",
 						"facebook.com", "David Gofour", null, null, null),
 				new OPIdentityContact(new OPRolodexContact(
-						OPRolodexContact.Dispositions.Disposition_Update,
 						"identity://facebook.com/100003952283621",
 						"facebook.com", "David Gofour", null, null, null)) });
 		mAdapter.notifyDataSetChanged();

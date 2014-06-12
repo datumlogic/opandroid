@@ -43,6 +43,17 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 		setupWebView(mAccountLoginWebView);
 
 		setupWebView(mIdentityLoginWebView);
+		view.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				startLogin();
+			}
+		});
+		return view;
+	}
+
+	void startLogin() {
 		if (OPDataManager.getInstance().getReloginInfo() == null) {
 			Log.d("test", "logging in");
 
@@ -50,14 +61,14 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 					mAccountLoginWebView, mIdentityLoginWebView);
 			loginManager.login();
 		} else {
-			Log.d("test", "re-logging in");
+			Log.d("test", "re-logging in "
+					+ OPDataManager.getInstance().getReloginInfo());
 
 			LoginManager loginManager = new LoginManager(this,
 					mAccountLoginWebView, mIdentityLoginWebView);
 			loginManager.relogin(OPDatastoreDelegateImplementation
 					.getInstance().getReloginInfo());
 		}
-		return view;
 	}
 
 	void setupWebView(WebView view) {
@@ -102,11 +113,12 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 		mIdentityLoginWebView.setVisibility(View.GONE);
 		mAccountLoginWebView.setVisibility(View.VISIBLE);
 	}
-	public void onIdentityLoginWebViewClose(){
+
+	public void onIdentityLoginWebViewClose() {
 		mIdentityLoginWebView.setVisibility(View.GONE);
 	}
 
-	public void onAccountLoginWebViewMadeClose(){
+	public void onAccountLoginWebViewMadeClose() {
 		mAccountLoginWebView.setVisibility(View.GONE);
 	}
 	/* END implementation of LoginUIListener */
