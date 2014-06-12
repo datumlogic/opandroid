@@ -1,6 +1,7 @@
 package com.openpeer.app;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
@@ -27,7 +29,7 @@ public class OPDataManager {
 	private String mReloginInfo;
 
 	public String getReloginInfo() {
-		return null;//mReloginInfo;
+		return null;// mReloginInfo;
 	}
 
 	public static OPDataManager getInstance() {
@@ -46,6 +48,10 @@ public class OPDataManager {
 		if (mReloginInfo != null) {
 			// Read idenities and contacts
 		}
+	}
+
+	public List<OPRolodexContact> getRolodexContactsForIdentity(long identityId) {
+		return mContacts.get(identityId);
 	}
 
 	/**
@@ -98,35 +104,35 @@ public class OPDataManager {
 	}
 
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
-		OPDownloadedRolodexContacts downloaded = identity.getDownloadedRolodexContacts();
-//		if (BuildConfig.DEBUG) {
-//			Log.d("login", "OPDataManager onDownloadedRolodexContacts version" + downloaded.getVersionDownloaded());
-//		}
-		setIdentityContacts(identity.getStableID(),
-				downloaded);
+		OPDownloadedRolodexContacts downloaded = identity
+				.getDownloadedRolodexContacts();
+		// if (BuildConfig.DEBUG) {
+		// Log.d("login", "OPDataManager onDownloadedRolodexContacts version" +
+		// downloaded.getVersionDownloaded());
+		// }
+		setIdentityContacts(identity.getStableID(), downloaded);
 		OPDatastoreDelegateImplementation.getInstance().saveOrUpdateContacts(
-				downloaded.getRolodexContacts(),
-				identity.getStableID());
-		identityLookup(identity);
+				downloaded.getRolodexContacts(), identity.getStableID());
+		identityLookup(identity,
+				this.getRolodexContactsForIdentity(identity.getStableID()));
 
 		// mLoginHandler.onDownloadedRolodexContacts(identity);
 	}
 
-	public void identityLookup(OPIdentity identity) {
+	public void identityLookup(OPIdentity identity,
+			List<OPRolodexContact> contacts) {
 		if (BuildConfig.DEBUG) {
 			Log.d("login", "start identity lookup");
 		}
-		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation();
+		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation(
+				identity);
 		OPIdentityLookup mIdentityLookup = new OPIdentityLookup();
 		CallbackHandler.getInstance().registerIdentityLookupDelegate(
 				mIdentityLookup, mIdentityLookupDelegate);
 
-		OPDownloadedRolodexContacts rolodexContacts = identity
-				.getDownloadedRolodexContacts();
-
 		List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
 
-		for (OPRolodexContact contact : rolodexContacts.getRolodexContacts()) {
+		for (OPRolodexContact contact : contacts) {
 			Log.d("output", "contact " + contact.toString());
 			OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
 			ilInfo.initWithRolodexContact(contact);
@@ -140,6 +146,14 @@ public class OPDataManager {
 
 	public String getContactsVersionForIdentity(long id) {
 		return downloadedIdentityContactVersions.get(id);
+	}
+
+	public void updateIdentityContacts(OPIdentity mIdentity,
+			List<OPIdentityContact> iContacts) {
+
+		Log.d("TODO",
+				"OPDataManager updateIdentityContacts "
+						+ Arrays.deepToString(iContacts.toArray()));
 	}
 
 }

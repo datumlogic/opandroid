@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
@@ -28,7 +29,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	private static final String PREF_DATASTORE = "model_data";
 	private static final String PREF_KEY_RELOGIN_INFO = "relogin_info";
 	private static final String PREF_KEY_HOMEUSER_STABLEID = "homeuser_stable_id";
-	static final String WHERE_CLAUSE = "where ";
 
 	private static OPDatastoreDelegateImplementation instance;
 	OPDatabaseHelper mOpenHelper;
@@ -170,6 +170,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public boolean saveOrUpdateContacts(List<OPRolodexContact> contacts,
 			long identityId) {
 		for (OPRolodexContact contact : contacts) {
+			Log.d("OPDatastoreDelegateImplementation", "saveOrUpdateContacts "
+					+ contact+" identityId "+identityId);
 			saveOrUpdateContact(contact, identityId);
 		}
 		return true;
@@ -273,8 +275,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		if (contact instanceof OPIdentityContact) {
 			mOpenHelper.getWritableDatabase().delete(
 					IdentityContactEntry.TABLE_NAME,
-					WHERE_CLAUSE + IdentityContactEntry.COLUMN_NAME_STABLE_ID,
-					null);
+					IdentityContactEntry.COLUMN_NAME_STABLE_ID, null);
 		}
 		return false;
 	}

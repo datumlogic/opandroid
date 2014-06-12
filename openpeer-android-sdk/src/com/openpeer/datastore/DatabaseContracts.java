@@ -48,9 +48,9 @@ public class DatabaseContracts {
 		public static final String TABLE_NAME = "contact";
 		public static final String COLUMN_NAME_CONTACT_ID = "contact_id";
 		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
-		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "ientity_contact_id";
-		public static final String COLUMN_NAME_IDENTITY_URI = "ientity_uri";
-		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "ientity_provider";
+		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "identity_contact_id";
+		public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
+		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "identity_provider";
 
 		public static final String COLUMN_NAME_CONTACT_NAME = "name";
 		public static final String COLUMN_NAME_URL = "profile_url";
@@ -95,10 +95,13 @@ public class DatabaseContracts {
 			+ ContactEntry.TABLE_NAME + " (" + ContactEntry._ID + INTEGER_TYPE
 			+ COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_ID
 			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-			+ ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + COMMA_SEP
-			+ ContactEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE + COMMA_SEP
-
-			+ ContactEntry.COLUMN_NAME_URL + TEXT_TYPE + " )";
+			+ ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE
+			+ COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE
+			+ COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER
+			+ TEXT_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_URI
+			+ TEXT_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_URL + TEXT_TYPE
+			+ COMMA_SEP + ContactEntry.COLUMN_NAME_VPROFILE_URL + TEXT_TYPE
+			+ " )";
 	public static final String SQL_CREATE_IDENTITY = "CREATE TABLE "
 			+ IdentityEntry.TABLE_NAME + " (" + IdentityEntry._ID
 			+ INTEGER_TYPE + COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_ID
