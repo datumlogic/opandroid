@@ -9,13 +9,13 @@ import android.util.Log;
 import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.delegates.CallbackHandler;
-import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
+import com.openpeer.openpeer_android_sdk.BuildConfig;
 
 public class OPDataManager {
 	private static OPDataManager instance;
@@ -36,12 +36,15 @@ public class OPDataManager {
 		}
 		return instance;
 	}
-	
-	public void init(OPDatastoreDelegate delegate){
-		assert(delegate!=null);
+
+	public void init(OPDatastoreDelegate delegate) {
+		assert (delegate != null);
+		mDatastoreDelegate = delegate;
 		mReloginInfo = delegate.getReloginInfo();
-		if(mReloginInfo!=null){
-			//Read idenities and contacts
+		downloadedIdentityContactVersions = new Hashtable();
+		mContacts = new Hashtable();
+		if (mReloginInfo != null) {
+			// Read idenities and contacts
 		}
 	}
 
@@ -95,6 +98,9 @@ public class OPDataManager {
 	}
 
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
+		if (BuildConfig.DEBUG) {
+			Log.d("login", "" + identity.getDownloadedRolodexContacts());
+		}
 		setIdentityContacts(identity.getStableID(),
 				identity.getDownloadedRolodexContacts());
 		OPDatastoreDelegateImplementation.getInstance().saveOrUpdateContacts(
@@ -106,6 +112,9 @@ public class OPDataManager {
 	}
 
 	public void identityLookup(OPIdentity identity) {
+		if (BuildConfig.DEBUG) {
+			Log.d("login", "start identity lookup");
+		}
 		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation();
 		OPIdentityLookup mIdentityLookup = new OPIdentityLookup();
 		CallbackHandler.getInstance().registerIdentityLookupDelegate(
@@ -126,6 +135,10 @@ public class OPDataManager {
 		mIdentityLookup = OPIdentityLookup.create(OPDataManager.getInstance()
 				.getSharedAccount(), mIdentityLookupDelegate, inputLookupList,
 				OPSdkConfig.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
+	}
+
+	public String getContactsVersionForIdentity(long id) {
+		return downloadedIdentityContactVersions.get(id);
 	}
 
 }

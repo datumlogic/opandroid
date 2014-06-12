@@ -53,11 +53,11 @@ public class OPHelper {
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
-		
 
-		OPLogger.setLogLevel("openpeer_services_transport_stream", OPLogLevel.LogLevel_Insane);
+		OPLogger.setLogLevel("openpeer_services_transport_stream",
+				OPLogLevel.LogLevel_Insane);
 		OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
-//		OPLogger.installTelnetLogger(59999, 60, true);
+		OPLogger.installTelnetLogger(59999, 60, true);
 		OPLogger.installFileLogger("/storage/emulated/0/HFLog1.txt", true);
 	}
 
@@ -65,10 +65,9 @@ public class OPHelper {
 		mContext = context;
 		OPMediaEngine.init(mContext);
 		if (datastoreDelegate != null) {
-			OPDataManager.getInstance().registerDatastoreDelegate(
-					datastoreDelegate);
+			OPDataManager.getInstance().init(datastoreDelegate);
 		} else {
-			OPDataManager.getInstance().registerDatastoreDelegate(
+			OPDataManager.getInstance().init(
 					OPDatastoreDelegateImplementation.getInstance().init(
 							mContext));
 		}

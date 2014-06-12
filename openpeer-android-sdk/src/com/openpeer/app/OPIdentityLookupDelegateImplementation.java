@@ -1,4 +1,4 @@
-package com.openpeer.delegates;
+package com.openpeer.app;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class OPIdentityLookupDelegateImplementation extends
 	@Override
 	public void onIdentityLookupCompleted(OPIdentityLookup lookup) {
 		// TODO Auto-generated method stub
-		// Log.d("output", "Identity lookup test PASSED");
+		Log.d("output", "Identity lookup completed " + lookup);
 
 	}
 

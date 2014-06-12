@@ -3,10 +3,10 @@ package com.openpeer.app;
 import java.util.Arrays;
 import java.util.List;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 
-import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
@@ -97,18 +97,18 @@ public class LoginManager {
 	// }
 	public class OPIdentityDelegateImplementation extends OPIdentityDelegate {
 		WebView mLoginView;
-		OPIdentity mIdentity;// somehow the identity passed in the callback
+//		OPIdentity mIdentity;// somehow the identity passed in the callback
 								// function
 								// isn't same as the one created.
 
 		public void setmIdentity(OPIdentity mIdentity) {
-			this.mIdentity = mIdentity;
+//			this.mIdentity = mIdentity;
 		}
 
 		public OPIdentityDelegateImplementation(WebView loginView,
 				OPIdentity identity) {
 			this.mLoginView = loginView;
-			mIdentity = identity;
+//			mIdentity = identity;
 		}
 
 		@Override
@@ -135,7 +135,7 @@ public class LoginManager {
 						mListener.onIdentityLoginWebViewMadeVisible();
 					}
 				});
-				mIdentity.notifyBrowserWindowVisible();
+				identity.notifyBrowserWindowVisible();
 				break;
 			case IdentityState_WaitingForBrowserWindowToClose:
 				mLoginView.post(new Runnable() {
@@ -143,7 +143,7 @@ public class LoginManager {
 						mListener.onIdentityLoginWebViewClose();
 					}
 				});
-				mIdentity.notifyBrowserWindowClosed();
+				identity.notifyBrowserWindowClosed();
 				break;
 			case IdentityState_Ready:
 				// LoginManager.mIdentity.;
@@ -156,7 +156,7 @@ public class LoginManager {
 		public void onIdentityPendingMessageForInnerBrowserWindowFrame(
 				OPIdentity identity) {
 			// TODO Auto-generated method stub
-			String msg = mIdentity.getNextMessageForInnerBrowerWindowFrame();
+			String msg = identity.getNextMessageForInnerBrowerWindowFrame();
 			Log.d("login", "identity pendingMessageForInnerFrame " + msg);
 
 			passMessageToJS(msg);
@@ -233,51 +233,43 @@ public class LoginManager {
 
 		public void onAccountStateReady(OPAccount account) {
 
-			try {
-				AccountStates state = AccountStates.AccountState_Pending;
-				int outErrorCode = 0;
-				String outErrorReason = "";
-				state = mAccount.getState(outErrorCode, outErrorReason);
-				if (state != AccountStates.AccountState_Ready) {
-					Log.d("TODO",
-							"Account test FAILED state = " + state.toString());
-					// TODO: error handling
-					return;
-				}
-
-				List<OPIdentity> identities = account.getAssociatedIdentities();
-				if (identities.size() == 0) {
-					Log.d("TODO",
-							"Account test FAILED identities = "
-									+ Arrays.deepToString(identities.toArray()));
-
-					return;
-				}
-				OPDataManager.getInstance().setSharedAccount(mAccount);
-				OPDataManager.getInstance().setIdentities(identities);
-				for (OPIdentity identity : identities) {
-					if (OPDatastoreDelegateImplementation.getInstance()
-							.getDownloadedContactsVersion(
-									identity.getStableID()) != null) {
-						Log.d("login", "start download initial contacts");
-						identity.startRolodexDownload("");
-					} else {
-						// check for new contacts
-						Log.d("login",
-								"start download  contacts since version "
-										+ identity
-												.getDownloadedRolodexContacts()
-												.getVersionDownloaded());
-
-						identity.startRolodexDownload(identity
-								.getDownloadedRolodexContacts()
-								.getVersionDownloaded());
-					}
-				}
-			} catch (Exception e) {
-				Log.d("TODO", "Account error " + e);
+			AccountStates state = AccountStates.AccountState_Pending;
+			int outErrorCode = 0;
+			String outErrorReason = "";
+			state = mAccount.getState(outErrorCode, outErrorReason);
+			if (state != AccountStates.AccountState_Ready) {
+				Log.d("TODO", "Account test FAILED state = " + state.toString());
+				// TODO: error handling
 				return;
 			}
+			Log.d("TODO", "account state " + state + " relogin info "
+					+ mAccount.getReloginInformation());
+
+			List<OPIdentity> identities = account.getAssociatedIdentities();
+			if (identities.size() == 0) {
+				Log.d("TODO", "Account test FAILED identities emppty ");
+
+				return;
+			}
+			Log.d("TODO",
+					"Account associated identities = "
+							+ Arrays.deepToString(identities.toArray()));
+			OPDataManager.getInstance().setSharedAccount(mAccount);
+			OPDataManager.getInstance().setIdentities(identities);
+			for (OPIdentity identity : identities) {
+				String version = OPDataManager.getInstance()
+						.getContactsVersionForIdentity(identity.getStableID());
+				if (TextUtils.isEmpty(version)) {
+					Log.d("login", "start download initial contacts");
+					identity.startRolodexDownload("");
+				} else {
+					// check for new contacts
+					Log.d("login", "start download  contacts since version "
+							+ version);
+					identity.startRolodexDownload(version);
+				}
+			}
+
 		}
 
 		@Override

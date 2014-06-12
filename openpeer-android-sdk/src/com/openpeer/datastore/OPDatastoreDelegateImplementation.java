@@ -93,8 +93,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		Cursor cursor = mOpenHelper.getWritableDatabase().query(
 				ContactEntry.TABLE_NAME,
 				null,
-				"where " + ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
-						+ "=" + identityId, null, null, null, null);
+				ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
+						+ identityId, null, null, null, null);
 		if (cursor != null) {
 			List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
 
@@ -108,7 +108,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				Cursor avatarCursor = mOpenHelper.getWritableDatabase().query(
 						AvatarEntry.TABLE_NAME,
 						null,
-						"where " + AvatarEntry.COLUMN_NAME_CONTACT_ID + "="
+						AvatarEntry.COLUMN_NAME_CONTACT_ID + "="
 								+ contact.getId(), null, null, null, null);
 				if (avatarCursor != null) {
 					List<OPAvatar> avatars = new ArrayList<OPAvatar>();
@@ -213,7 +213,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			for (OPAvatar avatar : contact.getAvatars()) {
 				ContentValues avatarValues = new ContentValues();
 				avatarValues.put(AvatarEntry.COLUMN_NAME_CONTACT_ID,
-						contact.getStableID());
+						contact.getId());
 				avatarValues.put(AvatarEntry.COLUMN_NAME_AVATAR_NAME,
 						avatar.getName());
 				avatarValues.put(AvatarEntry.COLUMN_NAME_AVATAR_URL,
@@ -256,25 +256,20 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public boolean deleteIdentity(long id) {
 
 		mOpenHelper.getWritableDatabase().delete(IdentityEntry.TABLE_NAME,
-				"where " + IdentityEntry.COLUMN_NAME_IDENTITY_ID + "=" + id,
-				null);
-		mOpenHelper
-				.getWritableDatabase()
-				.delete(IdentityContactEntry.TABLE_NAME,
-						"where "
-								+ IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
-								+ "=" + id, null);
+				IdentityEntry.COLUMN_NAME_IDENTITY_ID + "=" + id, null);
 		mOpenHelper.getWritableDatabase().delete(
-				ContactEntry.TABLE_NAME,
-				"where " + ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
-						+ "=", null);
+				IdentityContactEntry.TABLE_NAME,
+				IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
+						+ id, null);
+		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
+				ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "=", null);
 		return false;
 	}
 
 	@Override
 	public boolean deleteContact(OPRolodexContact contact) {
 		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
-				WHERE_CLAUSE + ContactEntry.COLUMN_NAME_URL, null);
+				ContactEntry.COLUMN_NAME_URL, null);
 		if (contact instanceof OPIdentityContact) {
 			mOpenHelper.getWritableDatabase().delete(
 					IdentityContactEntry.TABLE_NAME,
@@ -309,7 +304,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				.getWritableDatabase()
 				.query(IdentityEntry.TABLE_NAME,
 						new String[] { IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION },
-						"where " + IdentityEntry.COLUMN_NAME_IDENTITY_ID + "="
+						IdentityEntry.COLUMN_NAME_IDENTITY_ID + "="
 								+ identityId, null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
