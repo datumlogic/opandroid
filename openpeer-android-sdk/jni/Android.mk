@@ -5,7 +5,7 @@ ANDROIDNDK_PATH := /usr/ndk/x86_64/android-ndk-r8e
 
 #zLib shared library
 include $(CLEAR_VARS)
-ZLIB_LIB_PATH := ./OpenPeerNativeSampleApp/jni
+ZLIB_LIB_PATH := ./openpeer-android-sdk/jni
 LOCAL_MODULE := z_shared
 LOCAL_SRC_FILES := \
     $(ZLIB_LIB_PATH)/libz_shared.so
@@ -482,23 +482,23 @@ $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/include \
 $(ANDROIDNDK_PATH)/platforms/android-9/arch-arm/usr/include \
 
 LOCAL_SRC_FILES := \
-		OpenPeerNativeSampleApp/jni/OpenPeerCoreManager.cpp \
-		OpenPeerNativeSampleApp/jni/globals.cpp \
-		OpenPeerNativeSampleApp/jni/EventManager.cpp \
-		OpenPeerNativeSampleApp/jni/CacheDelegateWrapper.cpp \
-		OpenPeerNativeSampleApp/jni/SettingsDelegateWrapper.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStackMessageQueue.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStack.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPAccount.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPIdentity.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPIdentityLookup.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPMediaEngine.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPLogger.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPSettings.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCache.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCall.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPContact.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPConversationThread.cpp \
+		openpeer-android-sdk/jni/OpenPeerCoreManager.cpp \
+		openpeer-android-sdk/jni/globals.cpp \
+		openpeer-android-sdk/jni/EventManager.cpp \
+		openpeer-android-sdk/jni/CacheDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/SettingsDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPStackMessageQueue.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPStack.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPAccount.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPIdentity.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPIdentityLookup.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPMediaEngine.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPLogger.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPSettings.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPCache.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPCall.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPContact.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPConversationThread.cpp \
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a
