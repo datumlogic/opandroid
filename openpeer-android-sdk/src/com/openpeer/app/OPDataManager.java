@@ -51,6 +51,13 @@ public class OPDataManager {
 	}
 
 	public List<OPRolodexContact> getRolodexContactsForIdentity(long identityId) {
+		if (identityId == 0) {
+			List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
+			for (List<OPRolodexContact> lc : mContacts.values()) {
+				contacts.addAll(lc);
+			}
+			return contacts;
+		}
 		return mContacts.get(identityId);
 	}
 
