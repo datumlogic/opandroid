@@ -29,7 +29,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentity;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
-  (JNIEnv *, jclass, jobject, jobject, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jobject, jobject, jstring, jstring, jstring);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity

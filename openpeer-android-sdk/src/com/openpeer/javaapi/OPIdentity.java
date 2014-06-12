@@ -13,7 +13,7 @@ public class OPIdentity {
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
 	
-	public static native OPIdentity login(
+	public native OPIdentity login(
                               OPAccount account,
                               OPIdentityDelegate delegate,
                               String identityProviderDomain, // used when identity URI is of legacy or oauth-type

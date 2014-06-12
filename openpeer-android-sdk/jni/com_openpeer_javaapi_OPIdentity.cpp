@@ -41,7 +41,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentity;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
-(JNIEnv *env, jclass, jobject, jobject, jstring identityProviderDomain, jstring identityURI_or_identityBaseURI, jstring outerFrameURLUponReload)
+(JNIEnv *env, jobject callingIdentity, jobject, jobject, jstring identityProviderDomain, jstring identityURI_or_identityBaseURI, jstring outerFrameURLUponReload)
 {
 	jclass cls;
 	jmethodID method;
@@ -75,8 +75,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
 		if(jni_env)
 		{
 			cls = findClass("com/openpeer/javaapi/OPIdentity");
-			method = jni_env->GetMethodID(cls, "<init>", "()V");
-			object = jni_env->NewObject(cls, method);
+//			method = jni_env->GetMethodID(cls, "<init>", "()V");
+			object = callingIdentity;//jni_env->NewObject(cls, method);
 
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 			jlong identity = (jlong) identityPtr.get();
@@ -693,7 +693,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 
 		//OPAvatar class and methods fetch
 		jclass avatarClass = findClass("com/openpeer/javaapi/OPRolodexContact$OPAvatar");
-		jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "(Lcom/openpeer/javaapi/OPRolodexContact;)V");
+		jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "()V");
 		jmethodID setAvatarNameMethodID = jni_env->GetMethodID(avatarClass, "setName", "(Ljava/lang/String;)V");
 		jmethodID setAvatarURLMethodID = jni_env->GetMethodID(avatarClass, "setURL", "(Ljava/lang/String;)V");
 		jmethodID setAvatarWidthMethodID = jni_env->GetMethodID(avatarClass, "setWidth", "(I)V");
