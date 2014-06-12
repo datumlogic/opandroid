@@ -34,8 +34,9 @@ public class LoginManager {
 		// if (OPDatastoreDelegateImplementation.getInstance().getReloginInfo()
 		// == null) {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
-		mAccountLoginWebView.setWebViewClient(new OPAccountLoginWebViewClient(
-				account));
+		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
+				account);
+		mAccountLoginWebView.setWebViewClient(client);
 		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
 				mAccountLoginWebView, account);
 		CallbackHandler.getInstance().registerAccountDelegate(account,
@@ -44,7 +45,10 @@ public class LoginManager {
 		account = OPAccount.login(null, null, null,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
 				"bojanGrantID", "identity-v1-rel-lespaul-i.hcs.io", false);
+		Log.d("login", "account login returned account " + account);
 		OPDataManager.getInstance().setSharedAccount(account);
+		client.mAccount = account;
+		accountDelegate.mAccount = account;
 		startIdentityLogin();
 	}
 
@@ -75,7 +79,7 @@ public class LoginManager {
 
 		OPSdkConfig config = OPSdkConfig.getInstance();
 		Log.d("login", "identity initial " + identity);
-		identity = OPIdentity.login(account, null,
+		identity = identity.login(account, null,
 				config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
 				config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
 				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
@@ -153,7 +157,7 @@ public class LoginManager {
 				OPIdentity identity) {
 			// TODO Auto-generated method stub
 			String msg = mIdentity.getNextMessageForInnerBrowerWindowFrame();
-			Log.d("login", "pendingMessageForInnerFrame " + msg);
+			Log.d("login", "identity pendingMessageForInnerFrame " + msg);
 
 			passMessageToJS(msg);
 		}

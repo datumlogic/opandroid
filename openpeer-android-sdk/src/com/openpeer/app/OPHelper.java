@@ -15,6 +15,7 @@ import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPSettings;
@@ -49,7 +50,15 @@ public class OPHelper {
 	}
 
 	public void enableTelnetLogging() {
-		OPLogger.installTelnetLogger(59999, 60, true);
+		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
+		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
+		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+		
+
+		OPLogger.setLogLevel("openpeer_services_transport_stream", OPLogLevel.LogLevel_Insane);
+		OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
+//		OPLogger.installTelnetLogger(59999, 60, true);
+		OPLogger.installFileLogger("/storage/emulated/0/HFLog1.txt", true);
 	}
 
 	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {

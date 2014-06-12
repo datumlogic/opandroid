@@ -47,7 +47,7 @@ public class OPAccountLoginWebViewClient extends WebViewClient {
 	@Override
 	public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
 		if (url.contains("datapass")) {
-			Log.w("JNI", url);
+			Log.d("login", "Account client " + url);
 			String data = url.substring(url.lastIndexOf("data="));
 			data = data.substring(5);
 			// Log.w("JNI", data);
@@ -58,7 +58,7 @@ public class OPAccountLoginWebViewClient extends WebViewClient {
 				e.printStackTrace();
 			}
 
-			Log.w("JNI", "Namespace grant Received from JS: " + data);
+			Log.d("login", "Account Client Namespace grant Received from JS: " + data);
 			// mAccount.handleMessageFromInnerBrowserWindowFrame(data);
 			mAccount.handleMessageFromInnerBrowserWindowFrame(data);
 
@@ -80,7 +80,7 @@ public class OPAccountLoginWebViewClient extends WebViewClient {
 			mNamespaceGrantInnerFrameLoaded = true;
 			String cmd = String.format("javascript:initInnerFrame(\'%s\')",
 					mAccount.getInnerBrowserWindowFrameURL());
-			Log.w("JNI", "INIT NAMESPACE GRANT INNER FRAME: " + cmd);
+			Log.d("login", "Account Client INIT NAMESPACE GRANT INNER FRAME: " + cmd);
 			view.loadUrl(cmd);
 
 		} else {
