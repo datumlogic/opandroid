@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import com.openpeer.app.OPDataManager;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.Dispositions;
@@ -53,7 +54,7 @@ public class ContactsFragment extends Fragment implements
 		if (mTest) {
 			fillTestView();
 		} else {
-			
+			setupContent();
 		}
 		return view;
 	}
@@ -122,9 +123,13 @@ public class ContactsFragment extends Fragment implements
 		mRootLayout.setRefreshing(false);
 	}
 
-	void setupContent(){
-//		mAdapter.mContacts = OPData
+	void setupContent() {
+		mAdapter.mContacts = OPDataManager.getInstance()
+				.getRolodexContactsForIdentity(0);
+		
+		mAdapter.notifyDataSetChanged();
 	}
+
 	// fill in test data to the view
 	void fillTestView() {
 		// ProfileURL Name David Gotwo identityUrl
@@ -136,11 +141,9 @@ public class ContactsFragment extends Fragment implements
 		// com.openpeer.javaapi.OPRolodexContact@4266d098 ProfileURL Name Cindy
 		// Love identityUrl
 		mAdapter.mContacts = Arrays.asList(new OPRolodexContact[] {
-				new OPRolodexContact(
-						"identity://facebook.com/100003823387069",
+				new OPRolodexContact("identity://facebook.com/100003823387069",
 						"facebook.com", "David Gotwo", null, null, null),
-				new OPRolodexContact(
-						"identity://facebook.com/100003952283621",
+				new OPRolodexContact("identity://facebook.com/100003952283621",
 						"facebook.com", "David Gofour", null, null, null),
 				new OPIdentityContact(new OPRolodexContact(
 						"identity://facebook.com/100003952283621",

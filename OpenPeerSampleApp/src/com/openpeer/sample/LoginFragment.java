@@ -12,6 +12,7 @@ import com.openpeer.app.LoginManager;
 import com.openpeer.app.LoginUIListener;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
+import com.openpeer.sample.contacts.ContactsFragment;
 
 public class LoginFragment extends BaseFragment implements LoginUIListener {
 	WebView mAccountLoginWebView;
@@ -90,7 +91,8 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	@Override
 	public void onLoginComplete() {
-
+		((BaseFragmentActivity) getActivity()).switchFragment(ContactsFragment
+				.newInstance());
 	}
 
 	@Override
