@@ -27,7 +27,7 @@ public class OPDataManager {
 	private String mReloginInfo;
 
 	public String getReloginInfo() {
-		return mReloginInfo;
+		return null;//mReloginInfo;
 	}
 
 	public static OPDataManager getInstance() {
@@ -98,13 +98,14 @@ public class OPDataManager {
 	}
 
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
-		if (BuildConfig.DEBUG) {
-			Log.d("login", "" + identity.getDownloadedRolodexContacts());
-		}
+		OPDownloadedRolodexContacts downloaded = identity.getDownloadedRolodexContacts();
+//		if (BuildConfig.DEBUG) {
+//			Log.d("login", "OPDataManager onDownloadedRolodexContacts version" + downloaded.getVersionDownloaded());
+//		}
 		setIdentityContacts(identity.getStableID(),
-				identity.getDownloadedRolodexContacts());
+				downloaded);
 		OPDatastoreDelegateImplementation.getInstance().saveOrUpdateContacts(
-				identity.getDownloadedRolodexContacts().getRolodexContacts(),
+				downloaded.getRolodexContacts(),
 				identity.getStableID());
 		identityLookup(identity);
 
