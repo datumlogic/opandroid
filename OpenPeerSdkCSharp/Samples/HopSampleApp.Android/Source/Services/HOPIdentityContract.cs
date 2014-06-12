@@ -17,6 +17,7 @@ namespace HopSampleApp
 	class HOPIdentityContract
 	{
 	}
+
 	public   class HOPIdentityState
 	{
 		public  HOPIdentityStates State {get; set;}

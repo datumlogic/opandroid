@@ -83,7 +83,7 @@ namespace HopSampleApp
 						break;
 				case HOPCallStates.HOPCallStateRinging :
 						//Receives just callee side. Now should play ringing sound
-					SessionManager.SharedSessionManager().onCallRinging(call);
+					    SessionManager.SharedSessionManager().onCallRinging(call);
 						//[[SoundManager sharedSoundsManager] playRingingSound];
 						break;
 				case HOPCallStates.HOPCallStateRingback :
@@ -95,7 +95,7 @@ namespace HopSampleApp
 					    SoundManager.SharedSoundsManager().StopCallingSound();
 						SoundManager.SharedSoundsManager().StopRingingSound();
 					    SessionManager.SharedSessionManager().onCallOpened(call);
-					//sessionViewController.StartTimer();
+					    //sessionViewController.StartTimer();
 						break;
 				case HOPCallStates.HOPCallStateActive :
 						//Currently not in use
@@ -106,18 +106,18 @@ namespace HopSampleApp
 				case HOPCallStates.HOPCallStateHold :
 						//Receives both parties
 						break;
-				  case HOPCallStates.HOPCallStateClosing :
-						//Receives both parties
+				case HOPCallStates.HOPCallStateClosing :
+					//Receives both parties
 					if (OpenPeer.sharedOpenPeer().AppEnteredBackground()) OpenPeer.sharedOpenPeer().PrepareAppForBackground();
 
-					SessionManager.SharedSessionManager().onCallClosing(call);
+					    SessionManager.SharedSessionManager().onCallClosing(call);
 						SoundManager.SharedSoundsManager().StopCallingSound();
 						SoundManager.SharedSoundsManager().StopRingingSound();
-					//sessionViewController.StopTimer();
+					    //sessionViewController.StopTimer();
 						break;
 				case HOPCallStates.HOPCallStateClosed :
-					//Receives both parties
-					SessionManager.SharedSessionManager().onCallEnded(call);
+					    //Receives both parties
+					    SessionManager.SharedSessionManager().onCallEnded(call);
 						break;
 				case HOPCallStates.HOPCallStateNone :
 					default :

@@ -39,6 +39,9 @@ using Newtonsoft.Json;
 
 namespace HopSampleApp
 {
+
+	#region Enums
+
 	public enum LoggerTypes
 	{
 		LOGGER_STD_OUT,
@@ -76,8 +79,12 @@ namespace HopSampleApp
 		TOTAL_MODULES
 	};
 
+	#endregion
+
 	class Settings
 	{
+		#region Properties
+
 		public bool IsMediaAECOn {get; set;}
 
 		public bool IsMediaAGCOn {get; set;}
@@ -97,6 +104,10 @@ namespace HopSampleApp
 		public Dictionary<string,object> TelnetLoggerSettings {get; set;}
 
 		public Dictionary<string,object> OutgoingTelnetLoggerSettings {get; set;}
+
+		#endregion
+
+		#region Singleton Pattern
 
 		private static Settings instance;
 		private Settings()
@@ -130,12 +141,17 @@ namespace HopSampleApp
 				this.AppModulesLoggerLevel = new Dictionary<string,string>();
 
 		}
+
 		public static Settings SharedSettings()
 		{
 			if (instance == null)
 				instance = new Settings();
 			return instance;
 		}
+
+		#endregion
+
+		#region Methods
 		//
 		public void enableMediaAEC(bool enable)
 		{
@@ -717,6 +733,7 @@ namespace HopSampleApp
 		}*/
 
 		//
+		#endregion
 	}
 }
 

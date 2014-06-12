@@ -36,10 +36,10 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace HopSampleApp
 {
-	// Singleton Pattern only for translation
-
 	public class HOPMediaEngineOutputAudioRoutes{}
 	//Simulation MediaEngine class
+	#region Singleton Pattern
+
 	public class HOPMediaEngine
 	{
 		private static HOPMediaEngine instance;
@@ -48,10 +48,13 @@ namespace HopSampleApp
 		public void PauseVoice(bool value){ /*code*/ }
 	}
 
+	#endregion
+
 
 
 	class MediaEngineDelegate
 	{
+		#region Methods
 
 		public static void OnMediaEngineAudioRouteChanged(HOPMediaEngineOutputAudioRoutes audioRoute)
 		{
@@ -90,6 +93,7 @@ namespace HopSampleApp
 
 		}
 
+		#endregion
 	}
 }
 

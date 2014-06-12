@@ -36,11 +36,6 @@ using Android.Widget;
 namespace HopSampleApp.Enums
 {
 
-	//#if	//openpeer_ios_sdk_OpenPeerTypes_h
-
-	//#define //openpeer_ios_sdk_OpenPeerTypes_h
-
-	//#pragma mark - HOPCall enums
 	public enum HOPCallStates
 	{
 		HOPCallStateNone, // call has no state yet
@@ -57,24 +52,20 @@ namespace HopSampleApp.Enums
 		HOPCallStateClosing, // call is hanging up
 		HOPCallStateClosed, // call has ended
 	};
+
 	public enum HOPCallClosedReasons
 	{
 		HOPCallClosedReasonNone = 0,
-
 		HOPCallClosedReasonUser = 200,
-
 		HOPCallClosedReasonRequestTimeout = 408,
 		HOPCallClosedReasonTemporarilyUnavailable = 480,
 		HOPCallClosedReasonBusy = 486,
 		HOPCallClosedReasonRequestTerminated = 487,
 		HOPCallClosedReasonNotAcceptableHere = 488,
-
 		CallClosedReasonServerInternalError = 500,
-
 		CallClosedReasonDecline = 603,
 	};
 
-	//#pragma mark - HOPConversationThread enums
 	public enum HOPConversationThreadMessageDeliveryStates
 	{
 		HOPConversationThreadMessageDeliveryStateDiscovering = 0,
@@ -89,6 +80,7 @@ namespace HopSampleApp.Enums
 		HOPConversationThreadContactStateConnected,
 		HOPConversationThreadContactStateDisconnected
 	};
+
 	public enum HOPAccountStates
 	{
 		HOPAccountStatePending,
@@ -102,8 +94,6 @@ namespace HopSampleApp.Enums
 		HOPAccountStateShutdown,
 	};
 
-
-	//#pragma mark - HOPIdentity enums
 	public enum HOPIdentityStates
 	{
 		HOPIdentityStatePending,
@@ -116,9 +106,6 @@ namespace HopSampleApp.Enums
 		HOPIdentityStateShutdown
 	};
 
-
-
-	//#pragma mark - HOPClientLog enums
 	public enum HOPLoggerSeverities
 	{
 		HOPLoggerSeverityInformational,
@@ -135,20 +122,15 @@ namespace HopSampleApp.Enums
 		HOPLoggerLevelDebug,
 		HOPLoggerLevelTrace,
 		HOPLoggerLevelInsane,
-
 		HOPLoggerTotalNumberOfLevels
-	} ;//Replacing HOPClientLogSeverities
+	};//Replacing HOPClientLogSeverities
 
-
-	//#pragma mark - Client enums
 	public enum HOPContactTypes
 	{
 		HOPContactTypeOpenPeer,
 		HOPContactTypeExternal
 	};
 
-
-	//#pragma mark - HOPMediaEngine enums
 	public enum HOPMediaEngineCameraTypes
 	{
 		HOPMediaEngineCameraTypeNone,
@@ -170,11 +152,7 @@ namespace HopSampleApp.Enums
 		HOPMediaEngineOutputAudioRouteBuiltInReceiver,
 		HOPMediaEngineOutputAudioRouteBuiltInSpeaker
 	};
-	//#endif
-	class HOPTypes
-	{
 
-
-	}
+	class HOPTypes { }
 }
 
