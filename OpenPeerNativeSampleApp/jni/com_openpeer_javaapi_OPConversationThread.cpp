@@ -186,7 +186,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 				coreIdentityContact.mName = jni_env->GetStringUTFChars(name, NULL);
 
 				jclass cls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
-				jfieldID fid = jni_env->GetFieldID(cls, "peerFileString", "Ljava/lang/String;");
+				jfieldID fid = jni_env->GetFieldID(cls, "mPeerFileString", "Ljava/lang/String;");
 				jstring peerFileString = (jstring) jni_env->GetObjectField(peerFilePublic, fid);
 				String corePeerFileString = jni_env->GetStringUTFChars(peerFileString, NULL);
 				ElementPtr peerFilePublicEl = IHelper::createElement(corePeerFileString);
