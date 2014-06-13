@@ -57,6 +57,7 @@ public class OPTestIdentityLookup {
 					OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
 					ilInfo.initWithRolodexContact(contact);
 					inputLookupList.add(ilInfo);
+					contact.printInfo();
 				}
 				
 				LoginManager.mIdentityLookup = OPIdentityLookup.create(LoginManager.mAccount,
