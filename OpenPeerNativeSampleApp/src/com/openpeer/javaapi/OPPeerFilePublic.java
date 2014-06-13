@@ -2,9 +2,15 @@ package com.openpeer.javaapi;
 
 public class OPPeerFilePublic {
 
-	public String peerFileString;
+	private String mPeerFileString;
 	
-	public native String saveToString();
-	public static native OPPeerFilePublic loadFromString(String peerFilePublicString);
+	public String getPeerFileString()
+	{
+		return mPeerFileString;
+	}
+	public void setPeerFileString(String peerFile)
+	{
+		mPeerFileString = peerFile;
+	}
 	
 }

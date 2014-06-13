@@ -42,7 +42,7 @@ public class OPTestConversationThread {
 				if (idContact.getName().toLowerCase().contains("sire"))
 				{
 					Log.d("output", "ID contact name = " + idContact.getName());
-					Log.d("output", "ID contact peerFile = " + idContact.getPeerFilePublic().peerFileString);
+					Log.d("output", "ID contact peerFile = " + idContact.getPeerFilePublic().getPeerFileString());
 					Log.d("output", "ID contact identity URI = " + idContact.getIdentityURI());
 					Log.d("output", "ID contact profile URL = " + idContact.getProfileURL());
 					Log.d("output", "ID contact V profile URL = " + idContact.getVProfileURL());
@@ -50,7 +50,7 @@ public class OPTestConversationThread {
 
 
 					OPContactProfileInfo info = new OPContactProfileInfo();
-					OPContact newContact = OPContact.createFromPeerFilePublic(LoginManager.mAccount, idContact.getPeerFilePublic().peerFileString);
+					OPContact newContact = OPContact.createFromPeerFilePublic(LoginManager.mAccount, idContact.getPeerFilePublic().getPeerFileString());
 
 					info.setIdentityContacts(callContacts);
 					info.setContact(newContact);

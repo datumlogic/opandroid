@@ -41,11 +41,13 @@ public class LoginManager {
 	public static void LoginWithFacebook (){
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
 		stackMessageQueue = OPStackMessageQueue.singleton(); 
-		//stackMessageQueue = new OPStackMessageQueue();
-		//stackMessageQueue.interceptProcessing(null);
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
+		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+		//OPLogger.setLogLevel("openpeer_services_transport_stream", OPLogLevel.LogLevel_Insane);
+		//OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
 		OPLogger.installTelnetLogger(59999, 60, true);
+		OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
 		stack = OPStack.singleton();
 		
 		mCacheDelegate = new OPCacheDelegateImplementation();
