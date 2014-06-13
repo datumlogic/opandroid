@@ -1,5 +1,6 @@
 package com.openpeer.javaapi;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class OPRolodexContact {
@@ -162,7 +163,7 @@ public class OPRolodexContact {
 		this.mAvatars = mAvatars;
 	}
 
-	void copy(OPRolodexContact contact) {
+	OPRolodexContact copy(OPRolodexContact contact) {
 		this.mAvatars = contact.mAvatars;
 		this.mDisposition = contact.mDisposition;
 		this.mIdentityProvider = contact.mIdentityProvider;
@@ -170,11 +171,23 @@ public class OPRolodexContact {
 		this.mName = contact.mName;
 		this.mProfileURL = contact.mProfileURL;
 		this.mVProfileURL = contact.mVProfileURL;
+		return this;
 	}
 
 	public String toString() {
-		return super.toString() + " ProfileURL " + mProfileURL + " Name "
-				+ mName + " identityUrl " + mIdentityURI + " IdentityProvider "
-				+ mIdentityProvider + " Disposition " + mDisposition;
+		return super.toString()
+				+ " ProfileURL "
+				+ mProfileURL
+				+ " Name "
+				+ mName
+				+ " identityUrl "
+				+ mIdentityURI
+				+ " IdentityProvider "
+				+ mIdentityProvider
+				+ " Disposition "
+				+ mDisposition
+				+ " avatars "
+				+ (mAvatars != null ? Arrays.deepToString(mAvatars.toArray())
+						: "null");
 	}
 }

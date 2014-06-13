@@ -1,5 +1,7 @@
 package com.openpeer.javaapi;
 
+import java.util.List;
+
 import android.text.format.Time;
 
 public class OPIdentityContact extends OPRolodexContact {
@@ -14,6 +16,22 @@ public class OPIdentityContact extends OPRolodexContact {
 
 	private Time mLastUpdated;
 	private Time mExpires;
+
+	public OPIdentityContact setIdentityParams(String mStableID, String string,
+			String mIdentityProofBundleEl, int mPriority, int mWeight, long l,
+			long m) {
+
+		this.mStableID = mStableID;
+		this.mPeerFilePublic = OPPeerFilePublic.loadFromString(string);
+		this.mIdentityProofBundleEl = mIdentityProofBundleEl;
+		this.mPriority = mPriority;
+		this.mWeight = mWeight;
+		this.mLastUpdated = new Time();
+		mLastUpdated.set(l);
+		this.mExpires = new Time();
+		mExpires.set(m);
+		return this;
+	}
 
 	public OPIdentityContact() {
 

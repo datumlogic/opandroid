@@ -24,6 +24,20 @@ public class OPDataManager {
 	private OPAccount mAccount;
 	private OPDatastoreDelegate mDatastoreDelegate;
 	private List<OPIdentity> mIdentities;
+	private Hashtable<Long, OPIdentityContact> mSelfContacts;
+
+	public Hashtable<Long, OPIdentityContact> getSelfContacts() {
+		return mSelfContacts;
+	}
+
+	public void setSelfContacts(Hashtable<Long, OPIdentityContact> selfContacts) {
+		this.mSelfContacts = selfContacts;
+	}
+
+	public List<OPIdentity> getIdentities() {
+		return mIdentities;
+	}
+
 	private Hashtable<Long, List<OPRolodexContact>> mContacts;
 	private Hashtable<Long, String> downloadedIdentityContactVersions;
 	private String mReloginInfo;
@@ -43,14 +57,24 @@ public class OPDataManager {
 		assert (delegate != null);
 		mDatastoreDelegate = delegate;
 		mReloginInfo = delegate.getReloginInfo();
-		downloadedIdentityContactVersions = new Hashtable();
-		mContacts = new Hashtable();
+		downloadedIdentityContactVersions = new Hashtable<Long, String>();
+		mContacts = new Hashtable<Long, List<OPRolodexContact>>();
 		if (mReloginInfo != null) {
 			// Read idenities and contacts
+
 		}
 	}
 
 	public List<OPRolodexContact> getRolodexContactsForIdentity(long identityId) {
+		// Lazy instantiation and loading of contacts
+		if (mContacts == null) {
+			mContacts = new Hashtable<Long, List<OPRolodexContact>>();
+		}
+		if (mContacts.get(identityId) == null) {
+			mContacts.put(identityId,
+					mDatastoreDelegate.getContacts(identityId));
+		}
+
 		if (identityId == 0) {
 			List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
 			for (List<OPRolodexContact> lc : mContacts.values()) {
@@ -74,9 +98,6 @@ public class OPDataManager {
 	}
 
 	public OPAccount getSharedAccount() {
-		if (mAccount == null) {
-			mAccount = new OPAccount();
-		}
 		return mAccount;
 	}
 
@@ -104,6 +125,8 @@ public class OPDataManager {
 			}
 			mContacts.put(identityId, contacts);
 		}
+
+		mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
 	}
 
 	public void registerDatastoreDelegate(OPDatastoreDelegate delegate) {
@@ -118,8 +141,7 @@ public class OPDataManager {
 		// downloaded.getVersionDownloaded());
 		// }
 		setIdentityContacts(identity.getStableID(), downloaded);
-		OPDatastoreDelegateImplementation.getInstance().saveOrUpdateContacts(
-				downloaded.getRolodexContacts(), identity.getStableID());
+
 		identityLookup(identity,
 				this.getRolodexContactsForIdentity(identity.getStableID()));
 
@@ -161,6 +183,11 @@ public class OPDataManager {
 		Log.d("TODO",
 				"OPDataManager updateIdentityContacts "
 						+ Arrays.deepToString(iContacts.toArray()));
+		mDatastoreDelegate.saveOrUpdateContacts(iContacts,
+				mIdentity.getStableID());
+		// TODO: optimize this
+		mContacts.put(mIdentity.getStableID(),
+				mDatastoreDelegate.getContacts(mIdentity.getStableID()));
 	}
 
 }

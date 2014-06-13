@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.model.OPHomeUser;
 
@@ -11,10 +12,13 @@ import android.content.Context;
 
 public interface OPDatastoreDelegate {
 	public String getReloginInfo();
+
 	public OPHomeUser getHomeUser();
+
 	public boolean saveHomeUser(OPHomeUser user);
 
 	public List<OPIdentity> getIdentities();
+
 	public OPIdentity getIdentity();
 
 	/**
@@ -39,9 +43,11 @@ public interface OPDatastoreDelegate {
 
 	public boolean saveOrUpdateAccount(OPAccount account);
 
-	public boolean saveOrUpdateIdentities(List<OPIdentity> identies, long accountId);
+	public boolean saveOrUpdateIdentities(List<OPIdentity> identies,
+			long accountId);
 
-	public boolean saveOrUpdateContacts(List<OPRolodexContact> contacts, long identityId);
+	public boolean saveOrUpdateContacts(
+			List<? extends OPRolodexContact> contacts, long identityId);
 
 	public boolean saveOrUpdateIdentity(OPIdentity identy, long accountId);
 
@@ -50,11 +56,17 @@ public interface OPDatastoreDelegate {
 	public boolean deleteIdentity(long id);
 
 	public boolean deleteContact(OPRolodexContact id);
+
 	public String getDownloadedContactsVersion(long identityId);
+
+	public void setDownloadedContactsVersion(long identityId, String version);
+
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);
-	 * public boolean saveCallRecord(OPConversationRecord record);
-	 * public List<OPConversationRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords);
-	 * public List<OPCallRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords);
+	 * public boolean saveCallRecord(OPConversationRecord record); public
+	 * List<OPConversationRecord> getConversationRecords(String contactId, int
+	 * pageNumber, int numberofRecords); public List<OPCallRecord>
+	 * getConversationRecords(String contactId, int pageNumber, int
+	 * numberofRecords);
 	 */
 }

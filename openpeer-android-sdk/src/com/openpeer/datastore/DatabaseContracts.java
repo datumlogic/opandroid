@@ -1,9 +1,6 @@
 package com.openpeer.datastore;
 
-import com.openpeer.javaapi.OPPeerFilePublic;
-
 import android.provider.BaseColumns;
-import android.text.format.Time;
 
 /**
  * Created by brucexia on 2014-06-03.
@@ -13,6 +10,7 @@ public class DatabaseContracts {
 	private static final String INTEGER_TYPE = " INTEGER";
 	private static final String INTEGER_PRIMARY_KEY_TYPE = " INTEGER PRIMARY KEY";
 	private static final String UNIQUE_TYPE = " UNIQUE";
+	private static final String PRIMARY_KEY_TYPE = " PRIMARY KEY";
 
 	private static final String COMMA_SEP = ",";
 
@@ -96,12 +94,13 @@ public class DatabaseContracts {
 			+ COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_ID
 			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
 			+ ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE
-			+ COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE
-			+ COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER
-			+ TEXT_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_URI
-			+ TEXT_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_URL + TEXT_TYPE
-			+ COMMA_SEP + ContactEntry.COLUMN_NAME_VPROFILE_URL + TEXT_TYPE
-			+ " )";
+			+ COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_CONTACT_ID
+			+ TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ ContactEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE + COMMA_SEP
+			+ ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE
+			+ COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_URI + TEXT_TYPE
+			+ COMMA_SEP + ContactEntry.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP
+			+ ContactEntry.COLUMN_NAME_VPROFILE_URL + TEXT_TYPE + " )";
 	public static final String SQL_CREATE_IDENTITY = "CREATE TABLE "
 			+ IdentityEntry.TABLE_NAME + " (" + IdentityEntry._ID
 			+ INTEGER_TYPE + COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_ID
@@ -135,7 +134,7 @@ public class DatabaseContracts {
 			+ IdentityContactEntry.TABLE_NAME + " (" + IdentityContactEntry._ID
 			+ INTEGER_TYPE + COMMA_SEP
 			+ IdentityContactEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE
-			+ COMMA_SEP
+			+ PRIMARY_KEY_TYPE + COMMA_SEP
 			+ IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
 			+ INTEGER_TYPE + COMMA_SEP
 			+ IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC + TEXT_TYPE
