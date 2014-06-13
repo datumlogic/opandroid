@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.openpeer.datastore.OPDatastoreDelegate;
@@ -20,11 +21,16 @@ import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.openpeer_android_sdk.BuildConfig;
 
 public class OPDataManager {
+	public static String INTENT_CONTACTS_CHANGED = "com.openpeer.contacts_changed";
+
 	private static OPDataManager instance;
 	private OPAccount mAccount;
 	private OPDatastoreDelegate mDatastoreDelegate;
 	private List<OPIdentity> mIdentities;
 	private Hashtable<Long, OPIdentityContact> mSelfContacts;
+	// private Hashtable<Long, List<OPRolodexContact>> mContacts;
+	private Hashtable<Long, String> downloadedIdentityContactVersions;
+	private String mReloginInfo;
 
 	public Hashtable<Long, OPIdentityContact> getSelfContacts() {
 		return mSelfContacts;
@@ -37,10 +43,6 @@ public class OPDataManager {
 	public List<OPIdentity> getIdentities() {
 		return mIdentities;
 	}
-
-	private Hashtable<Long, List<OPRolodexContact>> mContacts;
-	private Hashtable<Long, String> downloadedIdentityContactVersions;
-	private String mReloginInfo;
 
 	public String getReloginInfo() {
 		return null;// mReloginInfo;
@@ -58,31 +60,36 @@ public class OPDataManager {
 		mDatastoreDelegate = delegate;
 		mReloginInfo = delegate.getReloginInfo();
 		downloadedIdentityContactVersions = new Hashtable<Long, String>();
-		mContacts = new Hashtable<Long, List<OPRolodexContact>>();
+		// mContacts = new Hashtable<Long, List<OPRolodexContact>>();
 		if (mReloginInfo != null) {
-			// Read idenities and contacts
-
+			// Read idenities contacts and contacts
+			mSelfContacts = mDatastoreDelegate.getSelfIdentityContacts();
 		}
 	}
 
 	public List<OPRolodexContact> getRolodexContactsForIdentity(long identityId) {
 		// Lazy instantiation and loading of contacts
-		if (mContacts == null) {
-			mContacts = new Hashtable<Long, List<OPRolodexContact>>();
-		}
-		if (mContacts.get(identityId) == null) {
-			mContacts.put(identityId,
-					mDatastoreDelegate.getContacts(identityId));
-		}
+		// if (mContacts == null) {
+		// mContacts = new Hashtable<Long, List<OPRolodexContact>>();
+		// }
+		// if (mContacts.get(identityId) == null) {
+		// mContacts.put(identityId,
+		// mDatastoreDelegate.getContacts(identityId));
+		// }
+		//
+		// if (identityId == 0) {
+		// List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
+		// for (List<OPRolodexContact> lc : mContacts.values()) {
+		// contacts.addAll(lc);
+		// }
+		// return contacts;
+		// } else {
 
-		if (identityId == 0) {
-			List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
-			for (List<OPRolodexContact> lc : mContacts.values()) {
-				contacts.addAll(lc);
-			}
-			return contacts;
-		}
-		return mContacts.get(identityId);
+		// }
+		// return null;
+		// return mContacts.get(identityId);
+		return mDatastoreDelegate.getContacts(identityId);
+
 	}
 
 	/**
@@ -103,6 +110,11 @@ public class OPDataManager {
 
 	public void setIdentities(List<OPIdentity> identities) {
 		mIdentities = identities;
+		mSelfContacts = new Hashtable<Long, OPIdentityContact>();
+		for (OPIdentity identity : identities) {
+			mSelfContacts.put(identity.getStableID(),
+					identity.getSelfIdentityContact());
+		}
 		mDatastoreDelegate.saveOrUpdateIdentities(mIdentities,
 				mAccount.getStableID());
 	}
@@ -117,13 +129,25 @@ public class OPDataManager {
 			return;
 		}
 		if (downloadedContacts.isFlushAllRolodexContacts()) {
-			mContacts.put(identityId, contacts);
+			mDatastoreDelegate.flushContactsForIdentity(identityId);
+			mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
+			// mContacts.put(identityId, contacts);
 		} else {
-			List<OPRolodexContact> existingContacts = mContacts.get(identityId);
-			if (existingContacts != null) {
-				contacts.addAll(existingContacts);
+			for (OPRolodexContact contact : contacts) {
+				switch (contact.getDisposition()) {
+				case Disposition_Remove:
+					mDatastoreDelegate.deleteContact(contact.getId());
+					break;
+				default:
+					mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
+				}
 			}
-			mContacts.put(identityId, contacts);
+			// List<OPRolodexContact> existingContacts =
+			// mContacts.get(identityId);
+			// if (existingContacts != null) {
+			// contacts.addAll(existingContacts);
+			// }
+			// mContacts.put(identityId, contacts);
 		}
 
 		mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
@@ -144,6 +168,7 @@ public class OPDataManager {
 
 		identityLookup(identity,
 				this.getRolodexContactsForIdentity(identity.getStableID()));
+		notifyContactsChanged();
 
 		// mLoginHandler.onDownloadedRolodexContacts(identity);
 	}
@@ -186,8 +211,17 @@ public class OPDataManager {
 		mDatastoreDelegate.saveOrUpdateContacts(iContacts,
 				mIdentity.getStableID());
 		// TODO: optimize this
-		mContacts.put(mIdentity.getStableID(),
-				mDatastoreDelegate.getContacts(mIdentity.getStableID()));
+		// mContacts.put(mIdentity.getStableID(),
+		// mDatastoreDelegate.getContacts(mIdentity.getStableID()));
+
+		notifyContactsChanged();
+	}
+
+	private void notifyContactsChanged() {
+
+		Intent intent = new Intent();
+		intent.setAction(INTENT_CONTACTS_CHANGED);
+		OPHelper.getInstance().sendBroadcast(intent);
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.openpeer.datastore;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import com.openpeer.javaapi.OPAccount;
@@ -55,11 +56,15 @@ public interface OPDatastoreDelegate {
 
 	public boolean deleteIdentity(long id);
 
-	public boolean deleteContact(OPRolodexContact id);
+	public boolean deleteContact(long id);
 
 	public String getDownloadedContactsVersion(long identityId);
 
 	public void setDownloadedContactsVersion(long identityId, String version);
+
+	boolean flushContactsForIdentity(long id);
+
+	Hashtable<Long, OPIdentityContact> getSelfIdentityContacts();
 
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);

@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.openpeer.datastore.OPDatastoreDelegate;
@@ -135,6 +136,10 @@ public class OPHelper {
 			e.printStackTrace();
 			return "";
 		}
+	}
+
+	public void sendBroadcast(Intent intent) {
+		mContext.sendBroadcast(intent);
 	}
 
 }

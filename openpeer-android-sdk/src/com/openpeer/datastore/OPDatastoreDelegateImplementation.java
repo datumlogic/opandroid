@@ -1,6 +1,8 @@
 package com.openpeer.datastore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -80,6 +82,31 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
+	public Hashtable<Long, OPIdentityContact> getSelfIdentityContacts() {
+		String columns[] = new String[] {
+				IdentityEntry.COLUMN_NAME_IDENTITY_ID,
+				IdentityEntry.COLUMN_NAME_IDENTITY_CONTACT_ID };
+		Cursor cursor = mOpenHelper.getWritableDatabase()
+				.query(IdentityEntry.TABLE_NAME, columns, null, null, null,
+						null, null);
+		if (cursor != null) {
+			Hashtable<Long, OPIdentityContact> contacts = new Hashtable<Long, OPIdentityContact>();
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				contacts.put(cursor.getLong(0),
+						getIdentitySelfContact(cursor.getString(1)));
+				cursor.moveToNext();
+			}
+			cursor.close();
+			Log.d("test",
+					"getSelfIdentityContacts "
+							+ Arrays.deepToString(contacts.values().toArray()));
+			return contacts;
+		}
+		return null;
+	}
+
+	@Override
 	public List<OPIdentity> getIdentities() {
 		// TODO Auto-generated method stub
 		return null;
@@ -93,12 +120,14 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	@Override
 	public List<OPRolodexContact> getContacts(long identityId) {
 		List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
-
+		String selection = null;
+		if (identityId != 0) {
+			selection = ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
+					+ identityId;
+		}
 		Cursor cursor = mOpenHelper.getWritableDatabase().query(
-				ContactEntry.TABLE_NAME,
-				null,
-				ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
-						+ identityId, null, null, null, null);
+				ContactEntry.TABLE_NAME, null, selection, null, null, null,
+				null);
 		if (cursor != null) {
 
 			cursor.moveToFirst();
@@ -211,8 +240,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			icValues.put(
 					IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID,
 					identityId);
-			icValues.put(IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC,
-					ic.getPeerFilePublic().getPeerFileString());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC, ic
+					.getPeerFilePublic().getPeerFileString());
 
 			icValues.put(
 					IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE,
@@ -247,18 +276,36 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public boolean deleteContact(OPRolodexContact contact) {
+	public boolean flushContactsForIdentity(long id) {
+		String selection = IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
+				+ "=" + id;
+		String cSelection = ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
+				+ "=" + id;
+		mOpenHelper.getWritableDatabase().delete(
+				IdentityContactEntry.TABLE_NAME, selection, null);
 		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
-				ContactEntry.COLUMN_NAME_CONTACT_ID + "=" + contact.getId(),
-				null);
-		if (contact instanceof OPIdentityContact) {
-			mOpenHelper.getWritableDatabase()
-					.delete(IdentityContactEntry.TABLE_NAME,
-							IdentityContactEntry.COLUMN_NAME_STABLE_ID
-									+ "="
-									+ ((OPIdentityContact) contact)
-											.getStableID(), null);
-		}
+				cSelection, null);
+		return true;
+	}
+
+	@Override
+	public boolean deleteContact(long id) {
+		String rawSql = "delete from " + IdentityContactEntry.TABLE_NAME
+				+ " where " + IdentityContactEntry.COLUMN_NAME_STABLE_ID
+				+ " in (select " + ContactEntry.COLUMN_NAME_IDENTITY_CONTACT_ID
+				+ " from " + ContactEntry.TABLE_NAME + " where "
+				+ ContactEntry.COLUMN_NAME_CONTACT_ID + "=" + id + ")";
+		mOpenHelper.getWritableDatabase().execSQL(rawSql);
+		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
+				ContactEntry.COLUMN_NAME_CONTACT_ID + "=" + id, null);
+		// if (contact instanceof OPIdentityContact) {
+		// mOpenHelper.getWritableDatabase()
+		// .delete(IdentityContactEntry.TABLE_NAME,
+		// IdentityContactEntry.COLUMN_NAME_STABLE_ID
+		// + "="
+		// + ((OPIdentityContact) contact)
+		// .getStableID(), null);
+		// }
 		return true;
 	}
 
@@ -295,6 +342,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 					.getString(cursor
 							.getColumnIndex(IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION));
 		}
+		Log.d("test", "datastore contacts version " + version);
 		return version;
 	}
 
@@ -310,8 +358,9 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION, version);
 		String whereClause = IdentityEntry.COLUMN_NAME_IDENTITY_ID + "="
 				+ identityId;
-		mOpenHelper.getWritableDatabase().update(IdentityEntry.TABLE_NAME,
-				values, whereClause, null);
+		long rowId = mOpenHelper.getWritableDatabase().update(
+				IdentityEntry.TABLE_NAME, values, whereClause, null);
+		Log.d("test", "setDownloadedContactsVersion " + rowId);
 	}
 
 	public OPIdentityContact getIdentitySelfContact(String identityContactId) {
@@ -357,6 +406,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		String stableIdentityId = cursor.getString(cursor
 				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_CONTACT_ID));
 		if (stableIdentityId != null) {
+			Log.d("test", "retrieving identity contact of id "
+					+ stableIdentityId);
 			Cursor iCursor = mOpenHelper.getWritableDatabase().query(
 					IdentityContactEntry.TABLE_NAME, null,
 					IdentityContactEntry.COLUMN_NAME_STABLE_ID + "=?",
@@ -407,6 +458,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 								.getColumnIndex(AvatarEntry.COLUMN_NAME_AVATAR_URL)),
 						0, 0);
 				avatars.add(avatar);
+				cursor.moveToNext();
 			}
 			cursor.close();
 			return avatars;
