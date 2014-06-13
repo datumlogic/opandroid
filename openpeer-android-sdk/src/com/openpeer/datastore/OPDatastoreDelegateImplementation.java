@@ -212,7 +212,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 					IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID,
 					identityId);
 			icValues.put(IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC,
-					ic.getPeerFilePublic().peerFileString);
+					ic.getPeerFilePublic().getPeerFileString());
 
 			icValues.put(
 					IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE,
