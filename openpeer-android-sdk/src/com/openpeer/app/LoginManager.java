@@ -21,19 +21,43 @@ public class LoginManager {
 	private WebView mAccountLoginWebView;
 	private WebView mIdentityLoginWebView;
 
-	public LoginManager(LoginUIListener mListener,
+	private static LoginManager instance;
+
+	public static LoginManager getInstance() {
+		if (instance == null) {
+			instance = new LoginManager();
+		}
+		return instance;
+	}
+
+	public LoginManager setup(LoginUIListener mListener,
 			WebView mAccountLoginWebView, WebView mIdentityLoginWebView) {
-		super();
 		this.mListener = mListener;
 		this.mAccountLoginWebView = mAccountLoginWebView;
 		this.mIdentityLoginWebView = mIdentityLoginWebView;
+		return this;
+	}
+
+	private LoginManager() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public boolean isLoginInProgress() {
+		return instance != null;
+	}
+
+	/**
+	 * this function should be called after logging to release resources
+	 */
+	static void destroy() {
+		instance = null;
 	}
 
 	public void login() {
 
 		// if (OPDatastoreDelegateImplementation.getInstance().getReloginInfo()
 		// == null) {
-		OPAccount account = OPDataManager.getInstance().getSharedAccount();
+		OPAccount account = new OPAccount();
 		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
 				account);
 		mAccountLoginWebView.setWebViewClient(client);
@@ -45,7 +69,6 @@ public class LoginManager {
 		account = OPAccount.login(null, null, null,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
 				"bojanGrantID", "identity-v1-rel-lespaul-i.hcs.io", false);
-		Log.d("login", "account login returned account " + account);
 		OPDataManager.getInstance().setSharedAccount(account);
 		client.mAccount = account;
 		accountDelegate.mAccount = account;
@@ -53,7 +76,12 @@ public class LoginManager {
 	}
 
 	public void relogin(String reloginInfo) {
-		OPAccount mAccount = OPDataManager.getInstance().getSharedAccount();
+		OPAccount mAccount;
+		if (OPDataManager.getInstance().getSharedAccount() != null) {
+			mAccount = OPDataManager.getInstance().getSharedAccount();
+		} else {
+			mAccount = new OPAccount();
+		}
 		OPAccountDelegateImplementation mAccountDelegate = new OPAccountDelegateImplementation(
 				mAccountLoginWebView, mAccount);
 		CallbackHandler.getInstance().registerAccountDelegate(mAccount,
@@ -61,6 +89,7 @@ public class LoginManager {
 		mAccount = OPAccount.relogin(null, null, null,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// namespaceGrantOuterFrameURLUponReload
 				reloginInfo);
+		OPDataManager.getInstance().setSharedAccount(mAccount);
 	}
 
 	public void startIdentityLogin() {
@@ -97,18 +126,19 @@ public class LoginManager {
 	// }
 	public class OPIdentityDelegateImplementation extends OPIdentityDelegate {
 		WebView mLoginView;
-//		OPIdentity mIdentity;// somehow the identity passed in the callback
-								// function
-								// isn't same as the one created.
+
+		// OPIdentity mIdentity;// somehow the identity passed in the callback
+		// function
+		// isn't same as the one created.
 
 		public void setmIdentity(OPIdentity mIdentity) {
-//			this.mIdentity = mIdentity;
+			// this.mIdentity = mIdentity;
 		}
 
 		public OPIdentityDelegateImplementation(WebView loginView,
 				OPIdentity identity) {
 			this.mLoginView = loginView;
-//			mIdentity = identity;
+			// mIdentity = identity;
 		}
 
 		@Override
@@ -164,8 +194,10 @@ public class LoginManager {
 
 		@Override
 		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
-			// TODO Auto-generated method stub
 			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
+			mListener.onLoginComplete();
+			CallbackHandler.getInstance().unregisterIdentityDelegate(this);
+			destroy();
 		}
 
 		public void passMessageToJS(final String msg) {
@@ -270,6 +302,7 @@ public class LoginManager {
 				}
 			}
 
+			CallbackHandler.getInstance().unregisterAccountDelegate(this);
 		}
 
 		@Override
