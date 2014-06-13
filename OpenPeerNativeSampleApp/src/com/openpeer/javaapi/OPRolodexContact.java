@@ -2,6 +2,8 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
+import android.util.Log;
+
 public class OPRolodexContact {
 
 	class OPAvatar {
@@ -44,6 +46,25 @@ public class OPRolodexContact {
 		}
 		
 	};
+	
+	public void printInfo()
+	{
+		Log.d("output", "Contact Name is: " + mName);
+		Log.d("output", "Contact Identity URI is: " + mIdentityURI);
+		Log.d("output", "Contact Identity provider is: " + mIdentityProvider);
+		Log.d("output", "Contact Profile URL is: " + mProfileURL);
+		Log.d("output", "Contact VProfileURL is: " + mVProfileURL);
+		Log.d("output", "Contact Disposition is: " + mDisposition.toString());
+		Log.d("output", "Contact Avatars count is: " + mAvatars.size());
+		Log.d("output", "Avatars:");
+		for (OPAvatar avatar : mAvatars)
+		{
+			Log.d("output", "Avatar name is: " + avatar.mName);
+			Log.d("output", "Avatar URL is: " + avatar.mURL);
+			Log.d("output", "Avatar height is: " + avatar.mHeight);
+			Log.d("output", "Avatar width is: " + avatar.mWidth);
+		}
+	}
 	
 	enum Dispositions
     {

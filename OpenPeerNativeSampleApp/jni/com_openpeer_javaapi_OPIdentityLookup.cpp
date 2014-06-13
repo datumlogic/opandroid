@@ -246,7 +246,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
 			jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
 
-			jfieldID fid = jni_env->GetFieldID(peerFileCls, "peerFileString", "Ljava/lang/String;");
+			jfieldID fid = jni_env->GetFieldID(peerFileCls, "mPeerFileString", "Ljava/lang/String;");
 			ElementPtr peerFilePublicEl = IHelper::convertToElement(coreContact.mPeerFilePublic);
 			jstring peerFileString = jni_env->NewStringUTF(IHelper::convertToString(peerFilePublicEl).c_str());
 			//jlong peerFilePtr = (jlong) coreContact.mPeerFilePublic;

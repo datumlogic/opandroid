@@ -24,6 +24,7 @@ public class OPTestIdentityLookup {
 	
 	public static boolean isContactsDownloaded = false;
 	public static OPIdentity mIdentity;
+	public static boolean isRolodexContactsRefreshed = false;
 	//public static OPIdentityLookup mIdentityLookup;
 	public static boolean execute (OPIdentity identity)
 		{
@@ -46,6 +47,12 @@ public class OPTestIdentityLookup {
 					mIdentity.startRolodexDownload("");
 					return false;
 				}
+				else if (!isRolodexContactsRefreshed)
+				{
+					Log.d("output", "Rolodex contacts is being refreshed...");
+					mIdentity.refreshRolodexContacts();
+					return false;
+				}
 				
 				Log.d("output", "Identity lookup test started...");
 				OPDownloadedRolodexContacts rolodexContacts = mIdentity.getDownloadedRolodexContacts();
@@ -57,12 +64,14 @@ public class OPTestIdentityLookup {
 					OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
 					ilInfo.initWithRolodexContact(contact);
 					inputLookupList.add(ilInfo);
+					contact.printInfo();
 				}
 				
 				LoginManager.mIdentityLookup = OPIdentityLookup.create(LoginManager.mAccount,
 						LoginManager.mIdentityLookupDelegate,
 						inputLookupList,
 						"identity-v1-rel-lespaul-i.hcs.io");
+				LoginManager.mCallbackHandler.registerIdentityLookupDelegate(LoginManager.mIdentityLookup, LoginManager.mIdentityLookupDelegate);
 				Log.d("output", "Idenity lookup test RolodexContacts = " + Arrays.deepToString(rolodexContacts.getRolodexContacts().toArray()));
 				Log.d("output", "Identity lookup test Send lookup");
 				

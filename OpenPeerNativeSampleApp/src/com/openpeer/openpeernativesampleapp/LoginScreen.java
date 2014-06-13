@@ -401,6 +401,10 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	@Override
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
 		// TODO Auto-generated method stub
+		if(OPTestIdentityLookup.isContactsDownloaded)
+		{
+			OPTestIdentityLookup.isRolodexContactsRefreshed = true;
+		}
 		OPTestIdentityLookup.isContactsDownloaded = true;
 		OPTestIdentityLookup.execute(identity);
 		
