@@ -22,7 +22,7 @@ public class OPIdentityContact extends OPRolodexContact {
 			long m) {
 
 		this.mStableID = mStableID;
-		this.mPeerFilePublic = OPPeerFilePublic.loadFromString(string);
+		this.mPeerFilePublic = new OPPeerFilePublic(string);
 		this.mIdentityProofBundleEl = mIdentityProofBundleEl;
 		this.mPriority = mPriority;
 		this.mWeight = mWeight;
