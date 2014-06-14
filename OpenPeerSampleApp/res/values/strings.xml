@@ -6,8 +6,10 @@
 	<string name="search_title">Search</string>
 	<string name="search_hint">Search contacts</string>
 	<string name="title_contacts">Contacts</string>
+	<string name="label_send">Send</string>
 	<string name="hint_message">Message</string>
 	<string name="hint_call">Call</string>
 	<string name="hint_invite">Invite</string>
+	<string name="hint_comepose">Say something</string>
 
 </resources>
