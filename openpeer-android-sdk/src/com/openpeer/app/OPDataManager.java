@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.openpeer.datastore.OPDatastoreDelegate;
-import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
@@ -20,24 +19,28 @@ import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.openpeer_android_sdk.BuildConfig;
 
+/**
+ * Hold reference to objects that cannot be constructed from database, and
+ * manages contacts data change. This class is probably unneccessary -- at the
+ * least I don't want it to be a simple wrapper of
+ * OPDatastoreDelegateImplementation. Might end up merging this with OPHelper,
+ * but for now let's keep it so OPHelper doesn't grow weird.
+ * 
+ */
 public class OPDataManager {
 	public static String INTENT_CONTACTS_CHANGED = "com.openpeer.contacts_changed";
 
 	private static OPDataManager instance;
-	private OPAccount mAccount;
 	private OPDatastoreDelegate mDatastoreDelegate;
+
+	private OPAccount mAccount;
 	private List<OPIdentity> mIdentities;
 	private Hashtable<Long, OPIdentityContact> mSelfContacts;
-	// private Hashtable<Long, List<OPRolodexContact>> mContacts;
 	private Hashtable<Long, String> downloadedIdentityContactVersions;
 	private String mReloginInfo;
 
-	public Hashtable<Long, OPIdentityContact> getSelfContacts() {
-		return mSelfContacts;
-	}
-
-	public void setSelfContacts(Hashtable<Long, OPIdentityContact> selfContacts) {
-		this.mSelfContacts = selfContacts;
+	public OPDatastoreDelegate getmDatastoreDelegate() {
+		return mDatastoreDelegate;
 	}
 
 	public List<OPIdentity> getIdentities() {
@@ -68,28 +71,7 @@ public class OPDataManager {
 	}
 
 	public List<OPRolodexContact> getRolodexContactsForIdentity(long identityId) {
-		// Lazy instantiation and loading of contacts
-		// if (mContacts == null) {
-		// mContacts = new Hashtable<Long, List<OPRolodexContact>>();
-		// }
-		// if (mContacts.get(identityId) == null) {
-		// mContacts.put(identityId,
-		// mDatastoreDelegate.getContacts(identityId));
-		// }
-		//
-		// if (identityId == 0) {
-		// List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
-		// for (List<OPRolodexContact> lc : mContacts.values()) {
-		// contacts.addAll(lc);
-		// }
-		// return contacts;
-		// } else {
-
-		// }
-		// return null;
-		// return mContacts.get(identityId);
 		return mDatastoreDelegate.getContacts(identityId);
-
 	}
 
 	/**
@@ -142,12 +124,6 @@ public class OPDataManager {
 					mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
 				}
 			}
-			// List<OPRolodexContact> existingContacts =
-			// mContacts.get(identityId);
-			// if (existingContacts != null) {
-			// contacts.addAll(existingContacts);
-			// }
-			// mContacts.put(identityId, contacts);
 		}
 
 		mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
@@ -160,17 +136,12 @@ public class OPDataManager {
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
 		OPDownloadedRolodexContacts downloaded = identity
 				.getDownloadedRolodexContacts();
-		// if (BuildConfig.DEBUG) {
-		// Log.d("login", "OPDataManager onDownloadedRolodexContacts version" +
-		// downloaded.getVersionDownloaded());
-		// }
+
 		setIdentityContacts(identity.getStableID(), downloaded);
 
 		identityLookup(identity,
 				this.getRolodexContactsForIdentity(identity.getStableID()));
 		notifyContactsChanged();
-
-		// mLoginHandler.onDownloadedRolodexContacts(identity);
 	}
 
 	public void identityLookup(OPIdentity identity,
@@ -210,9 +181,6 @@ public class OPDataManager {
 						+ Arrays.deepToString(iContacts.toArray()));
 		mDatastoreDelegate.saveOrUpdateContacts(iContacts,
 				mIdentity.getStableID());
-		// TODO: optimize this
-		// mContacts.put(mIdentity.getStableID(),
-		// mDatastoreDelegate.getContacts(mIdentity.getStableID()));
 
 		notifyContactsChanged();
 	}

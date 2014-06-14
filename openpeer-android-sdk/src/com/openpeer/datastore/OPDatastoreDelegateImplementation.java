@@ -94,7 +94,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				contacts.put(cursor.getLong(0),
-						getIdentitySelfContact(cursor.getString(1)));
+						getIdentityContact(cursor.getString(1)));
 				cursor.moveToNext();
 			}
 			cursor.close();
@@ -363,7 +363,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		Log.d("test", "setDownloadedContactsVersion " + rowId);
 	}
 
-	public OPIdentityContact getIdentitySelfContact(String identityContactId) {
+	@Override
+	public OPIdentityContact getIdentityContact(String identityContactId) {
 		String iSelection = IdentityContactEntry.COLUMN_NAME_STABLE_ID + "=?";
 		String cSelection = ContactEntry.COLUMN_NAME_IDENTITY_CONTACT_ID + "=?";
 		String[] selectionParams = new String[] { identityContactId };

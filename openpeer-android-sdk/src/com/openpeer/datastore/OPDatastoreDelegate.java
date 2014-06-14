@@ -66,6 +66,8 @@ public interface OPDatastoreDelegate {
 
 	Hashtable<Long, OPIdentityContact> getSelfIdentityContacts();
 
+	OPIdentityContact getIdentityContact(String identityContactId);
+
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);
 	 * public boolean saveCallRecord(OPConversationRecord record); public
