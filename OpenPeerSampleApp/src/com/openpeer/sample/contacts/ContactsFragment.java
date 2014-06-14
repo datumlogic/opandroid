@@ -2,10 +2,15 @@ package com.openpeer.sample.contacts;
 
 import java.util.Arrays;
 import java.util.List;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,8 +22,7 @@ import android.widget.ListView;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
-import com.openpeer.javaapi.OPRolodexContact.Dispositions;
-import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
+
 import com.openpeer.sample.R;
 
 public class ContactsFragment extends Fragment implements
@@ -28,6 +32,7 @@ public class ContactsFragment extends Fragment implements
 	private ListView mListView;
 	private ContactsAdapter mAdapter;
 	private boolean mTest;
+	private DataChangeReceiver mReceiver;
 
 	public static ContactsFragment newInstance() {
 		return new ContactsFragment();
@@ -42,6 +47,7 @@ public class ContactsFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		mReceiver = new DataChangeReceiver();
 		return setupView(inflater.inflate(R.layout.fragment_contacts, null));
 	}
 
@@ -76,12 +82,16 @@ public class ContactsFragment extends Fragment implements
 	public void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
+		getActivity().unregisterReceiver(mReceiver);
 	}
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		getActivity().registerReceiver(mReceiver,
+				new IntentFilter(OPDataManager.INTENT_CONTACTS_CHANGED));
+
 	}
 
 	static class ContactsAdapter extends BaseAdapter {
@@ -102,7 +112,7 @@ public class ContactsFragment extends Fragment implements
 		@Override
 		public long getItemId(int arg0) {
 			// TODO Auto-generated method stub
-			return 0;
+			return arg0;
 		}
 
 		@Override
@@ -126,7 +136,7 @@ public class ContactsFragment extends Fragment implements
 	void setupContent() {
 		mAdapter.mContacts = OPDataManager.getInstance()
 				.getRolodexContactsForIdentity(0);
-		
+
 		mAdapter.notifyDataSetChanged();
 	}
 
@@ -151,4 +161,12 @@ public class ContactsFragment extends Fragment implements
 		mAdapter.notifyDataSetChanged();
 	}
 
+	class DataChangeReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context arg0, Intent arg1) {
+			Log.d("test", "received broadcast " + arg1.getAction());
+			setupContent();
+		}
+	}
 }
