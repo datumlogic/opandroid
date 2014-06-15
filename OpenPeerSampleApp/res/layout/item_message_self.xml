@@ -11,17 +11,19 @@
 		android:id="@+id/avatar"
 		android:layout_width="@dimen/profile_image_size_in_chat"
 		android:layout_height="@dimen/profile_image_size_in_chat"
+		android:layout_alignParentBottom="true"
 		android:layout_alignParentRight="true"
-		android:layout_gravity="bottom"
 		android:scaleType="centerCrop" />
 
 	<TextView
 		android:id="@+id/message"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_marginRight="@dimen/padding_spacing_internal"
 		android:layout_toLeftOf="@+id/avatar"
-		android:background="@drawable/speech_bubble_green" >
+		android:layout_centerVertical="true"
+		android:background="@drawable/speech_bubble_green" 
+		>
 	</TextView>
 
 </RelativeLayout>

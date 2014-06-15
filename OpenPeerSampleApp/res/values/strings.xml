@@ -10,6 +10,6 @@
 	<string name="hint_message">Message</string>
 	<string name="hint_call">Call</string>
 	<string name="hint_invite">Invite</string>
-	<string name="hint_comepose">Say something</string>
+	<string name="hint_compose">Say something</string>
 
 </resources>
