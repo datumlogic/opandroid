@@ -39,8 +39,8 @@ public class OPDataManager {
 	private Hashtable<Long, String> downloadedIdentityContactVersions;
 	private String mReloginInfo;
 
-	public OPDatastoreDelegate getmDatastoreDelegate() {
-		return mDatastoreDelegate;
+	public static OPDatastoreDelegate getDatastoreDelegate() {
+		return getInstance().mDatastoreDelegate;
 	}
 
 	public List<OPIdentity> getIdentities() {

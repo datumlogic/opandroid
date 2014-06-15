@@ -396,12 +396,15 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				.getColumnIndex(ContactEntry.COLUMN_NAME_URL);
 		int vprofileURLIndex = cursor
 				.getColumnIndex(ContactEntry.COLUMN_NAME_VPROFILE_URL);
+		int assoiatedIdentityIdIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID);
 
 		OPRolodexContact contact = new OPRolodexContact(
 				cursor.getString(identityUrlIndex),
 				cursor.getString(identityProviderIndex),
 				cursor.getString(nameIndex), cursor.getString(profileURLIndex),
-				cursor.getString(vprofileURLIndex), null);
+				cursor.getString(vprofileURLIndex), null,
+				cursor.getLong(assoiatedIdentityIdIndex));
 
 		contact.setAvatars(this.getAvatars(contact.getId()));
 		String stableIdentityId = cursor.getString(cursor

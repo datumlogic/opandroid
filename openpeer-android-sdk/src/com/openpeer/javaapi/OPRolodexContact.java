@@ -79,10 +79,19 @@ public class OPRolodexContact {
 	private String mVProfileURL;
 
 	private List<OPAvatar> mAvatars;
+	private long mAssociatedIdentityId;
+
+	public long getAssociatedIdentityId() {
+		return mAssociatedIdentityId;
+	}
+
+	public void setmAssociatedIdentityId(long mAssociatedIdentityId) {
+		this.mAssociatedIdentityId = mAssociatedIdentityId;
+	}
 
 	public OPRolodexContact(String mIdentityURI, String mIdentityProvider,
 			String mName, String mProfileURL, String mVProfileURL,
-			List<OPAvatar> mAvatars) {
+			List<OPAvatar> mAvatars, long associatedIdentityId) {
 		super();
 		this.mIdentityURI = mIdentityURI;
 		this.mIdentityProvider = mIdentityProvider;
@@ -90,6 +99,7 @@ public class OPRolodexContact {
 		this.mProfileURL = mProfileURL;
 		this.mVProfileURL = mVProfileURL;
 		this.mAvatars = mAvatars;
+		this.mAssociatedIdentityId = associatedIdentityId;
 	}
 
 	public long getId() {
@@ -163,6 +173,14 @@ public class OPRolodexContact {
 		this.mAvatars = mAvatars;
 	}
 
+	public String getDefaultAvatarUrl() {
+		if (mAvatars != null && mAvatars.size() != 0) {
+			return mAvatars.get(0).mURL;
+		} else {
+			return null;
+		}
+	}
+
 	OPRolodexContact copy(OPRolodexContact contact) {
 		this.mAvatars = contact.mAvatars;
 		this.mDisposition = contact.mDisposition;
@@ -171,6 +189,7 @@ public class OPRolodexContact {
 		this.mName = contact.mName;
 		this.mProfileURL = contact.mProfileURL;
 		this.mVProfileURL = contact.mVProfileURL;
+		this.mAssociatedIdentityId = contact.mAssociatedIdentityId;
 		return this;
 	}
 
