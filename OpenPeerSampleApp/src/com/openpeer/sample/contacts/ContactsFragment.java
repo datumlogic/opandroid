@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
@@ -53,10 +54,20 @@ public class ContactsFragment extends Fragment implements
 
 	private View setupView(View view) {
 		mListView = (ListView) view.findViewById(R.id.listview);
+		View emptyView = view.findViewById(R.id.empty_view);
+		mListView.setEmptyView(emptyView);
 		mRootLayout = (SwipeRefreshLayout) view;
 		mRootLayout.setOnRefreshListener(this);
 		mAdapter = new ContactsAdapter();
 		mListView.setAdapter(mAdapter);
+		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				((ContactItemView) view).onClick();
+			}
+		});
 		if (mTest) {
 			fillTestView();
 		} else {
@@ -129,13 +140,13 @@ public class ContactsFragment extends Fragment implements
 
 	@Override
 	public void onRefresh() {
-		ContactsManager.getInstance().refreshContacts();
+		OPDataManager.getInstance().refreshContacts();
 		mRootLayout.setRefreshing(false);
 	}
 
 	void setupContent() {
-		mAdapter.mContacts = OPDataManager.getInstance()
-				.getRolodexContactsForIdentity(0);
+		mAdapter.mContacts = OPDataManager.getDatastoreDelegate()
+				.getContacts(0);
 
 		mAdapter.notifyDataSetChanged();
 	}
@@ -150,14 +161,20 @@ public class ContactsFragment extends Fragment implements
 		// IdentityProvider facebook.com Disposition Disposition_Update,
 		// com.openpeer.javaapi.OPRolodexContact@4266d098 ProfileURL Name Cindy
 		// Love identityUrl
-		mAdapter.mContacts = Arrays.asList(new OPRolodexContact[] {
-				new OPRolodexContact("identity://facebook.com/100003823387069",
-						"facebook.com", "David Gotwo", null, null, null),
-				new OPRolodexContact("identity://facebook.com/100003952283621",
-						"facebook.com", "David Gofour", null, null, null),
-				new OPIdentityContact(new OPRolodexContact(
-						"identity://facebook.com/100003952283621",
-						"facebook.com", "David Gofour", null, null, null)) });
+		mAdapter.mContacts = Arrays
+				.asList(new OPRolodexContact[] {
+						new OPRolodexContact(
+								"identity://facebook.com/100003823387069",
+								"facebook.com", "David Gotwo", null, null,
+								null, 0),
+						new OPRolodexContact(
+								"identity://facebook.com/100003952283621",
+								"facebook.com", "David Gofour", null, null,
+								null, 0),
+						new OPIdentityContact(new OPRolodexContact(
+								"identity://facebook.com/100003952283621",
+								"facebook.com", "David Gofour", null, null,
+								null, 0)) });
 		mAdapter.notifyDataSetChanged();
 	}
 

@@ -28,6 +28,7 @@ public class ConversationActivity extends BaseFragmentActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_container);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		Intent intent = getIntent();
 		String action = intent
 				.getStringExtra(IntentData.ARG_CONVERSATION_ACTION);
@@ -35,7 +36,8 @@ public class ConversationActivity extends BaseFragmentActivity {
 		case IntentData.ACTION_CALL:
 			break;
 		case IntentData.ACTION_CHAT:
-			ChatFragment cFragment = ChatFragment.newInstance(intent.getStringExtra(IntentData.ARG_PEER_CONTACT_ID));
+			ChatFragment cFragment = ChatFragment.newInstance(intent
+					.getStringExtra(IntentData.ARG_PEER_CONTACT_ID));
 			setContentFragment(cFragment);
 			break;
 		}

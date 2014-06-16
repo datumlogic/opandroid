@@ -195,7 +195,6 @@ public class LoginManager {
 		@Override
 		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
-			mListener.onLoginComplete();
 			CallbackHandler.getInstance().unregisterIdentityDelegate(this);
 			destroy();
 		}
@@ -264,6 +263,7 @@ public class LoginManager {
 		}
 
 		public void onAccountStateReady(OPAccount account) {
+			mListener.onLoginComplete();
 
 			AccountStates state = AccountStates.AccountState_Pending;
 			int outErrorCode = 0;

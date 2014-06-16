@@ -15,18 +15,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.openpeer.app.OPDataManager;
+import com.openpeer.delegates.CallbackHandler;
+import com.openpeer.javaapi.ContactStates;
+import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.openpeernativesampleapp.LoginManager;
+import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
+import com.openpeer.sample.delegates.OPConversationThreadDelegateImplementation;
 import com.squareup.picasso.Picasso;
-
-import static com.openpeer.javaapi.OPMessage.OPMessageType;
 
 public class ChatFragment extends BaseFragment {
 	private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
@@ -39,6 +42,8 @@ public class ChatFragment extends BaseFragment {
 	private List<OPMessage> mMessages;
 
 	private OPIdentityContact mPeerContact, mSelfContact;
+	private OPConversationThread mConvThread;
+	private ConversationThreadDelegate mConvThreadDelegate;
 
 	public static ChatFragment newInstance(String peerContactId) {
 		ChatFragment fragment = new ChatFragment();
@@ -62,7 +67,7 @@ public class ChatFragment extends BaseFragment {
 				args.getString(IntentData.ARG_PEER_CONTACT_ID));
 		mSelfContact = OPDataManager.getInstance().getSelfContacts()
 				.get(mPeerContact.getAssociatedIdentityId());
-
+		setupChat();
 		// mSelfContact =
 		// OPDataManager.getDatastoreDelegate().getIdentityContact(
 		// mSelfContactId);
@@ -74,6 +79,20 @@ public class ChatFragment extends BaseFragment {
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.fragment_chat, null);
 		return setupView(view);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		// CallbackHandler.getInstance().registerConversationThreadDelegate(
+		// mConvThreadDelegate);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		CallbackHandler.getInstance().unregisterConversationThreadDelegate(
+				mConvThreadDelegate);
 	}
 
 	View setupView(View view) {
@@ -95,12 +114,18 @@ public class ChatFragment extends BaseFragment {
 				}
 				Time time = new Time();
 				time.setToNow();
+				String messageId = java.util.UUID.randomUUID().toString();
 				OPMessage msg = new OPMessage(mSelfContact.getStableID(),
 						OPMessageType.TYPE_TEXT, mComposeBox.getText()
 								.toString(), time);
+
 				getMessages().add(msg);
 				mMessagesAdaptor.notifyDataSetChanged();
 				mComposeBox.setText("");
+
+				mConvThread.sendMessage(messageId,
+						OPMessage.OPMessageType.TYPE_TEXT, msg.getMessage(),
+						false);
 			}
 		});
 		return view;
@@ -208,25 +233,87 @@ public class ChatFragment extends BaseFragment {
 		}
 	}
 
-	void startChat() {
-		 List<OPIdentityContact> callContacts = new ArrayList<OPIdentityContact>();
-		 List<OPContact> contacts = new ArrayList<OPContact>();
-		 List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
+	void setupChat() {
+		mConvThreadDelegate = new ConversationThreadDelegate();
+		CallbackHandler.getInstance().registerConversationThreadDelegate(
+				mConvThreadDelegate);
+
+		List<OPIdentityContact> selfContacts = new ArrayList<OPIdentityContact>();
+
+		selfContacts.add(mSelfContact);
+
+		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
+				.getSharedAccount(), selfContacts);
+
+		List<OPIdentityContact> callContacts = new ArrayList<OPIdentityContact>();
+		List<OPContact> contacts = new ArrayList<OPContact>();
+		List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
 		OPContactProfileInfo info = new OPContactProfileInfo();
 
-		OPContact newContact = OPContact.createFromPeerFilePublic(
-				OPDataManager.getInstance().getSharedAccount(), mPeerContact.getPeerFilePublic()
-						.getPeerFileString());
+		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
+				.getInstance().getSharedAccount(), mPeerContact
+				.getPeerFilePublic().getPeerFileString());
 
+		callContacts.add(mPeerContact);
 		info.setIdentityContacts(callContacts);
 		info.setContact(newContact);
 
 		contactProfiles.add(info);
 
-//		LoginManager.mConvThread.addContacts(contactProfiles);
+		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
+				.getSharedAccount(), callContacts);
+		mConvThread.addContacts(contactProfiles);
 
-		OPConversationThread mConvThread = OPConversationThread.create(
-				OPDataManager.getInstance().getSharedAccount(), callContacts);
+	}
+
+	class ConversationThreadDelegate extends OPConversationThreadDelegate {
+
+		@Override
+		public void onConversationThreadNew(
+				OPConversationThread conversationThread) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onConversationThreadContactsChanged(
+				OPConversationThread conversationThread) {
+			Log.d("test", "onConversationThreadContactsChanged"
+					+ conversationThread);
+		}
+
+		@Override
+		public void onConversationThreadContactStateChanged(
+				OPConversationThread conversationThread, OPContact contact,
+				ContactStates state) {
+			Log.d("test", "onConversationThreadContactStateChanged = "
+					+ contact + " state " + state);
+		}
+
+		@Override
+		public void onConversationThreadMessage(
+				OPConversationThread conversationThread, String messageID) {
+			OPMessage message = conversationThread.getMessage(messageID);
+			Log.d("test", "onConversationThreadMessage = " + messageID
+					+ " full message " + message);
+
+		}
+
+		@Override
+		public void onConversationThreadMessageDeliveryStateChanged(
+				OPConversationThread conversationThread, String messageID,
+				MessageDeliveryStates state) {
+			Log.d("test", "onConversationThreadMessageDeliveryStateChanged = "
+					+ messageID + " state " + state);
+		}
+
+		@Override
+		public void onConversationThreadPushMessage(
+				OPConversationThread conversationThread, String messageID,
+				OPContact contact) {
+			// TODO Auto-generated method stub
+
+		}
 
 	}
 }

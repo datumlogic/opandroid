@@ -2,6 +2,7 @@ package com.openpeer.sample.contacts;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.R;
+import com.openpeer.sample.conversation.ConversationActivity;
 import com.squareup.picasso.Picasso;
 
 public class ContactItemView extends RelativeLayout {
@@ -54,6 +56,16 @@ public class ContactItemView extends RelativeLayout {
 			mInviteView.setVisibility(View.GONE);
 			mCallView.setVisibility(View.VISIBLE);
 			mChatView.setVisibility(View.VISIBLE);
+
+			mChatView.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Log.d("test", "Chat button tapped");
+					ConversationActivity.launchForChat(getContext(),
+							((OPIdentityContact) mContact).getStableID());
+				}
+			});
 		} else {
 			mInviteView.setVisibility(View.VISIBLE);
 
@@ -63,7 +75,7 @@ public class ContactItemView extends RelativeLayout {
 	}
 
 	public void onClick() {
-
+		Log.d("TODO", "item clicked!");
 	}
 
 	public void onLongPress() {
