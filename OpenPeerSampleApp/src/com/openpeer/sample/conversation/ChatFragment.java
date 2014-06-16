@@ -259,10 +259,10 @@ public class ChatFragment extends BaseFragment {
 		info.setContact(newContact);
 
 		contactProfiles.add(info);
-
-		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
-				.getSharedAccount(), callContacts);
 		mConvThread.addContacts(contactProfiles);
+//
+//		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
+//				.getSharedAccount(), callContacts);
 
 	}
 
