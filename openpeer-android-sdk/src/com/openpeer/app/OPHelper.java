@@ -11,11 +11,9 @@ import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
-import com.openpeer.javaapi.AccountStates;
-import com.openpeer.javaapi.OPAccount;
+import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
-import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
@@ -97,6 +95,9 @@ public class OPHelper {
 		OPSettings.apply(forceDashSettings);
 
 		OPSettings.apply(OPSdkConfig.getInstance().getAPPSettingsString());
+
+		CallbackHandler.getInstance().registerConversationThreadDelegate(
+				new OPConversationThreadDelegateImplementation());
 
 		stack.setup(null, null);
 

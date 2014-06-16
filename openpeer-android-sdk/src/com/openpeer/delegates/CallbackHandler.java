@@ -332,6 +332,12 @@ public class CallbackHandler {
 		this.conversationThreadDelegates.remove(delegate);
 
 	}
+	
+	public void unregisterConversationThreadDelegate(
+			OPConversationThreadDelegate delegate) {
+		conversationThreadDelegates.remove(delegate);
+
+	}
 
 	// ///////////////////////////////////////////////////////////////////
 	// CACHE DELEGATE GLUE

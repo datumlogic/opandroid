@@ -27,6 +27,15 @@ public class OPMessage {
 	private String mMessage;
 	private Time mTime;
 	private String mSenderId;
+	private String mMessageId;
+
+	public String getMessageId() {
+		return mMessageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.mMessageId = messageId;
+	}
 
 	public String getSenderId() {
 		return mSenderId;

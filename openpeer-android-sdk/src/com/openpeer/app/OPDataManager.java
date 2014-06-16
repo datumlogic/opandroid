@@ -101,6 +101,10 @@ public class OPDataManager {
 				mAccount.getStableID());
 	}
 
+	public Hashtable<Long, OPIdentityContact> getSelfContacts() {
+		return mSelfContacts;
+	}
+
 	public void setIdentityContacts(long identityId,
 			OPDownloadedRolodexContacts downloadedContacts) {
 		downloadedIdentityContactVersions.put(identityId,
@@ -136,11 +140,10 @@ public class OPDataManager {
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
 		OPDownloadedRolodexContacts downloaded = identity
 				.getDownloadedRolodexContacts();
+		long identityId = identity.getStableID();
+		setIdentityContacts(identityId, downloaded);
 
-		setIdentityContacts(identity.getStableID(), downloaded);
-
-		identityLookup(identity,
-				this.getRolodexContactsForIdentity(identity.getStableID()));
+		identityLookup(identity, mDatastoreDelegate.getContacts(identityId));
 		notifyContactsChanged();
 	}
 
@@ -190,6 +193,11 @@ public class OPDataManager {
 		Intent intent = new Intent();
 		intent.setAction(INTENT_CONTACTS_CHANGED);
 		OPHelper.getInstance().sendBroadcast(intent);
+	}
+
+	public void refreshContacts() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
