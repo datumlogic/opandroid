@@ -23,6 +23,14 @@ public class ConversationActivity extends BaseFragmentActivity {
 		context.startActivity(intent);
 	}
 
+	public static void launchForCall(Context context, String peerContactId) {
+		Intent intent = new Intent(context, ConversationActivity.class);
+		intent.putExtra(IntentData.ARG_CONVERSATION_ACTION,
+				IntentData.ACTION_CALL);
+		intent.putExtra(IntentData.ARG_PEER_CONTACT_ID, peerContactId);
+		context.startActivity(intent);
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -32,14 +40,14 @@ public class ConversationActivity extends BaseFragmentActivity {
 		Intent intent = getIntent();
 		String action = intent
 				.getStringExtra(IntentData.ARG_CONVERSATION_ACTION);
-		switch (action) {
-		case IntentData.ACTION_CALL:
-			break;
-		case IntentData.ACTION_CHAT:
+		if (action.equals(IntentData.ACTION_CHAT)) {
 			ChatFragment cFragment = ChatFragment.newInstance(intent
 					.getStringExtra(IntentData.ARG_PEER_CONTACT_ID));
 			setContentFragment(cFragment);
-			break;
+		} else if (action.equals(IntentData.ACTION_CALL)) {
+			CallFragment cFragment = CallFragment.newInstance(intent
+					.getStringExtra(IntentData.ARG_PEER_CONTACT_ID));
+			setContentFragment(cFragment);
 		}
 	}
 }

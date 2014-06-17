@@ -11,6 +11,7 @@ import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
+import com.openpeer.delegates.OPCallDelegateImplementation;
 import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
@@ -98,6 +99,8 @@ public class OPHelper {
 
 		CallbackHandler.getInstance().registerConversationThreadDelegate(
 				new OPConversationThreadDelegateImplementation());
+		CallbackHandler.getInstance().registerCallDelegate(null,
+				new OPCallDelegateImplementation());
 
 		stack.setup(null, null);
 

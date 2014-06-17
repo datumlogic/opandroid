@@ -66,6 +66,16 @@ public class ContactItemView extends RelativeLayout {
 							((OPIdentityContact) mContact).getStableID());
 				}
 			});
+			
+			mCallView.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Log.d("test", "Call button tapped");
+					ConversationActivity.launchForCall(getContext(),
+							((OPIdentityContact) mContact).getStableID());
+				}
+			});
 		} else {
 			mInviteView.setVisibility(View.VISIBLE);
 
