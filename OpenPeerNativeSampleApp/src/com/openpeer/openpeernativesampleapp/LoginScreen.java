@@ -15,6 +15,7 @@ import com.openpeer.javaapi.test.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.Menu;
@@ -42,7 +43,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login_screen);
-		
+
 		OPMediaEngine.init(getApplicationContext());
 
 		setupFacebookButton();
@@ -394,27 +395,39 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	@Override
 	public void onAccountStateReady() {
 		// TODO Auto-generated method stub
-		OPTestAccount.execute(LoginManager.mAccount);
-		
+		//OPTestAccount.execute(LoginManager.mAccount);
+		this.runOnUiThread(new Runnable() {
+			public void run() {
+				myWebView.stopLoading();
+				myWebView.clearView();
+				myWebView.destroy();
+			}
+		});
+
+		OPTestIdentityLookup.execute(LoginManager.mIdentity);
+
 	}
-	
+
 	@Override
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
 		// TODO Auto-generated method stub
-		if(OPTestIdentityLookup.isContactsDownloaded)
-		{
-			OPTestIdentityLookup.isRolodexContactsRefreshed = true;
-		}
-		OPTestIdentityLookup.isContactsDownloaded = true;
-		OPTestIdentityLookup.execute(identity);
-		
+		//		if(OPTestIdentityLookup.isContactsDownloaded)
+		//		{
+		//			OPTestIdentityLookup.isRolodexContactsRefreshed = true;
+		//		}
+		//		OPTestIdentityLookup.isContactsDownloaded = true;
+		//		OPTestIdentityLookup.execute(identity);
+
+		Intent intent = new Intent(this, ContactsScreen.class);
+		startActivity(intent);
+
 	}
-	
+
 	@Override
 	public void onLookupCompleted() {
 		// TODO Auto-generated method stub
 		OPTestConversationThread.execute();
-		
+
 	}
 
 

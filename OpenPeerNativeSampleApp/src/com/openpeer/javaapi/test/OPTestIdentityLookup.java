@@ -41,12 +41,12 @@ public class OPTestIdentityLookup {
 					mIdentity.startRolodexDownload("");
 					return false;
 				}
-				else if (!isRolodexContactsRefreshed)
-				{
-					Log.d("output", "Rolodex contacts is being refreshed...");
-					mIdentity.refreshRolodexContacts();
-					return false;
-				}
+//				else if (!isRolodexContactsRefreshed)
+//				{
+//					Log.d("output", "Rolodex contacts is being refreshed...");
+//					mIdentity.refreshRolodexContacts();
+//					return false;
+//				}
 				
 				Log.d("output", "Identity lookup test started...");
 				OPDownloadedRolodexContacts rolodexContacts = mIdentity.getDownloadedRolodexContacts();
