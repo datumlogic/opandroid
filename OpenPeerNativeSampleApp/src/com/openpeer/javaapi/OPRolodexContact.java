@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class OPRolodexContact {
 
-	class OPAvatar {
+	public class OPAvatar {
 		private String mName;
 		private String mURL;
 		private int mWidth;
