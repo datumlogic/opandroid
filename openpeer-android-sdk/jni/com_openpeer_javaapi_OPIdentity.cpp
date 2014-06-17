@@ -741,7 +741,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 		//Fetch setVersionDownloaded method from OPDownloadedRolodexContacts class
 		jmethodID setVersionDownloadedMethodID = jni_env->GetMethodID( returnObjectClass, "setVersionDownloaded", "(Ljava/lang/String;)V" );
 		//Fetch setRolodexContacts method from OPDownloadedRolodexContacts class
-		jmethodID setRolodexContactsMethodID = jni_env->GetMethodID( returnObjectClass, "setRolodexContacts", "(Ljava/util/List;)V" );
+		jmethodID setRolodexContactsMethodID = jni_env->GetMethodID( returnObjectClass, "setRolodexContacts", "(Ljava/util/ArrayList;)V" );
 
 		///////////////////////////////////////////////////////////////
 		//CALL DOWNLOADED ROLODEX CONTACTS METHODS TO SET INFO TO JAVA
@@ -787,7 +787,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 		//avatar list fetch
 		jclass avatarListClass = findClass("java/util/ArrayList");
 		jmethodID avatarListConstructorMethodID = jni_env->GetMethodID(avatarListClass, "<init>", "()V");
-		jobject avatarListObject = jni_env->NewObject(avatarListClass, avatarListConstructorMethodID);
+
 		jmethodID avatarListAddMethodID = jni_env->GetMethodID(avatarListClass, "add", "(Ljava/lang/Object;)Z");
 
 
@@ -832,9 +832,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 			jstring vProfileURLStr = jni_env->NewStringUTF(coreRolodexContact.mVProfileURL.c_str());
 			jni_env->CallVoidMethod(rolodexContactObject, setVProfileURLMethodID, vProfileURLStr);
 
+			//Avatar List object
+			jobject avatarListObject = jni_env->NewObject(avatarListClass, avatarListConstructorMethodID);
+
 			//set avatars to OPAvatarList
 			for (RolodexContact::AvatarList::iterator avatarIter = coreRolodexContact.mAvatars.begin();
-					avatarIter != coreRolodexContact.mAvatars.end(); avatarIter++)
+					avatarIter != coreRolodexContact.mAvatars.end(); ++avatarIter)
 			{
 				RolodexContact::Avatar coreAvatar = *avatarIter;
 				//create OPAvatar object
@@ -845,6 +848,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 				jni_env->CallVoidMethod(avatarObject, setAvatarNameMethodID, avatarNameStr);
 
 				//set avatar URL to OPRolodexContact::OPAvatar
+				__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "avatar = %s",coreAvatar.mURL.c_str());
 				jstring avatarURLStr = jni_env->NewStringUTF(coreAvatar.mURL.c_str());
 				jni_env->CallVoidMethod(avatarObject, setAvatarURLMethodID, avatarURLStr);
 
@@ -862,7 +866,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 			jni_env->CallVoidMethod(rolodexContactObject, setAvatarsMethodID, avatarListObject);
 
 			// Call set method to set to OPDownloadedRolodexContacts
-			jni_env->CallVoidMethod( rolodexListObject, listAddMethodID, rolodexContactObject);
+			jni_env->CallBooleanMethod( rolodexListObject, listAddMethodID, rolodexContactObject);
 
 		}
 
