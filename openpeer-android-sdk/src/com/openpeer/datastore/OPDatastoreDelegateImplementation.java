@@ -144,11 +144,12 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	@Override
 	public boolean saveOrUpdateAccount(OPAccount account) {
+		Log.d("test",
+				"DatastoreDelegate saving account id " + account.getStableID()
+						+ " relogin " + account.getReloginInformation());
 		SharedPreferences.Editor editor = mPreferenceStore.edit();
 		editor.putString(PREF_KEY_RELOGIN_INFO, account.getReloginInformation());
 		editor.putLong(PREF_KEY_HOMEUSER_STABLEID, account.getStableID());
-		// TODO: do we need store peerfileprivate and key? what does the client
-		// app need it for?
 		editor.apply();
 		return true;
 	}
@@ -360,7 +361,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				+ identityId;
 		long rowId = mOpenHelper.getWritableDatabase().update(
 				IdentityEntry.TABLE_NAME, values, whereClause, null);
-		Log.d("test", "setDownloadedContactsVersion " + rowId);
+		Log.d("test", "setDownloadedContactsVersion " + rowId + " version "
+				+ version + " id " + identityId);
 	}
 
 	@Override
