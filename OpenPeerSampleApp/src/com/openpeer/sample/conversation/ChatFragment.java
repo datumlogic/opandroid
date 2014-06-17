@@ -237,32 +237,31 @@ public class ChatFragment extends BaseFragment {
 		mConvThreadDelegate = new ConversationThreadDelegate();
 		CallbackHandler.getInstance().registerConversationThreadDelegate(
 				mConvThreadDelegate);
+		
+		mConvThread=SessionManager.getInstance().getSessionForContact(mPeerContact).getThread();
 
-		List<OPIdentityContact> selfContacts = new ArrayList<OPIdentityContact>();
-
-		selfContacts.add(mSelfContact);
-
-		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
-				.getSharedAccount(), selfContacts);
-
-		List<OPIdentityContact> callContacts = new ArrayList<OPIdentityContact>();
-		List<OPContact> contacts = new ArrayList<OPContact>();
-		List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
-		OPContactProfileInfo info = new OPContactProfileInfo();
-
-		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
-				.getInstance().getSharedAccount(), mPeerContact
-				.getPeerFilePublic().getPeerFileString());
-
-		callContacts.add(mPeerContact);
-		info.setIdentityContacts(callContacts);
-		info.setContact(newContact);
-
-		contactProfiles.add(info);
-		mConvThread.addContacts(contactProfiles);
+//		List<OPIdentityContact> selfContacts = new ArrayList<OPIdentityContact>();
+//
+//		selfContacts.add(mSelfContact);
 //
 //		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
-//				.getSharedAccount(), callContacts);
+//				.getSharedAccount(), selfContacts);
+//
+//		List<OPIdentityContact> callContacts = new ArrayList<OPIdentityContact>();
+//		List<OPContact> contacts = new ArrayList<OPContact>();
+//		List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
+//		OPContactProfileInfo info = new OPContactProfileInfo();
+//
+//		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
+//				.getInstance().getSharedAccount(), mPeerContact
+//				.getPeerFilePublic().getPeerFileString());
+//
+//		callContacts.add(mPeerContact);
+//		info.setIdentityContacts(callContacts);
+//		info.setContact(newContact);
+//
+//		contactProfiles.add(info);
+//		mConvThread.addContacts(contactProfiles);
 
 	}
 
