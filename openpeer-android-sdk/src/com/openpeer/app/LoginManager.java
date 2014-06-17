@@ -76,20 +76,26 @@ public class LoginManager {
 	}
 
 	public void relogin(String reloginInfo) {
-		OPAccount mAccount;
+		OPAccount account;
 		if (OPDataManager.getInstance().getSharedAccount() != null) {
-			mAccount = OPDataManager.getInstance().getSharedAccount();
+			account = OPDataManager.getInstance().getSharedAccount();
 		} else {
-			mAccount = new OPAccount();
+			account = new OPAccount();
 		}
-		OPAccountDelegateImplementation mAccountDelegate = new OPAccountDelegateImplementation(
-				mAccountLoginWebView, mAccount);
-		CallbackHandler.getInstance().registerAccountDelegate(mAccount,
-				mAccountDelegate);
-		mAccount = OPAccount.relogin(null, null, null,
-				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// namespaceGrantOuterFrameURLUponReload
+		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
+				account);
+		mAccountLoginWebView.setWebViewClient(client);
+		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
+				mAccountLoginWebView, account);
+		CallbackHandler.getInstance().registerAccountDelegate(account,
+				accountDelegate);
+		account = OPAccount.relogin(null, null, null,
+				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html"
+																	// namespaceGrantOuterFrameURLUponReload
 				reloginInfo);
-		OPDataManager.getInstance().setSharedAccount(mAccount);
+		OPDataManager.getInstance().setSharedAccount(account);
+		client.mAccount = account;
+		accountDelegate.mAccount = account;
 	}
 
 	public void startIdentityLogin() {
@@ -268,14 +274,7 @@ public class LoginManager {
 			AccountStates state = AccountStates.AccountState_Pending;
 			int outErrorCode = 0;
 			String outErrorReason = "";
-			state = mAccount.getState(outErrorCode, outErrorReason);
-			if (state != AccountStates.AccountState_Ready) {
-				Log.d("TODO", "Account test FAILED state = " + state.toString());
-				// TODO: error handling
-				return;
-			}
-			Log.d("TODO", "account state " + state + " relogin info "
-					+ mAccount.getReloginInformation());
+			
 
 			List<OPIdentity> identities = account.getAssociatedIdentities();
 			if (identities.size() == 0) {
@@ -289,8 +288,8 @@ public class LoginManager {
 			OPDataManager.getInstance().setSharedAccount(mAccount);
 			OPDataManager.getInstance().setIdentities(identities);
 			for (OPIdentity identity : identities) {
-				String version = OPDataManager.getInstance()
-						.getContactsVersionForIdentity(identity.getStableID());
+				String version = OPDataManager.getDatastoreDelegate()
+						.getDownloadedContactsVersion(identity.getStableID());
 				if (TextUtils.isEmpty(version)) {
 					Log.d("login", "start download initial contacts");
 					identity.startRolodexDownload("");

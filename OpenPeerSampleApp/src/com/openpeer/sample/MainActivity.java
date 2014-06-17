@@ -19,11 +19,11 @@ public class MainActivity extends BaseFragmentActivity {
 		// Launching app so account hasn't been constructed, and login process
 		// hasn't started
 		if (account == null) {
-			if (reloginInfo == null) {
+//			if (reloginInfo == null) {
 				doLogin();
-			} else {
-				doRelogin();
-			}
+//			} else {
+//				doRelogin();
+//			}
 		} else if (account.getState(0, "") == AccountStates.AccountState_Shutdown
 				&& reloginInfo != null && NetworkUtil.isConnected()) {
 			doRelogin();

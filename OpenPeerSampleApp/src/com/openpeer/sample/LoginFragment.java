@@ -44,32 +44,31 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 		setupWebView(mAccountLoginWebView);
 
 		setupWebView(mIdentityLoginWebView);
-		view.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				startLogin();
-			}
-		});
+		// view.setOnClickListener(new View.OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View arg0) {
+		startLogin();
+		// }
+		// });
 		return view;
 	}
 
 	void startLogin() {
-		if (OPDataManager.getInstance().getReloginInfo() == null) {
-			Log.d("test", "logging in");
-
-			LoginManager loginManager = new LoginManager(this,
-					mAccountLoginWebView, mIdentityLoginWebView);
-			loginManager.login();
+		String reloginInfo = OPDataManager.getInstance().getReloginInfo();
+		if (reloginInfo == null || reloginInfo.length() == 0) {
+			Log.d("login", "LoginFragment startLogin() logging in");
+			LoginManager.getInstance()
+					.setup(this, mAccountLoginWebView, mIdentityLoginWebView)
+					.login();
 		} else {
-			Log.d("test", "re-logging in "
-					+ OPDataManager.getInstance().getReloginInfo());
+			Log.d("login", "LoginFragment startLogin() relogging in");
 
-			LoginManager loginManager = new LoginManager(this,
-					mAccountLoginWebView, mIdentityLoginWebView);
-			loginManager.relogin(OPDatastoreDelegateImplementation
-					.getInstance().getReloginInfo());
+			LoginManager.getInstance()
+					.setup(this, mAccountLoginWebView, mIdentityLoginWebView)
+					.relogin(OPDataManager.getInstance().getReloginInfo());
 		}
+
 	}
 
 	void setupWebView(WebView view) {
@@ -91,8 +90,10 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	@Override
 	public void onLoginComplete() {
-		((BaseFragmentActivity) getActivity()).switchFragment(ContactsFragment
-				.newInstance());
+		if (!this.isDetached()) {
+			((BaseFragmentActivity) getActivity())
+					.switchFragment(ContactsFragment.newInstance());
+		}
 	}
 
 	@Override

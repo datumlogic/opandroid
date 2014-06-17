@@ -48,7 +48,7 @@ public class OPDataManager {
 	}
 
 	public String getReloginInfo() {
-		return null;// mReloginInfo;
+		return mReloginInfo;
 	}
 
 	public static OPDataManager getInstance() {
@@ -62,6 +62,7 @@ public class OPDataManager {
 		assert (delegate != null);
 		mDatastoreDelegate = delegate;
 		mReloginInfo = delegate.getReloginInfo();
+		Log.d("test", "LoginManager.init relogin info " + mReloginInfo);
 		downloadedIdentityContactVersions = new Hashtable<Long, String>();
 		// mContacts = new Hashtable<Long, List<OPRolodexContact>>();
 		if (mReloginInfo != null) {
@@ -107,13 +108,16 @@ public class OPDataManager {
 
 	public void setIdentityContacts(long identityId,
 			OPDownloadedRolodexContacts downloadedContacts) {
-		downloadedIdentityContactVersions.put(identityId,
-				downloadedContacts.getVersionDownloaded());
+
 		List<OPRolodexContact> contacts = downloadedContacts
 				.getRolodexContacts();
 		if (contacts == null) {
 			return;
 		}
+		String contactsVersion = downloadedContacts.getVersionDownloaded();
+		downloadedIdentityContactVersions.put(identityId, contactsVersion);
+		mDatastoreDelegate.setDownloadedContactsVersion(identityId,
+				contactsVersion);
 		if (downloadedContacts.isFlushAllRolodexContacts()) {
 			mDatastoreDelegate.flushContactsForIdentity(identityId);
 			mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
@@ -197,7 +201,7 @@ public class OPDataManager {
 
 	public void refreshContacts() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
