@@ -6,26 +6,29 @@ public class OPIdentityContact extends OPRolodexContact {
 
 	private String mStableID;
 
-	private OPPeerFilePublic mPeerFilePublic;
-	private String mIdentityProofBundleEl;
+    private OPPeerFilePublic mPeerFilePublic;
+    private String mIdentityProofBundleEl;
 
-	private int mPriority;
-	private int mWeight;
+    private int mPriority;
+    private int mWeight;
 
-	private Time mLastUpdated;
-	private Time mExpires;
+    private Time mLastUpdated;
+    private Time mExpires;
+    
+    public OPIdentityContact()
+    {
+    	
+    }
 
-	public OPIdentityContact() {
-
-	}
-
-	public OPIdentityContact(OPRolodexContact rolodexContact) {
-
-	}
-
-	public boolean hasData() {
-		return false;
-	}
+    public OPIdentityContact( OPRolodexContact rolodexContact)
+    {
+    	
+    }
+    
+    public boolean hasData()
+    {
+    	return false;
+    }
 
 	public String getStableID() {
 		return mStableID;
@@ -81,11 +84,5 @@ public class OPIdentityContact extends OPRolodexContact {
 
 	public void setExpires(Time mExpires) {
 		this.mExpires = mExpires;
-	}
-
-	public String toString() {
-		return super.toString() + " peerFilePublic "+mPeerFilePublic+" identityProofBundle "
-				+ mIdentityProofBundleEl + " mStableID " + mStableID
-				+ " mExpires " + mExpires;
 	}
 }

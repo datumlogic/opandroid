@@ -12,8 +12,7 @@ public class OPIdentity {
 	public static native String toString(IdentityStates state);
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
-	// TODO: since we're using EventManager in jni and CallbackHandler in java we should remove the delegate
-	// parameters to avoid confusion.
+	
 	public static native OPIdentity login(
                               OPAccount account,
                               OPIdentityDelegate delegate,
@@ -72,9 +71,4 @@ public class OPIdentity {
 	public native OPDownloadedRolodexContacts getDownloadedRolodexContacts();
 	
 	public native void cancel();
-	public String toString(){
-		return super.toString()+ " identityUri " + getIdentityURI()+" innerBrowserWindowFrameURL " + 
-				getInnerBrowserWindowFrameURL() + " identityProviderDomain "+getIdentityProviderDomain()
-				+ " state " + getState(0,"");
-	}
 }

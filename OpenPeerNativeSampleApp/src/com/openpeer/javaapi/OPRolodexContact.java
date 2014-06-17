@@ -41,9 +41,6 @@ public class OPRolodexContact {
 		public void setHeight(int mHeight) {
 			this.mHeight = mHeight;
 		}
-		public String toString(){
-			return super.toString() + " Name "+mName+" URL "+mURL+" Width "+ mWidth + " Height "+mHeight;
-		}
 		
 	};
 	
@@ -142,10 +139,5 @@ public class OPRolodexContact {
 
 	public void setAvatars(List<OPAvatar> mAvatars) {
 		this.mAvatars = mAvatars;
-	}
-	
-	public String toString(){
-		return super.toString() + " ProfileURL "+mProfileURL + " Name "+mName+" identityUrl "+mIdentityURI
-				+ " IdentityProvider " + mIdentityProvider + " Disposition " + mDisposition;
 	}
 }

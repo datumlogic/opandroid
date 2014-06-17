@@ -20,7 +20,6 @@ import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.openpeernativesampleapp.LoginManager;
 
 public class OPTestIdentityLookup {
-	private static String TAG = OPTestIdentityLookup.class.getSimpleName();
 	
 	public static boolean isContactsDownloaded = false;
 	public static OPIdentity mIdentity;
@@ -38,11 +37,6 @@ public class OPTestIdentityLookup {
 				Log.d("output", "Identity lookup test mIdentity = " + mIdentity.toString());
 				if(!isContactsDownloaded)
 				{
-					long start=System.currentTimeMillis();
-					Log.d("output","refresh rolodex "+System.currentTimeMillis());
-					mIdentity.refreshRolodexContacts();
-					Log.d("output","done refresh rolodex duration "+(System.currentTimeMillis()-start));
-
 					Log.d("output", "Identity lookup test is preparing, please wait...");
 					mIdentity.startRolodexDownload("");
 					return false;
@@ -60,7 +54,6 @@ public class OPTestIdentityLookup {
 				List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();;
 				for(OPRolodexContact contact : rolodexContacts.getRolodexContacts())
 				{
-					Log.d(TAG,"contact "+contact.toString());
 					OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
 					ilInfo.initWithRolodexContact(contact);
 					inputLookupList.add(ilInfo);
