@@ -28,7 +28,6 @@ import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
-import com.openpeer.sample.delegates.OPConversationThreadDelegateImplementation;
 import com.squareup.picasso.Picasso;
 
 public class ChatFragment extends BaseFragment {
