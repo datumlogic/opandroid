@@ -24,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -154,6 +156,18 @@ public class ContactsScreen extends Activity {
 
 			ListView listView = (ListView) getActivity().findViewById(R.id.mContactsListView);
 			listView.setAdapter(mAdapter);
+		       listView.setOnItemClickListener(new OnItemClickListener() {
+		            @Override
+		            public void onItemClick(AdapterView<?> parent, View view, int position,
+		                    long id) {
+		                
+		                //LoginManager.mconve
+		                
+		                //Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
+		            	Log.e("output", "Contact clicked");
+		                
+		            }
+		        });
 
 		}
 

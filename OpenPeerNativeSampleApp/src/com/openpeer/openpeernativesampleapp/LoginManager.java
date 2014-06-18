@@ -1,5 +1,7 @@
 package com.openpeer.openpeernativesampleapp;
 
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -304,6 +306,20 @@ public class LoginManager {
 		editor.putString("/openpeer/reloginInformation", mAccount.getReloginInformation());
 		editor.commit();
 
+		//mIdentity = 
+		List<OPIdentity> identityList = mAccount.getAssociatedIdentities();
+		for (OPIdentity ident :identityList)
+		{
+			if (!ident.isDelegateAttached())
+			{
+				mIdentityDelegate = new OPIdentityDelegateImplementation();
+				//mIdentity = new OPIdentity();
+				mCallbackHandler.registerIdentityDelegate(ident, mIdentityDelegate);
+				ident.attachDelegate(mIdentityDelegate, "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
+			}
+			mIdentity = ident;
+		}
+		
 		//Notigy GUI that account is in ready state
 		mLoginHandler.onAccountStateReady();
 
