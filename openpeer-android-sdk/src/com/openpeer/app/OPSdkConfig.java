@@ -113,6 +113,8 @@ public class OPSdkConfig {
 					android.os.Build.VERSION.RELEASE);
 			jsonObject
 					.put("openpeer/calculated/system", android.os.Build.MODEL);
+			jsonObject.put("openpeer/calculated/instance-id", java.util.UUID
+					.randomUUID().toString());
 			parent.put("root", jsonObject);
 			Log.d("output", parent.toString(2));
 			return parent.toString(2);
