@@ -396,13 +396,13 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	public void onAccountStateReady() {
 		// TODO Auto-generated method stub
 		//OPTestAccount.execute(LoginManager.mAccount);
-		this.runOnUiThread(new Runnable() {
-			public void run() {
-				myWebView.stopLoading();
-				myWebView.clearView();
-				myWebView.destroy();
-			}
-		});
+//		this.runOnUiThread(new Runnable() {
+//			public void run() {
+//				myWebView.stopLoading();
+//				myWebView.clearView();
+//				myWebView.destroy();
+//			}
+//		});
 
 		OPTestIdentityLookup.execute(LoginManager.mIdentity);
 
