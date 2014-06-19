@@ -250,7 +250,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
 
-			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Conversation thread 7");
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 			jlong convThread = (jlong) conversationThreadPtr.get();
 			jni_env->SetLongField(object, fid, convThread);

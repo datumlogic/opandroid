@@ -1,5 +1,6 @@
 package com.openpeer.openpeernativesampleapp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -25,6 +26,7 @@ import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupDelegate;
@@ -98,6 +100,8 @@ public class LoginManager {
 	public static OPCacheDelegate mCacheDelegate;
 	public static OPCall mCall;
 	public static OPCallDelegate mCallDelegate;
+	
+	public static List<OPIdentityContact> mIdentityContacts = new ArrayList<OPIdentityContact> ();
 
 	public static void setHandlerListener(LoginHandlerInterface listener)
 	{
@@ -340,6 +344,7 @@ public class LoginManager {
 	public static void onIdentityLookupCompleted(OPIdentityLookup lookup) {
 		// TODO Auto-generated method stub
 		LoginManager.mIdentityLookup = lookup;
+		LoginManager.mIdentityContacts = LoginManager.mIdentityLookup.getUpdatedIdentities();
 
 		mLoginHandler.onLookupCompleted();
 	}
