@@ -85,14 +85,15 @@ public class LoginManager {
 		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
 				account);
 		mAccountLoginWebView.setWebViewClient(client);
-		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
-				mAccountLoginWebView, account);
-		CallbackHandler.getInstance().registerAccountDelegate(account,
-				accountDelegate);
+
 		account = OPAccount.relogin(null, null, null,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html"
 																	// namespaceGrantOuterFrameURLUponReload
 				reloginInfo);
+		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
+				mAccountLoginWebView, account);
+		CallbackHandler.getInstance().registerAccountDelegate(account,
+				accountDelegate);
 		OPDataManager.getInstance().setSharedAccount(account);
 		client.mAccount = account;
 		accountDelegate.mAccount = account;
@@ -183,6 +184,29 @@ public class LoginManager {
 				break;
 			case IdentityState_Ready:
 				// LoginManager.mIdentity.;
+				if (OPDataManager.getInstance().getSharedAccount()
+						.getState(0, "") == AccountStates.AccountState_Ready) {
+					OPDataManager.getInstance().setIdentities(
+							OPDataManager.getInstance().getSharedAccount()
+									.getAssociatedIdentities());
+
+					mListener.onLoginComplete();
+
+					String version = OPDataManager.getDatastoreDelegate()
+							.getDownloadedContactsVersion(
+									identity.getStableID());
+					if (TextUtils.isEmpty(version)) {
+						Log.d("login", "start download initial contacts");
+						identity.startRolodexDownload("");
+					} else {
+						// check for new contacts
+						Log.d("login",
+								"start download  contacts since version "
+										+ version);
+						identity.startRolodexDownload(version);
+					}
+
+				}
 				break;
 			}
 
@@ -202,7 +226,7 @@ public class LoginManager {
 		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
 			CallbackHandler.getInstance().unregisterIdentityDelegate(this);
-			destroy();
+			// destroy();
 		}
 
 		public void passMessageToJS(final String msg) {
@@ -269,39 +293,51 @@ public class LoginManager {
 		}
 
 		public void onAccountStateReady(OPAccount account) {
-			mListener.onLoginComplete();
 
-			AccountStates state = AccountStates.AccountState_Pending;
-			int outErrorCode = 0;
-			String outErrorReason = "";
-			
+			OPDataManager.getInstance().setSharedAccount(mAccount);
 
-			List<OPIdentity> identities = account.getAssociatedIdentities();
+			List<OPIdentity> identities = mAccount.getAssociatedIdentities();
 			if (identities.size() == 0) {
 				Log.d("TODO", "Account test FAILED identities emppty ");
 
 				return;
 			}
-			Log.d("TODO",
-					"Account associated identities = "
-							+ Arrays.deepToString(identities.toArray()));
-			OPDataManager.getInstance().setSharedAccount(mAccount);
-			OPDataManager.getInstance().setIdentities(identities);
+
 			for (OPIdentity identity : identities) {
-				String version = OPDataManager.getDatastoreDelegate()
-						.getDownloadedContactsVersion(identity.getStableID());
-				if (TextUtils.isEmpty(version)) {
-					Log.d("login", "start download initial contacts");
-					identity.startRolodexDownload("");
+				if (!identity.isDelegateAttached()) {
+					OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
+							identity);
+					mIdentityLoginWebView.setWebViewClient(client);
+					OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
+							mIdentityLoginWebView, identity);
+					CallbackHandler.getInstance().registerIdentityDelegate(
+							identity, identityDelegate);
+					identity.attachDelegate(identityDelegate,
+							"http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
+
 				} else {
-					// check for new contacts
-					Log.d("login", "start download  contacts since version "
-							+ version);
-					identity.startRolodexDownload(version);
+					OPDataManager.getInstance().setIdentities(identities);
+
+					mListener.onLoginComplete();
+
+					String version = OPDataManager.getDatastoreDelegate()
+							.getDownloadedContactsVersion(
+									identity.getStableID());
+					if (TextUtils.isEmpty(version)) {
+						Log.d("login", "start download initial contacts");
+						identity.startRolodexDownload("");
+					} else {
+						// check for new contacts
+						Log.d("login",
+								"start download  contacts since version "
+										+ version);
+						identity.startRolodexDownload(version);
+					}
+					CallbackHandler.getInstance().unregisterAccountDelegate(
+							this);
 				}
 			}
 
-			CallbackHandler.getInstance().unregisterAccountDelegate(this);
 		}
 
 		@Override
