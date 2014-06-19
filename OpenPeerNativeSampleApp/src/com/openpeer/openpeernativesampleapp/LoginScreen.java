@@ -396,13 +396,13 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	public void onAccountStateReady() {
 		// TODO Auto-generated method stub
 		//OPTestAccount.execute(LoginManager.mAccount);
-//		this.runOnUiThread(new Runnable() {
-//			public void run() {
-//				myWebView.stopLoading();
-//				myWebView.clearView();
-//				myWebView.destroy();
-//			}
-//		});
+		//		this.runOnUiThread(new Runnable() {
+		//			public void run() {
+		//				myWebView.stopLoading();
+		//				myWebView.clearView();
+		//				myWebView.destroy();
+		//			}
+		//		});
 
 		OPTestIdentityLookup.execute(LoginManager.mIdentity);
 
@@ -411,22 +411,25 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	@Override
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
 		// TODO Auto-generated method stub
-		//		if(OPTestIdentityLookup.isContactsDownloaded)
-		//		{
-		//			OPTestIdentityLookup.isRolodexContactsRefreshed = true;
-		//		}
-		//		OPTestIdentityLookup.isContactsDownloaded = true;
-		//		OPTestIdentityLookup.execute(identity);
+//		if(OPTestIdentityLookup.isContactsDownloaded)
+//		{
+//			OPTestIdentityLookup.isRolodexContactsRefreshed = true;
+//		}
+		OPTestIdentityLookup.isContactsDownloaded = true;
+		OPTestIdentityLookup.execute(identity);
 
-		Intent intent = new Intent(this, ContactsScreen.class);
-		startActivity(intent);
+		//		Intent intent = new Intent(this, ContactsScreen.class);
+		//		startActivity(intent);
+
 
 	}
 
 	@Override
 	public void onLookupCompleted() {
 		// TODO Auto-generated method stub
-		OPTestConversationThread.execute();
+		//OPTestConversationThread.execute();
+		Intent intent = new Intent(this, ContactsScreen.class);
+		startActivity(intent);
 
 	}
 

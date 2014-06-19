@@ -56,6 +56,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.openpeer.openpeernativesampleapp.LoginScreen" />
         </activity>
+        <activity
+            android:name="com.openpeer.openpeernativesampleapp.ChatScreen"
+            android:label="@string/title_activity_chat_screen"
+            android:parentActivityName="com.openpeer.openpeernativesampleapp.ContactsScreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.openpeer.openpeernativesampleapp.ContactsScreen" />
+        </activity>
     </application>
 
 </manifest>

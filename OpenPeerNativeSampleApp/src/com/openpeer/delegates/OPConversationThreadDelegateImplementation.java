@@ -22,7 +22,8 @@ public class OPConversationThreadDelegateImplementation extends
 	public void onConversationThreadContactsChanged(
 			OPConversationThread conversationThread) {
 		// TODO Auto-generated method stub
-		OPTestConversationThread.testCall("idemooooo");
+		//OPTestConversationThread.testCall("idemooooo");
+		Log.d("output", "onConversationThreadContactsChanged");
 
 	}
 

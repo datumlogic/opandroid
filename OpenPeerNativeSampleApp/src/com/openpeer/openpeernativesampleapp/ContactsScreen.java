@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -35,6 +37,8 @@ import android.os.Build;
 public class ContactsScreen extends Activity {
 
 	private static UserItemAdapter mAdapter;
+	private static OPDownloadedRolodexContacts mRolodexContacts;
+	//private static List<OPIdentityContact> mHookflashContacts = new ArrayList<OPIdentityContact>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,13 +48,14 @@ public class ContactsScreen extends Activity {
 			getFragmentManager().beginTransaction()
 			.add(R.id.container, new PlaceholderFragment()).commit();
 		}
-		OPDownloadedRolodexContacts rolodexContacts = LoginManager.mIdentity.getDownloadedRolodexContacts();
-		mAdapter = new ContactsScreen.UserItemAdapter(this, R.layout.contact_list_item, rolodexContacts.getRolodexContacts());
+		//mRolodexContacts = LoginManager.mIdentity.getDownloadedRolodexContacts();
+		mAdapter = new ContactsScreen.UserItemAdapter(this, R.layout.contact_list_item, LoginManager.mIdentityContacts);
+		//mAdapter.
 	}
-	public class UserItemAdapter extends ArrayAdapter<OPRolodexContact> {
-		private ArrayList<OPRolodexContact> users;
+	public class UserItemAdapter extends ArrayAdapter<OPIdentityContact> {
+		private List<OPIdentityContact> users;
 
-		public UserItemAdapter(Context context, int textViewResourceId, ArrayList<OPRolodexContact> list) {
+		public UserItemAdapter(Context context, int textViewResourceId, List<OPIdentityContact> list) {
 			super(context, textViewResourceId, list);
 			this.users = list;
 		}
@@ -63,24 +68,26 @@ public class ContactsScreen extends Activity {
 				v = vi.inflate(R.layout.contact_list_item, null);
 			}
 
-			OPRolodexContact user = users.get(position);
+			OPIdentityContact user = users.get(position);
 			if (user != null) {
 				user.printInfo();
 				ImageView image = (ImageView) v.findViewById(R.id.contactImageView);
 				TextView username = (TextView) v.findViewById(R.id.contactName);
-				TextView email = (TextView) v.findViewById(R.id.contactIdentityURI);
+				TextView uri = (TextView) v.findViewById(R.id.contactIdentityURI);
 
 				if (image != null) {
-					Log.w("output", "URL = " + user.getAvatars().get(0).getURL());
-					new DownloadImageTask(image).execute(user.getAvatars().get(0).getURL());
+					if(user.getAvatars().size() != 0){
+						Log.d("output", "URL = " + user.getAvatars().get(0).getURL());
+						new DownloadImageTask(image).execute(user.getAvatars().get(0).getURL());
+					}
 				}
 
 				if (username != null) {
 					username.setText(user.getName());
 				}
 
-				if(email != null) {
-					email.setText("Email: " + user.getIdentityURI() );
+				if(uri != null) {
+					uri.setText("Identity URI: " + user.getIdentityURI() );
 				}
 			}
 			return v;
@@ -128,7 +135,7 @@ public class ContactsScreen extends Activity {
 		}
 
 		protected void onPostExecute(Bitmap result) {
-		  bmImage.setImageBitmap(result);
+			bmImage.setImageBitmap(result);
 		} 
 	}
 
@@ -156,18 +163,23 @@ public class ContactsScreen extends Activity {
 
 			ListView listView = (ListView) getActivity().findViewById(R.id.mContactsListView);
 			listView.setAdapter(mAdapter);
-		       listView.setOnItemClickListener(new OnItemClickListener() {
-		            @Override
-		            public void onItemClick(AdapterView<?> parent, View view, int position,
-		                    long id) {
-		                
-		                //LoginManager.mconve
-		                
-		                //Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
-		            	Log.e("output", "Contact clicked");
-		                
-		            }
-		        });
+			listView.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position,
+						long id) {
+
+					//LoginManager.mconve
+
+					//Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
+					Log.d("output", "Contact clicked");
+					Intent intent = new Intent(getActivity(), ChatScreen.class);
+					intent.putExtra("peerFile", LoginManager.mIdentityContacts.get(position).getPeerFilePublic().getPeerFileString());
+					intent.putExtra("identityURI", LoginManager.mIdentityContacts.get(position).getIdentityURI());
+					startActivity(intent);
+
+
+				}
+			});
 
 		}
 
