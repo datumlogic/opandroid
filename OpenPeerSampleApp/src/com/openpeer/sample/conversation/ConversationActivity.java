@@ -4,16 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.javaapi.AccountStates;
-import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.sample.BaseFragmentActivity;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
-import com.openpeer.sample.contacts.ContactsFragment;
-import com.openpeer.sample.util.NetworkUtil;
 
 public class ConversationActivity extends BaseFragmentActivity {
+
+	public static Intent getIntentForNotification(Context context,
+			OPConversationThread thread, String messageId, OPContact contact) {
+		Intent intent = new Intent(context, ConversationActivity.class);
+		// set intent data
+		return intent;
+	}
 
 	public static void launchForChat(Context context, String peerContactId) {
 		Intent intent = new Intent(context, ConversationActivity.class);

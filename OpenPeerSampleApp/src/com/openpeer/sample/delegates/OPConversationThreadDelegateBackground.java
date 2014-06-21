@@ -1,5 +1,6 @@
-package com.openpeer.delegates;
+package com.openpeer.sample.delegates;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.openpeer.javaapi.ContactStates;
@@ -8,8 +9,11 @@ import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
+import com.openpeer.sample.OPApplication;
+import com.openpeer.sample.R;
+import com.openpeer.sample.conversation.ConversationActivity;
 
-public class OPConversationThreadDelegateImplementation extends
+public class OPConversationThreadDelegateBackground extends
 		OPConversationThreadDelegate {
 
 	@Override
@@ -42,6 +46,16 @@ public class OPConversationThreadDelegateImplementation extends
 		Log.d("output", "onConversationThreadMessage = " + conversationThread
 				+ " messageId " + messageID + " full message " + message);
 
+		// fire bar notifications if app in background
+		int notificationId = (int) conversationThread.getStableID();
+		String title = "new Messge";
+		String contentText = message.getMessage();
+		int notificationDrawableRes = R.drawable.ic_launcher;
+		Intent intent = ConversationActivity.getIntentForNotification(
+				OPApplication.getInstance(), conversationThread, messageID,
+				null);
+		OPApplication.notify(notificationId, notificationDrawableRes, title,
+				contentText, intent);
 	}
 
 	@Override

@@ -28,6 +28,15 @@ public class OPMessage {
 	private Time mTime;
 	private String mSenderId;
 	private String mMessageId;
+	private long readTimeInMillis;// read time in millis
+
+	public long getReadTimeInMillis() {
+		return readTimeInMillis;
+	}
+
+	public void setReadTimeInMillis(long readTimeInMillis) {
+		this.readTimeInMillis = readTimeInMillis;
+	}
 
 	public String getMessageId() {
 		return mMessageId;

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.openpeer.app.OPDataManager;
+import com.openpeer.app.OPSessionManager;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
@@ -36,7 +37,7 @@ public class CallFragment extends BaseFragment {
 		View view = inflater.inflate(R.layout.fragment_call, null);
 
 		setupView(view);
-		SessionManager
+		OPSessionManager
 				.getInstance()
 				.getSessionForContact(mPeerContact)
 				.placeCall(mPeerContact, new OPCallDelegateImplementation(),

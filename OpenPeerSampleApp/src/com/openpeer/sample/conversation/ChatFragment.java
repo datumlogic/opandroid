@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.openpeer.app.OPDataManager;
+import com.openpeer.app.OPSessionManager;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
@@ -236,31 +237,36 @@ public class ChatFragment extends BaseFragment {
 		mConvThreadDelegate = new ConversationThreadDelegate();
 		CallbackHandler.getInstance().registerConversationThreadDelegate(
 				mConvThreadDelegate);
-		
-		mConvThread=SessionManager.getInstance().getSessionForContact(mPeerContact).getThread();
 
-//		List<OPIdentityContact> selfContacts = new ArrayList<OPIdentityContact>();
-//
-//		selfContacts.add(mSelfContact);
-//
-//		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
-//				.getSharedAccount(), selfContacts);
-//
-//		List<OPIdentityContact> callContacts = new ArrayList<OPIdentityContact>();
-//		List<OPContact> contacts = new ArrayList<OPContact>();
-//		List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
-//		OPContactProfileInfo info = new OPContactProfileInfo();
-//
-//		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
-//				.getInstance().getSharedAccount(), mPeerContact
-//				.getPeerFilePublic().getPeerFileString());
-//
-//		callContacts.add(mPeerContact);
-//		info.setIdentityContacts(callContacts);
-//		info.setContact(newContact);
-//
-//		contactProfiles.add(info);
-//		mConvThread.addContacts(contactProfiles);
+		mConvThread = OPSessionManager.getInstance()
+				.getSessionForContact(mPeerContact).getThread();
+
+		// List<OPIdentityContact> selfContacts = new
+		// ArrayList<OPIdentityContact>();
+		//
+		// selfContacts.add(mSelfContact);
+		//
+		// mConvThread = OPConversationThread.create(OPDataManager.getInstance()
+		// .getSharedAccount(), selfContacts);
+		//
+		// List<OPIdentityContact> callContacts = new
+		// ArrayList<OPIdentityContact>();
+		// List<OPContact> contacts = new ArrayList<OPContact>();
+		// List<OPContactProfileInfo> contactProfiles = new
+		// ArrayList<OPContactProfileInfo>();
+		// OPContactProfileInfo info = new OPContactProfileInfo();
+		//
+		// OPContact newContact =
+		// OPContact.createFromPeerFilePublic(OPDataManager
+		// .getInstance().getSharedAccount(), mPeerContact
+		// .getPeerFilePublic().getPeerFileString());
+		//
+		// callContacts.add(mPeerContact);
+		// info.setIdentityContacts(callContacts);
+		// info.setContact(newContact);
+		//
+		// contactProfiles.add(info);
+		// mConvThread.addContacts(contactProfiles);
 
 	}
 
@@ -276,7 +282,7 @@ public class ChatFragment extends BaseFragment {
 		@Override
 		public void onConversationThreadContactsChanged(
 				OPConversationThread conversationThread) {
-			Log.d("test", "onConversationThreadContactsChanged"
+			Log.d("ChatFragment", "onConversationThreadContactsChanged"
 					+ conversationThread);
 		}
 
@@ -284,7 +290,7 @@ public class ChatFragment extends BaseFragment {
 		public void onConversationThreadContactStateChanged(
 				OPConversationThread conversationThread, OPContact contact,
 				ContactStates state) {
-			Log.d("test", "onConversationThreadContactStateChanged = "
+			Log.d("ChatFragment", "onConversationThreadContactStateChanged = "
 					+ contact + " state " + state);
 		}
 
@@ -292,7 +298,7 @@ public class ChatFragment extends BaseFragment {
 		public void onConversationThreadMessage(
 				OPConversationThread conversationThread, String messageID) {
 			OPMessage message = conversationThread.getMessage(messageID);
-			Log.d("test", "onConversationThreadMessage = " + messageID
+			Log.d("ChatFragment", "onConversationThreadMessage = " + messageID
 					+ " full message " + message);
 
 		}
@@ -301,16 +307,18 @@ public class ChatFragment extends BaseFragment {
 		public void onConversationThreadMessageDeliveryStateChanged(
 				OPConversationThread conversationThread, String messageID,
 				MessageDeliveryStates state) {
-			Log.d("test", "onConversationThreadMessageDeliveryStateChanged = "
-					+ messageID + " state " + state);
+			Log.d("ChatFragment",
+					"onConversationThreadMessageDeliveryStateChanged = "
+							+ messageID + " state " + state + " thread "
+							+ conversationThread);
 		}
 
 		@Override
 		public void onConversationThreadPushMessage(
 				OPConversationThread conversationThread, String messageID,
 				OPContact contact) {
-			// TODO Auto-generated method stub
-
+			Log.d("ChatFragment", "onConversationThreadPushMessage = "
+					+ messageID + " thread " + conversationThread);
 		}
 
 	}

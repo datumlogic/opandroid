@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.openpeer.app.OPDataManager;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.R;
@@ -19,6 +20,7 @@ public class ContactItemView extends RelativeLayout {
 	private OPRolodexContact mContact;
 
 	private ImageView mImageView;
+	private TextView mBadgeView;
 	private TextView mTitleView;
 
 	private View mCallView;
@@ -33,6 +35,8 @@ public class ContactItemView extends RelativeLayout {
 		super(context, attrs, defStyle);
 		LayoutInflater.from(context).inflate(R.layout.item_contact, this);
 		mImageView = (ImageView) findViewById(R.id.image_view);
+		mBadgeView = (TextView) findViewById(R.id.badge_view);
+
 		mTitleView = (TextView) findViewById(R.id.title);
 		mCallView = findViewById(R.id.call);
 		mChatView = findViewById(R.id.chat);
@@ -66,7 +70,7 @@ public class ContactItemView extends RelativeLayout {
 							((OPIdentityContact) mContact).getStableID());
 				}
 			});
-			
+
 			mCallView.setOnClickListener(new View.OnClickListener() {
 
 				@Override
@@ -76,6 +80,16 @@ public class ContactItemView extends RelativeLayout {
 							((OPIdentityContact) mContact).getStableID());
 				}
 			});
+			// show unread messages badge if any
+			int numberofUnreadMessages = OPDataManager.getDatastoreDelegate()
+					.getNumberofUnreadMessages(
+							((OPIdentityContact) mContact).getStableID());
+			if (numberofUnreadMessages > 0) {
+				mBadgeView.setText("" + numberofUnreadMessages);
+				mBadgeView.setVisibility(View.VISIBLE);
+			} else {
+				mBadgeView.setVisibility(View.GONE);
+			}
 		} else {
 			mInviteView.setVisibility(View.VISIBLE);
 

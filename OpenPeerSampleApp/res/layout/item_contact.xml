@@ -1,53 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingBottom="@dimen/padding_vertical"
-	android:paddingLeft="@dimen/padding_edge"
-	android:paddingRight="@dimen/padding_edge"
-	android:paddingTop="@dimen/padding_vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/padding_vertical"
+    android:paddingLeft="@dimen/padding_edge"
+    android:paddingRight="@dimen/padding_edge"
+    android:paddingTop="@dimen/padding_vertical" >
 
-	<ImageView
-		android:id="@+id/image_view"
-		android:layout_width="@dimen/profile_image_size_in_list"
-		android:layout_height="@dimen/profile_image_size_in_list"
-		android:layout_centerVertical="true"
-		android:scaleType="centerCrop" />
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="@dimen/profile_image_size_in_list"
+        android:layout_height="@dimen/profile_image_size_in_list"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop" />
 
-	<TextView
-		android:id="@+id/title"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="@dimen/padding_spacing_internal"
-		android:layout_toRightOf="@id/image_view" />
+    <TextView
+        android:id="@+id/badge_view"
+        android:layout_width="@dimen/badge_image_size_in_contact"
+        android:layout_height="@dimen/badge_image_size_in_contact"
+        android:layout_alignRight="@id/image_view"
+        android:layout_alignTop="@id/image_view"
+        android:background="@color/red"
+        android:text="20+" />
 
-	<ImageView
-		android:id="@+id/call"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:layout_centerVertical="true"
-		android:scaleType="centerCrop"
-		android:src="@drawable/ic_action_call" />
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/padding_spacing_internal"
+        android:layout_toRightOf="@id/image_view" />
 
-	<ImageView
-		android:id="@+id/chat"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_toLeftOf="@id/call"
-		android:layout_marginRight="@dimen/padding_spacing_internal"
-		android:scaleType="centerCrop"
-		android:src="@drawable/ic_action_chat" />
+    <ImageView
+        android:id="@+id/call"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_action_call" />
 
-	<Button
-		android:id="@+id/invite"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:layout_centerVertical="true"
-		android:text="@string/hint_invite" 
-		android:visibility="gone"/>
+    <ImageView
+        android:id="@+id/chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/padding_spacing_internal"
+        android:layout_toLeftOf="@id/call"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_action_chat" />
+
+    <Button
+        android:id="@+id/invite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:text="@string/hint_invite"
+        android:visibility="gone" />
 
 </RelativeLayout>

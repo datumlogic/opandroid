@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.openpeer.app.OPSession;
 import com.openpeer.datastore.DatabaseContracts.AvatarEntry;
 import com.openpeer.datastore.DatabaseContracts.ContactEntry;
 import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
@@ -19,6 +20,7 @@ import com.openpeer.datastore.DatabaseContracts.IdentityEntry;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
+import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.model.OPHomeUser;
@@ -470,5 +472,39 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			return avatars;
 		}
 		return null;
+	}
+
+	@Override
+	public boolean saveSession(OPSession session) {
+		Log.d("TODO", "OPDatastoreDelegate saveSession " + session);
+		return true;
+	}
+
+	@Override
+	public boolean saveMessage(OPMessage message, String sessionId) {
+		Log.d("TODO", "OPDatastoreDelegate saveMessage " + message.getMessage()
+				+ " sessionId " + sessionId);
+		return true;
+	}
+
+	/**
+	 * Get all private messages with the contact. This function retrieves all
+	 * private sessions with the contact and messages associated
+	 * 
+	 * @param contactId
+	 *            stableId of the OPContact(or OPIdentityContact?)
+	 * @return
+	 */
+	@Override
+	public List<OPMessage> getMessagesWithContact(long contactId, int max,
+			String lastMessageId) {
+		Log.d("TODO", "OPDatastoreDelegate getMessagesForContact " + contactId);
+		return null;
+	}
+
+	@Override
+	public int getNumberofUnreadMessages(String contactId) {
+		Log.d("TODO", "OPDatastoreDelegate getMessagesForContact " + contactId);
+		return 5;
 	}
 }

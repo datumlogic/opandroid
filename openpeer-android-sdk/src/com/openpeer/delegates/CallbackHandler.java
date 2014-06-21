@@ -41,7 +41,12 @@ public class CallbackHandler {
 	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate>();
 	private static CallbackHandler instance;
 	private static OPDatastoreDelegate sDatastoreDelegate;
-	private CallbackHandler(){}
+	private static OPConversationThreadDelegate mBackgroundConversationHandler;
+	private static OPCallDelegate mBackgroundCallHandler;
+
+	private CallbackHandler() {
+	}
+
 	public static CallbackHandler getInstance() {
 		if (instance == null) {
 			instance = new CallbackHandler();
@@ -202,11 +207,26 @@ public class CallbackHandler {
 
 	public static void onCallStateChanged(int state) {
 
+		if (callDelegates.size() == 0 && mBackgroundCallHandler != null) {
+			mBackgroundCallHandler.onCallStateChanged(mCall,
+					CallStates.values()[state]);
+		}
 		for (OPCallDelegate delegate : callDelegates) {
 			if (mCall != null && delegate != null) {
 				delegate.onCallStateChanged(mCall, CallStates.values()[state]);
 			}
 		}
+	}
+
+	public boolean registerBackgroundCallDelegate(OPCallDelegate delegate) {
+		mBackgroundCallHandler = delegate;
+		return true;
+	}
+
+	public boolean registerBackgroundCallDelegate(
+			OPConversationThreadDelegate delegate) {
+		mBackgroundConversationHandler = delegate;
+		return true;
 	}
 
 	// Call delegate register/unregister methods
@@ -278,6 +298,12 @@ public class CallbackHandler {
 
 	public static void onConversationThreadMessage(
 			OPConversationThread convThread, String messageID) {
+		if (conversationThreadDelegates.size() == 0
+				&& mBackgroundConversationHandler != null) {
+			mBackgroundConversationHandler.onConversationThreadMessage(
+					convThread, messageID);
+
+		}
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
 			if (convThread != null && delegate != null) {
 				delegate.onConversationThreadMessage(convThread, messageID);
@@ -290,6 +316,13 @@ public class CallbackHandler {
 
 	public static void onConversationThreadMessageDeliveryStateChanged(
 			OPConversationThread convThread, String messageID, int state) {
+		if (conversationThreadDelegates.size() == 0
+				&& mBackgroundConversationHandler != null) {
+			mBackgroundConversationHandler
+					.onConversationThreadMessageDeliveryStateChanged(
+							convThread, messageID,
+							MessageDeliveryStates.values()[state]);
+		}
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
 			if (convThread != null && delegate != null) {
 				delegate.onConversationThreadMessageDeliveryStateChanged(
@@ -304,6 +337,12 @@ public class CallbackHandler {
 
 	public static void onConversationThreadPushMessage(
 			OPConversationThread convThread, String messageID, OPContact contact) {
+		if (conversationThreadDelegates.size() == 0
+				&& mBackgroundConversationHandler != null) {
+			mBackgroundConversationHandler.onConversationThreadPushMessage(
+					convThread, messageID, contact);
+
+		}
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
 			if (convThread != null && delegate != null) {
 				delegate.onConversationThreadPushMessage(convThread, messageID,
@@ -332,7 +371,7 @@ public class CallbackHandler {
 		this.conversationThreadDelegates.remove(delegate);
 
 	}
-	
+
 	public void unregisterConversationThreadDelegate(
 			OPConversationThreadDelegate delegate) {
 		conversationThreadDelegates.remove(delegate);
@@ -618,7 +657,8 @@ public class CallbackHandler {
 	public void unregisterSettingsDelegate(OPSettingsDelegate delegate) {
 		settingsDelegate = null;
 	}
-	public void registerDatastoreDelegate(OPDatastoreDelegate datastoreDelegate){
+
+	public void registerDatastoreDelegate(OPDatastoreDelegate datastoreDelegate) {
 		this.sDatastoreDelegate = datastoreDelegate;
 	}
 }

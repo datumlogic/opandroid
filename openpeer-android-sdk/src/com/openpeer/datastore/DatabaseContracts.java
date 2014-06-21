@@ -89,6 +89,67 @@ public class DatabaseContracts {
 		// TODO add other columns
 	}
 
+	public static abstract class SessionEntry implements BaseColumns {
+		public static final String TABLE_NAME = "identity";
+		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
+		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
+		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
+		// The "selfContact" of the identity
+		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
+		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+
+		// TODO add other columns
+	}
+
+	public static abstract class MessageEntry implements BaseColumns {
+		public static final String TABLE_NAME = "identity";
+		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
+		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
+		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
+		// The "selfContact" of the identity
+		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
+		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+
+		// TODO add other columns
+	}
+
+	public static abstract class CallEntry implements BaseColumns {
+		public static final String TABLE_NAME = "identity";
+		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
+		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
+		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
+		// The "selfContact" of the identity
+		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
+		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+
+		// TODO add other columns
+	}
+
+	public static abstract class ConversationParticipantEntry implements
+			BaseColumns {
+		public static final String TABLE_NAME = "identity";
+		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
+		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
+		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
+		// The "selfContact" of the identity
+		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
+		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+
+		// TODO add other columns
+	}
+
+	public static abstract class CallParticipantEntry implements BaseColumns {
+		public static final String TABLE_NAME = "identity";
+		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
+		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
+		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
+		// The "selfContact" of the identity
+		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
+		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+
+		// TODO add other columns
+	}
+
 	public static final String SQL_CREATE_CONTACT = "CREATE TABLE "
 			+ ContactEntry.TABLE_NAME + " (" + ContactEntry._ID + INTEGER_TYPE
 			+ COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_ID

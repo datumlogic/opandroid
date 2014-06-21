@@ -305,9 +305,14 @@ public class LoginManager {
 
 			for (OPIdentity identity : identities) {
 				if (!identity.isDelegateAttached()) {
-					OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
+					final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
 							identity);
-					mIdentityLoginWebView.setWebViewClient(client);
+					mIdentityLoginWebView.post(new Runnable() {
+						public void run() {
+							mIdentityLoginWebView.setWebViewClient(client);
+
+						}
+					});
 					OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
 							mIdentityLoginWebView, identity);
 					CallbackHandler.getInstance().registerIdentityDelegate(
