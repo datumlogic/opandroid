@@ -25,6 +25,7 @@ import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPIdentityDelegate;
@@ -97,6 +98,7 @@ public class LoginManager {
 	static LoginHandlerInterface mLoginHandler;
 	public static OPIdentityLookup mIdentityLookup;
 	public static OPConversationThread mConvThread;
+	public static OPConversationThreadDelegate mConvThreadDelegate;
 	public static OPCacheDelegate mCacheDelegate;
 	public static OPCall mCall;
 	public static OPCallDelegate mCallDelegate;

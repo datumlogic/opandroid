@@ -46,8 +46,7 @@ public class ChatScreen extends Activity {
 		OPIdentityContact self = LoginManager.mIdentity.getSelfIdentityContact();
 		mSelfContacts.add(self);
 
-		OPConversationThreadDelegate delegate = new OPConversationThreadDelegateImplementation();
-		LoginManager.mCallbackHandler.registerConversationThreadDelegate(delegate);
+		
 		LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, mSelfContacts);
 
 		Intent intent = getIntent();
