@@ -7,12 +7,16 @@ import android.os.Bundle;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPSessionManager;
@@ -68,6 +72,7 @@ public class ChatFragment extends BaseFragment {
 		mSelfContact = OPDataManager.getInstance().getSelfContacts()
 				.get(mPeerContact.getAssociatedIdentityId());
 		setupChat();
+		this.setHasOptionsMenu(true);
 		// mSelfContact =
 		// OPDataManager.getDatastoreDelegate().getIdentityContact(
 		// mSelfContactId);
@@ -322,4 +327,27 @@ public class ChatFragment extends BaseFragment {
 		}
 
 	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.menu_chat, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_call:
+			makeCall(mPeerContact);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private void makeCall(OPIdentityContact peerContact) {
+		Toast.makeText(getActivity(),
+				"makeCall to be implmented" + peerContact, Toast.LENGTH_LONG);
+	}
+
 }
