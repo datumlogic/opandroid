@@ -89,38 +89,58 @@ public class DatabaseContracts {
 		// TODO add other columns
 	}
 
-	public static abstract class SessionEntry implements BaseColumns {
-		public static final String TABLE_NAME = "identity";
-		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
-		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
-		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
-		// The "selfContact" of the identity
-		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
-		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+	public static abstract class ConversationEntry implements BaseColumns {
+		public static final String TABLE_NAME = "conversation";
+		public static final String COLUMN_NAME_THREAD_ID = "thread_id";
+		public static final String COLUMN_NAME_THREAD_HOST = "is_host";
+		public static final String COLUMN_NAME_START_TIME = "start_time";
 
-		// TODO add other columns
+	}
+
+	/**
+	 * Record the state snapshot: when and what contact is added/deleted
+	 * 
+	 * 
+	 */
+	public static abstract class ConversationStateChangeEntry implements
+			BaseColumns {
+		public static final String TABLE_NAME = "conversation_state_change";
+		public static final String COLUMN_NAME_THREAD_ID = "thread_id";
+		public static final String COLUMN_NAME_STATE_TIME = "time";
+	}
+
+	/**
+	 * state_type: ADD_CONTACT, REMOVE_CONTACT, CONTACT_QUIT, etc
+	 * 
+	 */
+	public static abstract class ConversationStateEntry implements BaseColumns {
+		public static final String TABLE_NAME = "conversation_state";
+		public static final String COLUMN_NAME_state_change_ID = "state_change_id";
+		public static final String COLUMN_NAME_STATE_TYPE = "state_type";
 	}
 
 	public static abstract class MessageEntry implements BaseColumns {
-		public static final String TABLE_NAME = "identity";
-		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
-		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
-		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
-		// The "selfContact" of the identity
-		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
-		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
-
-		// TODO add other columns
+		public static final String TABLE_NAME = "message";
+		public static final String COLUMN_NAME_MESSAGE_ID = "message_id";
+		public static final String COLUMN_NAME_THREAD_ID = "thread_id";
+		// for now only text is supported
+		public static final String COLUMN_NAME_MESSAGE_TYPE = "type";
+		// id of peer contact. use your own id or "self" for outgoing message
+		public static final String COLUMN_NAME_SENDER_ID = "sender_id";
+		// Message content text
+		public static final String COLUMN_NAME_MESSAGE_TEXT = "text";
+		// sent or receive time
+		public static final String COLUMN_NAME_MESSAGE_TIME = "time";
 	}
 
 	public static abstract class CallEntry implements BaseColumns {
-		public static final String TABLE_NAME = "identity";
-		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
-		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
-		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
-		// The "selfContact" of the identity
-		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
-		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+		public static final String TABLE_NAME = "CALL";
+		public static final String COLUMN_NAME_CALL_ID = "stable_id";
+		public static final String COLUMN_NAME_CALL_PROVIDER = "provider";
+		public static final String COLUMN_NAME_CALL_URI = "uri";
+		// The "selfContact" of the CALL
+		public static final String COLUMN_NAME_CALL_CONTACT_ID = "contact_id";
+		public static final String COLUMN_NAME_CALL_CONTACTS_VERSION = "contacts_version";
 
 		// TODO add other columns
 	}
