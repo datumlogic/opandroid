@@ -7,6 +7,7 @@ import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
+import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.test.OPTestConversationThread;
 
 public class OPConversationThreadDelegateImplementation extends
@@ -40,6 +41,13 @@ public class OPConversationThreadDelegateImplementation extends
 			OPConversationThread conversationThread, String messageID) {
 		// TODO Auto-generated method stub
 		Log.d("output", "onConversationThreadMessage = " + messageID);
+		
+		OPMessage message = conversationThread.getMessage(messageID);
+		
+		Log.d("output","Message received from " + message.getFrom());
+		Log.d("output","Message received type " + message.getMessageType());
+		Log.d("output","Message received time " + message.getTime().toString());
+		Log.d("output","Message received =  " + message.getMessage());
 	}
 
 	@Override

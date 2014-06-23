@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
+import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
@@ -49,6 +51,8 @@ public class ContactsScreen extends Activity {
 			.add(R.id.container, new PlaceholderFragment()).commit();
 		}
 		//mRolodexContacts = LoginManager.mIdentity.getDownloadedRolodexContacts();
+		LoginManager.mConvThreadDelegate = new OPConversationThreadDelegateImplementation();
+		LoginManager.mCallbackHandler.registerConversationThreadDelegate(LoginManager.mConvThreadDelegate);
 		mAdapter = new ContactsScreen.UserItemAdapter(this, R.layout.contact_list_item, LoginManager.mIdentityContacts);
 		//mAdapter.
 	}
