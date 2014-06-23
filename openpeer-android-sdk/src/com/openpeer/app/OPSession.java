@@ -16,6 +16,14 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 
+/**
+ * A session represents extact state of a conversation thread.Any state change of a conversation thread will cause an existing session to terminate and
+ * a new session to be crated. The state change includes:
+ * -- Adding/Removing a contact from the conversation thread.
+ * 
+ * @author brucexia
+ *
+ */
 public class OPSession {
 
 	private List<OPIdentityContact> mParticipants;
