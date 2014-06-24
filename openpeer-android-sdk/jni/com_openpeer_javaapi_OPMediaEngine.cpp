@@ -10,6 +10,8 @@
 
 #include "globals.h"
 
+//#define TEST_MEDIA_ENGINE
+
 using namespace openpeer::core;
 
 #ifdef __cplusplus
@@ -52,14 +54,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
 	jni_env = getEnv();
 	if(jni_env)
 	{
+#ifdef TEST_MEDIA_ENGINE
 		cls = findClass("com/openpeer/javaapi/test/OPTestMediaEngine");
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
 
 	    openpeer::core::test::TestMediaEngineFactoryPtr overrideFactory(new openpeer::core::test::TestMediaEngineFactory);
-
 	    openpeer::core::internal::Factory::override(overrideFactory);
-
+#else
+		cls = findClass("com/openpeer/javaapi/OPMediaEngine");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+#endif
 		mediaEnginePtr = IMediaEngine::singleton();
 
 	}

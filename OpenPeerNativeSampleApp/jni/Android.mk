@@ -1,7 +1,7 @@
 LOCAL_PATH := $(call my-dir)/../..
 WEBRTC_LIBS_PATH := libs/op/libs/ortc-lib/libs/build/android/webrtc
 BOOST_LIBS_PATH := libs/op/libs/ortc-lib/libs/build/android/boost/lib
-ANDROIDNDK_PATH := /usr/ndk/x86_64/android-ndk-r8e
+ANDROIDNDK_PATH := /Users/petarsrdanovic/Downloads/android-ndk-r8e
 
 #zLib shared library
 include $(CLEAR_VARS)
