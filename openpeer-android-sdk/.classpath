@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="OWNERS|audio_device_jni_android.cc|audio_device_jni_android.h|audio_device_opensles_android.cc|audio_device_opensles_android.h|audio_device_utility_android.cc|audio_device_utility_android.h" kind="src" path="audio_device"/>
-	<classpathentry kind="src" path="video_render"/>
-	<classpathentry kind="src" path="video_capture"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="src" path="video_capture"/>
+	<classpathentry kind="src" path="video_render"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>

@@ -24,7 +24,7 @@ pushd opandroid/
 ./buildall_android.sh
 popd
 
-NOTE: It is required to have Android NDK r8e installed on the target machine. Path to the NDK is mandatory input for building 3rd party libraries.
+NOTE: It is required to have Android NDK r8e installed on the target machine. Path to the NDK is mandatory input for building 3rd party libraries. ninja build sysytem is required for WebRTC library build. You can install ninja using MacPorts or Homebrew (http://martine.github.io/ninja/).
 
 
 2) From Eclipse ADT, load sdk project:
