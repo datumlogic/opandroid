@@ -41,4 +41,8 @@ public class OPSessionManager {
 		}
 		return new OPSession(thread);
 	}
+
+	public List<OPSession> getRecentSessions() {
+		return OPDataManager.getDatastoreDelegate().getRecentSessions();
+	}
 }

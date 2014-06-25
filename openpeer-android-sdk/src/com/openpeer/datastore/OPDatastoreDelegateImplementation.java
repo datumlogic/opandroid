@@ -10,13 +10,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.text.format.Time;
 import android.util.Log;
 
-import com.openpeer.app.OPSession;
-import com.openpeer.datastore.DatabaseContracts.AvatarEntry;
-import com.openpeer.datastore.DatabaseContracts.ContactEntry;
-import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
-import com.openpeer.datastore.DatabaseContracts.IdentityEntry;
+import static com.openpeer.datastore.DatabaseContracts.*;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -24,6 +22,7 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.model.OPHomeUser;
+import com.openpeer.app.OPSession;
 
 /**
  * The data being stored in preference: -- Relogin information for account --
@@ -216,10 +215,15 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(ContactEntry.COLUMN_NAME_VPROFILE_URL,
 				contact.getVProfileURL());
 
-		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
-				DatabaseContracts.ContactEntry.TABLE_NAME, null, values,
-				SQLiteDatabase.CONFLICT_REPLACE);
-		if (rowId != 0 && contact.getAvatars() != null) {
+		boolean result = upsert(
+				DatabaseContracts.ContactEntry.TABLE_NAME,
+				values,
+				ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
+						+ identityId + " and "
+						+ ContactEntry.COLUMN_NAME_CONTACT_ID + "="
+						+ contact.getId(), null);
+
+		if (result && contact.getAvatars() != null) {
 			// insert or update avatar
 			for (OPAvatar avatar : contact.getAvatars()) {
 				ContentValues avatarValues = new ContentValues();
@@ -255,12 +259,18 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 					.getLastUpdated().toMillis(false));
 			icValues.put(IdentityContactEntry.COLUMN_NAME_EXPIRE, ic
 					.getExpires().toMillis(false));
-			long _rowId = mOpenHelper.getWritableDatabase()
-					.insertWithOnConflict(IdentityContactEntry.TABLE_NAME,
-							null, icValues, SQLiteDatabase.CONFLICT_REPLACE);
+			return upsert(
+					IdentityContactEntry.TABLE_NAME,
+					icValues,
+					IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
+							+ "=" + identityId + " and "
+							+ IdentityContactEntry.COLUMN_NAME_STABLE_ID + "=?",
+					new String[] { ((OPIdentityContact) contact).getStableID() });
+
+		} else {
+			return true;
 		}
 
-		return rowId != 0;
 	}
 
 	@Override
@@ -447,7 +457,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 						iCursor.getLong(iCursor
 								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME)),
 						iCursor.getLong(iCursor
-								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_EXPIRE)));
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_EXPIRE)),
+						iCursor.getLong(0));
 	}
 
 	private List<OPAvatar> getAvatars(long contactId) {
@@ -477,14 +488,149 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	@Override
 	public boolean saveSession(OPSession session) {
 		Log.d("TODO", "OPDatastoreDelegate saveSession " + session);
-		return true;
+		ContentValues values = new ContentValues();
+		values.put(ConversationEntry.COLUMN_NAME_SESSION_ID,
+				session.getUniqueId());
+		values.put(ConversationEntry.COLUMN_NAME_LAST_READ_MSG_ID,
+				session.getReadMessageId());
+		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
+				ConversationEntry.COLUMN_NAME_SESSION_ID, null, values,
+				SQLiteDatabase.CONFLICT_ABORT);
+		return rowId != 0;
 	}
 
 	@Override
-	public boolean saveMessage(OPMessage message, String sessionId) {
+	public List<OPSession> getRecentSessions() {
+		Cursor sessionCursor = mOpenHelper.getWritableDatabase().query(
+				ConversationEntry.TABLE_NAME,
+				new String[] { ConversationEntry.COLUMN_NAME_SESSION_ID,
+						ConversationEntry.COLUMN_NAME_LAST_READ_MSG_ID }, null,
+				null, null, null, null);
+		if (sessionCursor != null) {
+			List<OPSession> sessions = new ArrayList<OPSession>();
+			sessionCursor.moveToFirst();
+			int sessionIdIndex = sessionCursor
+					.getColumnIndex(ConversationEntry.COLUMN_NAME_SESSION_ID);
+			int lastReadMsgIndex = sessionCursor
+					.getColumnIndex(ConversationEntry.COLUMN_NAME_LAST_READ_MSG_ID);
+
+			while (!sessionCursor.isAfterLast()) {
+				OPSession session = new OPSession();
+				long sessionId = sessionCursor.getLong(sessionIdIndex);
+				Cursor participantCursor = mOpenHelper
+						.getWritableDatabase()
+						.query(ConversationParticipantEntry.TABLE_NAME,
+								new String[] { ConversationParticipantEntry.COLUMN_NAME_IDENTITY_ID },
+								ConversationParticipantEntry.COLUMN_NAME_SESSION_ID
+										+ "=" + sessionId, null, null, null,
+								null);
+				if (participantCursor != null) {
+					List<OPIdentityContact> contacts = new ArrayList<OPIdentityContact>();
+					participantCursor.moveToFirst();
+					while (!participantCursor.isAfterLast()) {
+						String id = participantCursor
+								.getString(participantCursor
+										.getColumnIndex(ConversationParticipantEntry.COLUMN_NAME_IDENTITY_ID));
+						OPIdentityContact contact = this.getIdentityContact(id);
+						contacts.add(contact);
+					}
+					participantCursor.close();
+				}
+				session.setLastMessage(getLastMessageForSession(sessionId));
+				sessions.add(session);
+			}
+			sessionCursor.close();
+			return sessions;
+		}
+		return null;
+	}
+
+	public OPMessage getLastMessageForSession(long sessionId) {
+		Cursor cursor = mOpenHelper.getWritableDatabase().query(
+				MessageEntry.TABLE_NAME, null,
+				MessageEntry.COLUMN_NAME_SESSION_ID + "=" + sessionId, null,
+				null, null, MessageEntry._ID, "1");
+
+		if (cursor != null) {
+			cursor.moveToFirst();
+			int senderIdIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID);
+			int messageTypeIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE);
+			int timeIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME);
+			int textIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT);
+			int messageIdIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID);
+			OPMessage message = new OPMessage(cursor.getString(senderIdIndex),
+					cursor.getString(messageTypeIndex),
+					cursor.getString(textIndex), cursor.getLong(timeIndex));
+			message.setMessageId(cursor.getString(messageIdIndex));
+			cursor.close();
+			return message;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean saveMessage(OPMessage message, long sessionId) {
 		Log.d("TODO", "OPDatastoreDelegate saveMessage " + message.getMessage()
 				+ " sessionId " + sessionId);
-		return true;
+		ContentValues values = new ContentValues();
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, message.getMessageId());
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TEXT, message.getMessage());
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TYPE,
+				message.getMessageType());
+		values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
+		values.put(MessageEntry.COLUMN_NAME_SESSION_ID, sessionId);
+
+		long rowId = mOpenHelper.getWritableDatabase().insert(
+				MessageEntry.TABLE_NAME, null, values);
+		return rowId != 0;
+	}
+
+	/**
+	 * Get all private messages with the contact. This function retrieves all
+	 * private sessions with the contact and messages associated
+	 * 
+	 * @param contactId
+	 *            stableId of the OPContact(or OPIdentityContact?)
+	 * @return
+	 */
+	@Override
+	public List<OPMessage> getMessagesWithSession(long sessionId, int max,
+			String lastMessageId) {
+		Log.d("TODO", "OPDatastoreDelegate getMessagesForContact " + sessionId);
+		Cursor cursor = mOpenHelper.getWritableDatabase().query(
+				MessageEntry.TABLE_NAME, null,
+				MessageEntry.COLUMN_NAME_SESSION_ID + "=" + sessionId, null,
+				null, null, null);
+		if (cursor != null) {
+			List<OPMessage> messages = new ArrayList<OPMessage>();
+
+			cursor.moveToFirst();
+			int senderIdIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID);
+			int messageTypeIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE);
+			int timeIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME);
+			int textIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT);
+			int messageIdIndex = cursor
+					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID);
+			while (!cursor.isAfterLast()) {
+				OPMessage message = new OPMessage(
+						cursor.getString(senderIdIndex),
+						cursor.getString(messageTypeIndex),
+						cursor.getString(textIndex), cursor.getLong(timeIndex));
+				message.setMessageId(cursor.getString(messageIdIndex));
+				messages.add(message);
+			}
+			return messages;
+		}
+		return null;
 	}
 
 	/**
@@ -507,4 +653,18 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		Log.d("TODO", "OPDatastoreDelegate getMessagesForContact " + contactId);
 		return 5;
 	}
+
+	boolean upsert(String tableName, ContentValues values, String whereClause,
+			String[] whereArgs) {
+		int updated = mOpenHelper.getWritableDatabase().update(tableName,
+				values, whereClause, whereArgs);
+		if (updated == 0) {
+			long rowId = mOpenHelper.getWritableDatabase().insert(tableName,
+					null, values);
+			return rowId != -1;
+		} else {
+			return true;
+		}
+	}
+
 }

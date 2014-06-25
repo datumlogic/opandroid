@@ -36,7 +36,10 @@ public class OPIdentity {
                                    String outLastErrorReason
                                    );
 
-	public native long getStableID();
+	public long getStableID(){
+		return getIdentityURI().hashCode();
+	}
+//	public native long getStableID();
 
 	public native boolean isDelegateAttached();
 	public native void attachDelegate(

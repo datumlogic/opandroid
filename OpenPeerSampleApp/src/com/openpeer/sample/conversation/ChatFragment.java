@@ -117,12 +117,11 @@ public class ChatFragment extends BaseFragment {
 						|| mComposeBox.getText().length() == 0) {
 					return;
 				}
-				Time time = new Time();
-				time.setToNow();
+
 				String messageId = java.util.UUID.randomUUID().toString();
 				OPMessage msg = new OPMessage(mSelfContact.getStableID(),
 						OPMessageType.TYPE_TEXT, mComposeBox.getText()
-								.toString(), time);
+								.toString(), System.currentTimeMillis());
 
 				getMessages().add(msg);
 				mMessagesAdaptor.notifyDataSetChanged();
@@ -302,10 +301,21 @@ public class ChatFragment extends BaseFragment {
 		@Override
 		public void onConversationThreadMessage(
 				OPConversationThread conversationThread, String messageID) {
-			OPMessage message = conversationThread.getMessage(messageID);
+			final OPMessage message = conversationThread.getMessage(messageID);
 			Log.d("ChatFragment", "onConversationThreadMessage = " + messageID
 					+ " full message " + message);
+			Log.d("ChatFragment", "onConversationThreadPushMessage = "
+					+ messageID + " thread " + conversationThread);
+			getActivity().runOnUiThread(new Runnable() {
 
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					mMessages.add(message);
+					mMessagesAdaptor.notifyDataSetChanged();
+				}
+
+			});
 		}
 
 		@Override
@@ -322,8 +332,19 @@ public class ChatFragment extends BaseFragment {
 		public void onConversationThreadPushMessage(
 				OPConversationThread conversationThread, String messageID,
 				OPContact contact) {
+			final OPMessage message = conversationThread.getMessage(messageID);
 			Log.d("ChatFragment", "onConversationThreadPushMessage = "
 					+ messageID + " thread " + conversationThread);
+			getActivity().runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					mMessages.add(message);
+					mMessagesAdaptor.notifyDataSetChanged();
+				}
+
+			});
 		}
 
 	}

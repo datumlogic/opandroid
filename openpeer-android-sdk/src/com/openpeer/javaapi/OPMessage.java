@@ -58,12 +58,13 @@ public class OPMessage {
 	}
 
 	public OPMessage(String senderId, String mMessageType, String message,
-			Time mTime) {
+			long sendTime) {
 		super();
 		this.mSenderId = senderId;
 		this.mMessageType = mMessageType;
 		this.mMessage = message;
-		this.mTime = mTime;
+		this.mTime = new Time();
+		mTime.set(sendTime);
 	}
 
 	public OPContact getFrom() {

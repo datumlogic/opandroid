@@ -1,13 +1,12 @@
 package com.openpeer.sample;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 
-import com.openpeer.sample.R;
-
-public class BaseFragmentActivity extends Activity {
+public class BaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +16,7 @@ public class BaseFragmentActivity extends Activity {
 	}
 
 	public Fragment setContentFragment(Fragment fragment) {
-		this.getFragmentManager().beginTransaction()
+		this.getSupportFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, fragment).commit();
 		return fragment;
 	}
@@ -25,8 +24,21 @@ public class BaseFragmentActivity extends Activity {
 	public void switchFragment(Fragment fragment) {
 		Log.d("BaseFragmentActivity", "switching fragment " + fragment
 				+ " for activity " + this);
-		this.getFragmentManager().beginTransaction()
+		this.getSupportFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, fragment).commit();
 
+	}
+
+	public void showLoginFragment() {
+		findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
+
+		this.getSupportFragmentManager().beginTransaction()
+				.replace(R.id.fragment_container, LoginFragment.newInstance())
+				.commit();
+
+	}
+
+	public void hideLoginFragment() {
+		findViewById(R.id.fragment_container).setVisibility(View.GONE);
 	}
 }

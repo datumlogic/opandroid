@@ -1,12 +1,11 @@
 package com.openpeer.javaapi;
 
-import java.util.List;
-
 import android.text.format.Time;
 
 public class OPIdentityContact extends OPRolodexContact {
 
 	private String mStableID;
+	private long userId;
 
 	private OPPeerFilePublic mPeerFilePublic;
 	private String mIdentityProofBundleEl;
@@ -17,19 +16,21 @@ public class OPIdentityContact extends OPRolodexContact {
 	private Time mLastUpdated;
 	private Time mExpires;
 
-	public OPIdentityContact setIdentityParams(String mStableID, String string,
-			String mIdentityProofBundleEl, int mPriority, int mWeight, long l,
-			long m) {
+	public OPIdentityContact setIdentityParams(String mStableID,
+			String peerFileString, String mIdentityProofBundleEl,
+			int mPriority, int mWeight, long lastUpdateTime, long expireTime,
+			long id) {
 
 		this.mStableID = mStableID;
-		this.mPeerFilePublic = new OPPeerFilePublic(string);
+		this.mPeerFilePublic = new OPPeerFilePublic(peerFileString);
 		this.mIdentityProofBundleEl = mIdentityProofBundleEl;
 		this.mPriority = mPriority;
 		this.mWeight = mWeight;
 		this.mLastUpdated = new Time();
-		mLastUpdated.set(l);
+		mLastUpdated.set(lastUpdateTime);
 		this.mExpires = new Time();
-		mExpires.set(m);
+		mExpires.set(expireTime);
+		userId = id;
 		return this;
 	}
 
@@ -105,5 +106,17 @@ public class OPIdentityContact extends OPRolodexContact {
 		return super.toString() + " identityProofBundle "
 				+ mIdentityProofBundleEl + " mStableID " + mStableID
 				+ " mExpires " + mExpires;
+	}
+
+	/**
+	 * A local ID used to identity a user, it's simply the "_ID" field in
+	 * database. A user is deemed the same if any of the follow meet: -- peerURI
+	 * -- stableID -- identityURI( TO BE DETERMINED)
+	 * 
+	 * @return
+	 */
+	public long getUserId() {
+		// TODO Auto-generated method stub
+		return userId;
 	}
 }

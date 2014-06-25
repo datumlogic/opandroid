@@ -90,10 +90,14 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	@Override
 	public void onLoginComplete() {
-		if (!this.isDetached()) {
-			((BaseFragmentActivity) getActivity())
-					.switchFragment(ContactsFragment.newInstance());
-		}
+		getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				if (!isDetached()) {
+					((BaseFragmentActivity) getActivity()).hideLoginFragment();
+				}
+			}
+		});
+
 	}
 
 	@Override
@@ -101,7 +105,6 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 		// TODO Auto-generated method stub
 
 	}
-
 	@Override
 	public void onIdentityLoginWebViewMadeVisible() {
 		mIdentityLoginWebView.setVisibility(View.VISIBLE);

@@ -128,6 +128,8 @@ public class OPDataManager {
 				case Disposition_Remove:
 					mDatastoreDelegate.deleteContact(contact.getId());
 					break;
+				case Disposition_Update:
+//					break;
 				default:
 					mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
 				}

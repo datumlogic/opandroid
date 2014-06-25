@@ -22,6 +22,9 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT);
 		db.execSQL(DatabaseContracts.SQL_CREATE_CONTACT);
 		db.execSQL(DatabaseContracts.SQL_CREATE_AVATAR);
+		db.execSQL(DatabaseContracts.SQL_CREATE_CONVERSATION_PARTICIPANT);
+		db.execSQL(DatabaseContracts.SQL_CREATE_SESSION);
+		db.execSQL(DatabaseContracts.SQL_CREATE_MESSAGES);
 	}
 
 	@Override

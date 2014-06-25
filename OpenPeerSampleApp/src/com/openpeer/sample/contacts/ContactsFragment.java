@@ -2,12 +2,11 @@ package com.openpeer.sample.contacts;
 
 import java.util.Arrays;
 import java.util.List;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -23,10 +22,10 @@ import android.widget.ListView;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
-
+import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
 
-public class ContactsFragment extends Fragment implements
+public class ContactsFragment extends BaseFragment implements
 		SwipeRefreshLayout.OnRefreshListener {
 
 	private SwipeRefreshLayout mRootLayout;
@@ -35,7 +34,7 @@ public class ContactsFragment extends Fragment implements
 	private boolean mTest;
 	private DataChangeReceiver mReceiver;
 
-	public static ContactsFragment newInstance() {
+	public static android.support.v4.app.Fragment newInstance() {
 		return new ContactsFragment();
 	}
 
@@ -80,7 +79,7 @@ public class ContactsFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		this.setHasOptionsMenu(true);
+//		this.setHasOptionsMenu(true);
 	}
 
 	@Override

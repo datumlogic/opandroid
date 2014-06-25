@@ -17,15 +17,24 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 
 /**
- * A session represents extact state of a conversation thread.Any state change of a conversation thread will cause an existing session to terminate and
- * a new session to be crated. The state change includes:
- * -- Adding/Removing a contact from the conversation thread.
+ * A session represents extact state of a conversation thread.Any state change
+ * of a conversation thread will cause an existing session to terminate and a
+ * new session to be crated. The state change includes: -- Adding/Removing a
+ * contact from the conversation thread.
  * 
  * @author brucexia
- *
+ * 
  */
 public class OPSession {
-
+	// When a new contact is added to the session, a new session is created and
+	// its parent is set to the current session.
+	// So if Alice and Bob, Eric in group chat, Alice then added Mike, a new
+	// session is created but from Alice point of view,
+	// there's only one group chat and when we construct the chat history after
+	// restart,
+	OPSession parent;
+	// A window identiti
+	private long mUniqueId;
 	private List<OPIdentityContact> mParticipants;
 	private OPConversationThread mConvThread;
 	private OPCall currentCall;
@@ -34,6 +43,7 @@ public class OPSession {
 	private List<OPMessage> mMessages;
 	Hashtable<String, OPMessage> undeliveredMessages;
 	private String lastReadMessageId;
+	private OPMessage mLastMessage;
 
 	public OPMessage addMessage(OPMessage message) {
 		mMessages.add(message);
@@ -120,6 +130,28 @@ public class OPSession {
 
 	}
 
+	public OPSession(List<OPIdentityContact> contacts) {
+		mParticipants = contacts;
+	}
+
+	public long getUniqueId() {
+		if (mUniqueId == 0) {
+			long IDs[] = new long[mParticipants.size()];
+			for (int i = 0; i < mParticipants.size() - 1; i++) {
+				OPIdentityContact contact = mParticipants.get(i);
+				IDs[i] = contact.getUserId();
+			}
+			Arrays.sort(IDs);
+			mUniqueId = IDs.hashCode();
+		}
+		return mUniqueId;
+	}
+
+	List<OPMessage> getHistoryMessages() {
+
+		return null;
+	}
+
 	public OPSession(OPIdentityContact contact) {
 		List<OPIdentityContact> selfContacts = new ArrayList<OPIdentityContact>();
 		for (OPIdentityContact ic : OPDataManager.getInstance()
@@ -137,6 +169,16 @@ public class OPSession {
 		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
 				.getInstance().getSharedAccount(), contact.getPeerFilePublic()
 				.getPeerFileString());
+		Log.d("test",
+				"OPContact peerURI "
+						+ newContact.getPeerURI()
+						+ " peerfile "
+						+ newContact.getPeerFilePublic()
+						+ " IdentityContact File identityURi "
+						+ contact.getIdentityURI()
+						+ " peerFile equal "
+						+ newContact.getPeerFilePublic().equals(
+								contact.getPeerFilePublic()));
 
 		mParticipants.add(contact);
 		info.setIdentityContacts(mParticipants);
@@ -144,6 +186,10 @@ public class OPSession {
 
 		contactProfiles.add(info);
 		mConvThread.addContacts(contactProfiles);
+	}
+
+	public OPSession() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public OPCall placeCall(OPIdentityContact contact, OPCallDelegate delegate,
@@ -164,5 +210,19 @@ public class OPSession {
 				delegate);
 		return currentCall;
 
+	}
+
+	public List<OPIdentityContact> getParticipants() {
+		// TODO Auto-generated method stub
+		return mParticipants;
+	}
+
+	public OPMessage getLastMessage() {
+		// TODO Auto-generated method stub
+		return mLastMessage;
+	}
+
+	public void setLastMessage(OPMessage lastMessage) {
+		mLastMessage = lastMessage;
 	}
 }

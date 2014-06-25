@@ -3,13 +3,13 @@ package com.openpeer.datastore;
 import java.util.Hashtable;
 import java.util.List;
 
-import com.openpeer.app.OPSession;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.model.OPHomeUser;
+import com.openpeer.app.OPSession;
 
 import android.content.Context;
 
@@ -70,13 +70,19 @@ public interface OPDatastoreDelegate {
 
 	public OPIdentityContact getIdentityContact(String identityContactId);
 
-	public List<OPMessage> getMessagesWithContact(long contactId, int max, String lastMessageId);
+	public List<OPMessage> getMessagesWithContact(long contactId, int max,
+			String lastMessageId);
 
-	public boolean saveMessage(OPMessage message, String sessionId);
+	public boolean saveMessage(OPMessage message, long sessionId);
 
 	public boolean saveSession(OPSession session);
 
 	int getNumberofUnreadMessages(String contactId);
+
+	List<OPMessage> getMessagesWithSession(long sessionId, int max,
+			String lastMessageId);
+
+	List<OPSession> getRecentSessions();
 
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);
