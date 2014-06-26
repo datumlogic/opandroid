@@ -10,14 +10,20 @@ import android.util.Log;
 import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.delegates.CallbackHandler;
+import com.openpeer.delegates.ContactsBasedMessageDispatcher;
+import com.openpeer.delegates.GroupBasedMessageDispatcher;
+import com.openpeer.delegates.MessageDispatcher;
+import com.openpeer.delegates.MessageReceiver;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
 import com.openpeer.delegates.OPCallDelegateImplementation;
 import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
+import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
@@ -144,6 +150,28 @@ public class OPHelper {
 
 	public void sendBroadcast(Intent intent) {
 		mContext.sendBroadcast(intent);
+	}
+
+	public static final int MODE_CONTACTS_BASED = 0;
+	public static final int MODE_GROUP_BASED = 1;
+
+	public void setChatGroupMode(int mode) {
+		if (mode == MODE_CONTACTS_BASED) {
+			mDispatcher = new ContactsBasedMessageDispatcher();
+		} else {
+			mDispatcher = new GroupBasedMessageDispatcher();
+
+		}
+	}
+
+	private MessageDispatcher mDispatcher;
+
+	public void dispatchMessage(OPConversationThread thread, OPMessage message) {
+		mDispatcher.dispatch(thread, message);
+	}
+	
+	public void registerMessageReceiver(MessageReceiver receiver){
+		
 	}
 
 }

@@ -62,4 +62,9 @@ public class OPConversationThread {
 				&& this.nativeClassPointer == ((OPConversationThread) o).nativeClassPointer;
 	}
 
+	public long getCurrentWindowId() {
+		// TODO Auto-generated method stub
+		return -1;
+	}
+
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import android.util.Log;
 
 import com.openpeer.delegates.CallbackHandler;
+import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPContact;
@@ -26,6 +27,7 @@ import com.openpeer.javaapi.OPMessage;
  * 
  */
 public class OPSession {
+	private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
 	// When a new contact is added to the session, a new session is created and
 	// its parent is set to the current session.
 	// So if Alice and Bob, Eric in group chat, Alice then added Mike, a new
@@ -44,6 +46,20 @@ public class OPSession {
 	Hashtable<String, OPMessage> undeliveredMessages;
 	private String lastReadMessageId;
 	private OPMessage mLastMessage;
+	private Hashtable<String, OPMessage> mMessageDeliveryQueue;
+
+	Hashtable<String, OPMessage> getMessageDeliveryQueue() {
+		if (mMessageDeliveryQueue == null) {
+			mMessageDeliveryQueue = new Hashtable<String, OPMessage>();
+		}
+		return mMessageDeliveryQueue;
+	}
+
+	public OPMessage sendMessage(OPMessage message, boolean signMessage) {
+		mConvThread.sendMessage(message.getMessageId(),
+				message.getMessageType(), message.getMessage(), signMessage);
+		return message;
+	}
 
 	public OPMessage addMessage(OPMessage message) {
 		mMessages.add(message);
@@ -106,6 +122,16 @@ public class OPSession {
 
 	}
 
+	/**
+	 * If an session existed for an incoming message and thread is null, set
+	 * thread.
+	 * 
+	 * @param thread
+	 */
+	public void setThread(OPConversationThread thread) {
+		mConvThread = thread;
+	}
+
 	public OPConversationThread getThread() {
 		return mConvThread;
 	}
@@ -134,7 +160,9 @@ public class OPSession {
 		mParticipants = contacts;
 	}
 
-	public long getUniqueId() {
+	public void getSessionId(){
+	}
+	public long getCurrentWindowId() {
 		if (mUniqueId == 0) {
 			long IDs[] = new long[mParticipants.size()];
 			for (int i = 0; i < mParticipants.size() - 1; i++) {
@@ -224,5 +252,22 @@ public class OPSession {
 
 	public void setLastMessage(OPMessage lastMessage) {
 		mLastMessage = lastMessage;
+	}
+
+	public void onMessagePushNeeded(String MessageId, OPContact contact) {
+
+	}
+
+	public void onMessageDeliverd(String MessageId, OPContact contact) {
+
+	}
+
+	public void onMessageDeliveryFailed(String MessageId, OPContact contact) {
+
+	}
+
+	public interface MessageDeliveryCallback {
+		public void onMessageDeliveryStateChange(String messageId,
+				MessageDeliveryStates state);
 	}
 }

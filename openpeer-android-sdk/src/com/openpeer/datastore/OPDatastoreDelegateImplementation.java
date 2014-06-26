@@ -490,7 +490,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		Log.d("TODO", "OPDatastoreDelegate saveSession " + session);
 		ContentValues values = new ContentValues();
 		values.put(ConversationEntry.COLUMN_NAME_SESSION_ID,
-				session.getUniqueId());
+				session.getCurrentWindowId());
 		values.put(ConversationEntry.COLUMN_NAME_LAST_READ_MSG_ID,
 				session.getReadMessageId());
 		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
@@ -574,7 +574,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public boolean saveMessage(OPMessage message, long sessionId) {
+	public boolean saveMessage(OPMessage message, long sessionId, String threadId) {
 		Log.d("TODO", "OPDatastoreDelegate saveMessage " + message.getMessage()
 				+ " sessionId " + sessionId);
 		ContentValues values = new ContentValues();

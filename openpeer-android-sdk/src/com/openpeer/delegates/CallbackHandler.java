@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.openpeer.app.OPDataManager;
+import com.openpeer.app.OPHelper;
 import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
+import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OutputAudioRoutes;
 import com.openpeer.javaapi.OPAccount;
@@ -298,6 +301,9 @@ public class CallbackHandler {
 
 	public static void onConversationThreadMessage(
 			OPConversationThread convThread, String messageID) {
+		OPMessage message = convThread.getMessage(messageID);
+		OPDataManager.getDatastoreDelegate().saveMessage(message,
+				convThread.getCurrentWindowId(), convThread.getThreadID());
 		if (conversationThreadDelegates.size() == 0
 				&& mBackgroundConversationHandler != null) {
 			mBackgroundConversationHandler.onConversationThreadMessage(
@@ -312,6 +318,7 @@ public class CallbackHandler {
 						"No conversation thread or listener available!!!");
 			}
 		}
+		OPHelper.getInstance().dispatchMessage(convThread, message);
 	}
 
 	public static void onConversationThreadMessageDeliveryStateChanged(

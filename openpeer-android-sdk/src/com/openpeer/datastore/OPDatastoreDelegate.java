@@ -73,7 +73,7 @@ public interface OPDatastoreDelegate {
 	public List<OPMessage> getMessagesWithContact(long contactId, int max,
 			String lastMessageId);
 
-	public boolean saveMessage(OPMessage message, long sessionId);
+	public boolean saveMessage(OPMessage message, long sessionId, String threadId);
 
 	public boolean saveSession(OPSession session);
 

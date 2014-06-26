@@ -35,10 +35,18 @@ public class OPSessionManager {
 
 	public OPSession getSessionOfThread(OPConversationThread thread) {
 		for (OPSession session : mSessions) {
-			if (thread.getStableID() == session.getThread().getStableID()) {
-				return session;
+			if (session.getThread()!=null){
+				if(thread.getThreadID().equals( session.getThread().getStableID()) ){
+					return session;
+				}
+			} else {
+				// Compare the participants, same participants is treated as same session
+				// if(session.hasSameParticipants()){
+				// return session;
+				// }
 			}
 		}
+		// No existing session with the thread, now lets try to find
 		return new OPSession(thread);
 	}
 
