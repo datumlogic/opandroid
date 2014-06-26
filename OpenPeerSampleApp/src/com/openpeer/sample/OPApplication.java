@@ -28,6 +28,7 @@ public class OPApplication extends Application {
 		super.onCreate();
 		instance = this;
 		OPHelper.getInstance().init(this, null);
+		OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
 	}
 
 	public static void notify(int notificationId, int notificationDrawableRes,

@@ -361,9 +361,17 @@ public class ChatFragment extends BaseFragment {
 		case R.id.menu_call:
 			makeCall(mPeerContact);
 			return true;
+		case R.id.menu_add:
+			addParticipant();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	// After adding a new participant we'll have switch chat window
+	private void addParticipant() {
+
 	}
 
 	private void makeCall(OPIdentityContact peerContact) {
