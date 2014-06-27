@@ -19,3 +19,5 @@ openpeer-android-sdk/obj
 openpeer-android-sdk/libs/armeabi
 openpeer-android-sdk/libs/armeabi-v7a
 openpeer-android-sdk/libs/x86
+*/bin
+*/gen
