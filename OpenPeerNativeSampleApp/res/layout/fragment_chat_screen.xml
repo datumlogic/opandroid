@@ -16,11 +16,19 @@
     </ListView>
 
     <Button
-        android:id="@+id/buttonSend"
+        android:id="@+id/buttonCall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/buttonSend"
+        android:text="@string/string_chat_button_call" />
+
+    <Button
+        android:id="@+id/buttonSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/editTextMessage"
         android:text="@string/string_chat_button_send" />
 
@@ -36,5 +44,23 @@
 
         <requestFocus />
     </EditText>
+
+    <LinearLayout
+        android:id="@+id/localChatViewLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_above="@+id/buttonCall"
+        android:orientation="vertical" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/remoteChatViewLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_above="@+id/localChatViewLinearLayout"
+        android:orientation="vertical" >
+
+    </LinearLayout>
 
 </RelativeLayout>

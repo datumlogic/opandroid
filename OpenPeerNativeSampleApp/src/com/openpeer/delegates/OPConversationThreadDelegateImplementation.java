@@ -9,6 +9,7 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.test.OPTestConversationThread;
+import com.openpeer.openpeernativesampleapp.LoginManager;
 
 public class OPConversationThreadDelegateImplementation extends
 		OPConversationThreadDelegate {
@@ -48,6 +49,8 @@ public class OPConversationThreadDelegateImplementation extends
 		Log.d("output","Message received type " + message.getMessageType());
 		Log.d("output","Message received time " + message.getTime().toString());
 		Log.d("output","Message received =  " + message.getMessage());
+		LoginManager.mMessages.add(message);
+		LoginManager.mChatMessageReceiver.onChatMessageReceived();
 	}
 
 	@Override
