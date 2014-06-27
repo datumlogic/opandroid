@@ -18,13 +18,9 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(DatabaseContracts.SQL_CREATE_IDENTITY);
-		db.execSQL(DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT);
-		db.execSQL(DatabaseContracts.SQL_CREATE_CONTACT);
-		db.execSQL(DatabaseContracts.SQL_CREATE_AVATAR);
-		db.execSQL(DatabaseContracts.SQL_CREATE_CONVERSATION_PARTICIPANT);
-		db.execSQL(DatabaseContracts.SQL_CREATE_SESSION);
-		db.execSQL(DatabaseContracts.SQL_CREATE_MESSAGES);
+		for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
+			db.execSQL(sql);
+		}
 	}
 
 	@Override

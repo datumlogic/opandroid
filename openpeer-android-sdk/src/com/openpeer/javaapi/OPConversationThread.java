@@ -1,6 +1,9 @@
 package com.openpeer.javaapi;
 
+import java.util.Arrays;
 import java.util.List;
+
+import com.openpeer.app.OPDataManager;
 
 import android.text.format.Time;
 
@@ -8,6 +11,7 @@ public class OPConversationThread {
 
 	private long nativeClassPointer;
 
+	// START OF JNI -- DON'T TOUCH THE SIGNATURES!!!
 	public static native String toString(MessageDeliveryStates state);
 
 	public static native String toString(ContactStates state);
@@ -55,6 +59,8 @@ public class OPConversationThread {
 	// returns false if the message ID is not known
 	public native MessageDeliveryStates getMessageDeliveryState(String messageID);
 
+	// END OF JNI
+
 	@Override
 	public boolean equals(Object o) {
 		// TODO Auto-generated method stub
@@ -62,9 +68,32 @@ public class OPConversationThread {
 				&& this.nativeClassPointer == ((OPConversationThread) o).nativeClassPointer;
 	}
 
+	long mWindowId;
+
 	public long getCurrentWindowId() {
-		// TODO Auto-generated method stub
-		return -1;
+		return mWindowId;
+	}
+
+	public void setWindowId() {
+
+		List<OPContact> contacts = getContacts();
+		long IDs[] = new long[contacts.size()];
+
+		int i = 0;
+		for (OPContact contact : getContacts()) {
+			// TODO: implement proper identity contact selection algorithm
+			OPIdentityContact iContact = this.getIdentityContactList(contact)
+					.get(0);
+			IDs[i] = OPDataManager.getInstance().getUserIdForContact(contact,
+					iContact);
+			i++;
+		}
+		Arrays.sort(IDs);
+		mWindowId = IDs.hashCode();
+	}
+
+	public long getNativeClassPtr() {
+		return nativeClassPointer;
 	}
 
 }

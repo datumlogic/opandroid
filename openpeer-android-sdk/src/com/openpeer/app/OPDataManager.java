@@ -11,13 +11,14 @@ import android.util.Log;
 import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
-import com.openpeer.openpeer_android_sdk.BuildConfig;
+import com.openpeer.sdk.BuildConfig;
 
 /**
  * Hold reference to objects that cannot be constructed from database, and
@@ -129,7 +130,7 @@ public class OPDataManager {
 					mDatastoreDelegate.deleteContact(contact.getId());
 					break;
 				case Disposition_Update:
-//					break;
+					// break;
 				default:
 					mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
 				}
@@ -203,6 +204,13 @@ public class OPDataManager {
 
 	public void refreshContacts() {
 		// TODO Auto-generated method stub
+
+	}
+
+	public long getUserIdForContact(OPContact contact,
+			OPIdentityContact iContact) {
+		// TODO implement proper userId querying and gereration
+		return iContact.getStableID().hashCode();
 
 	}
 

@@ -1,6 +1,7 @@
 package com.openpeer.delegates;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.text.format.Time;
 import android.util.Log;
@@ -261,8 +262,10 @@ public class CallbackHandler {
 	// private static OPConversationThread mConversationThread;
 	static ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate>();
 
+	static HashMap<Long, OPConversationThread> mThreads = new HashMap<Long, OPConversationThread>();
+
 	public static void onConversationThreadNew(OPConversationThread convThread) {
-		// TODO: Fix for creating new conversation thread object
+		mThreads.put(convThread.getNativeClassPtr(), convThread);
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
 			if (convThread != null && delegate != null) {
 				// mConversationThread = convThread;
@@ -276,6 +279,13 @@ public class CallbackHandler {
 
 	public static void onConversationThreadContactsChanged(
 			OPConversationThread convThread) {
+		OPConversationThread thread = mThreads.get(convThread.getNativeClassPtr());
+		if (thread == null) {
+			mThreads.put(convThread.getNativeClassPtr(), convThread);
+		} else {
+			convThread = thread;
+		}
+		convThread.setWindowId();
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
 			if (convThread != null && delegate != null) {
 				delegate.onConversationThreadContactsChanged(convThread);
@@ -301,6 +311,7 @@ public class CallbackHandler {
 
 	public static void onConversationThreadMessage(
 			OPConversationThread convThread, String messageID) {
+		convThread = mThreads.get(convThread.getNativeClassPtr());
 		OPMessage message = convThread.getMessage(messageID);
 		OPDataManager.getDatastoreDelegate().saveMessage(message,
 				convThread.getCurrentWindowId(), convThread.getThreadID());
@@ -318,6 +329,7 @@ public class CallbackHandler {
 						"No conversation thread or listener available!!!");
 			}
 		}
+
 		OPHelper.getInstance().dispatchMessage(convThread, message);
 	}
 
