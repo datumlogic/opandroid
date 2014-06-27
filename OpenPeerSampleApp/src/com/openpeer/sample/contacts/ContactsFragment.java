@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.BaseColumns;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,13 +22,21 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.openpeer.app.OPDataManager;
+import com.openpeer.datastore.DatabaseContracts;
+import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.BaseFragment;
+import android.database.Cursor;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.*;
+
 import com.openpeer.sample.R;
 
 public class ContactsFragment extends BaseFragment implements
-		SwipeRefreshLayout.OnRefreshListener {
+		SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	private SwipeRefreshLayout mRootLayout;
 	private ListView mListView;
@@ -51,13 +61,21 @@ public class ContactsFragment extends BaseFragment implements
 		return setupView(inflater.inflate(R.layout.fragment_contacts, null));
 	}
 
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onViewCreated(view, savedInstanceState);
+		getLoaderManager().initLoader(URL_LOADER, null, this);
+
+	}
+
 	private View setupView(View view) {
 		mListView = (ListView) view.findViewById(R.id.listview);
 		View emptyView = view.findViewById(R.id.empty_view);
 		mListView.setEmptyView(emptyView);
 		mRootLayout = (SwipeRefreshLayout) view;
 		mRootLayout.setOnRefreshListener(this);
-		mAdapter = new ContactsAdapter();
+		mAdapter = new ContactsAdapter(getActivity(), null);
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -79,7 +97,7 @@ public class ContactsFragment extends BaseFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-//		this.setHasOptionsMenu(true);
+		// this.setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -104,7 +122,27 @@ public class ContactsFragment extends BaseFragment implements
 
 	}
 
-	static class ContactsAdapter extends BaseAdapter {
+	static class ContactsAdapter extends CursorAdapter {
+
+		public ContactsAdapter(Context context, Cursor c) {
+			super(context, c);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public void bindView(View view, Context context, Cursor cursor) {
+			((ContactItemView) view).updateData(cursor);
+		}
+
+		@Override
+		public View newView(Context view, Cursor cursor, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			return new ContactItemView(arg2.getContext());
+		}
+
+	}
+
+	static class ContactsAdapter1 extends BaseAdapter {
 		private List<OPRolodexContact> mContacts;
 
 		@Override
@@ -144,10 +182,10 @@ public class ContactsFragment extends BaseFragment implements
 	}
 
 	void setupContent() {
-		mAdapter.mContacts = OPDataManager.getDatastoreDelegate()
-				.getContacts(0);
-
-		mAdapter.notifyDataSetChanged();
+		// mAdapter.mContacts = OPDataManager.getDatastoreDelegate()
+		// .getContacts(0);
+		//
+		// mAdapter.notifyDataSetChanged();
 	}
 
 	// fill in test data to the view
@@ -160,21 +198,21 @@ public class ContactsFragment extends BaseFragment implements
 		// IdentityProvider facebook.com Disposition Disposition_Update,
 		// com.openpeer.javaapi.OPRolodexContact@4266d098 ProfileURL Name Cindy
 		// Love identityUrl
-		mAdapter.mContacts = Arrays
-				.asList(new OPRolodexContact[] {
-						new OPRolodexContact(
-								"identity://facebook.com/100003823387069",
-								"facebook.com", "David Gotwo", null, null,
-								null, 0),
-						new OPRolodexContact(
-								"identity://facebook.com/100003952283621",
-								"facebook.com", "David Gofour", null, null,
-								null, 0),
-						new OPIdentityContact(new OPRolodexContact(
-								"identity://facebook.com/100003952283621",
-								"facebook.com", "David Gofour", null, null,
-								null, 0)) });
-		mAdapter.notifyDataSetChanged();
+		// mAdapter.mContacts = Arrays
+		// .asList(new OPRolodexContact[] {
+		// new OPRolodexContact(
+		// "identity://facebook.com/100003823387069",
+		// "facebook.com", "David Gotwo", null, null,
+		// null, 0),
+		// new OPRolodexContact(
+		// "identity://facebook.com/100003952283621",
+		// "facebook.com", "David Gofour", null, null,
+		// null, 0),
+		// new OPIdentityContact(new OPRolodexContact(
+		// "identity://facebook.com/100003952283621",
+		// "facebook.com", "David Gofour", null, null,
+		// null, 0)) });
+		// mAdapter.notifyDataSetChanged();
 	}
 
 	class DataChangeReceiver extends BroadcastReceiver {
@@ -185,4 +223,43 @@ public class ContactsFragment extends BaseFragment implements
 			setupContent();
 		}
 	}
+
+	// Begin: CursorCallback implementation
+	private static final int URL_LOADER = 0;
+	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
+			ContactsViewEntry.COLUMN_NAME_STABLE_ID };
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
+		switch (loaderID) {
+		case URL_LOADER:
+			// Returns a new CursorLoader
+			return new CursorLoader(
+					getActivity(), // Parent activity context
+					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
+																		// query
+					LIST_PROJECTION, // Projection to return
+					null, // No selection clause
+					null, // No selection arguments
+					null // Default sort order
+			);
+		default:
+			// An invalid id was passed in
+			return null;
+		}
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		mAdapter.changeCursor(cursor);
+
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		mAdapter.changeCursor(null);
+
+	}
+	// End: CursorCallback implementation
+
 }

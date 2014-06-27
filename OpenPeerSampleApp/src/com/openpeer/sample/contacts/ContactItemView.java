@@ -1,6 +1,11 @@
 package com.openpeer.sample.contacts;
 
+import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
+import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
 import android.content.Context;
+import android.database.Cursor;
+import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,6 +51,52 @@ public class ContactItemView extends RelativeLayout {
 	public ContactItemView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 		// TODO Auto-generated constructor stub
+	}
+
+	public void updateData(Cursor cursor) {
+		// BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL
+		mTitleView.setText(cursor.getString(1));
+		Picasso.with(getContext())
+				.load(cursor.getString(2))
+				.into(mImageView);
+		final String stableId = cursor.getString(3);
+		if (!TextUtils.isEmpty(stableId)) {
+			mInviteView.setVisibility(View.GONE);
+			mCallView.setVisibility(View.VISIBLE);
+			mChatView.setVisibility(View.VISIBLE);
+
+			mChatView.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Log.d("test", "Chat button tapped");
+					ConversationActivity.launchForChat(getContext(), stableId);
+				}
+			});
+
+			mCallView.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Log.d("test", "Call button tapped");
+					ConversationActivity.launchForCall(getContext(), stableId);
+				}
+			});
+			// show unread messages badge if any
+			int numberofUnreadMessages = OPDataManager.getDatastoreDelegate()
+					.getNumberofUnreadMessages(stableId);
+			if (numberofUnreadMessages > 0) {
+				mBadgeView.setText("" + numberofUnreadMessages);
+				mBadgeView.setVisibility(View.VISIBLE);
+			} else {
+				mBadgeView.setVisibility(View.GONE);
+			}
+		} else {
+			mInviteView.setVisibility(View.VISIBLE);
+
+			mCallView.setVisibility(View.GONE);
+			mChatView.setVisibility(View.GONE);
+		}
 	}
 
 	public void updateData(OPRolodexContact contact) {
