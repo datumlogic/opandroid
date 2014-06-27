@@ -4,6 +4,7 @@ import org.webrtc.videoengine.ViERenderer;
 
 import com.openpeer.openpeernativesampleapp.R;
 import com.openpeer.javaapi.CameraTypes;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
@@ -34,7 +35,7 @@ public class MediaScreen extends Activity {
 	SurfaceView myRemoteSurface = null;
 	int mediaEngineStatus = 0;
 	boolean speakerphoneEnabled = false;
-	boolean useFrontCamera = true;
+	boolean useFrontCamera = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,6 +47,11 @@ public class MediaScreen extends Activity {
 		LinearLayout remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
 		localViewLinearLayout.addView(myLocalSurface);
 		remoteViewLinearLayout.addView(myRemoteSurface);
+		
+		EditText remoteIPAddressEditText = (EditText) findViewById(R.id.remoteIPAddressEditText);
+		remoteIPAddressEditText.setText("127.0.0.1");
+		
+		OPLogger.installTelnetLogger(59999, 60, true);
 		
 		OPMediaEngine.init(getApplicationContext());
 		if (useFrontCamera)
