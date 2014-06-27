@@ -56,6 +56,7 @@ public class DatabaseContracts {
 
 		public static final String COLUMN_NAME_CONTACT_ID = "contact_id";
 		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
+		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
 		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "identity_provider";
 
@@ -68,8 +69,10 @@ public class DatabaseContracts {
 
 	public static abstract class IdentityContactEntry implements BaseColumns {
 		public static final String TABLE_NAME = "identity_contact";
+		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
+		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
-		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_identity_id";
+		public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
 		public static final String COLUMN_NAME_PEERFILE_PUBLIC = "peerfile_public";
 		public static final String COLUMN_NAME_IDENTITY_PROOF_BUNDLE = "identity_proof_bundle";
 		public static final String COLUMN_NAME_PRORITY = "priority";
@@ -100,12 +103,15 @@ public class DatabaseContracts {
 		// TODO add other columns
 	}
 
-	public static abstract class UserIdEntry implements BaseColumns {
+	public static abstract class UserEntry implements BaseColumns {
 		public static final String TABLE_NAME = "user_id";
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
 		public static final String COLUMN_NAME_PEER_URI = "peer_uri";
-		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "identity_contact_id";
 		public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
+
+		// A bit redundant informatin but to simplify querying
+		public static final String COLUMN_NAME_USER_NAME = "name";
+		public static final String COLUMN_NAME_AVTAR_URI = "avatar_uri";
 	}
 
 	public static abstract class GroupEntry implements BaseColumns {
@@ -116,7 +122,7 @@ public class DatabaseContracts {
 	}
 
 	public static abstract class ConversationWindowEntry implements BaseColumns {
-		private static final String TABLE_NAME = "conversation_window";
+		static final String TABLE_NAME = "conversation_window";
 		// Group id -- not used now
 		public static final String COLUMN_NAME_GROUP_ID = "group_id";
 		// This is window id based on participants
@@ -333,6 +339,7 @@ public class DatabaseContracts {
 			ContactEntry._ID + INTEGER_TYPE + COMMA_SEP +
 			ContactEntry.COLUMN_NAME_CONTACT_ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
 			ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + COMMA_SEP +
+			ContactEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP +
 			ContactsViewEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
 			ContactEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE + COMMA_SEP +
 			ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE + COMMA_SEP +
@@ -362,12 +369,11 @@ public class DatabaseContracts {
 			IdentityContactEntry.COLUMN_NAME_EXPIRE +
 			// ... Any other options for the CREATE command
 			" )";
-	public static final String SQL_CREATE_USER_ID = CREATE_TABLE + UserIdEntry.TABLE_NAME + " (" +
-			UserIdEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
-			UserIdEntry.COLUMN_NAME_STABLE_ID + INTEGER_TYPE + COMMA_SEP +
-			UserIdEntry.COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
-			UserIdEntry.COLUMN_NAME_IDENTITY_CONTACT_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
-			UserIdEntry.COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + " )";
+	public static final String SQL_CREATE_USER = CREATE_TABLE + UserEntry.TABLE_NAME + " (" +
+			UserEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
+			UserEntry.COLUMN_NAME_STABLE_ID + INTEGER_TYPE + COMMA_SEP +
+			UserEntry.COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
+			UserEntry.COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + " )";
 
 	public static final String SQL_CREATE_WINDOW = CREATE_TABLE + ConversationWindowEntry.TABLE_NAME + " (" +
 			BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
@@ -397,7 +403,7 @@ public class DatabaseContracts {
 			DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT,
 			DatabaseContracts.SQL_CREATE_CONTACT,
 			DatabaseContracts.SQL_CREATE_AVATAR,
-			DatabaseContracts.SQL_CREATE_USER_ID,
+			DatabaseContracts.SQL_CREATE_USER,
 
 			DatabaseContracts.SQL_CREATE_CONVERSATION_PARTICIPANT,
 			DatabaseContracts.SQL_CREATE_WINDOW,

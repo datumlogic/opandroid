@@ -1,5 +1,6 @@
 package com.openpeer.javaapi;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,6 +94,16 @@ public class OPConversationThread {
 		}
 		Arrays.sort(IDs);
 		mWindowId = IDs.hashCode();
+	}
+
+	public List<OPIdentityContact> getIdentityContacts() {
+		List<OPIdentityContact> contacts = new ArrayList<OPIdentityContact>();
+		for (OPContact contact : getContacts()) {
+			List<OPIdentityContact> iContacts = getIdentityContactList(contact);
+			if (!iContacts.isEmpty())
+				contacts.add(iContacts.get(0));
+		}
+		return contacts;
 	}
 
 	public long getNativeClassPtr() {

@@ -17,6 +17,8 @@ import android.util.Log;
 
 import static com.openpeer.datastore.DatabaseContracts.*;
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
@@ -581,22 +583,23 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public boolean saveMessage(OPMessage message, long sessionId, String threadId) {
+	public boolean saveMessage(OPMessage message, long windowId, String threadId) {
 		Log.d("TODO", "OPDatastoreDelegate saveMessage " + message.getMessage()
-				+ " sessionId " + sessionId);
+				+ " sessionId " + windowId);
 		ContentValues values = new ContentValues();
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, message.getMessageId());
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TEXT, message.getMessage());
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TYPE,
 				message.getMessageType());
 		values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
-		values.put(MessageEntry.COLUMN_NAME_WINDOW_ID, sessionId);
+		values.put(MessageEntry.COLUMN_NAME_WINDOW_ID, windowId);
 
 		long rowId = mOpenHelper.getWritableDatabase().insert(
 				MessageEntry.TABLE_NAME, null, values);
-		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + sessionId;
+		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "/window/" + windowId;
 		Log.d("test", "now notify change for " + url);
-		mContext.getContentResolver().notifyChange(Uri.parse(url), null);
+		// mContext.getContentResolver().notifyChange(Uri.parse(url), null);
+		mContext.getContentResolver().insert(Uri.parse(url), values);
 
 		return rowId != 0;
 	}
@@ -676,6 +679,12 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		} else {
 			return true;
 		}
+	}
+
+	@Override
+	public void saveWindow(OPConversationThread thread) {
+		List<OPContact> contacts = thread.getContacts();
+		ContentValues values = new ContentValues();
 	}
 
 }

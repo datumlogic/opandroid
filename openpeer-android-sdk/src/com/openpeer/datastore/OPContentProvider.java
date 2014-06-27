@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 import static com.openpeer.datastore.DatabaseContracts.*;
 
 public class OPContentProvider extends ContentProvider {
@@ -58,13 +59,19 @@ public class OPContentProvider extends ContentProvider {
 	}
 
 	private Uri insertWindow(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		long rowId = db.insert(DatabaseContracts.ConversationWindowEntry.TABLE_NAME, null, values);
+		Log.d("test", "insert result " + rowId + " for uri " + uri);
+		return uri;
 	}
 
 	private Uri inserMessage(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		long result = db.insert(DatabaseContracts.MessageEntry.TABLE_NAME, null, values);
+		Log.d("test", "result " + result + " inserting uri " + uri);
+		getContext().getContentResolver().notifyChange(uri, null);
+
+		return uri;
 	}
 
 	private Uri insertContacts(Uri uri, ContentValues values) {
@@ -137,7 +144,7 @@ public class OPContentProvider extends ContentProvider {
 	void initMatcher() {
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
-				MessageEntry.TABLE_NAME + "/#", MESSAGES);
+				MessageEntry.TABLE_NAME + "/window/#", MESSAGES);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
 				ContactsViewEntry.TABLE_NAME, CONTACTS);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,

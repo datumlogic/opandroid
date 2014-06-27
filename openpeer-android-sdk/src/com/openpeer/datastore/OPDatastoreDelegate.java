@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
@@ -83,6 +84,8 @@ public interface OPDatastoreDelegate {
 			String lastMessageId);
 
 	List<OPSession> getRecentSessions();
+
+	void saveWindow(OPConversationThread thread);
 
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);
