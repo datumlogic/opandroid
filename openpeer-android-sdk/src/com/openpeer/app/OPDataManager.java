@@ -210,8 +210,7 @@ public class OPDataManager {
 	public long getUserIdForContact(OPContact contact,
 			OPIdentityContact iContact) {
 		// TODO implement proper userId querying and gereration
-		return iContact.getStableID().hashCode();
-
+		return contact.getPeerURI().hashCode();
 	}
 
 }

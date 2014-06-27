@@ -2,6 +2,7 @@ package com.openpeer.delegates;
 
 import java.util.Hashtable;
 
+import com.openpeer.app.OPDataManager;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPMessage;
 
@@ -10,6 +11,7 @@ public class ContactsBasedMessageDispatcher implements MessageDispatcher {
 	Hashtable<Long, MessageReceiver> mReceivers = new Hashtable<Long, MessageReceiver>();
 
 	public void dispatch(OPConversationThread thread, OPMessage message) {
+		OPDataManager.getDatastoreDelegate().saveMessage(message, thread.getCurrentWindowId(), thread.getThreadID());
 		MessageReceiver receiver = mReceivers.get(thread.getCurrentWindowId());
 		if (receiver != null) {
 			receiver.onNewMessage(message);

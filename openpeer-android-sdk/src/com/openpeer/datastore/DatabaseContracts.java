@@ -162,9 +162,9 @@ public class DatabaseContracts {
 		// content://com.afzaln.restclient.provider/messages
 		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
 
-		// content://com.afzaln.restclient.provider/messages/
+		// content://com.afzaln.restclient.provider/message/
 		// for content provider insert() call
-		public static final Uri CONTENT_ID_URI_BASE = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/");
+		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
 
 		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 
@@ -207,6 +207,21 @@ public class DatabaseContracts {
 
 	public static abstract class WindowViewEntry implements BaseColumns {
 		public static final String TABLE_NAME = "windows";
+		private static final String URI_PATH_INFO = "/" + TABLE_NAME;
+
+		// Note the slash on the end of this one, as opposed to the
+		// URI_PATH_INFO, which has no slash.
+		private static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+		public static final int INFO_ID_PATH_POSITION = 1;
+
+		// content://com.openpeer.sdk.provider/messages
+		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
+
+		// content://com.openpeer.sdk.provider/messages/
+		// for content provider insert() call
+		public static final Uri CONTENT_ID_URI_BASE = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/");
+
+		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 		public static final String COLUMN_NAME_GROUP_ID = "group_id";
 		// This is window id based on participants
 		public static final String COLUMN_NAME_WINDOW_ID = "window_id";

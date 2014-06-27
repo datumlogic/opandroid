@@ -79,14 +79,17 @@ public class OPConversationThread {
 		List<OPContact> contacts = getContacts();
 		long IDs[] = new long[contacts.size()];
 
-		int i = 0;
-		for (OPContact contact : getContacts()) {
+		for (int i = 0; i < contacts.size() ; i++) {
+			OPContact contact = contacts.get(i);
 			// TODO: implement proper identity contact selection algorithm
-			OPIdentityContact iContact = this.getIdentityContactList(contact)
-					.get(0);
-			IDs[i] = OPDataManager.getInstance().getUserIdForContact(contact,
-					iContact);
-			i++;
+			List<OPIdentityContact> iContacts = this.getIdentityContactList(contact);
+			if (iContacts != null && !iContacts.isEmpty()) {
+				IDs[i] = OPDataManager.getInstance().getUserIdForContact(contact,
+						iContacts.get(0));
+			} else {
+				IDs[i] = OPDataManager.getInstance().getUserIdForContact(contact,
+						null);
+			}
 		}
 		Arrays.sort(IDs);
 		mWindowId = IDs.hashCode();

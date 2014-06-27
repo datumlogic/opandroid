@@ -38,9 +38,9 @@ public class OPConversationThreadDelegateImplementation extends
 	@Override
 	public void onConversationThreadMessage(
 			OPConversationThread conversationThread, String messageID) {
-		OPMessage message = conversationThread.getMessage(messageID);
+//		?OPMessage message = conversationThread.getMessage(messageID);
 		Log.d("output", "onConversationThreadMessage = " + conversationThread
-				+ " messageId " + messageID + " full message " + message);
+				+ " messageId " + messageID );
 
 	}
 
@@ -59,11 +59,10 @@ public class OPConversationThreadDelegateImplementation extends
 	public void onConversationThreadPushMessage(
 			OPConversationThread conversationThread, String messageID,
 			OPContact contact) {
-		OPMessage message = conversationThread.getMessage(messageID);
+		// OPMessage message = conversationThread.getMessage(messageID);
 		Log.d("output",
 				"onConversationThreadPushMessage = " + messageID + " thread "
-						+ conversationThread + " full message "
-						+ message.getMessage());
+						+ conversationThread);
 	}
 
 }

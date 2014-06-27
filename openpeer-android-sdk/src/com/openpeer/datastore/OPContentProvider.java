@@ -137,7 +137,7 @@ public class OPContentProvider extends ContentProvider {
 	void initMatcher() {
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
-				MessageEntry.TABLE_NAME, MESSAGES);
+				MessageEntry.TABLE_NAME + "/#", MESSAGES);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
 				ContactsViewEntry.TABLE_NAME, CONTACTS);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
@@ -173,6 +173,7 @@ public class OPContentProvider extends ContentProvider {
 				null, // don't filter by row groups
 				sortOrder // The sort order
 				);
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
 	}
 

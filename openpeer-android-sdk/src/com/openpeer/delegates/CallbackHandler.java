@@ -313,8 +313,7 @@ public class CallbackHandler {
 			OPConversationThread convThread, String messageID) {
 		convThread = mThreads.get(convThread.getNativeClassPtr());
 		OPMessage message = convThread.getMessage(messageID);
-		OPDataManager.getDatastoreDelegate().saveMessage(message,
-				convThread.getCurrentWindowId(), convThread.getThreadID());
+
 		if (conversationThreadDelegates.size() == 0
 				&& mBackgroundConversationHandler != null) {
 			mBackgroundConversationHandler.onConversationThreadMessage(
