@@ -7,6 +7,11 @@ public class OPMessage {
 	private String mMessageType;
 	private String mMessage;
 	private Time mTime;
+	
+	OPMessage() 
+	{
+		
+	}
 
 	public OPContact getFrom() {
 		return mFrom;

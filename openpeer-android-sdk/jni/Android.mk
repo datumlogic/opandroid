@@ -43,9 +43,21 @@ LOCAL_SRC_FILES := \
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := libacm2
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libacm2.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := libaudio_conference_mixer
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libaudio_conference_mixer.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libcpu_features
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libcpu_features.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -97,27 +109,9 @@ LOCAL_SRC_FILES := \
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := libvad
+LOCAL_MODULE := libcommon_audio_neon
 LOCAL_SRC_FILES := \
-    $(WEBRTC_LIBS_PATH)/libvad.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := libresampler
-LOCAL_SRC_FILES := \
-    $(WEBRTC_LIBS_PATH)/libresampler.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := libresampler_neon
-LOCAL_SRC_FILES := \
-    $(WEBRTC_LIBS_PATH)/libresampler_neon.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := libsignal_processing
-LOCAL_SRC_FILES := \
-    $(WEBRTC_LIBS_PATH)/libsignal_processing.a
+    $(WEBRTC_LIBS_PATH)/libcommon_audio_neon.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -163,18 +157,6 @@ LOCAL_SRC_FILES := \
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := libsignal_processing_neon
-LOCAL_SRC_FILES := \
-    $(WEBRTC_LIBS_PATH)/libsignal_processing_neon.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := libjpeg_turbo
-LOCAL_SRC_FILES := \
-    $(WEBRTC_LIBS_PATH)/libjpeg_turbo.a
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
 LOCAL_MODULE := libmedia_file
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libmedia_file.a
@@ -214,6 +196,12 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libremote_bitrate_estimator
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libremote_bitrate_estimator.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := librbe_components
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/librbe_components.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -259,24 +247,21 @@ LOCAL_SRC_FILES := \
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-ifeq ($(HOST_OS),linux)
 LOCAL_MODULE := libvoice_engine
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libvoice_engine.a
-VOICELIB := libvoice_engine
-else
-LOCAL_MODULE := libvoice_engine_core
-LOCAL_SRC_FILES := \
-    $(WEBRTC_LIBS_PATH)/libvoice_engine_core.a
-VOICELIB := libvoice_engine_core
-endif
-
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libvpx
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libvpx.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libvpx_intrinsics_neon
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libvpx_intrinsics_neon.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -313,6 +298,12 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libyuv
 LOCAL_SRC_FILES := \
     $(WEBRTC_LIBS_PATH)/libyuv.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libyuv_neon
+LOCAL_SRC_FILES := \
+    $(WEBRTC_LIBS_PATH)/libyuv_neon.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 #cryptopp
@@ -502,24 +493,23 @@ LOCAL_SRC_FILES := \
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a
-LOCAL_LDLIBS += -llog -lGLESv2 \
+LOCAL_LDLIBS += -llog -lGLESv2 -lOpenSLES \
 
 LOCAL_WHOLE_STATIC_LIBRARIES := \
-$(VOICELIB) \
+libvoice_engine \
 libaudio_conference_mixer \
 libaudio_processing_neon \
 libaudio_processing \
 libaudio_coding_module \
+libacm2 \
+libcpu_features \
 libcpu_features_android \
 libaudio_device \
 libbitrate_controller \
 libchannel_transport \
 libCNG \
 libcommon_audio \
-libvad \
-libresampler \
-libresampler_neon \
-libsignal_processing \
+libcommon_audio_neon \
 libcommon_video \
 libG711 \
 libG722 \
@@ -527,8 +517,6 @@ libiLBC \
 libisac_neon \
 libiSAC \
 libiSACFix \
-libsignal_processing_neon \
-libjpeg_turbo \
 libmedia_file \
 libNetEq \
 libNetEq4 \
@@ -536,6 +524,7 @@ libopus \
 libpaced_sender \
 libPCM16B \
 libremote_bitrate_estimator \
+librbe_components \
 librtp_rtcp \
 libsystem_wrappers \
 libvideo_capture_module \
@@ -543,14 +532,15 @@ libvideo_coding_utility \
 libvideo_engine_core \
 libvideo_processing \
 libvideo_render_module \
-\
 libvpx \
+libvpx_intrinsics_neon \
 libwebrtc_i420 \
 libwebrtc_opus \
 libwebrtc_utility \
 libwebrtc_video_coding \
 libwebrtc_vp8 \
 libyuv \
+libyuv_neon \
 libortc_android \
 libcryptopp \
 libudns_android \

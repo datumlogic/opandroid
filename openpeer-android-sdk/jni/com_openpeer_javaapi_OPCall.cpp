@@ -58,13 +58,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 	JNIEnv *jni_env = 0;
 	ICallPtr callPtr;
 
-	IConversationThreadPtr convThread = (conversationThreadMap.find(conversationThread))->second;
-	IContactPtr contact = contactMap.find(toContact)->second;
-
+	IConversationThreadPtr convThread = OpenPeerCoreManager::getConversationThreadFromList(conversationThread);
+	IContactPtr contact = OpenPeerCoreManager::getContactFromList(toContact);
 	if(convThread && contact)
 	{
 
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Placing call...");
 		callPtr = ICall::placeCall(convThread, contact ,includeAudio, includeVideo);
+
 	}
 
 	if(callPtr)

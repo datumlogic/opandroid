@@ -12,5 +12,6 @@
     <string name="title_activity_chat_screen">ChatScreen</string>
     <string name="string_chat_hint">Message</string>
     <string name="string_chat_button_send">Send</string>
+    <string name="string_chat_button_call">Call</string>
 
 </resources>

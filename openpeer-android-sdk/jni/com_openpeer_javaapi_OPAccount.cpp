@@ -361,40 +361,42 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 		//fetch List.add object
 		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
 
-		if(identityMap.size() < 1 || identityMap.size() != coreIdentities->size())
+		if (OpenPeerCoreManager::coreIdentityList.size() > 0 )
 		{
-			//fill/update map
-			for(IdentityList::iterator coreListIter = coreIdentities->begin();
-					coreListIter != coreIdentities->end(); coreListIter++)
-			{
-				//fetch List item object / OPIdentity
-				jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
-				jmethodID identityConstructorMethodID = jni_env->GetMethodID(identityClass, "<init>", "()V");
-				jobject identityObject = jni_env->NewObject(identityClass, identityConstructorMethodID);
-
-				jfieldID fid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
-				jlong identity = (jlong) (*coreListIter).get();
-				jni_env->SetLongField(identityObject, fid, identity);
-
-				//add to map for future calls
-				identityMap.insert(std::pair<jobject, IIdentityPtr>(identityObject, *coreListIter));
-				//identityMap[identityObject] = *coreListIter;
-
-				//add to return List
-				jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , identityObject);
-
-			}
+			__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Identity list was not empty, force clear!!!");
+			OpenPeerCoreManager::coreIdentityList.clear();
 		}
-		else
+		//fill/update map
+		for(IdentityList::iterator coreListIter = coreIdentities->begin();
+				coreListIter != coreIdentities->end(); coreListIter++)
 		{
-			//return known identities from map
-			for (std::map<jobject, IIdentityPtr>::iterator it = identityMap.begin();
-					it != identityMap.end(); it++)
-			{
-				jni_env->CallBooleanMethod(returnListObject,listAddMethodID , it->first);
+			//fetch List item object / OPIdentity
+			jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
+			jmethodID identityConstructorMethodID = jni_env->GetMethodID(identityClass, "<init>", "()V");
+			jobject identityObject = jni_env->NewObject(identityClass, identityConstructorMethodID);
 
-			}
+			jfieldID fid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
+			jlong identity = (jlong) (*coreListIter).get();
+			jni_env->SetLongField(identityObject, fid, identity);
+
+			//add to map for future calls
+			//identityMap.insert(std::pair<jobject, IIdentityPtr>(identityObject, *coreListIter));
+			//identityMap[identityObject] = *coreListIter;
+			OpenPeerCoreManager::coreIdentityList.push_back(*coreListIter);
+			__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Identity added = %p", (*coreListIter).get());
+
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , identityObject);
+
 		}
+		//return known identities from map
+//		for (std::map<jobject, IIdentityPtr>::iterator it = identityMap.begin();
+//				it != identityMap.end(); it++)
+//		{
+//			jni_env->CallBooleanMethod(returnListObject,listAddMethodID , it->first);
+//
+//		}
+
 	}
 	return returnListObject;
 }
@@ -436,7 +438,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
 		for( int i=0; i<listItemsCount; ++i )
 		{
 			// Call "java.util.List.get" method and get IdentParams object by index.
-			jobject identityObject = jni_env->CallObjectMethod( identitiesToRemove, listGetMethodID, i - 1 );
+			jobject identityObject = jni_env->CallObjectMethod( identitiesToRemove, listGetMethodID, i );
 			if( identityObject != NULL )
 			{
 				IIdentityPtr identity = identityMap.find(identityObject)->second;

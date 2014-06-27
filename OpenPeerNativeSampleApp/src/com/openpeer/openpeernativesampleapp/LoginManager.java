@@ -33,6 +33,7 @@ import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupDelegate;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
+import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
@@ -43,8 +44,17 @@ public class LoginManager {
 
 	public static CallbackHandler mCallbackHandler = new CallbackHandler();
 	public static Context mContext;
+	public static String mInstanceId;
+	public static String mDeviceId;
 
 	public static void LoginWithFacebook (){
+		
+		mInstanceId = java.util.UUID.randomUUID().toString();
+		mInstanceId = mInstanceId.replace("-", "");
+		
+		mDeviceId = Secure.getString(mContext.getContentResolver(),Secure.ANDROID_ID);
+		
+		Log.d("output", "instance ID = " + mInstanceId);
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
 		stackMessageQueue = OPStackMessageQueue.singleton(); 
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
@@ -52,6 +62,9 @@ public class LoginManager {
 		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 		//OPLogger.setLogLevel("openpeer_services_transport_stream", OPLogLevel.LogLevel_Insane);
 		//OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
+		String telnetLogString = mDeviceId + "-" + mInstanceId + "\n";
+		Log.d("output", "Outgoing log string = " + telnetLogString);
+		//OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true, telnetLogString);
 		OPLogger.installTelnetLogger(59999, 60, true);
 		OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
 		stack = OPStack.singleton();
@@ -102,9 +115,11 @@ public class LoginManager {
 	public static OPCacheDelegate mCacheDelegate;
 	public static OPCall mCall;
 	public static OPCallDelegate mCallDelegate;
+	public static IChatMessageReceiver mChatMessageReceiver;
 	
 	public static List<OPIdentityContact> mIdentityContacts = new ArrayList<OPIdentityContact> ();
-
+	public static List<OPMessage> mMessages = new ArrayList<OPMessage> ();
+	
 	public static void setHandlerListener(LoginHandlerInterface listener)
 	{
 		mLoginHandler=listener;
@@ -216,11 +231,10 @@ public class LoginManager {
 			jsonObject.put("openpeer/calculated/authorizated-application-id", OPStack.createAuthorizedApplicationID("com.openpeer.nativeApp", "14b2c9df6713df465d97d0736863c42964faa678", expires ));
 
 			jsonObject.put("openpeer/calculated/user-agent", "OpenPeerNativeSampleApp");
-			jsonObject.put("openpeer/calculated/device-id", Secure.getString(mContext.getContentResolver(),
-					Secure.ANDROID_ID));
+			jsonObject.put("openpeer/calculated/device-id", mDeviceId);
 			jsonObject.put("openpeer/calculated/os", android.os.Build.VERSION.RELEASE);
 			jsonObject.put("openpeer/calculated/system", android.os.Build.MODEL);
-			jsonObject.put("openpeer/calculated/instance-id", java.util.UUID.randomUUID().toString());
+			jsonObject.put("openpeer/calculated/instance-id", mInstanceId);
 			parent.put("root", jsonObject);
 			Log.d("output", parent.toString(2));
 			return parent.toString(2);

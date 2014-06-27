@@ -1,5 +1,6 @@
 package com.openpeer.javaapi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OPDownloadedRolodexContacts {
@@ -7,7 +8,7 @@ public class OPDownloadedRolodexContacts {
 	private boolean mIsSuccess;
 	private boolean mFlushAllRolodexContacts;
 	private String mVersionDownloaded;
-	private List<OPRolodexContact> mRolodexContacts;
+	private ArrayList<OPRolodexContact> mRolodexContacts;
 	
 	public boolean isSuccess() {
 		return mIsSuccess;
@@ -27,10 +28,10 @@ public class OPDownloadedRolodexContacts {
 	public void setVersionDownloaded(String mVersionDownloaded) {
 		this.mVersionDownloaded = mVersionDownloaded;
 	}
-	public List<OPRolodexContact> getRolodexContacts() {
+	public ArrayList<OPRolodexContact> getRolodexContacts() {
 		return mRolodexContacts;
 	}
-	public void setRolodexContacts(List<OPRolodexContact> mRolodexContacts) {
+	public void setRolodexContacts(ArrayList<OPRolodexContact> mRolodexContacts) {
 		this.mRolodexContacts = mRolodexContacts;
 	}
 	

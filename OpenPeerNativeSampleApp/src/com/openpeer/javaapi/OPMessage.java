@@ -8,7 +8,7 @@ public class OPMessage {
 	private String mMessage;
 	private Time mTime;
 	
-	OPMessage() 
+	public OPMessage() 
 	{
 		
 	}
