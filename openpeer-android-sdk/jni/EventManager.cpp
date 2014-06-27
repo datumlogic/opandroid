@@ -3,6 +3,8 @@
 #include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include <android/log.h>
 
+#include "OpenPeerCoreManager.h"
+
 //IStackMessageQueueDelegate implementation
 void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread()
 {
@@ -246,7 +248,7 @@ void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr
 }
 
 //IConversationThreadDelegate implementation
-void EventManager::onConversationThreadNew(IConversationThreadPtr conversationThread)
+void EventManager::onConversationThreadNew(IConversationThreadPtr conversationThreadPtr)
 {
 	jclass cls;
 	jmethodID method;
@@ -262,7 +264,12 @@ void EventManager::onConversationThreadNew(IConversationThreadPtr conversationTh
 	cls = findClass("com/openpeer/javaapi/OPConversationThread");
 	method = jni_env->GetMethodID(cls, "<init>", "()V");
 	object = jni_env->NewObject(cls, method);
-	conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThread));
+	OpenPeerCoreManager::coreConversationThreadList.push_back(conversationThreadPtr);
+	//conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThread));
+
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong convThread = (jlong) conversationThreadPtr.get();
+	jni_env->SetLongField(object, fid, convThread);
 
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
 	method = jni_env->GetStaticMethodID(cls, "onConversationThreadNew", "(Lcom/openpeer/javaapi/OPConversationThread;)V");
@@ -368,6 +375,9 @@ void EventManager::onConversationThreadMessage(
 	{
 		return;
 	}
+
+
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onConversationThreadMessage");
 
 	jclass Ctcls = findClass("com/openpeer/javaapi/OPConversationThread");
 	jmethodID ctmethod = jni_env->GetMethodID(Ctcls, "<init>", "()V");

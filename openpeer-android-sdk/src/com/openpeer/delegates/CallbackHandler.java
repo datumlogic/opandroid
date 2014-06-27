@@ -367,10 +367,6 @@ public class CallbackHandler {
 		return true;
 	}
 
-	public void unregisterConversationThreadDelegate(OPCallDelegate delegate) {
-		this.conversationThreadDelegates.remove(delegate);
-
-	}
 
 	public void unregisterConversationThreadDelegate(
 			OPConversationThreadDelegate delegate) {

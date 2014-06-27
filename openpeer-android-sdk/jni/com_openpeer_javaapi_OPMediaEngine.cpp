@@ -35,7 +35,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_init
 	if(jni_env)
 	{
 		webrtc::VoiceEngine::SetAndroidObjects(android_jvm, jni_env, context);
-		webrtc::VideoEngine::SetAndroidObjects(android_jvm, context);
+		webrtc::VideoEngine::SetAndroidObjects(android_jvm);
 	}
 }
 
@@ -68,7 +68,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
 		object = jni_env->NewObject(cls, method);
 #endif
 		mediaEnginePtr = IMediaEngine::singleton();
-
 	}
 	return object;
 

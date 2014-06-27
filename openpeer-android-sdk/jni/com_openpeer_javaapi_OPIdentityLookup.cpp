@@ -246,7 +246,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			jmethodID peerFileMethodID = jni_env->GetMethodID(peerFileCls, "<init>", "()V");
 			jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
 
-			jfieldID fid = jni_env->GetFieldID(peerFileCls, "peerFileString", "Ljava/lang/String;");
+			jfieldID fid = jni_env->GetFieldID(peerFileCls, "mPeerFileString", "Ljava/lang/String;");
 			ElementPtr peerFilePublicEl = IHelper::convertToElement(coreContact.mPeerFilePublic);
 			jstring peerFileString = jni_env->NewStringUTF(IHelper::convertToString(peerFilePublicEl).c_str());
 			//jlong peerFilePtr = (jlong) coreContact.mPeerFilePublic;
@@ -323,6 +323,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			//OPAvatar class and methods fetch
 			jclass avatarClass = findClass("com/openpeer/javaapi/OPRolodexContact$OPAvatar");
 			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "()V");
+
 			jmethodID setAvatarNameMethodID = jni_env->GetMethodID(avatarClass, "setName", "(Ljava/lang/String;)V");
 			jmethodID setAvatarURLMethodID = jni_env->GetMethodID(avatarClass, "setURL", "(Ljava/lang/String;)V");
 			jmethodID setAvatarWidthMethodID = jni_env->GetMethodID(avatarClass, "setWidth", "(I)V");

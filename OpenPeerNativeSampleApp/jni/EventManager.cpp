@@ -65,6 +65,8 @@ void EventManager::onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioRouteChanged");
+
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
 	{
@@ -88,6 +90,8 @@ void EventManager::onMediaEngineAudioSessionInterruptionBegan()
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioSessionInterruptionBegan");
+
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
 	{
@@ -109,6 +113,8 @@ void EventManager::onMediaEngineAudioSessionInterruptionEnded()
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioSessionInterruptionEnded");
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
@@ -253,6 +259,7 @@ void EventManager::onConversationThreadNew(IConversationThreadPtr conversationTh
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onConversationThreadNew");
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
@@ -287,6 +294,7 @@ void EventManager::onConversationThreadContactsChanged(IConversationThreadPtr co
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onConversationThreadContactsChanged");
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
@@ -324,6 +332,8 @@ void EventManager::onConversationThreadContactStateChanged(
 	jobject convThreadObject;
 	jobject contactObject;
 	JNIEnv *jni_env = 0;
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onConversationThreadContactStateChanged");
+
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
@@ -449,6 +459,8 @@ void EventManager::onConversationThreadPushMessage(
 	jobject contactObject;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onConversationThreadPushMessage");
+
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
 	if (attach_result < 0 || jni_env == 0)
 	{
@@ -492,18 +504,19 @@ void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onCallStateChanged state = %d", (jint)state);
 
-	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0)
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
 	{
 		return;
 	}
 	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onCallStateChanged", "(I)V");
-	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
+	method = jni_env->GetStaticMethodID(callbackClass, "onCallStateChanged", "(I)V");
+	jni_env->CallStaticVoidMethod(callbackClass, method, (jint) state);
 
-	if (gEnv->ExceptionCheck()) {
-		gEnv->ExceptionDescribe();
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
 	}
 
 	android_jvm->DetachCurrentThread();

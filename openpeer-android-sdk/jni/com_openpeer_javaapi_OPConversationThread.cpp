@@ -186,7 +186,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 				coreIdentityContact.mName = jni_env->GetStringUTFChars(name, NULL);
 
 				jclass cls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
-				jfieldID fid = jni_env->GetFieldID(cls, "peerFileString", "Ljava/lang/String;");
+
+				jfieldID fid = jni_env->GetFieldID(cls, "mPeerFileString", "Ljava/lang/String;");
 				jstring peerFileString = (jstring) jni_env->GetObjectField(peerFilePublic, fid);
 				String corePeerFileString = jni_env->GetStringUTFChars(peerFileString, NULL);
 				ElementPtr peerFilePublicEl = IHelper::createElement(corePeerFileString);
@@ -232,6 +233,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 //				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mName %s ", coreIdentityContact.mName.c_str());
 //				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "disposition %d ", coreIdentityContact.mDisposition);
 
+
 				//add core identity contacts to list
 				coreIdentityContacts.push_front(coreIdentityContact);
 
@@ -258,7 +260,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 					"CorePtr raw = %p, ptr as long = %Lu",conversationThreadPtr.get(), convThread);
 
 			OpenPeerCoreManager::coreConversationThreadList.push_back(conversationThreadPtr);
-			conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThreadPtr));
+
+			//conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThreadPtr));
 
 		}
 	}
@@ -910,7 +913,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 
 				//FETCH METHODS TO GET INFO FROM JAVA
 				//Fetch setFrom method from OPMessage class
-				jmethodID setFromMethodID = jni_env->GetMethodID( messageClass, "setFrom", "(Lcom/openpeer/javaapi/OPPeerFilePublic;)V" );
+				jmethodID setFromMethodID = jni_env->GetMethodID( messageClass, "setFrom", "(Lcom/openpeer/javaapi/OPContact;)V" );
 				//Fetch setMessageType method from OPMessage class
 				jmethodID setMessageTypeMethodID = jni_env->GetMethodID( messageClass, "setMessageType", "(Ljava/lang/String;)V" );
 				//Fetch setMessage method from OPMessage class
@@ -919,15 +922,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 				jmethodID setTimeMethodID = jni_env->GetMethodID( messageClass, "setTime", "(Landroid/text/format/Time;)V" );
 
 				//Convert parameter and call setFrom method on return object
-				jobject from;
-				for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
-				{
-					if (iter->second == outFrom)
-					{
-						from = iter->first;
-						break;
-					}
-				}
+				jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+				jmethodID contactConstructorMethodID = jni_env->GetMethodID(contactClass, "<init>", "()V");
+				jobject from = jni_env->NewObject(contactClass, contactConstructorMethodID);
+
+				jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+				jlong contact = (jlong) outFrom.get();
+				jni_env->SetLongField(from, fid, contact);
+
+
 				jni_env->CallVoidMethod( messageObject, setFromMethodID, from );
 
 				//Convert parameter and call setMessageType method on return object
