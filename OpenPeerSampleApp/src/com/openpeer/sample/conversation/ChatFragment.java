@@ -3,7 +3,15 @@ package com.openpeer.sample.conversation;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +28,8 @@ import android.widget.Toast;
 
 import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPSessionManager;
+import com.openpeer.datastore.DatabaseContracts;
+import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
@@ -35,19 +45,20 @@ import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
 import com.squareup.picasso.Picasso;
 
-public class ChatFragment extends BaseFragment {
+public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
 	private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
 
 	private ListView mMessagesList;
 	private TextView mComposeBox;
 	private View mSendButton;
-	private MessagesAdaptor mMessagesAdaptor;
+	private MessagesAdaptor mAdapter;
 	private List<OPMessage> mMessages;
 
 	private OPIdentityContact mPeerContact, mSelfContact;
 	private OPConversationThread mConvThread;
 	private ConversationThreadDelegate mConvThreadDelegate;
+	private Uri mWindowId;
 
 	public static ChatFragment newInstance(String peerContactId) {
 		ChatFragment fragment = new ChatFragment();
@@ -102,8 +113,8 @@ public class ChatFragment extends BaseFragment {
 
 	View setupView(View view) {
 		mMessagesList = (ListView) view.findViewById(R.id.listview);
-		mMessagesAdaptor = new MessagesAdaptor();
-		mMessagesList.setAdapter(mMessagesAdaptor);
+		mAdapter = new MessagesAdaptor(getActivity(), null);
+		mMessagesList.setAdapter(mAdapter);
 		View layout = view.findViewById(R.id.layout_compose);
 		mComposeBox = (TextView) layout.findViewById(R.id.text);
 		mSendButton = layout.findViewById(R.id.send);
@@ -122,9 +133,12 @@ public class ChatFragment extends BaseFragment {
 				OPMessage msg = new OPMessage(mSelfContact.getStableID(),
 						OPMessageType.TYPE_TEXT, mComposeBox.getText()
 								.toString(), System.currentTimeMillis());
+				msg.setMessageId(messageId);
+				// TODO: create a util function in proper place
+				OPDataManager.getDatastoreDelegate().saveMessage(msg, mConvThread.getCurrentWindowId(), mConvThread.getThreadID());
 
 				getMessages().add(msg);
-				mMessagesAdaptor.notifyDataSetChanged();
+				mAdapter.notifyDataSetChanged();
 				mComposeBox.setText("");
 
 				mConvThread.sendMessage(messageId,
@@ -143,7 +157,87 @@ public class ChatFragment extends BaseFragment {
 		return mMessages;
 	}
 
-	class MessagesAdaptor extends BaseAdapter {
+	class MessagesAdaptor extends CursorAdapter {
+
+		public MessagesAdaptor(Context context, Cursor c) {
+			super(context, c);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return super.getItem(position);
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			// TODO Auto-generated method stub
+			return super.getItemViewType(position);
+		}
+
+		@Override
+		public int getViewTypeCount() {
+			// TODO Auto-generated method stub
+			return super.getViewTypeCount();
+		}
+
+		@Override
+		public void bindView(View view, Context context, Cursor cursor) {
+		}
+
+		@Override
+		public View newView(Context context, Cursor cursor, ViewGroup arg2) {
+			int viewType = 0;
+			View view = null;
+			switch (viewType) {
+			case VIEWTYPE_SELF_MESSAGE_VIEW:
+				view = View.inflate(getActivity(),
+						R.layout.item_message_self, null);
+				break;
+			case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
+				view = View.inflate(getActivity(),
+						R.layout.item_message_peer, null);
+
+				break;
+			}
+			ViewHolder viewHolder = new ViewHolder(view, viewType);
+			view.setTag(viewHolder);
+			return view;
+		}
+	}
+
+	class ViewHolder {
+		ImageView avatarView;
+		TextView text;
+		int viewType;
+
+		public ViewHolder(View view, int viewType) {
+			avatarView = (ImageView) view.findViewById(R.id.avatar);
+			text = (TextView) view.findViewById(R.id.message);
+			this.viewType = viewType;
+		}
+
+		void update(OPMessage data) {
+			switch (viewType) {
+			case VIEWTYPE_SELF_MESSAGE_VIEW:
+				Picasso.with(getActivity())
+						.load(mSelfContact.getDefaultAvatarUrl())
+						.into(avatarView);
+				break;
+			case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
+				Picasso.with(getActivity())
+						.load(mPeerContact.getDefaultAvatarUrl())
+						.into(avatarView);
+
+				break;
+			}
+			text.setText(data.getMessage());
+
+		}
+	}
+
+	class MessagesAdaptor1 extends BaseAdapter {
 
 		@Override
 		public int getCount() {
@@ -206,35 +300,6 @@ public class ChatFragment extends BaseFragment {
 			return view;
 		}
 
-		class ViewHolder {
-			ImageView avatarView;
-			TextView text;
-			int viewType;
-
-			public ViewHolder(View view, int viewType) {
-				avatarView = (ImageView) view.findViewById(R.id.avatar);
-				text = (TextView) view.findViewById(R.id.message);
-				this.viewType = viewType;
-			}
-
-			void update(OPMessage data) {
-				switch (viewType) {
-				case VIEWTYPE_SELF_MESSAGE_VIEW:
-					Picasso.with(getActivity())
-							.load(mSelfContact.getDefaultAvatarUrl())
-							.into(avatarView);
-					break;
-				case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-					Picasso.with(getActivity())
-							.load(mPeerContact.getDefaultAvatarUrl())
-							.into(avatarView);
-
-					break;
-				}
-				text.setText(data.getMessage());
-
-			}
-		}
 	}
 
 	void setupChat() {
@@ -301,9 +366,9 @@ public class ChatFragment extends BaseFragment {
 		@Override
 		public void onConversationThreadMessage(
 				OPConversationThread conversationThread, String messageID) {
-			final OPMessage message = conversationThread.getMessage(messageID);
-			Log.d("ChatFragment", "onConversationThreadMessage = " + messageID
-					+ " full message " + message);
+			// final OPMessage message =
+			// conversationThread.getMessage(messageID);
+
 			Log.d("ChatFragment", "onConversationThreadPushMessage = "
 					+ messageID + " thread " + conversationThread);
 			getActivity().runOnUiThread(new Runnable() {
@@ -311,8 +376,7 @@ public class ChatFragment extends BaseFragment {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					mMessages.add(message);
-					mMessagesAdaptor.notifyDataSetChanged();
+
 				}
 
 			});
@@ -332,7 +396,6 @@ public class ChatFragment extends BaseFragment {
 		public void onConversationThreadPushMessage(
 				OPConversationThread conversationThread, String messageID,
 				OPContact contact) {
-			final OPMessage message = conversationThread.getMessage(messageID);
 			Log.d("ChatFragment", "onConversationThreadPushMessage = "
 					+ messageID + " thread " + conversationThread);
 			getActivity().runOnUiThread(new Runnable() {
@@ -340,8 +403,6 @@ public class ChatFragment extends BaseFragment {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					mMessages.add(message);
-					mMessagesAdaptor.notifyDataSetChanged();
 				}
 
 			});
@@ -378,5 +439,47 @@ public class ChatFragment extends BaseFragment {
 		Toast.makeText(getActivity(),
 				"makeCall to be implmented" + peerContact, Toast.LENGTH_LONG);
 	}
+
+	// Begin: CursorCallback implementation
+	private static final int URL_LOADER = 0;
+	static final String LIST_PROJECTION[] = { BaseColumns._ID,
+			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
+			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
+			WindowViewEntry.COLUMN_NAME_IDENTITY_ID,
+			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
+		switch (loaderID) {
+		case URL_LOADER:
+			// Returns a new CursorLoader
+			return new CursorLoader(
+					getActivity(), // Parent activity context
+					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + mWindowId), // Table
+																								// to
+					// query
+					LIST_PROJECTION, // Projection to return
+					null, // No selection clause
+					null, // No selection arguments
+					null // Default sort order
+			);
+		default:
+			// An invalid id was passed in
+			return null;
+		}
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		mAdapter.changeCursor(cursor);
+
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		mAdapter.changeCursor(null);
+
+	}
+	// End: CursorCallback implementation
 
 }

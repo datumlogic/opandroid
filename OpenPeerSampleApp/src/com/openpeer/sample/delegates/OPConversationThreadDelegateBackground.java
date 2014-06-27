@@ -42,20 +42,20 @@ public class OPConversationThreadDelegateBackground extends
 	@Override
 	public void onConversationThreadMessage(
 			OPConversationThread conversationThread, String messageID) {
-		OPMessage message = conversationThread.getMessage(messageID);
-		Log.d("output", "onConversationThreadMessage = " + conversationThread
-				+ " messageId " + messageID + " full message " + message);
-
-		// fire bar notifications if app in background
-		int notificationId = (int) conversationThread.getStableID();
-		String title = "new Messge";
-		String contentText = message.getMessage();
-		int notificationDrawableRes = R.drawable.ic_launcher;
-		Intent intent = ConversationActivity.getIntentForNotification(
-				OPApplication.getInstance(), conversationThread, messageID,
-				null);
-		OPApplication.notify(notificationId, notificationDrawableRes, title,
-				contentText, intent);
+//		OPMessage message = conversationThread.getMessage(messageID);
+//		Log.d("output", "onConversationThreadMessage = " + conversationThread
+//				+ " messageId " + messageID + " full message " + message);
+//
+//		// fire bar notifications if app in background
+//		int notificationId = (int) conversationThread.getStableID();
+//		String title = "new Messge";
+//		String contentText = message.getMessage();
+//		int notificationDrawableRes = R.drawable.ic_launcher;
+//		Intent intent = ConversationActivity.getIntentForNotification(
+//				OPApplication.getInstance(), conversationThread, messageID,
+//				null);
+//		OPApplication.notify(notificationId, notificationDrawableRes, title,
+//				contentText, intent);
 	}
 
 	@Override
@@ -73,11 +73,7 @@ public class OPConversationThreadDelegateBackground extends
 	public void onConversationThreadPushMessage(
 			OPConversationThread conversationThread, String messageID,
 			OPContact contact) {
-		OPMessage message = conversationThread.getMessage(messageID);
-		Log.d("output",
-				"onConversationThreadPushMessage = " + messageID + " thread "
-						+ conversationThread + " full message "
-						+ message.getMessage());
+
 	}
 
 }

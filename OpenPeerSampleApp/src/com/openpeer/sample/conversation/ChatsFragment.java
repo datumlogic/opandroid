@@ -1,44 +1,43 @@
 package com.openpeer.sample.conversation;
 
+import static com.openpeer.datastore.DatabaseContracts.WindowViewEntry.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.text.format.Time;
+import android.provider.BaseColumns;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPSession;
-import com.openpeer.app.OPSessionManager;
+import com.openpeer.datastore.DatabaseContracts;
+import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
-import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseFragment;
-import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
-import com.squareup.picasso.Picasso;
 
-public class ChatsFragment extends BaseFragment {
+public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-	private ChatInfoAdaptor mChatInfoAdaptor;
+	private ChatInfoAdaptor mAdapter;
 	private List<OPSession> mSessions;
 	private ListView mMessagesList;
 
@@ -89,8 +88,8 @@ public class ChatsFragment extends BaseFragment {
 
 	View setupView(View view) {
 		mMessagesList = (ListView) view.findViewById(R.id.listview);
-		mChatInfoAdaptor = new ChatInfoAdaptor();
-		mMessagesList.setAdapter(mChatInfoAdaptor);
+		mAdapter = new ChatInfoAdaptor(getActivity(), null);
+		mMessagesList.setAdapter(mAdapter);
 
 		return view;
 	}
@@ -103,45 +102,22 @@ public class ChatsFragment extends BaseFragment {
 		return mSessions;
 	}
 
-	class ChatInfoAdaptor extends BaseAdapter {
+	class ChatInfoAdaptor extends CursorAdapter {
 
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return mSessions == null ? 0 : mSessions.size();
+		public ChatInfoAdaptor(Context context, Cursor c) {
+			super(context, c);
+			// TODO Auto-generated constructor stub
 		}
 
 		@Override
-		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
-			return mSessions.get(arg0);
+		public void bindView(View view, Context context, Cursor cursor) {
+			((ChatInfoItemView) view).updateData(cursor);
 		}
 
 		@Override
-		public long getItemId(int arg0) {
+		public View newView(Context view, Cursor cursor, ViewGroup arg2) {
 			// TODO Auto-generated method stub
-			return arg0;
-		}
-
-		@Override
-		public int getViewTypeCount() {
-			// TODO Auto-generated method stub
-			return 1;
-		}
-
-		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
-			ChatInfoItemView view = null;
-			if (view == null) {
-				view = (ChatInfoItemView) View.inflate(getActivity(),
-						R.layout.item_chat_info, null);
-
-			} else {
-				view = (ChatInfoItemView) arg1;
-			}
-			view.updateData((OPSession) getItem(arg0));
-
-			return view;
+			return new ChatInfoItemView(arg2.getContext());
 		}
 	}
 
@@ -201,17 +177,16 @@ public class ChatsFragment extends BaseFragment {
 		public void onConversationThreadPushMessage(
 				OPConversationThread conversationThread, String messageID,
 				OPContact contact) {
-			final OPMessage message = conversationThread.getMessage(messageID);
 			Log.d("ChatFragment", "onConversationThreadPushMessage = "
 					+ messageID + " thread " + conversationThread);
-			getActivity().runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					mChatInfoAdaptor.notifyDataSetChanged();
-				}
-			});
+			// getActivity().runOnUiThread(new Runnable() {
+			//
+			// @Override
+			// public void run() {
+			// // TODO Auto-generated method stub
+			// mAdapter.notifyDataSetChanged();
+			// }
+			// });
 		}
 
 	}
@@ -221,5 +196,46 @@ public class ChatsFragment extends BaseFragment {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.menu_chat, menu);
 	}
+
+	// Begin: CursorCallback implementation
+	private static final int URL_LOADER = 0;
+	static final String LIST_PROJECTION[] = { BaseColumns._ID,
+			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
+			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
+			WindowViewEntry.COLUMN_NAME_IDENTITY_ID,
+			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
+		switch (loaderID) {
+		case URL_LOADER:
+			// Returns a new CursorLoader
+			return new CursorLoader(
+					getActivity(), // Parent activity context
+					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
+																	// query
+					LIST_PROJECTION, // Projection to return
+					null, // No selection clause
+					null, // No selection arguments
+					null // Default sort order
+			);
+		default:
+			// An invalid id was passed in
+			return null;
+		}
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		mAdapter.changeCursor(cursor);
+
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		mAdapter.changeCursor(null);
+
+	}
+	// End: CursorCallback implementation
 
 }

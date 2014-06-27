@@ -3,6 +3,7 @@ package com.openpeer.sample.conversation;
 import java.util.List;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +49,11 @@ public class ChatInfoItemView extends RelativeLayout {
 		// TODO Auto-generated constructor stub
 	}
 
+	public void updateData(Cursor cursor) {
+		mTitleView.setText(cursor.getString(1));
+		mLastMessageView.setText(cursor.getString(2));
+	}
+
 	public void updateData(OPSession session) {
 		// mContact = contact;
 		// if (contact.getAvatars() != null && !contact.getAvatars().isEmpty())
@@ -58,8 +64,8 @@ public class ChatInfoItemView extends RelativeLayout {
 		// }
 		mTitleView.setText(formatParticipants(session.getParticipants()));
 		OPMessage message = session.getLastMessage();
-		if(message!=null){
-		mLastMessageView.setText(message.getMessage());
+		if (message != null) {
+			mLastMessageView.setText(message.getMessage());
 		}
 
 	}
