@@ -58,7 +58,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	private OPIdentityContact mPeerContact, mSelfContact;
 	private OPConversationThread mConvThread;
 	private ConversationThreadDelegate mConvThreadDelegate;
-	private Uri mWindowId;
+	private long mWindowId;
 
 	public static ChatFragment newInstance(String peerContactId) {
 		ChatFragment fragment = new ChatFragment();
@@ -135,7 +135,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 								.toString(), System.currentTimeMillis());
 				msg.setMessageId(messageId);
 				// TODO: create a util function in proper place
-				OPDataManager.getDatastoreDelegate().saveMessage(msg, mConvThread.getCurrentWindowId(), mConvThread.getThreadID());
+				OPDataManager.getDatastoreDelegate().saveMessage(msg, mWindowId, mConvThread.getThreadID());
 
 				getMessages().add(msg);
 				mAdapter.notifyDataSetChanged();
@@ -309,6 +309,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		mConvThread = OPSessionManager.getInstance()
 				.getSessionForContact(mPeerContact).getThread();
+		mWindowId = mConvThread.getCurrentWindowId();
 
 		// List<OPIdentityContact> selfContacts = new
 		// ArrayList<OPIdentityContact>();
@@ -455,9 +456,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			// Returns a new CursorLoader
 			return new CursorLoader(
 					getActivity(), // Parent activity context
-					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + mWindowId), // Table
-																								// to
-					// query
+					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "/window/" + mWindowId),
 					LIST_PROJECTION, // Projection to return
 					null, // No selection clause
 					null, // No selection arguments

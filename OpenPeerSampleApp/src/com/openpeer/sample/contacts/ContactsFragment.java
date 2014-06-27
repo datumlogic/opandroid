@@ -219,8 +219,8 @@ public class ContactsFragment extends BaseFragment implements
 
 		@Override
 		public void onReceive(Context arg0, Intent arg1) {
-			Log.d("test", "received broadcast " + arg1.getAction());
-			setupContent();
+//			Log.d("test", "received broadcast " + arg1.getAction());
+//			setupContent();
 		}
 	}
 
