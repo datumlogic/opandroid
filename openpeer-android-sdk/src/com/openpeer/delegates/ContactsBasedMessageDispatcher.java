@@ -11,7 +11,7 @@ public class ContactsBasedMessageDispatcher implements MessageDispatcher {
 	Hashtable<Long, MessageReceiver> mReceivers = new Hashtable<Long, MessageReceiver>();
 
 	public void dispatch(OPConversationThread thread, OPMessage message) {
-		OPDataManager.getDatastoreDelegate().saveMessage(message, thread.getCurrentWindowId(), thread.getThreadID());
+//		OPDataManager.getDatastoreDelegate().saveMessage(message, thread.getCurrentWindowId(), thread.getThreadID());
 		MessageReceiver receiver = mReceivers.get(thread.getCurrentWindowId());
 		if (receiver != null) {
 			receiver.onNewMessage(message);

@@ -90,6 +90,7 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 		mMessagesList = (ListView) view.findViewById(R.id.listview);
 		mAdapter = new ChatInfoAdaptor(getActivity(), null);
 		mMessagesList.setAdapter(mAdapter);
+		getLoaderManager().initLoader(URL_LOADER, null, this);
 
 		return view;
 	}
@@ -202,7 +203,7 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	static final String LIST_PROJECTION[] = { BaseColumns._ID,
 			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
 			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
-			WindowViewEntry.COLUMN_NAME_IDENTITY_ID,
+			WindowViewEntry.COLUMN_NAME_USER_ID,
 			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
 
 	@Override

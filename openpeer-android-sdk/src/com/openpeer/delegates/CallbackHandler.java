@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPHelper;
+import com.openpeer.app.OPSessionManager;
 import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
@@ -279,6 +280,7 @@ public class CallbackHandler {
 
 	public static void onConversationThreadContactsChanged(
 			OPConversationThread convThread) {
+		OPSessionManager.getInstance().getSessionOfThread(convThread).onContactsChanged();
 		OPConversationThread thread = mThreads.get(convThread.getNativeClassPtr());
 		if (thread == null) {
 			mThreads.put(convThread.getNativeClassPtr(), convThread);
@@ -329,7 +331,8 @@ public class CallbackHandler {
 			}
 		}
 
-		OPHelper.getInstance().dispatchMessage(convThread, message);
+		Log.d("test", "received message " + message);
+		OPSessionManager.getInstance().getSessionOfThread(convThread).onMessageReceived(message);
 	}
 
 	public static void onConversationThreadMessageDeliveryStateChanged(
@@ -384,7 +387,6 @@ public class CallbackHandler {
 
 		return true;
 	}
-
 
 	public void unregisterConversationThreadDelegate(
 			OPConversationThreadDelegate delegate) {

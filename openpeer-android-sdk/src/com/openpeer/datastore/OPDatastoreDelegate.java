@@ -1,16 +1,15 @@
 package com.openpeer.datastore;
 
-import java.util.Hashtable;
 import java.util.List;
 
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.model.OPHomeUser;
 import com.openpeer.app.OPSession;
+import com.openpeer.app.OPUser;
 
 import android.content.Context;
 
@@ -67,7 +66,7 @@ public interface OPDatastoreDelegate {
 
 	boolean flushContactsForIdentity(long id);
 
-	public Hashtable<Long, OPIdentityContact> getSelfIdentityContacts();
+	public List<OPIdentityContact> getSelfIdentityContacts();
 
 	public OPIdentityContact getIdentityContact(String identityContactId);
 
@@ -85,7 +84,11 @@ public interface OPDatastoreDelegate {
 
 	List<OPSession> getRecentSessions();
 
-	void saveWindow(OPConversationThread thread);
+	void saveWindow(long windowId, List<OPUser> userList);
+
+	public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long stableID);
+
+	void saveUser(OPUser user);
 
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);

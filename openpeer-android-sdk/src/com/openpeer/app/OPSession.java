@@ -1,10 +1,12 @@
 package com.openpeer.app;
 
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.os.Bundle;
 import android.util.Log;
 
 import com.openpeer.delegates.CallbackHandler;
@@ -26,8 +28,7 @@ import com.openpeer.javaapi.OPMessage;
  * @author brucexia
  * 
  */
-public class OPSession {
-	private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
+public class OPSession extends Observable {
 	// When a new contact is added to the session, a new session is created and
 	// its parent is set to the current session.
 	// So if Alice and Bob, Eric in group chat, Alice then added Mike, a new
@@ -35,9 +36,7 @@ public class OPSession {
 	// there's only one group chat and when we construct the chat history after
 	// restart,
 	OPSession parent;
-	// A window identiti
-	private long mUniqueId;
-	private List<OPIdentityContact> mParticipants;
+	private List<OPUser> mParticipants = new ArrayList<OPUser>();
 	private OPConversationThread mConvThread;
 	private OPCall currentCall;
 
@@ -47,6 +46,7 @@ public class OPSession {
 	private String lastReadMessageId;
 	private OPMessage mLastMessage;
 	private Hashtable<String, OPMessage> mMessageDeliveryQueue;
+	long mCurrentWindowId;
 
 	Hashtable<String, OPMessage> getMessageDeliveryQueue() {
 		if (mMessageDeliveryQueue == null) {
@@ -56,8 +56,10 @@ public class OPSession {
 	}
 
 	public OPMessage sendMessage(OPMessage message, boolean signMessage) {
+		Log.d("test", "sending messge " + message);
 		mConvThread.sendMessage(message.getMessageId(),
 				message.getMessageType(), message.getMessage(), signMessage);
+		OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
 		return message;
 	}
 
@@ -140,39 +142,43 @@ public class OPSession {
 		return null;
 	}
 
-	public boolean hasContact(OPIdentityContact contact) {
-		if (mParticipants == null)
-			return false;
-		for (OPIdentityContact oc : mParticipants) {
-			if (oc.getStableID().equals(contact.getStableID())) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// public boolean hasContact(OPIdentityContact contact) {
+	// if (mParticipants == null)
+	// return false;
+	// for (OPIdentityContact oc : mParticipants) {
+	// if (oc.getStableID().equals(contact.getStableID())) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 
 	public OPSession(OPConversationThread thread) {
 		mConvThread = thread;
-
-	}
-
-	public OPSession(List<OPIdentityContact> contacts) {
-		mParticipants = contacts;
-	}
-
-	public void getSessionId(){
-	}
-	public long getCurrentWindowId() {
-		if (mUniqueId == 0) {
-			long IDs[] = new long[mParticipants.size()];
-			for (int i = 0; i < mParticipants.size() - 1; i++) {
-				OPIdentityContact contact = mParticipants.get(i);
-				IDs[i] = contact.getUserId();
+		List<OPContact> contacts = this.mConvThread.getContacts();
+		for (OPContact contact : contacts) {
+			if (contact.isSelf()) {
+				continue;
 			}
-			Arrays.sort(IDs);
-			mUniqueId = IDs.hashCode();
+			// new contact
+			OPUser user = new OPUser(contact, mConvThread.getIdentityContactList(contact));
+			mParticipants.add(user);
+			// This function will also set the userId so don't worry
+			OPDataManager.getDatastoreDelegate().saveUser(user);
 		}
-		return mUniqueId;
+		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
+		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
+	}
+
+	// public OPSession(List<OPIdentityContact> contacts) {
+	// mParticipants = contacts;
+	// }
+
+	public void getSessionId() {
+	}
+
+	public long getCurrentWindowId() {
+		return mCurrentWindowId;
 	}
 
 	List<OPMessage> getHistoryMessages() {
@@ -180,40 +186,34 @@ public class OPSession {
 		return null;
 	}
 
-	public OPSession(OPIdentityContact contact) {
-		List<OPIdentityContact> selfContacts = new ArrayList<OPIdentityContact>();
-		for (OPIdentityContact ic : OPDataManager.getInstance()
-				.getSelfContacts().values()) {
-			selfContacts.add(ic);
-		}
+	public OPSession(List<OPUser> users) {
+		// TODO: decide if we need to keep selfcontacts in OPDataManager since
+		// we can always get them through account
 
 		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
-				.getSharedAccount(), selfContacts);
+				.getSharedAccount(), OPDataManager.getInstance()
+				.getSelfContacts());
 
-		mParticipants = new ArrayList<OPIdentityContact>();
-		List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
-		OPContactProfileInfo info = new OPContactProfileInfo();
+		mParticipants = users;
+		addContactToThread(users);
+		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
+	}
 
-		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
-				.getInstance().getSharedAccount(), contact.getPeerFilePublic()
-				.getPeerFileString());
-		Log.d("test",
-				"OPContact peerURI "
-						+ newContact.getPeerURI()
-						+ " peerfile "
-						+ newContact.getPeerFilePublic()
-						+ " IdentityContact File identityURi "
-						+ contact.getIdentityURI()
-						+ " peerFile equal "
-						+ newContact.getPeerFilePublic().equals(
-								contact.getPeerFilePublic()));
+	private void addContactToThread(List<OPUser> users) {
+		for (OPUser user : users) {
+			List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
+			OPContactProfileInfo info = new OPContactProfileInfo();
 
-		mParticipants.add(contact);
-		info.setIdentityContacts(mParticipants);
-		info.setContact(newContact);
+			OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
+					.getInstance().getSharedAccount(), user.getPreferredContact().getPeerFilePublic()
+					.getPeerFileString());
 
-		contactProfiles.add(info);
-		mConvThread.addContacts(contactProfiles);
+			info.setIdentityContacts(user.getIdentityContacts());
+			info.setContact(newContact);
+
+			contactProfiles.add(info);
+			mConvThread.addContacts(contactProfiles);
+		}
 	}
 
 	public OPSession() {
@@ -226,12 +226,7 @@ public class OPSession {
 		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
 				.getInstance().getSharedAccount(), contact.getPeerFilePublic()
 				.getPeerFileString());
-		Log.d("test",
-				"contact "
-						+ newContact
-						+ " Contacts in thread "
-						+ Arrays.deepToString(mConvThread.getContacts()
-								.toArray()));
+
 		currentCall = OPCall.placeCall(mConvThread, newContact, includeAudio,
 				includeVideo);
 		CallbackHandler.getInstance().registerCallDelegate(currentCall,
@@ -240,7 +235,7 @@ public class OPSession {
 
 	}
 
-	public List<OPIdentityContact> getParticipants() {
+	public List<OPUser> getParticipants() {
 		// TODO Auto-generated method stub
 		return mParticipants;
 	}
@@ -269,5 +264,112 @@ public class OPSession {
 	public interface MessageDeliveryCallback {
 		public void onMessageDeliveryStateChange(String messageId,
 				MessageDeliveryStates state);
+	}
+
+	boolean hasOPContact(OPContact contact) {
+		for (OPUser user : mParticipants) {
+			if (user.isSame(contact)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Find the added/deleted contacts and inform listener -- probably better to
+	 * be done in core
+	 * 
+	 * @param contacts
+	 */
+	public void onContactsChanged() {
+		boolean contactsChanged = false;
+		List<OPUser> users = new ArrayList<OPUser>();
+		List<OPContact> contacts = this.mConvThread.getContacts();
+		for (OPContact contact : contacts) {
+			if (contact.isSelf()) {
+				continue;
+			}
+			if (!hasOPContact(contact)) {
+				contactsChanged = true;
+				// new contact
+				OPUser user = new OPUser(contact, mConvThread.getIdentityContactList(contact));
+				mParticipants.add(user);
+				// This function will also set the userId so don't worry
+				OPDataManager.getDatastoreDelegate().saveUser(user);
+			}
+		}
+		if (contactsChanged) {
+			Bundle data = new Bundle();
+			notify(SessionEvent.SessionEvent_Contact_Change, data);
+		}
+	}
+
+	void notify(SessionEvent event, Bundle data) {
+		notifyObservers(new ChangeEvent(event, data));
+	}
+
+	public enum SessionEvent {
+		SessionEvent_Contact_Change, SessionEvent_Message_Delivery_Report;
+
+		SessionEvent() {
+		}
+
+	};
+
+	public static class ChangeEvent {
+
+		SessionEvent event;
+		Bundle data;
+
+		public ChangeEvent(SessionEvent event, Bundle data) {
+			super();
+			this.event = event;
+			this.data = data;
+		}
+
+		public SessionEvent getEvent() {
+			return event;
+		}
+
+		public Bundle getData() {
+			return data;
+		}
+
+	}
+
+	public boolean isForUsers(long[] userIDs) {
+		return getCurrentWindowId() == OPChatWindow.getWindowId(userIDs);
+	}
+
+	public void addParticipant(List<OPUser> users) {
+		mParticipants.addAll(users);
+		addContactToThread(users);
+		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
+		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
+	}
+
+	public void onMessageReceived(OPMessage message) {
+		Log.d("test", "thread " + mConvThread.getNativeClassPtr() + " received message " + message);
+		OPUser user = getUserByContact(message.getFrom());
+		message.setSenderId(user.getUserId());
+		OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
+	}
+
+	private OPUser getUserByContact(OPContact from) {
+		for (OPUser user : mParticipants) {
+			if (user.getPeerUri().equals(from.getPeerURI())) {
+				return user;
+			}
+		}
+		return null;
+	}
+
+	public OPUser getUserBySenderId(long senderId) {
+		for (OPUser user : mParticipants) {
+			if (user.getUserId() == senderId) {
+				return user;
+			}
+		}
+		return null;
 	}
 }

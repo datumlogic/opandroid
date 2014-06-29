@@ -1,5 +1,8 @@
 package com.openpeer.javaapi;
 
+import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
+
+import android.database.Cursor;
 import android.text.format.Time;
 
 public class OPIdentityContact extends OPRolodexContact {
@@ -118,5 +121,31 @@ public class OPIdentityContact extends OPRolodexContact {
 	public long getUserId() {
 		// TODO Auto-generated method stub
 		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public static OPIdentityContact fromCursor(Cursor cursor) {
+		OPIdentityContact contact = new OPIdentityContact(OPRolodexContact.contactFromCursor(cursor));
+		return contact
+				.setIdentityParams(
+						cursor.getString(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_STABLE_ID)),
+						cursor.getString(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC)),
+						cursor.getString(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE)),
+						cursor.getInt(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_PRORITY)),
+						cursor.getInt(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_WEIGHT)),
+						cursor.getLong(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME)),
+						cursor.getLong(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_EXPIRE)),
+						cursor.getLong(cursor
+								.getColumnIndex(IdentityContactEntry.COLUMN_NAME_USER_ID)));
 	}
 }

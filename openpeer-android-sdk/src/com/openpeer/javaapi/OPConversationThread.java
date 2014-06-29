@@ -80,7 +80,7 @@ public class OPConversationThread {
 		List<OPContact> contacts = getContacts();
 		long IDs[] = new long[contacts.size()];
 
-		for (int i = 0; i < contacts.size() ; i++) {
+		for (int i = 0; i < contacts.size(); i++) {
 			OPContact contact = contacts.get(i);
 			// TODO: implement proper identity contact selection algorithm
 			List<OPIdentityContact> iContacts = this.getIdentityContactList(contact);

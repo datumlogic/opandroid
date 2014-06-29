@@ -1,5 +1,8 @@
 package com.openpeer.javaapi;
 
+import com.openpeer.datastore.DatabaseContracts.MessageEntry;
+
+import android.database.Cursor;
 import android.text.format.Time;
 
 //Important: Don't remove the empty constructor since it's being used in jni
@@ -26,7 +29,7 @@ public class OPMessage {
 	private String mMessageType;
 	private String mMessage;
 	private Time mTime;
-	private String mSenderId;
+	private long mSenderId;
 	private String mMessageId;
 	private long readTimeInMillis;// read time in millis
 
@@ -46,25 +49,26 @@ public class OPMessage {
 		this.mMessageId = messageId;
 	}
 
-	public String getSenderId() {
+	public long getSenderId() {
 		return mSenderId;
 	}
 
-	public void setSenderId(String mSenderId) {
+	public void setSenderId(long mSenderId) {
 		this.mSenderId = mSenderId;
 	}
 
 	public OPMessage() {
 	}
 
-	public OPMessage(String senderId, String mMessageType, String message,
-			long sendTime) {
+	public OPMessage(long senderId, String mMessageType, String message,
+			long sendTime, String messageId) {
 		super();
 		this.mSenderId = senderId;
 		this.mMessageType = mMessageType;
 		this.mMessage = message;
 		this.mTime = new Time();
 		mTime.set(sendTime);
+		this.mMessageId = messageId;
 	}
 
 	public OPContact getFrom() {
@@ -99,9 +103,17 @@ public class OPMessage {
 		this.mTime = mTime;
 	}
 
+	public static OPMessage fromCursor(Cursor cursor) {
+		return new OPMessage(cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
+				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
+				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
+				cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
+				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)));
+	}
+
 	public String toString() {
 		return super.toString() + " from " + mFrom + " messageType "
-				+ mMessageType + " message " + mMessage;
+				+ mMessageType + " message " + mMessage + " id " + mMessageId + " sender id " + mSenderId;
 	}
 
 }

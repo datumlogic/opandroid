@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPIdentityContact;
 
 public class OPSessionManager {
 	List<OPSession> mSessions;
@@ -24,23 +23,15 @@ public class OPSessionManager {
 		return session;
 	}
 
-	public OPSession getSessionForContact(OPIdentityContact contact) {
-		for (OPSession session : mSessions) {
-			if (session.hasContact(contact)) {
-				return session;
-			}
-		}
-		return new OPSession(contact);
-	}
-
 	public OPSession getSessionOfThread(OPConversationThread thread) {
 		for (OPSession session : mSessions) {
-			if (session.getThread()!=null){
-				if(thread.getThreadID().equals( session.getThread().getStableID()) ){
+			if (session.getThread() != null) {
+				if (thread.getThreadID().equals(session.getThread().getThreadID())) {
 					return session;
 				}
 			} else {
-				// Compare the participants, same participants is treated as same session
+				// Compare the participants, same participants is treated as
+				// same session
 				// if(session.hasSameParticipants()){
 				// return session;
 				// }
@@ -52,5 +43,14 @@ public class OPSessionManager {
 
 	public List<OPSession> getRecentSessions() {
 		return OPDataManager.getDatastoreDelegate().getRecentSessions();
+	}
+
+	public OPSession getSessionForUsers(long[] userIDs) {
+		for (OPSession session : mSessions) {
+			if (session.isForUsers(userIDs)) {
+				return session;
+			}
+		}
+		return null;
 	}
 }

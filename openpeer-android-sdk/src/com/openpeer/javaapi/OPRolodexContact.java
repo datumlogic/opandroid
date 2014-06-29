@@ -3,6 +3,13 @@ package com.openpeer.javaapi;
 import java.util.Arrays;
 import java.util.List;
 
+import android.database.Cursor;
+import android.util.Log;
+
+import com.openpeer.datastore.DatabaseContracts.ContactEntry;
+import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
+
 public class OPRolodexContact {
 
 	public static class OPAvatar {
@@ -209,4 +216,31 @@ public class OPRolodexContact {
 				+ (mAvatars != null ? Arrays.deepToString(mAvatars.toArray())
 						: "null");
 	}
+
+	public static OPRolodexContact contactFromCursor(Cursor cursor) {
+		int identityUrlIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_URI);
+		int identityProviderIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER);
+		int nameIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_CONTACT_NAME);
+		int profileURLIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_URL);
+		int vprofileURLIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_VPROFILE_URL);
+		int assoiatedIdentityIdIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID);
+
+		OPRolodexContact contact = new OPRolodexContact(
+				cursor.getString(identityUrlIndex),
+				cursor.getString(identityProviderIndex),
+				cursor.getString(nameIndex), cursor.getString(profileURLIndex),
+				cursor.getString(vprofileURLIndex), null,
+				cursor.getLong(assoiatedIdentityIdIndex));
+
+		// contact.setAvatars(this.getAvatars(contact.getId()));
+
+		return contact;
+	}
+
 }

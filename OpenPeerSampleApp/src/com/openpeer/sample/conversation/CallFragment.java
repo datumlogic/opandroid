@@ -37,11 +37,11 @@ public class CallFragment extends BaseFragment {
 		View view = inflater.inflate(R.layout.fragment_call, null);
 
 		setupView(view);
-		OPSessionManager
-				.getInstance()
-				.getSessionForContact(mPeerContact)
-				.placeCall(mPeerContact, new OPCallDelegateImplementation(),
-						true, false);
+//		OPSessionManager
+//				.getInstance()
+//				.getSessionForContact(mPeerContact)
+//				.placeCall(mPeerContact, new OPCallDelegateImplementation(),
+//						true, false);
 		return view;
 	}
 

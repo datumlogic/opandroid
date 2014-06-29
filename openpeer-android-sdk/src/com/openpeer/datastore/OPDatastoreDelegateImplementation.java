@@ -10,22 +10,31 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.text.format.Time;
 import android.util.Log;
 
-import static com.openpeer.datastore.DatabaseContracts.*;
+import com.openpeer.app.OPDataManager;
+import com.openpeer.app.OPSession;
+import com.openpeer.app.OPUser;
+import com.openpeer.datastore.DatabaseContracts.AvatarEntry;
+import com.openpeer.datastore.DatabaseContracts.ContactEntry;
+import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.datastore.DatabaseContracts.ConversationWindowEntry;
+import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
+import com.openpeer.datastore.DatabaseContracts.IdentityEntry;
+import com.openpeer.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.datastore.DatabaseContracts.UserEntry;
+import com.openpeer.datastore.DatabaseContracts.WindowParticipantEntry;
+import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.model.OPHomeUser;
-import com.openpeer.app.OPSession;
+import com.openpeer.sdk.BuildConfig;
 
 /**
  * The data being stored in preference: -- Relogin information for account --
@@ -38,6 +47,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	private static final String PREF_DATASTORE = "model_data";
 	private static final String PREF_KEY_RELOGIN_INFO = "relogin_info";
 	private static final String PREF_KEY_HOMEUSER_STABLEID = "homeuser_stable_id";
+	private static final String TAG = OPDatastoreDelegateImplementation.class.getSimpleName();
 
 	private static OPDatastoreDelegateImplementation instance;
 	OPDatabaseHelper mOpenHelper;
@@ -90,7 +100,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public Hashtable<Long, OPIdentityContact> getSelfIdentityContacts() {
+	public List<OPIdentityContact> getSelfIdentityContacts() {
 		String columns[] = new String[] {
 				IdentityEntry.COLUMN_NAME_IDENTITY_ID,
 				IdentityEntry.COLUMN_NAME_IDENTITY_CONTACT_ID };
@@ -98,17 +108,15 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				.query(IdentityEntry.TABLE_NAME, columns, null, null, null,
 						null, null);
 		if (cursor != null) {
-			Hashtable<Long, OPIdentityContact> contacts = new Hashtable<Long, OPIdentityContact>();
+			List<OPIdentityContact> contacts = new ArrayList<OPIdentityContact>();
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
-				contacts.put(cursor.getLong(0),
+				contacts.add(
 						getIdentityContact(cursor.getString(1)));
 				cursor.moveToNext();
 			}
 			cursor.close();
-			Log.d("test",
-					"getSelfIdentityContacts "
-							+ Arrays.deepToString(contacts.values().toArray()));
+
 			return contacts;
 		}
 		return null;
@@ -250,6 +258,9 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			OPIdentityContact ic = (OPIdentityContact) contact;
 			ContentValues icValues = new ContentValues();
 
+			icValues.put(IdentityContactEntry.COLUMN_NAME_USER_ID, ic.getUserId());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_CONTACT_ID, ic.getId());
+
 			icValues.put(IdentityContactEntry.COLUMN_NAME_STABLE_ID,
 					ic.getStableID());
 			icValues.put(
@@ -272,8 +283,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 					icValues,
 					IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
 							+ "=" + identityId + " and "
-							+ IdentityContactEntry.COLUMN_NAME_STABLE_ID + "=?",
-					new String[] { ((OPIdentityContact) contact).getStableID() });
+							+ IdentityContactEntry.COLUMN_NAME_CONTACT_ID + "=" + ic.getId(),
+					null);
 
 		} else {
 			return true;
@@ -572,9 +583,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT);
 			int messageIdIndex = cursor
 					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID);
-			OPMessage message = new OPMessage(cursor.getString(senderIdIndex),
-					cursor.getString(messageTypeIndex),
-					cursor.getString(textIndex), cursor.getLong(timeIndex));
+			OPMessage message = OPMessage.fromCursor(cursor);
 			message.setMessageId(cursor.getString(messageIdIndex));
 			cursor.close();
 			return message;
@@ -594,14 +603,15 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
 		values.put(MessageEntry.COLUMN_NAME_WINDOW_ID, windowId);
 
-		long rowId = mOpenHelper.getWritableDatabase().insert(
-				MessageEntry.TABLE_NAME, null, values);
-		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "/window/" + windowId;
-		Log.d("test", "now notify change for " + url);
+		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + windowId;
 		// mContext.getContentResolver().notifyChange(Uri.parse(url), null);
-		mContext.getContentResolver().insert(Uri.parse(url), values);
-
-		return rowId != 0;
+		Uri uri = mContext.getContentResolver().insert(Uri.parse(url), values);
+		if (uri != null) {
+			Log.d("test", "now notify change for " + url);
+			mContext.getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -635,11 +645,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			int messageIdIndex = cursor
 					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID);
 			while (!cursor.isAfterLast()) {
-				OPMessage message = new OPMessage(
-						cursor.getString(senderIdIndex),
-						cursor.getString(messageTypeIndex),
-						cursor.getString(textIndex), cursor.getLong(timeIndex));
-				message.setMessageId(cursor.getString(messageIdIndex));
+				OPMessage message = OPMessage.fromCursor(cursor);
 				messages.add(message);
 			}
 			return messages;
@@ -682,9 +688,103 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public void saveWindow(OPConversationThread thread) {
-		List<OPContact> contacts = thread.getContacts();
+	public void saveWindow(long windowId, List<OPUser> userList) {
 		ContentValues values = new ContentValues();
+		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, windowId);
+		Uri uri = mContext.getContentResolver().insert(ConversationWindowEntry.CONTENT_URI, values);
+		if (uri != null) {
+			// now insert the participants
+			ContentValues contentValues[] = new ContentValues[userList.size()];
+			for (int i = 0; i < userList.size(); i++) {
+				OPUser user = userList.get(i);
+				contentValues[i] = new ContentValues();
+				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_WINDOW_ID, windowId);
+
+				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_ID, user.getUserId());
+				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_NAME, user.getName());
+				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_AVATAR, user.getAvatarUri());
+				// contentValues[i].put(ConversationWindowEntry., windowId);
+			}
+			mContext.getContentResolver().bulkInsert(WindowParticipantEntry.CONTENT_URI, contentValues);
+		}
 	}
 
+	@Override
+	public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long associatedIdentityId) {
+		for (OPIdentityContact contact : iContacts) {
+			ContentValues values = new ContentValues();
+			values.put(UserEntry.COLUMN_NAME_AVTAR_URI, contact.getDefaultAvatarUrl());
+			values.put(UserEntry.COLUMN_NAME_IDENTITY_URI, contact.getIdentityURI());
+			values.put(UserEntry.COLUMN_NAME_STABLE_ID, contact.getStableID());
+			values.put(UserEntry.COLUMN_NAME_USER_NAME, contact.getName());
+			OPContact oContact = OPContact.createFromPeerFilePublic(OPDataManager.getInstance().getSharedAccount(), contact
+					.getPeerFilePublic().getPeerFileString());
+			values.put(UserEntry.COLUMN_NAME_PEER_URI, oContact.getPeerURI());
+
+			Uri uri = mContext.getContentResolver().insert(DatabaseContracts.UserEntry.CONTENT_URI, values);
+			if (uri != null) {
+				// this is a new user
+				long userId = Long.parseLong(uri.getLastPathSegment());
+				contact.setUserId(userId);
+				saveOrUpdateContact(contact, associatedIdentityId);
+
+			} else {
+				String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
+						UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
+						UserEntry.COLUMN_NAME_IDENTITY_URI + "=?";
+				String args[] = { contact.getStableID(), oContact.getPeerURI(), contact.getIdentityURI() };
+				mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, selection, args);
+				// TODO:update contacts with userId
+			}
+			mContext.getContentResolver().notifyChange(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null);
+
+		}
+	}
+
+	/**
+	 * Save a user from incoming thread. If the use is already in database, set
+	 * the userId and update user info
+	 * 
+	 * @param user
+	 */
+	@Override
+	public void saveUser(OPUser user) {
+		long userID = -1;
+		ContentValues values = new ContentValues();
+
+		values.put(UserEntry.COLUMN_NAME_AVTAR_URI, user.getAvatarUri());
+		values.put(UserEntry.COLUMN_NAME_IDENTITY_URI, user.getIdentityUri());
+		values.put(UserEntry.COLUMN_NAME_STABLE_ID, user.getLockboxStableId());
+		values.put(UserEntry.COLUMN_NAME_USER_NAME, user.getName());
+		values.put(UserEntry.COLUMN_NAME_PEER_URI, user.getPeerUri());
+
+		String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
+				UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
+				UserEntry.COLUMN_NAME_IDENTITY_URI + "=?";
+		String args[] = { user.getLockboxStableId(), user.getPeerUri(), user.getIdentityUri() };
+		Cursor cursor = mContext.getContentResolver().query(UserEntry.CONTENT_URI, null, selection, args, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			// TODO: Compare and Update
+			cursor.moveToFirst();
+			userID = cursor.getLong(0);
+			selection = UserEntry.COLUMN_NAME_STABLE_ID + "=" + userID;
+			cursor.close();
+			int count = mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, selection, args);
+			if (BuildConfig.DEBUG)
+				Log.d(TAG, "saveUser updated " + count + " for id " + userID);
+
+		} else {
+			// Insert
+			Uri uri = mContext.getContentResolver().insert(DatabaseContracts.UserEntry.CONTENT_URI, values);
+			if (uri != null) {
+				// this is a new user
+				userID = Long.parseLong(uri.getLastPathSegment());
+				// saveOrUpdateContact(contact, associatedIdentityId);
+				Log.d(TAG, "saveUser inserted " + userID);
+
+			}
+		}
+		user.setUserId(userID);
+
+	}
 }

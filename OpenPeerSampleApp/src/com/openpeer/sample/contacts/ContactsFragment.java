@@ -1,17 +1,22 @@
 package com.openpeer.sample.contacts;
 
-import java.util.Arrays;
+import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
+import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
+
 import java.util.List;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,15 +29,8 @@ import android.widget.ListView;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.datastore.DatabaseContracts;
 import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.BaseFragment;
-import android.database.Cursor;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.*;
-
 import com.openpeer.sample.R;
 
 public class ContactsFragment extends BaseFragment implements
@@ -219,15 +217,18 @@ public class ContactsFragment extends BaseFragment implements
 
 		@Override
 		public void onReceive(Context arg0, Intent arg1) {
-//			Log.d("test", "received broadcast " + arg1.getAction());
-//			setupContent();
+			// Log.d("test", "received broadcast " + arg1.getAction());
+			// setupContent();
 		}
 	}
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
-			ContactsViewEntry.COLUMN_NAME_STABLE_ID };
+	static final String LIST_PROJECTION[] = { BaseColumns._ID,
+			COLUMN_NAME_CONTACT_NAME,
+			COLUMN_NAME_AVATAR_URL,
+			ContactsViewEntry.COLUMN_NAME_STABLE_ID,
+			ContactsViewEntry.COLUMN_NAME_USER_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {

@@ -10,7 +10,7 @@ public class OPChatWindow {
 	OPConversationThread thread;
 	List<OPIdentityContact> mParticipants;
 	long mUniqueId;
- 
+
 	public long getWindowId() {
 		if (mUniqueId == 0) {
 			long IDs[] = new long[mParticipants.size()];
@@ -22,6 +22,21 @@ public class OPChatWindow {
 			mUniqueId = IDs.hashCode();
 		}
 		return mUniqueId;
+	}
+
+	public static long getWindowId(long userIds[]) {
+		Arrays.sort(userIds);
+		return userIds.hashCode();
+	}
+
+	public static long getWindowId(List<OPUser> users) {
+		long userIds[] = new long[users.size()];
+		for (int i = 0; i < userIds.length; i++) {
+			OPUser user = users.get(i);
+			userIds[i] = user.getUserId();
+		}
+		// TODO Auto-generated method stub
+		return getWindowId(userIds);
 	}
 
 }

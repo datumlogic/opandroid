@@ -57,12 +57,12 @@ public class OPHelper {
 
 	public void enableTelnetLogging() {
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
+		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
 		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 
 		OPLogger.setLogLevel("openpeer_services_transport_stream",
-				OPLogLevel.LogLevel_Insane);
-		OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
+				OPLogLevel.LogLevel_None);
+		OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_None);
 		OPLogger.installTelnetLogger(59999, 60, true);
 		OPLogger.installFileLogger("/storage/emulated/0/HFLog1.txt", true);
 	}
@@ -169,9 +169,9 @@ public class OPHelper {
 	public void dispatchMessage(OPConversationThread thread, OPMessage message) {
 		mDispatcher.dispatch(thread, message);
 	}
-	
-	public void registerMessageReceiver(MessageReceiver receiver){
-		
+
+	public void registerMessageReceiver(MessageReceiver receiver) {
+
 	}
 
 }

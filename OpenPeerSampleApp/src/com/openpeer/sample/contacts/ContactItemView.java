@@ -60,6 +60,7 @@ public class ContactItemView extends RelativeLayout {
 				.load(cursor.getString(2))
 				.into(mImageView);
 		final String stableId = cursor.getString(3);
+		final long userId = cursor.getLong(4);
 		if (!TextUtils.isEmpty(stableId)) {
 			mInviteView.setVisibility(View.GONE);
 			mCallView.setVisibility(View.VISIBLE);
@@ -70,7 +71,8 @@ public class ContactItemView extends RelativeLayout {
 				@Override
 				public void onClick(View v) {
 					Log.d("test", "Chat button tapped");
-					ConversationActivity.launchForChat(getContext(), stableId);
+					long[] ids = { userId };
+					ConversationActivity.launchForChat(getContext(), ids);
 				}
 			});
 

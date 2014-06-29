@@ -62,11 +62,11 @@ public class ChatInfoItemView extends RelativeLayout {
 		// .load(contact.getAvatars().get(0).getURL())
 		// .into(mImageView);
 		// }
-		mTitleView.setText(formatParticipants(session.getParticipants()));
-		OPMessage message = session.getLastMessage();
-		if (message != null) {
-			mLastMessageView.setText(message.getMessage());
-		}
+//		mTitleView.setText(formatParticipants(session.getParticipants()));
+//		OPMessage message = session.getLastMessage();
+//		if (message != null) {
+//			mLastMessageView.setText(message.getMessage());
+//		}
 
 	}
 

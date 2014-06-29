@@ -36,7 +36,7 @@ public class OPDataManager {
 
 	private OPAccount mAccount;
 	private List<OPIdentity> mIdentities;
-	private Hashtable<Long, OPIdentityContact> mSelfContacts;
+	private List<OPIdentityContact> mSelfContacts;
 	private Hashtable<Long, String> downloadedIdentityContactVersions;
 	private String mReloginInfo;
 
@@ -94,16 +94,16 @@ public class OPDataManager {
 
 	public void setIdentities(List<OPIdentity> identities) {
 		mIdentities = identities;
-		mSelfContacts = new Hashtable<Long, OPIdentityContact>();
+		mSelfContacts = new ArrayList<OPIdentityContact>();
 		for (OPIdentity identity : identities) {
-			mSelfContacts.put(identity.getStableID(),
+			mSelfContacts.add(
 					identity.getSelfIdentityContact());
 		}
 		mDatastoreDelegate.saveOrUpdateIdentities(mIdentities,
 				mAccount.getStableID());
 	}
 
-	public Hashtable<Long, OPIdentityContact> getSelfContacts() {
+	public List<OPIdentityContact> getSelfContacts() {
 		return mSelfContacts;
 	}
 
@@ -189,7 +189,8 @@ public class OPDataManager {
 		Log.d("TODO",
 				"OPDataManager updateIdentityContacts "
 						+ Arrays.deepToString(iContacts.toArray()));
-		mDatastoreDelegate.saveOrUpdateContacts(iContacts,
+		// Each IdentityContact represents a user. Update user info
+		mDatastoreDelegate.saveOrUpdateUsers(iContacts,
 				mIdentity.getStableID());
 
 		notifyContactsChanged();

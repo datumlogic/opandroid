@@ -26,9 +26,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.openpeer.app.OPChatWindow;
 import com.openpeer.app.OPDataManager;
+import com.openpeer.app.OPSession;
 import com.openpeer.app.OPSessionManager;
+import com.openpeer.app.OPUser;
 import com.openpeer.datastore.DatabaseContracts;
+import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.ContactStates;
@@ -48,6 +53,7 @@ import com.squareup.picasso.Picasso;
 public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
 	private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
+	private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
 
 	private ListView mMessagesList;
 	private TextView mComposeBox;
@@ -55,10 +61,18 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	private MessagesAdaptor mAdapter;
 	private List<OPMessage> mMessages;
 
-	private OPIdentityContact mPeerContact, mSelfContact;
+	private OPIdentityContact mSelfContact;
 	private OPConversationThread mConvThread;
-	private ConversationThreadDelegate mConvThreadDelegate;
 	private long mWindowId;
+	private OPSession mSession;
+
+	public static ChatFragment newInstance(long[] userIdList) {
+		ChatFragment fragment = new ChatFragment();
+		Bundle args = new Bundle();
+		args.putLongArray(IntentData.ARG_PEER_USER_IDS, userIdList);
+		fragment.setArguments(args);
+		return fragment;
+	}
 
 	public static ChatFragment newInstance(String peerContactId) {
 		ChatFragment fragment = new ChatFragment();
@@ -78,11 +92,25 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		Bundle args = getArguments();
-		mPeerContact = OPDataManager.getDatastoreDelegate().getIdentityContact(
-				args.getString(IntentData.ARG_PEER_CONTACT_ID));
-		mSelfContact = OPDataManager.getInstance().getSelfContacts()
-				.get(mPeerContact.getAssociatedIdentityId());
-		setupChat();
+		long[] userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+		mWindowId = OPChatWindow.getWindowId(userIDs);
+		mSession = OPSessionManager.getInstance().getSessionForUsers(userIDs);
+		if (mSession == null) {
+			// this is user intiiated session
+			List<OPUser> users = new ArrayList<OPUser>();
+			for (long userId : userIDs) {
+				Cursor cursor = getActivity().getContentResolver().query(ContactsViewEntry.CONTENT_URI, null,
+						ContactsViewEntry.COLUMN_NAME_USER_ID + "=" + userId, null, null);
+				OPUser user = OPUser.fromDetailCursor(cursor);
+				users.add(user);
+			}
+			mSession = new OPSession(users);
+			OPSessionManager.getInstance().addSession(mSession);
+		}
+		// mPeerContact =
+		// OPDataManager.getDatastoreDelegate().getIdentityContact(
+		// args.getString(IntentData.ARG_PEER_CONTACT_ID));
+		mSelfContact = OPDataManager.getInstance().getSelfContacts().get(0);
 		this.setHasOptionsMenu(true);
 		// mSelfContact =
 		// OPDataManager.getDatastoreDelegate().getIdentityContact(
@@ -107,8 +135,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		CallbackHandler.getInstance().unregisterConversationThreadDelegate(
-				mConvThreadDelegate);
+
 	}
 
 	View setupView(View view) {
@@ -130,22 +157,18 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 				}
 
 				String messageId = java.util.UUID.randomUUID().toString();
-				OPMessage msg = new OPMessage(mSelfContact.getStableID(),
+				// we use 0 for home user
+				OPMessage msg = new OPMessage(0,
 						OPMessageType.TYPE_TEXT, mComposeBox.getText()
-								.toString(), System.currentTimeMillis());
-				msg.setMessageId(messageId);
-				// TODO: create a util function in proper place
-				OPDataManager.getDatastoreDelegate().saveMessage(msg, mWindowId, mConvThread.getThreadID());
+								.toString(), System.currentTimeMillis(), messageId);
 
-				getMessages().add(msg);
-				mAdapter.notifyDataSetChanged();
 				mComposeBox.setText("");
 
-				mConvThread.sendMessage(messageId,
-						OPMessage.OPMessageType.TYPE_TEXT, msg.getMessage(),
-						false);
+				mSession.sendMessage(msg, false);
 			}
 		});
+		getLoaderManager().initLoader(URL_LOADER, null, this);
+
 		return view;
 	}
 
@@ -172,18 +195,21 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		@Override
 		public int getItemViewType(int position) {
-			// TODO Auto-generated method stub
-			return super.getItemViewType(position);
+			Log.d("test", "item at " + position + getItem(position));
+			return position % 2;
+
 		}
 
 		@Override
 		public int getViewTypeCount() {
 			// TODO Auto-generated method stub
-			return super.getViewTypeCount();
+			return 2;
 		}
 
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
+			OPMessage message = OPMessage.fromCursor(cursor);
+			((ViewHolder) view.getTag()).update(message);
 		}
 
 		@Override
@@ -226,8 +252,9 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 						.into(avatarView);
 				break;
 			case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
+				OPUser sender = mSession.getUserBySenderId(data.getSenderId());
 				Picasso.with(getActivity())
-						.load(mPeerContact.getDefaultAvatarUrl())
+						.load(sender.getAvatarUri())
 						.into(avatarView);
 
 				break;
@@ -257,15 +284,15 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			return arg0;
 		}
 
-		@Override
-		public int getItemViewType(int position) {
-			if (((OPMessage) getItem(position)).getSenderId().equals(
-					mSelfContact.getStableID())) {
-				return VIEWTYPE_SELF_MESSAGE_VIEW;
-			} else {
-				return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
-			}
-		}
+		// @Override
+		// public int getItemViewType(int position) {
+		// // if (((OPMessage) getItem(position)).getSenderId().equals(
+		// // mSelfContact.getStableID())) {
+		// // return VIEWTYPE_SELF_MESSAGE_VIEW;
+		// // } else {
+		// // return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
+		// // }
+		// }
 
 		@Override
 		public int getViewTypeCount() {
@@ -302,115 +329,6 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	}
 
-	void setupChat() {
-		mConvThreadDelegate = new ConversationThreadDelegate();
-		CallbackHandler.getInstance().registerConversationThreadDelegate(
-				mConvThreadDelegate);
-
-		mConvThread = OPSessionManager.getInstance()
-				.getSessionForContact(mPeerContact).getThread();
-		mWindowId = mConvThread.getCurrentWindowId();
-
-		// List<OPIdentityContact> selfContacts = new
-		// ArrayList<OPIdentityContact>();
-		//
-		// selfContacts.add(mSelfContact);
-		//
-		// mConvThread = OPConversationThread.create(OPDataManager.getInstance()
-		// .getSharedAccount(), selfContacts);
-		//
-		// List<OPIdentityContact> callContacts = new
-		// ArrayList<OPIdentityContact>();
-		// List<OPContact> contacts = new ArrayList<OPContact>();
-		// List<OPContactProfileInfo> contactProfiles = new
-		// ArrayList<OPContactProfileInfo>();
-		// OPContactProfileInfo info = new OPContactProfileInfo();
-		//
-		// OPContact newContact =
-		// OPContact.createFromPeerFilePublic(OPDataManager
-		// .getInstance().getSharedAccount(), mPeerContact
-		// .getPeerFilePublic().getPeerFileString());
-		//
-		// callContacts.add(mPeerContact);
-		// info.setIdentityContacts(callContacts);
-		// info.setContact(newContact);
-		//
-		// contactProfiles.add(info);
-		// mConvThread.addContacts(contactProfiles);
-
-	}
-
-	class ConversationThreadDelegate extends OPConversationThreadDelegate {
-
-		@Override
-		public void onConversationThreadNew(
-				OPConversationThread conversationThread) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onConversationThreadContactsChanged(
-				OPConversationThread conversationThread) {
-			Log.d("ChatFragment", "onConversationThreadContactsChanged"
-					+ conversationThread);
-		}
-
-		@Override
-		public void onConversationThreadContactStateChanged(
-				OPConversationThread conversationThread, OPContact contact,
-				ContactStates state) {
-			Log.d("ChatFragment", "onConversationThreadContactStateChanged = "
-					+ contact + " state " + state);
-		}
-
-		@Override
-		public void onConversationThreadMessage(
-				OPConversationThread conversationThread, String messageID) {
-			// final OPMessage message =
-			// conversationThread.getMessage(messageID);
-
-			Log.d("ChatFragment", "onConversationThreadPushMessage = "
-					+ messageID + " thread " + conversationThread);
-			getActivity().runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-
-				}
-
-			});
-		}
-
-		@Override
-		public void onConversationThreadMessageDeliveryStateChanged(
-				OPConversationThread conversationThread, String messageID,
-				MessageDeliveryStates state) {
-			Log.d("ChatFragment",
-					"onConversationThreadMessageDeliveryStateChanged = "
-							+ messageID + " state " + state + " thread "
-							+ conversationThread);
-		}
-
-		@Override
-		public void onConversationThreadPushMessage(
-				OPConversationThread conversationThread, String messageID,
-				OPContact contact) {
-			Log.d("ChatFragment", "onConversationThreadPushMessage = "
-					+ messageID + " thread " + conversationThread);
-			getActivity().runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-				}
-
-			});
-		}
-
-	}
-
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
@@ -421,7 +339,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_call:
-			makeCall(mPeerContact);
+			// makeCall(mPeerContact);
 			return true;
 		case R.id.menu_add:
 			addParticipant();
@@ -444,10 +362,10 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
 	static final String LIST_PROJECTION[] = { BaseColumns._ID,
-			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
-			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
-			WindowViewEntry.COLUMN_NAME_IDENTITY_ID,
-			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
+			MessageEntry.COLUMN_NAME_MESSAGE_ID,
+			MessageEntry.COLUMN_NAME_MESSAGE_TEXT,
+			MessageEntry.COLUMN_NAME_SENDER_ID,
+			MessageEntry.COLUMN_NAME_WINDOW_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
@@ -456,7 +374,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			// Returns a new CursorLoader
 			return new CursorLoader(
 					getActivity(), // Parent activity context
-					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "/window/" + mWindowId),
+					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + mWindowId),
 					LIST_PROJECTION, // Projection to return
 					null, // No selection clause
 					null, // No selection arguments
@@ -470,6 +388,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		Log.d("test", "ChatFragment onLoadFinished" + cursor);
 		mAdapter.changeCursor(cursor);
 
 	}
