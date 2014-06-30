@@ -3,6 +3,7 @@ package com.openpeer.datastore;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by brucexia on 2014-06-03.
@@ -19,6 +20,7 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
+			Log.d("test", "create statement" + sql);
 			db.execSQL(sql);
 		}
 	}

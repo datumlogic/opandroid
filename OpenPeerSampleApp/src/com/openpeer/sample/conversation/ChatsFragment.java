@@ -217,7 +217,7 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 					getActivity(), // Parent activity context
 					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
 																	// query
-					LIST_PROJECTION, // Projection to return
+					null,//LIST_PROJECTION, // Projection to return
 					null, // No selection clause
 					null, // No selection arguments
 					null // Default sort order

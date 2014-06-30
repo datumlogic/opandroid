@@ -55,13 +55,17 @@ public class ChatInfoItemView extends RelativeLayout {
 	}
 
 	public void updateData(Cursor cursor) {
-		mTitleView.setText(cursor.getString(1));
+		mTitleView.setText(cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES)));
 		String msg = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE));
 		Long time = cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME));
 		final String idListString = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_USER_ID));
+		Log.d("test", "ChatInfo user_id " + idListString);
 		if (idListString != null) {
 			String idStrings[] = idListString.split(",");
 			final long IDs[] = new long[idStrings.length];
+			for (int i = 0; i < IDs.length; i++) {
+				IDs[i] = Long.parseLong(idStrings[i]);
+			}
 			this.setOnClickListener(new View.OnClickListener() {
 
 				@Override

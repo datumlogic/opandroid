@@ -53,6 +53,7 @@ public class OPContentProvider extends ContentProvider {
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int result = super.bulkInsert(uri, values);
 		Log.d("test", "bulkinsert " + uri + " values" + values.length + " result " + result);
+		test();
 		return result;
 	}
 
@@ -132,8 +133,7 @@ public class OPContentProvider extends ContentProvider {
 				null, // uses the default SQLite cursor
 				OPDatabaseHelper.DATABASE_VERSION);
 		initMatcher();
-		test();
-		return true;
+	return true;
 	}
 
 	@Override
@@ -310,7 +310,9 @@ public class OPContentProvider extends ContentProvider {
 			while (!cursor.isAfterLast()) {
 				Log.d("test", "window " + cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_WINDOW_ID)) + " message id " +
 						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE)) + " text " +
-						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES)));
+						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES)) +
+						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_USER_ID)) + " text "
+						);
 				cursor.moveToNext();
 			}
 			cursor.close();

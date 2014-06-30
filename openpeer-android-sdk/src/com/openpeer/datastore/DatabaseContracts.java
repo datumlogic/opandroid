@@ -279,19 +279,29 @@ public class DatabaseContracts {
 		private static final String COLUMNS = "a." + BaseColumns._ID + " as " + BaseColumns._ID + "," +
 				"a." + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + COLUMN_NAME_WINDOW_ID + "," +
 				"group_concat(" + "b." + COLUMN_NAME_USER_ID + "," + "',')" + " as " + COLUMN_NAME_USER_ID + "," +
-				"group_concat(" + "b." + COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as " + COLUMN_NAME_PARTICIPANT_NAMES + "," +
-				// "group_concat(" + "b." + ContactEntry. + "," + "',')" +
-				// " as " + COLUMN_NAME_PARTICIPANT_NAMES + "," +
+				"group_concat(" + "b." + COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as " + COLUMN_NAME_PARTICIPANT_NAMES;// +
+																																// ","
+																																// +
+		// "group_concat(" + "b." + ContactEntry. + "," + "',')" +
+		// " as " + COLUMN_NAME_PARTICIPANT_NAMES + "," +
 
-				"c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as " + COLUMN_NAME_LAST_MESSAGE + "," +
-				"c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as " + COLUMN_NAME_LAST_MESSAGE_TIME;
+		// "c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as " +
+		// COLUMN_NAME_LAST_MESSAGE + "," +
+		// "c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as " +
+		// COLUMN_NAME_LAST_MESSAGE_TIME;
 	}
 
-	public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW + WindowViewEntry.TABLE_NAME + " AS SELECT " +
+	public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW + WindowViewEntry.TABLE_NAME + " AS SELECT d." + BaseColumns._ID
+			+ " as " + BaseColumns._ID + "," +
+			"d." + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + "," +
+			"d." + WindowViewEntry.COLUMN_NAME_USER_ID + " as " + WindowViewEntry.COLUMN_NAME_USER_ID + "," +
+			"d." + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + " as " + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + "," +
+			"c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as " + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE + "," +
+			"c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as " + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME + " from (SELECT " +
 			WindowViewEntry.COLUMNS +
 			" from " + ConversationWindowEntry.TABLE_NAME + " a " +
 			" left join " + WindowParticipantEntry.TABLE_NAME + " b " +
-			" using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + ")" +
+			" using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + "))  d" +
 			" left join " + MessageEntry.TABLE_NAME + " c " +
 			" using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + ")" +
 			" group by " + WindowViewEntry.COLUMN_NAME_WINDOW_ID;
@@ -386,8 +396,8 @@ public class DatabaseContracts {
 			" group by " + ContactsViewEntry.COLUMN_NAME_CONTACT_ID;
 
 	public static final String SQL_CREATE_CONTACT = CREATE_TABLE + ContactEntry.TABLE_NAME + " (" +
-			ContactEntry._ID + INTEGER_TYPE + COMMA_SEP +
-			ContactEntry.COLUMN_NAME_CONTACT_ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
+			ContactEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
+			ContactEntry.COLUMN_NAME_CONTACT_ID + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP +
 			ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + " default -1 " + COMMA_SEP +
 			// ContactEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP +
 			ContactsViewEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
@@ -409,7 +419,7 @@ public class DatabaseContracts {
 			+ getCompositePrimaryKey(new String[] { AvatarEntry.COLUMN_NAME_CONTACT_ID, AvatarEntry.COLUMN_NAME_AVATAR_URL }) + " )";
 	public static final String SQL_CREATE_IDENTITY_CONTACT = CREATE_TABLE + IdentityContactEntry.TABLE_NAME + " (" +
 			IdentityContactEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
-			IdentityContactEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
+			IdentityContactEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + COMMA_SEP +
 			IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + " default -1 " + COMMA_SEP +
 			ContactsViewEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP +
 			IdentityContactEntry.COLUMN_NAME_CONTACT_ID + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP +
