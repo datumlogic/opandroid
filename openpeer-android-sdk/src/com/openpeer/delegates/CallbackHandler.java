@@ -317,19 +317,22 @@ public class CallbackHandler {
 		convThread = mThreads.get(convThread.getNativeClassPtr());
 		OPMessage message = convThread.getMessage(messageID);
 
-//		OPAccount account = convThread.getAssociatedAccount();
-//		if (account != null) {
-//			List<OPIdentity> identities = account.getAssociatedIdentities();
-//			if (identities != null && identities.size() > 0) {
-//				Log.d("test", "found identities for account " + identities.size() + identities.get(0).getIdentityURI());
-//			}
-//		}
+		// OPAccount account = convThread.getAssociatedAccount();
+		// if (account != null) {
+		// List<OPIdentity> identities = account.getAssociatedIdentities();
+		// if (identities != null && identities.size() > 0) {
+		// Log.d("test", "found identities for account " + identities.size() +
+		// identities.get(0).getIdentityURI());
+		// }
+		// }
 		for (OPContact contact : convThread.getContacts()) {
 			List<OPIdentityContact> iContacts = convThread.getIdentityContactList(contact);
 			if (iContacts != null) {
 				for (OPIdentityContact oContact : iContacts) {
-					Log.d("test", "onConversationThreadMessage identityContact name " + oContact.getName() + " opcontact peer uri "
-							+ contact.getPeerURI());
+					Log.d("test",
+							"onConversationThreadMessage identityContact name " + oContact.getName() + " identity uri "
+									+ oContact.getIdentityURI() + " opcontact peer uri "
+									+ contact.getPeerURI());
 				}
 			}
 		}

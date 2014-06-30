@@ -111,11 +111,11 @@ public class CallFragment extends BaseFragment {
 		LinearLayout remoteViewLinearLayout = (LinearLayout) view.findViewById(R.id.remoteChatViewLinearLayout);
 		localViewLinearLayout.addView(myLocalSurface);
 		remoteViewLinearLayout.addView(myRemoteSurface);
-
-		if (useFrontCamera)
-			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
-		else
-			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
+//
+//		if (useFrontCamera)
+//			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
+//		else
+//			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
 		OPMediaEngine.getInstance().setEcEnabled(true);
 		OPMediaEngine.getInstance().setAgcEnabled(true);
 		OPMediaEngine.getInstance().setNsEnabled(false);

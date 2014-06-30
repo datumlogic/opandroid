@@ -185,7 +185,6 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		@Override
 		public int getItemViewType(int position) {
-			Log.d("test", "item at " + position + getItem(position));
 			return position % 2;
 
 		}
@@ -297,7 +296,19 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	// After adding a new participant we'll have switch chat window
 	private void addParticipant() {
-
+		Cursor cursor = getActivity().getContentResolver().query(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null,
+				ContactsViewEntry.COLUMN_NAME_CONTACT_NAME + "=?", new String[] { "David Gotwo" }, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+			OPUser user = OPUser.fromDetailCursor(cursor);
+			Log.d("test", "loaded user " + user.getName());
+			List<OPUser> users = new ArrayList<OPUser>();
+			users.add(user);
+			mSession.addParticipant(users);
+			mWindowId = mSession.getCurrentWindowId();
+			LoaderManager.enableDebugLogging(true);
+			getLoaderManager().restartLoader(URL_LOADER, null, this);
+		}
 	}
 
 	private void makeCall(OPIdentityContact peerContact) {
