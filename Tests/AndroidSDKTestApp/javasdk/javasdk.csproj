@@ -76,7 +76,6 @@
   <ItemGroup>
     <EmbeddedJar Include="..\..\..\openpeer-android-sdk\bin\openpeer-android-sdk.jar">
       <Link>Jars\openpeer-android-sdk.jar</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedJar>
   </ItemGroup>
 </Project>

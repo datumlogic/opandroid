@@ -20,20 +20,22 @@ namespace AndroidSDKTestApp
 	{
 		public override void OnIdentityStateChanged (OPIdentity account,IdentityStates state)
 		{
-			if (state == IdentityStates.IdentityStatePendingAssociation) {
+			switch (state.NumericType) 
+			{
+			case 1:
 				LoginManager.loadOuterFrame ();
-			}
-			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToBeMadeVisible)
-			{
-				LoginManager.mIdentity.NotifyBrowserWindowVisible();
-			}
-			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToClose)
-			{
+				break;
+			case 4:
+				break;
+			case 5:
 				LoginManager.mIdentity.NotifyBrowserWindowClosed();
-			}
-			if (state == IdentityStates.IdentityStateReady) {
+				break;
+			case 6:
 				//LoginManager.mIdentity;
+				break;
+
 			}
+
 		}
 
 

@@ -54,6 +54,11 @@
     <Compile Include="Delegates\OPAccountDelegateImplementation.cs" />
     <Compile Include="Delegates\OPStackDelegateImplementation.cs" />
     <Compile Include="Delegates\OPStackMessageQueueDelegateImplementation.cs" />
+    <Compile Include="EnumBaseClass\EnumBaseType.cs" />
+    <Compile Include="Delegates\OPConversationThreadDelegateImplementation.cs" />
+    <Compile Include="IChatMessageReceiver.cs" />
+    <Compile Include="Delegates\OPCallDelegateImplementation.cs" />
+    <Compile Include="Delegates\OPIdentityLookupDelegateImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -74,5 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Delegates\" />
+    <Folder Include="EnumBaseClass\" />
   </ItemGroup>
 </Project>

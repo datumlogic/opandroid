@@ -20,26 +20,31 @@ namespace AndroidSDKTestApp
 	{
 		public override  void OnAccountStateChanged (OPAccount account,AccountStates state)
 		{
-			if (state == AccountStates.AccountStateWaitingForAssociationToIdentity)
+			switch (state.NumericType) 
 			{
+			case 2://WaitingForAssociationToIdentity
 				LoginManager.loadOuterFrame();
-			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToBeLoaded) {
+				break;
+			case 3://WaitingForBrowserWindowToBeLoaded
 				LoginManager.startAccountLogin ();
-			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToBeMadeVisible) {
+				break;
+			case 4://WaitingForBrowserWindowToBeMadeVisible
 				LoginManager.mAccount.NotifyBrowserWindowVisible();
-			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToClose) {
+				break;
+			case 5://WaitingForBrowserWindowToClose
 				LoginManager.mAccount.NotifyBrowserWindowClosed();
-			}
-			if (state == AccountStates.AccountStateReady) {
+				break;
+			case 6://AccountStateReady
 				Log.Warn ("JNI", "READY !!!!!!!!!!!!");
 				IList<OPIdentity> identityList = account.AssociatedIdentities;
 				Log.Warn ("JNI", identityList.ToString());
 
 				LoginManager.loadOuterFrame();
+				break;
+			
+
 			}
+
 
 		}
 		public override void OnAccountAssociatedIdentitiesChanged (OPAccount p0)

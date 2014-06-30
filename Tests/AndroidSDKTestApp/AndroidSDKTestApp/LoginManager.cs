@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Collections;
 using Android.Text.Format;
 using Android.App;
 using Android.Content;
@@ -27,15 +27,21 @@ namespace AndroidSDKTestApp
 		static CallbackHandler mCallbackHandler = new CallbackHandler();
 		public static Context mContext;
 
-		public static void LoginWithFacebook (){
-			//TODO: Add delegate when implement mechanism to post events to the android GUI thread
+		public static String mInstanceId;
+		public static String mDeviceId;
+
+		public static void LoginWithFacebook ()
+		{
+
 			stackMessageQueue = OPStackMessageQueue.Singleton(); 
 			//stackMessageQueue = new OPStackMessageQueue();
 			//stackMessageQueue.interceptProcessing(null);
 			OPLogger.InstallTelnetLogger(59999, 60, true);
 			stack = OPStack.Singleton();
 
-			//OPCache.setup(null);
+			mCacheDelegate = new OPCacheDelegateImplementation();
+			mCallbackHandler.RegisterCacheDelegate(mCacheDelegate);
+			OPCache.Setup(mCacheDelegate);
 
 			//OPSettings.setup(null);
 			OPSettings.ApplyDefaults();
@@ -43,22 +49,28 @@ namespace AndroidSDKTestApp
 			String httpSettings = createHttpSettings();
 			OPSettings.Apply(httpSettings);
 
+			String forceDashSettings = createForceDashSetting();
+			OPSettings.Apply(forceDashSettings);
+
 			String appSettings = createFakeApplicationSettings();
 			OPSettings.Apply(appSettings);
 
 			//TODO: After interception is done, we can call setup
 
 			stack.Setup(null, null);
+
 		}
 
 
 
 
 
-		public static OPAccount getAccount() {
+		public static OPAccount getAccount()
+		{
 			return mAccount;
 		}
-		public static void setAccount(OPAccount account) {
+		public static void setAccount(OPAccount account)
+		{
 			LoginManager.mAccount = account;
 		}
 
@@ -68,18 +80,27 @@ namespace AndroidSDKTestApp
 		public static OPAccountDelegate mAccountDelegate;
 		public static OPIdentity mIdentity;
 		public static OPIdentityDelegate mIdentityDelegate;
-		//public static OPMediaEngine mMediaEngine;
+		public static OPMediaEngine mMediaEngine;
+		public static OPIdentityLookupDelegate mIdentityLookupDelegate;
 		//public static OPLogger mLogger;
 		static LoginHandlerInterface mLoginHandler;
+		public static OPIdentityLookup mIdentityLookup;
+		public static OPConversationThread mConvThread;
+		public static OPCacheDelegate mCacheDelegate;
+		public static OPCall mCall;
+		public static OPCallDelegate mCallDelegate;
 
 		public static void setHandlerListener(LoginHandlerInterface listener)
 		{
 			mLoginHandler=listener;
 		}
 
-		public static void loadOuterFrame() {
-			if(mLoginHandler!=null)
-				mLoginHandler.onLoadOuterFrameHandle(null);
+		public static void loadOuterFrame() 
+		{
+			if (mLoginHandler != null)
+			{
+				mLoginHandler.onLoadOuterFrameHandle (null);
+			}
 
 		}
 
@@ -147,6 +168,22 @@ namespace AndroidSDKTestApp
 			}
 		}
 
+
+		public static String createForceDashSetting()
+		{
+			try {
+				JSONObject parent = new JSONObject();
+				JSONObject jsonObject = new JSONObject();
+
+				jsonObject.Put("openpeer/core/authorized-application-id-split-char", "-");
+				parent.Put("root", jsonObject);
+				Log.Debug("output", parent.ToString(2));
+				return parent.ToString(2);
+			} catch (JSONException e) {
+				e.PrintStackTrace();
+				return "";
+			}
+		}
 		public static String createFakeApplicationSettings()
 		{
 			// {
@@ -198,15 +235,24 @@ namespace AndroidSDKTestApp
 
 		public static void AccountLogin()
 		{
+			long stableId = 0;
+			if (mAccount == null)
+			{
+				mAccountDelegate = new OPAccountDelegateImplementation();
+				mAccount = new OPAccount();
+				mCallbackHandler.RegisterAccountDelegate(mAccount, mAccountDelegate);
 
-			mAccountDelegate = new OPAccountDelegateImplementation();
-			mAccount = new OPAccount();
-			mCallbackHandler.RegisterAccountDelegate(mAccount, mAccountDelegate);
 
-			mAccount = OPAccount.Login(null, null, null, 
-				"http://jsouter-v1-beta-1-i.hcs.io/grant.html", 
-				"bojanGrantID", 
-				"identity-v1-beta-1-i.hcs.io", false);
+				mAccount = OPAccount.Login(null, null, null, 
+					"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
+					"bojanGrantID", 
+					"identity-v1-rel-lespaul-i.hcs.io", false);
+			}
+			else
+			{
+				stableId = mAccount.StableID;
+
+			}
 
 		}
 
@@ -216,9 +262,8 @@ namespace AndroidSDKTestApp
 		{
 			if (mLoginHandler != null)
 			{
-				mLoginHandler.onLoadOuterFrameHandle ("http://jsouter-v1-beta-1-i.hcs.io/grant.html");
-			}
-		
+				mLoginHandler.onLoadOuterFrameHandle ("http://jsouter-v1-rel-dev2-i.hcs.io/grant.html");
+			}		
 		}
 
 
@@ -231,9 +276,9 @@ namespace AndroidSDKTestApp
 
 		public static void onIdentityLookupCompleted(OPIdentityLookup lookup) {
 
-			//LoginManager.mIdentityLookup = lookup;
+			LoginManager.mIdentityLookup = lookup;
 
-			//mLoginHandler.onLookupCompleted();
+			mLoginHandler.onLookupCompleted();
 		}
 
 		public static void onDownloadedRolodexContacts(OPIdentity identity) {
@@ -247,7 +292,7 @@ namespace AndroidSDKTestApp
 		}
 		public static void onAccountStateReady() {
 
-			//mLoginHandler.onAccountStateReady();
+			mLoginHandler.onAccountStateReady();
 
 		}
 

@@ -69,7 +69,7 @@ namespace AndroidSDKTestApp
 			}
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
-			//OPMediaEngine.Init(Android.App.Application.Context);
+			OPMediaEngine.Init(Android.App.Application.Context);
 
 			setupFacebookButton();
 			setupAccountButton();
@@ -137,14 +137,10 @@ namespace AndroidSDKTestApp
 			myWebView.Settings.JavaScriptEnabled = true;
 			myWebView.Settings.JavaScriptCanOpenWindowsAutomatically = true;
 			myWebView.Settings.DomStorageEnabled = true;
-
-
 			LoginManager.setHandlerListener(this);
 			//myWebView.SetWebChromeClient(myWebViewClient);
 			myWebView.SetWebViewClient (myWebViewClient);
 
-
-			//
 		}
 
 		private class MyWebViewClient:WebViewClient
@@ -227,7 +223,7 @@ namespace AndroidSDKTestApp
 						RelativeLayout.LayoutParams linearLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FillParent,RelativeLayout.LayoutParams.FillParent);
 						linearLayoutParams.SetMargins(0, 0, 0, 0);
 						view.LayoutParameters = linearLayoutParams;
-						LoginManager.initInnerFrame();
+						//LoginManager.initInnerFrame();
 					}
 					else
 					{
@@ -241,7 +237,7 @@ namespace AndroidSDKTestApp
 						RelativeLayout.LayoutParams linearLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FillParent,RelativeLayout.LayoutParams.FillParent);
 						linearLayoutParams.SetMargins(0, 0, 0, 0);
 						view.LayoutParameters = linearLayoutParams;
-						LoginManager.initNamespaceGrantInnerFrame();
+						//LoginManager.initNamespaceGrantInnerFrame();
 					}
 					else
 					{
@@ -444,25 +440,21 @@ namespace AndroidSDKTestApp
 
 
 		}
-
-
-		//public void onDownloadedRolodexContacts(OPIdentity identity) {
-
-		// if(OPTestIdentityLookup.isContactsDownloaded)
-		// {
-		// OPTestIdentityLookup.isRolodexContactsRefreshed = true;
-		// }
+		public void onAccountStateReady() {
 
 
 
-		//OPTestIdentityLookup.isContactsDownloaded = true;
-		//OPTestIdentityLookup.execute(identity);
-
-		// Intent intent = new Intent(this, ContactsScreen.class);
-		// startActivity(intent);
+		}
+		public void onLookupCompleted() {
 
 
-		//}
+
+		}
+
+		public void onDownloadedRolodexContacts(OPIdentity identity)
+		{
+
+		}
 
 		//this need to override
 		public void passMessageToJS(String msg)
@@ -486,8 +478,9 @@ namespace AndroidSDKTestApp
 		void onInnerFrameInitialized(String innerFrameUrl);
 		void passMessageToJS(String msg);
 		void onNamespaceGrantInnerFrameInitialized(String innerFrameUrl);
-		//void onDownloadedRolodexContacts(OPIdentity identity);
-		//void onAccountStateReady();
+		void onDownloadedRolodexContacts(OPIdentity identity);
+		void onAccountStateReady();
+		void onLookupCompleted();
 	}
 }
 
