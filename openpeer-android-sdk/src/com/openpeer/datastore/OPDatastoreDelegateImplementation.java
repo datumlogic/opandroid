@@ -693,6 +693,12 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public void saveWindow(long windowId, List<OPUser> userList) {
 		ContentValues values = new ContentValues();
 		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, windowId);
+		Cursor cursor = mContext.getContentResolver().query(WindowViewEntry.CONTENT_URI, null,
+				WindowViewEntry.COLUMN_NAME_WINDOW_ID + "=" + windowId, null, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			Log.d("test", "saveWindow window exists " + windowId);
+			return;
+		}
 		Uri uri = mContext.getContentResolver().insert(ConversationWindowEntry.CONTENT_URI, values);
 		if (uri != null) {
 			Log.d("test", "Inserted window " + Arrays.deepToString(values.valueSet().toArray()));
@@ -769,15 +775,15 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
 				UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
 				UserEntry.COLUMN_NAME_IDENTITY_URI + "=?";
-		String args[] = { user.getLockboxStableId(), user.getPeerUri(), user.getIdentityUri() };
-		Cursor cursor = mContext.getContentResolver().query(UserEntry.CONTENT_URI, null, selection, args, null);
+		String aueryArgs[] = { user.getLockboxStableId(), user.getPeerUri(), user.getIdentityUri() };
+		Cursor cursor = mContext.getContentResolver().query(UserEntry.CONTENT_URI, null, selection, aueryArgs, null);
 		if (cursor != null && cursor.getCount() > 0) {
 			// TODO: Compare and Update
 			cursor.moveToFirst();
 			userID = cursor.getLong(0);
 			selection = UserEntry.COLUMN_NAME_STABLE_ID + "=" + userID;
 			cursor.close();
-			int count = mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, selection, args);
+			int count = mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, "_id=" + userID, null);
 			if (BuildConfig.DEBUG)
 				Log.d(TAG, "saveUser updated " + count + " for id " + userID);
 
