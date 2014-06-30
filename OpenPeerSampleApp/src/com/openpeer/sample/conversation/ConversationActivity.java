@@ -3,6 +3,7 @@ package com.openpeer.sample.conversation;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
@@ -62,4 +63,15 @@ public class ConversationActivity extends BaseFragmentActivity {
 			setContentFragment(cFragment);
 		}
 	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 }

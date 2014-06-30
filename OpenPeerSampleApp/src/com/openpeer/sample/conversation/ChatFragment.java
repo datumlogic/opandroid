@@ -337,13 +337,12 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		Log.d("test", "ChatFragment onLoadFinished" + cursor);
 		mAdapter.changeCursor(cursor);
-
+		mMessagesList.setSelection(mMessagesList.getCount() - 1);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		mAdapter.changeCursor(null);
-
 	}
 	// End: CursorCallback implementation
 
