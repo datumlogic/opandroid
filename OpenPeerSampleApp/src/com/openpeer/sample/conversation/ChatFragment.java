@@ -1,5 +1,6 @@
 package com.openpeer.sample.conversation;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,12 +8,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +19,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,28 +31,21 @@ import com.openpeer.app.OPSessionManager;
 import com.openpeer.app.OPUser;
 import com.openpeer.datastore.DatabaseContracts;
 import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.datastore.DatabaseContracts.MessageEntry;
-import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
-import com.openpeer.delegates.CallbackHandler;
-import com.openpeer.javaapi.ContactStates;
-import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
+import com.openpeer.sample.util.DateFormatUtils;
 import com.squareup.picasso.Picasso;
 
 public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
 	private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
 	private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
-
+	private static final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 	private ListView mMessagesList;
 	private TextView mComposeBox;
 	private View mSendButton;
@@ -105,7 +96,6 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 				users.add(user);
 			}
 			mSession = new OPSession(users);
-			OPSessionManager.getInstance().addSession(mSession);
 		}
 		// mPeerContact =
 		// OPDataManager.getDatastoreDelegate().getIdentityContact(
@@ -235,12 +225,15 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	class ViewHolder {
 		ImageView avatarView;
+		TextView time;
 		TextView text;
 		int viewType;
 
 		public ViewHolder(View view, int viewType) {
 			avatarView = (ImageView) view.findViewById(R.id.avatar);
 			text = (TextView) view.findViewById(R.id.message);
+			time = (TextView) view.findViewById(R.id.time);
+
 			this.viewType = viewType;
 		}
 
@@ -259,74 +252,27 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 				break;
 			}
-			text.setText(data.getMessage());
 
-		}
-	}
-
-	class MessagesAdaptor1 extends BaseAdapter {
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return mMessages == null ? 0 : mMessages.size();
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
-			return mMessages.get(arg0);
-		}
-
-		@Override
-		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
-			return arg0;
-		}
-
-		// @Override
-		// public int getItemViewType(int position) {
-		// // if (((OPMessage) getItem(position)).getSenderId().equals(
-		// // mSelfContact.getStableID())) {
-		// // return VIEWTYPE_SELF_MESSAGE_VIEW;
-		// // } else {
-		// // return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
-		// // }
-		// }
-
-		@Override
-		public int getViewTypeCount() {
-			// TODO Auto-generated method stub
-			return 2;
-		}
-
-		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
-			View view = arg1;
-			ViewHolder viewHolder;
-			int viewType = getItemViewType(arg0);
-			if (view == null) {
-				switch (viewType) {
-				case VIEWTYPE_SELF_MESSAGE_VIEW:
-					view = View.inflate(getActivity(),
-							R.layout.item_message_self, null);
-					break;
-				case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-					view = View.inflate(getActivity(),
-							R.layout.item_message_peer, null);
-
-					break;
-				}
-				viewHolder = new ViewHolder(view, viewType);
-				view.setTag(viewHolder);
+			String avatar = null;
+			if (data.getSenderId() == 0) {
+				// self
+				// avatar =
+				// OPDataManager.getInstance().getSelfContacts().get(0).getDefaultAvatarUrl();
 			} else {
-				viewHolder = (ViewHolder) view.getTag();
+				OPUser user = mSession.getUserBySenderId(data.getSenderId());
+				if (user != null) {
+					avatar = user.getAvatarUri();
+				}
 			}
-			viewHolder.update((OPMessage) getItem(arg0));
+			if (avatar != null) {
+				Picasso.with(getActivity())
+						.load(avatar)
+						.into(avatarView);
+			}
 
-			return view;
+			time.setText(DateFormatUtils.getSameDayTime(data.getTime().toMillis(true)));
+			text.setText(data.getMessage());
 		}
-
 	}
 
 	@Override
@@ -361,11 +307,12 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID,
-			MessageEntry.COLUMN_NAME_MESSAGE_ID,
-			MessageEntry.COLUMN_NAME_MESSAGE_TEXT,
-			MessageEntry.COLUMN_NAME_SENDER_ID,
-			MessageEntry.COLUMN_NAME_WINDOW_ID };
+
+	// static final String LIST_PROJECTION[] = { BaseColumns._ID,
+	// MessageEntry.COLUMN_NAME_MESSAGE_ID,
+	// MessageEntry.COLUMN_NAME_MESSAGE_TEXT,
+	// MessageEntry.COLUMN_NAME_SENDER_ID,
+	// MessageEntry.COLUMN_NAME_WINDOW_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
@@ -375,7 +322,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			return new CursorLoader(
 					getActivity(), // Parent activity context
 					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + mWindowId),
-					LIST_PROJECTION, // Projection to return
+					null, // Projection to return
 					null, // No selection clause
 					null, // No selection arguments
 					null // Default sort order

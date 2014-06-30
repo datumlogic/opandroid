@@ -27,7 +27,7 @@ public class ConversationActivity extends BaseFragmentActivity {
 		context.startActivity(intent);
 	}
 
-	public static void launchForChat(Context context, String peerContactId) {
+	public static void launchForChat(Context context, long peerContactId) {
 		Intent intent = new Intent(context, ConversationActivity.class);
 		intent.putExtra(IntentData.ARG_CONVERSATION_ACTION,
 				IntentData.ACTION_CHAT);
@@ -35,11 +35,11 @@ public class ConversationActivity extends BaseFragmentActivity {
 		context.startActivity(intent);
 	}
 
-	public static void launchForCall(Context context, String peerContactId) {
+	public static void launchForCall(Context context, long[] peerContactId) {
 		Intent intent = new Intent(context, ConversationActivity.class);
 		intent.putExtra(IntentData.ARG_CONVERSATION_ACTION,
 				IntentData.ACTION_CALL);
-		intent.putExtra(IntentData.ARG_PEER_CONTACT_ID, peerContactId);
+		intent.putExtra(IntentData.ARG_PEER_USER_IDS, peerContactId);
 		context.startActivity(intent);
 	}
 
@@ -58,7 +58,7 @@ public class ConversationActivity extends BaseFragmentActivity {
 			setContentFragment(cFragment);
 		} else if (action.equals(IntentData.ACTION_CALL)) {
 			CallFragment cFragment = CallFragment.newInstance(intent
-					.getStringExtra(IntentData.ARG_PEER_CONTACT_ID));
+					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS));
 			setContentFragment(cFragment);
 		}
 	}

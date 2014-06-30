@@ -21,7 +21,8 @@
         android:layout_alignRight="@id/image_view"
         android:layout_alignTop="@id/image_view"
         android:background="@color/red"
-        android:text="20+" />
+        android:text="20+"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/title"

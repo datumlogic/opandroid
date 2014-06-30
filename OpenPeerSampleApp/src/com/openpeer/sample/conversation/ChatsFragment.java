@@ -203,6 +203,8 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	static final String LIST_PROJECTION[] = { BaseColumns._ID,
 			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
 			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
+			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
+
 			WindowViewEntry.COLUMN_NAME_USER_ID,
 			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
 

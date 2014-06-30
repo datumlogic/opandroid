@@ -12,16 +12,16 @@ public class ContactsBasedMessageDispatcher implements MessageDispatcher {
 
 	public void dispatch(OPConversationThread thread, OPMessage message) {
 //		OPDataManager.getDatastoreDelegate().saveMessage(message, thread.getCurrentWindowId(), thread.getThreadID());
-		MessageReceiver receiver = mReceivers.get(thread.getCurrentWindowId());
-		if (receiver != null) {
-			receiver.onNewMessage(message);
-		}
+//		MessageReceiver receiver = mReceivers.get(thread.getCurrentWindowId());
+//		if (receiver != null) {
+//			receiver.onNewMessage(message);
+//		}
 	}
 
 	@Override
 	public void registerReceiver(OPConversationThread thread,
 			MessageReceiver receiver) {
-		mReceivers.put(thread.getCurrentWindowId(), receiver);
+//		mReceivers.put(thread.getCurrentWindowId(), receiver);
 	}
 
 }

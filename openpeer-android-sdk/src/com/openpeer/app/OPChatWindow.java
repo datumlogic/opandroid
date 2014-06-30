@@ -3,6 +3,8 @@ package com.openpeer.app;
 import java.util.Arrays;
 import java.util.List;
 
+import android.util.Log;
+
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 
@@ -26,7 +28,13 @@ public class OPChatWindow {
 
 	public static long getWindowId(long userIds[]) {
 		Arrays.sort(userIds);
-		return userIds.hashCode();
+		String arr[] = new String[userIds.length];
+		for (int i = 0; i < userIds.length; i++) {
+			arr[i] = "" + userIds[i];
+		}
+		long code = Arrays.deepHashCode(arr);
+		Log.d("test", " hash code " + code + " array " + Arrays.deepToString(arr));
+		return code;
 	}
 
 	public static long getWindowId(List<OPUser> users) {

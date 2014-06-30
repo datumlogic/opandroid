@@ -140,39 +140,6 @@ public class ContactsFragment extends BaseFragment implements
 
 	}
 
-	static class ContactsAdapter1 extends BaseAdapter {
-		private List<OPRolodexContact> mContacts;
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return mContacts == null ? 0 : mContacts.size();
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
-			return mContacts.get(arg0);
-		}
-
-		@Override
-		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
-			return arg0;
-		}
-
-		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
-			if (arg1 == null) {
-				arg1 = new ContactItemView(arg2.getContext());
-			}
-			((ContactItemView) arg1)
-					.updateData((OPRolodexContact) getItem(arg0));
-			return arg1;
-		}
-
-	}
-
 	@Override
 	public void onRefresh() {
 		OPDataManager.getInstance().refreshContacts();

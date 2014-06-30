@@ -168,6 +168,7 @@ public class OPSession extends Observable {
 		}
 		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
 		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
+		OPSessionManager.getInstance().addSession(this);
 	}
 
 	// public OPSession(List<OPIdentityContact> contacts) {
@@ -193,10 +194,12 @@ public class OPSession extends Observable {
 		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
 				.getSharedAccount(), OPDataManager.getInstance()
 				.getSelfContacts());
+		OPSessionManager.getInstance().addSession(this);
 
 		mParticipants = users;
 		addContactToThread(users);
 		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
+		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
 	}
 
 	private void addContactToThread(List<OPUser> users) {
@@ -218,6 +221,17 @@ public class OPSession extends Observable {
 
 	public OPSession() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public OPCall placeCall(OPCallDelegate delegate,
+			boolean includeAudio, boolean includeVideo) {
+
+		currentCall = OPCall.placeCall(mConvThread, mParticipants.get(0).getOPContact(), includeAudio,
+				includeVideo);
+		CallbackHandler.getInstance().registerCallDelegate(currentCall,
+				delegate);
+		return currentCall;
+
 	}
 
 	public OPCall placeCall(OPIdentityContact contact, OPCallDelegate delegate,

@@ -27,6 +27,7 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
+import com.openpeer.javaapi.VideoOrientations;
 
 /**
  * 
@@ -67,9 +68,25 @@ public class OPHelper {
 		OPLogger.installFileLogger("/storage/emulated/0/HFLog1.txt", true);
 	}
 
+	private void initMediaEngine() {
+		OPMediaEngine.getInstance().setEcEnabled(true);
+		OPMediaEngine.getInstance().setAgcEnabled(true);
+		OPMediaEngine.getInstance().setNsEnabled(false);
+		OPMediaEngine.getInstance().setMuteEnabled(false);
+		OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
+		OPMediaEngine.getInstance().setContinuousVideoCapture(true);
+		OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
+		OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
+		OPMediaEngine.getInstance().setFaceDetection(false);
+
+		OPMediaEngine.init(mContext);
+	}
+
 	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
 		mContext = context;
 		OPMediaEngine.init(mContext);
+
+		// initMediaEngine();
 		if (datastoreDelegate != null) {
 			OPDataManager.getInstance().init(datastoreDelegate);
 		} else {

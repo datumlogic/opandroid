@@ -50,6 +50,13 @@ public class OPContentProvider extends ContentProvider {
 	}
 
 	@Override
+	public int bulkInsert(Uri uri, ContentValues[] values) {
+		int result = super.bulkInsert(uri, values);
+		Log.d("test", "bulkinsert " + uri + " values" + values.length + " result " + result);
+		return result;
+	}
+
+	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		Uri result = null;
 		switch (mUriMatcher.match(uri)) {
@@ -94,6 +101,7 @@ public class OPContentProvider extends ContentProvider {
 		Log.d("test", "result " + result + " inserting uri " + uri);
 		getContext().getContentResolver().notifyChange(uri, null);
 		getContext().getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
+		test();
 		return uri;
 	}
 
@@ -124,7 +132,7 @@ public class OPContentProvider extends ContentProvider {
 				null, // uses the default SQLite cursor
 				OPDatabaseHelper.DATABASE_VERSION);
 		initMatcher();
-
+		test();
 		return true;
 	}
 
@@ -136,11 +144,8 @@ public class OPContentProvider extends ContentProvider {
 		case CONTACTS:
 			return queryContacts(uri, projection, selection, selectionArgs, sortOrder);
 		case MESSAGES:
-			String finalWhere = MessageEntry.COLUMN_NAME_WINDOW_ID + " = " + uri.getPathSegments().get(2);
-			if (selection != null) {
-				finalWhere = finalWhere + " AND " + selection;
-			}
-			return queryMessages(uri, projection, finalWhere, selectionArgs, sortOrder);
+
+			return queryMessages(uri, projection, selection, selectionArgs, sortOrder);
 		case WINDOWS:
 			return queryWindows(uri, projection, selection, selectionArgs, sortOrder);
 		case USERS:
@@ -202,6 +207,7 @@ public class OPContentProvider extends ContentProvider {
 		String table = uri.getLastPathSegment();
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		int result = db.update(table, values, selection, selectionArgs);
+		Log.d("test", "query uri for messages " + uri + " result " + result);
 
 		return result;
 	}
@@ -224,6 +230,8 @@ public class OPContentProvider extends ContentProvider {
 				ContactsViewEntry.TABLE_NAME, CONTACTS);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
 				WindowViewEntry.TABLE_NAME, WINDOWS);
+		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
+				UserEntry.TABLE_NAME, USERS);
 	}
 
 	Cursor queryContacts(Uri uri, String[] projection, String selection,
@@ -245,17 +253,20 @@ public class OPContentProvider extends ContentProvider {
 	Cursor queryMessages(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-
+		String finalWhere = MessageEntry.COLUMN_NAME_WINDOW_ID + "=" + uri.getLastPathSegment();
+		if (selection != null) {
+			finalWhere = finalWhere + " AND " + selection;
+		}
 		Cursor cursor = db.query(
 				DatabaseContracts.MessageEntry.TABLE_NAME,
 				projection, // The columns to return from the query
-				selection, // The columns for the where clause
+				finalWhere, // The columns for the where clause
 				selectionArgs, // The values for the where clause
 				null, // don't group the rows
 				null, // don't filter by row groups
 				sortOrder // The sort order
 				);
-		Log.d("test", "notification uri for messages " + uri);
+		Log.d("test", "query uri for messages " + uri + " result " + cursor.getCount());
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
 	}
@@ -272,8 +283,39 @@ public class OPContentProvider extends ContentProvider {
 				null, // don't filter by row groups
 				sortOrder // The sort order
 				);
+		Log.d("test", "query uri " + uri + " result " + cursor.getCount());
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
+	}
+
+	void test() {
+		Cursor cursor = mOpenHelper.getReadableDatabase().query(false, MessageEntry.TABLE_NAME, null, null, null, null, null, null, null,
+				null);
+		Log.d("test", "found messages " + cursor.getCount());
+		if (cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				Log.d("test", "message " + cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_WINDOW_ID)) + " message id " +
+						cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)) + " text " +
+						cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)));
+				cursor.moveToNext();
+			}
+			cursor.close();
+		}
+		cursor = mOpenHelper.getReadableDatabase().query(false, WindowViewEntry.TABLE_NAME, null, null, null, null, null, null, null,
+				null);
+		Log.d("test", "found windows " + cursor.getCount());
+		if (cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				Log.d("test", "window " + cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_WINDOW_ID)) + " message id " +
+						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE)) + " text " +
+						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES)));
+				cursor.moveToNext();
+			}
+			cursor.close();
+		}
+
 	}
 
 }

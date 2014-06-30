@@ -444,12 +444,14 @@ public class DatabaseContracts {
 			+ WindowParticipantEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP
 			+ WindowParticipantEntry.COLUMN_NAME_USER_NAME + TEXT_TYPE + COMMA_SEP
 			+ ConversationWindowEntry.COLUMN_NAME_GROUP_ID + TEXT_TYPE + COMMA_SEP
+			+ WindowParticipantEntry.COLUMN_NAME_USER_AVATAR + TEXT_TYPE + COMMA_SEP
+
 			+ getCompositePrimaryKey(new String[] { WindowParticipantEntry.COLUMN_NAME_WINDOW_ID,
 					WindowParticipantEntry.COLUMN_NAME_USER_ID }) + " )";
 
 	public static final String SQL_CREATE_MESSAGES = CREATE_TABLE + MessageEntry.TABLE_NAME + " (" +
 			MessageEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
-			MessageEntry.COLUMN_NAME_MESSAGE_ID + TEXT_TYPE + COMMA_SEP +
+			MessageEntry.COLUMN_NAME_MESSAGE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_MESSAGE_TYPE + TEXT_TYPE + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_SENDER_ID + INTEGER_TYPE + COMMA_SEP +

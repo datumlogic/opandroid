@@ -2,6 +2,7 @@ package com.openpeer.delegates;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.text.format.Time;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OutputAudioRoutes;
@@ -280,14 +282,13 @@ public class CallbackHandler {
 
 	public static void onConversationThreadContactsChanged(
 			OPConversationThread convThread) {
-		OPSessionManager.getInstance().getSessionOfThread(convThread).onContactsChanged();
+		// OPSessionManager.getInstance().getSessionOfThread(convThread).onContactsChanged();
 		OPConversationThread thread = mThreads.get(convThread.getNativeClassPtr());
 		if (thread == null) {
 			mThreads.put(convThread.getNativeClassPtr(), convThread);
 		} else {
 			convThread = thread;
 		}
-		convThread.setWindowId();
 		for (OPConversationThreadDelegate delegate : conversationThreadDelegates) {
 			if (convThread != null && delegate != null) {
 				delegate.onConversationThreadContactsChanged(convThread);
@@ -316,6 +317,22 @@ public class CallbackHandler {
 		convThread = mThreads.get(convThread.getNativeClassPtr());
 		OPMessage message = convThread.getMessage(messageID);
 
+//		OPAccount account = convThread.getAssociatedAccount();
+//		if (account != null) {
+//			List<OPIdentity> identities = account.getAssociatedIdentities();
+//			if (identities != null && identities.size() > 0) {
+//				Log.d("test", "found identities for account " + identities.size() + identities.get(0).getIdentityURI());
+//			}
+//		}
+		for (OPContact contact : convThread.getContacts()) {
+			List<OPIdentityContact> iContacts = convThread.getIdentityContactList(contact);
+			if (iContacts != null) {
+				for (OPIdentityContact oContact : iContacts) {
+					Log.d("test", "onConversationThreadMessage identityContact name " + oContact.getName() + " opcontact peer uri "
+							+ contact.getPeerURI());
+				}
+			}
+		}
 		if (conversationThreadDelegates.size() == 0
 				&& mBackgroundConversationHandler != null) {
 			mBackgroundConversationHandler.onConversationThreadMessage(

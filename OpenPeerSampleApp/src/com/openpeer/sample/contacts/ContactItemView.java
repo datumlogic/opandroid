@@ -65,13 +65,13 @@ public class ContactItemView extends RelativeLayout {
 			mInviteView.setVisibility(View.GONE);
 			mCallView.setVisibility(View.VISIBLE);
 			mChatView.setVisibility(View.VISIBLE);
+			final long[] ids = { userId };
 
 			mChatView.setOnClickListener(new View.OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
 					Log.d("test", "Chat button tapped");
-					long[] ids = { userId };
 					ConversationActivity.launchForChat(getContext(), ids);
 				}
 			});
@@ -81,62 +81,12 @@ public class ContactItemView extends RelativeLayout {
 				@Override
 				public void onClick(View v) {
 					Log.d("test", "Call button tapped");
-					ConversationActivity.launchForCall(getContext(), stableId);
+					ConversationActivity.launchForCall(getContext(), ids);
 				}
 			});
 			// show unread messages badge if any
 			int numberofUnreadMessages = OPDataManager.getDatastoreDelegate()
 					.getNumberofUnreadMessages(stableId);
-			if (numberofUnreadMessages > 0) {
-				mBadgeView.setText("" + numberofUnreadMessages);
-				mBadgeView.setVisibility(View.VISIBLE);
-			} else {
-				mBadgeView.setVisibility(View.GONE);
-			}
-		} else {
-			mInviteView.setVisibility(View.VISIBLE);
-
-			mCallView.setVisibility(View.GONE);
-			mChatView.setVisibility(View.GONE);
-		}
-	}
-
-	public void updateData(OPRolodexContact contact) {
-		mContact = contact;
-		if (contact.getAvatars() != null && !contact.getAvatars().isEmpty()) {
-			Picasso.with(getContext())
-					.load(contact.getAvatars().get(0).getURL())
-					.into(mImageView);
-		}
-		mTitleView.setText(contact.getName());
-		if (contact instanceof OPIdentityContact) {
-			mInviteView.setVisibility(View.GONE);
-			mCallView.setVisibility(View.VISIBLE);
-			mChatView.setVisibility(View.VISIBLE);
-
-			mChatView.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Log.d("test", "Chat button tapped");
-					ConversationActivity.launchForChat(getContext(),
-							((OPIdentityContact) mContact).getStableID());
-				}
-			});
-
-			mCallView.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Log.d("test", "Call button tapped");
-					ConversationActivity.launchForCall(getContext(),
-							((OPIdentityContact) mContact).getStableID());
-				}
-			});
-			// show unread messages badge if any
-			int numberofUnreadMessages = OPDataManager.getDatastoreDelegate()
-					.getNumberofUnreadMessages(
-							((OPIdentityContact) mContact).getStableID());
 			if (numberofUnreadMessages > 0) {
 				mBadgeView.setText("" + numberofUnreadMessages);
 				mBadgeView.setVisibility(View.VISIBLE);

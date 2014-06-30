@@ -73,12 +73,14 @@ public class OPUser {
 		this.mOPContact = contact;
 		this.mIdentityContacts = iContacts;
 		mPeerUri = contact.getPeerURI();
-		OPIdentityContact iContact = getPreferredContact();
-		if (iContact != null) {
-			mIdentityUri = iContact.getIdentityURI();
-			mName = iContact.getName();
-			mAvatarUri = iContact.getDefaultAvatarUrl();
-			mLockboxStableId = iContact.getStableID();
+		if (iContacts != null && iContacts.size() > 0) {
+			OPIdentityContact iContact = getPreferredContact();
+			if (iContact != null) {
+				mIdentityUri = iContact.getIdentityURI();
+				mName = iContact.getName();
+				mAvatarUri = iContact.getDefaultAvatarUrl();
+				mLockboxStableId = iContact.getStableID();
+			}
 		}
 	}
 

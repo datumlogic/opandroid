@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.format.Time;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +16,13 @@ import android.widget.Toast;
 
 import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPSession;
+import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.R;
 import com.openpeer.sample.conversation.ConversationActivity;
+import com.openpeer.sample.util.DateFormatUtils;
 import com.squareup.picasso.Picasso;
 
 public class ChatInfoItemView extends RelativeLayout {
@@ -29,6 +32,7 @@ public class ChatInfoItemView extends RelativeLayout {
 	private TextView mBadgeView;
 	private TextView mTitleView;
 	private TextView mLastMessageView;
+	private TextView mTimeView;
 
 	public ChatInfoItemView(Context context) {
 		this(context, null, 0);
@@ -41,7 +45,8 @@ public class ChatInfoItemView extends RelativeLayout {
 		mBadgeView = (TextView) findViewById(R.id.badge_view);
 
 		mTitleView = (TextView) findViewById(R.id.title);
-		mTitleView = (TextView) findViewById(R.id.text_message);
+		mLastMessageView = (TextView) findViewById(R.id.text_message);
+		mTimeView = (TextView) findViewById(R.id.time_view);
 	}
 
 	public ChatInfoItemView(Context context, AttributeSet attrs) {
@@ -51,22 +56,24 @@ public class ChatInfoItemView extends RelativeLayout {
 
 	public void updateData(Cursor cursor) {
 		mTitleView.setText(cursor.getString(1));
-		mLastMessageView.setText(cursor.getString(2));
-	}
+		String msg = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE));
+		Long time = cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME));
+		final String idListString = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_USER_ID));
+		if (idListString != null) {
+			String idStrings[] = idListString.split(",");
+			final long IDs[] = new long[idStrings.length];
+			this.setOnClickListener(new View.OnClickListener() {
 
-	public void updateData(OPSession session) {
-		// mContact = contact;
-		// if (contact.getAvatars() != null && !contact.getAvatars().isEmpty())
-		// {
-		// Picasso.with(getContext())
-		// .load(contact.getAvatars().get(0).getURL())
-		// .into(mImageView);
-		// }
-//		mTitleView.setText(formatParticipants(session.getParticipants()));
-//		OPMessage message = session.getLastMessage();
-//		if (message != null) {
-//			mLastMessageView.setText(message.getMessage());
-//		}
+				@Override
+				public void onClick(View v) {
+					ConversationActivity.launchForChat(getContext(), IDs);
+				}
+			});
+		}
+		if (msg != null) {
+			mLastMessageView.setText(msg);
+			mTimeView.setText(DateFormatUtils.getSameDayTime(time));
+		}
 
 	}
 

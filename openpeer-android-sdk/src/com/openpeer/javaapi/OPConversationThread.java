@@ -69,33 +69,6 @@ public class OPConversationThread {
 				&& this.nativeClassPointer == ((OPConversationThread) o).nativeClassPointer;
 	}
 
-	long mWindowId;
-
-	public long getCurrentWindowId() {
-		return mWindowId;
-	}
-
-	public void setWindowId() {
-
-		List<OPContact> contacts = getContacts();
-		long IDs[] = new long[contacts.size()];
-
-		for (int i = 0; i < contacts.size(); i++) {
-			OPContact contact = contacts.get(i);
-			// TODO: implement proper identity contact selection algorithm
-			List<OPIdentityContact> iContacts = this.getIdentityContactList(contact);
-			if (iContacts != null && !iContacts.isEmpty()) {
-				IDs[i] = OPDataManager.getInstance().getUserIdForContact(contact,
-						iContacts.get(0));
-			} else {
-				IDs[i] = OPDataManager.getInstance().getUserIdForContact(contact,
-						null);
-			}
-		}
-		Arrays.sort(IDs);
-		mWindowId = IDs.hashCode();
-	}
-
 	public List<OPIdentityContact> getIdentityContacts() {
 		List<OPIdentityContact> contacts = new ArrayList<OPIdentityContact>();
 		for (OPContact contact : getContacts()) {

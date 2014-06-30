@@ -598,6 +598,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		ContentValues values = new ContentValues();
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, message.getMessageId());
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TEXT, message.getMessage());
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TIME, message.getTime().toMillis(true));
+
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TYPE,
 				message.getMessageType());
 		values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
@@ -693,6 +695,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, windowId);
 		Uri uri = mContext.getContentResolver().insert(ConversationWindowEntry.CONTENT_URI, values);
 		if (uri != null) {
+			Log.d("test", "Inserted window " + Arrays.deepToString(values.valueSet().toArray()));
+
 			// now insert the participants
 			ContentValues contentValues[] = new ContentValues[userList.size()];
 			for (int i = 0; i < userList.size(); i++) {
@@ -704,8 +708,12 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_NAME, user.getName());
 				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_AVATAR, user.getAvatarUri());
 				// contentValues[i].put(ConversationWindowEntry., windowId);
+
 			}
-			mContext.getContentResolver().bulkInsert(WindowParticipantEntry.CONTENT_URI, contentValues);
+			int count = mContext.getContentResolver().bulkInsert(WindowParticipantEntry.CONTENT_URI, contentValues);
+			Log.d("test", "Inserted window participants " + count + " values " + Arrays.deepToString(contentValues));
+
+			mContext.getContentResolver().notifyChange(DatabaseContracts.WindowViewEntry.CONTENT_URI, null);
 		}
 	}
 
