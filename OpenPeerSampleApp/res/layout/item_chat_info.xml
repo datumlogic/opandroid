@@ -38,8 +38,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/padding_spacing_internal"
+        android:layout_toLeftOf="@id/time_view"
         android:layout_toRightOf="@id/image_view"
-        android:text="this is the peers" />
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="this is the peers blahblabladkfajfakfjakfjdkfjd" />
 
     <TextView
         android:id="@+id/text_message"
@@ -49,6 +52,8 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/padding_spacing_internal"
         android:layout_toRightOf="@id/image_view"
-        android:text="this is the last message" />
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="this is the last messageajdfaklfja;kfjak;lfja;dklfjadk;fja;kfjadkfjalkd;fjadkfj" />
 
 </RelativeLayout>

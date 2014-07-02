@@ -14,7 +14,8 @@
         android:layout_centerVertical="true"
         android:scaleType="centerCrop" />
 
-    <TextView
+    <!--
+         <TextView
         android:id="@+id/badge_view"
         android:layout_width="@dimen/badge_image_size_in_contact"
         android:layout_height="@dimen/badge_image_size_in_contact"
@@ -23,6 +24,7 @@
         android:background="@color/red"
         android:text="20+"
         android:visibility="gone" />
+    -->
 
     <TextView
         android:id="@+id/title"

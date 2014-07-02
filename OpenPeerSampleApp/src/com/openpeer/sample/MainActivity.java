@@ -21,7 +21,7 @@ import com.openpeer.sample.conversation.ChatsFragment;
 import com.openpeer.sample.conversation.DiscoveryFragment;
 import com.openpeer.sample.util.NetworkUtil;
 
-public class MainActivity extends BaseFragmentActivity {
+public class MainActivity extends BaseActivity {
 	TabsAdapter mTabsAdapter;
 	ViewPager mViewPager;
 	private static final int TAB_CHATS = 0;
