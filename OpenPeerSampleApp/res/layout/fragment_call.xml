@@ -10,17 +10,17 @@
 
         <LinearLayout
             android:id="@+id/localChatViewLinearLayout"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_alignParentBottom="true"
+            android:background="@drawable/bg_video_border"
             android:orientation="vertical" >
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/remoteChatViewLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_above="@+id/localChatViewLinearLayout"
+            android:layout_height="match_parent"
             android:orientation="vertical" >
         </LinearLayout>
     </RelativeLayout>
@@ -28,23 +28,38 @@
     <RelativeLayout
         android:id="@+id/status"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/peer_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/person" />
 
         <TextView
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/peer_image" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:hint="@string/status_calling" />
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/peer_image" />
 
         <ImageButton
             android:id="@+id/end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/text"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
+            android:layout_below="@id/time"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/peer_image"
             android:contentDescription="@string/label_endcall"
             android:src="@drawable/ic_action_end_call" />
     </RelativeLayout>

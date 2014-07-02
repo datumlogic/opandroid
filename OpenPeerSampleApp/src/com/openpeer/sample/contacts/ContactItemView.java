@@ -2,7 +2,10 @@ package com.openpeer.sample.contacts;
 
 import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
 import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
@@ -15,8 +18,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.openpeer.app.OPDataManager;
+import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
+import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.conversation.ConversationActivity;
 import com.squareup.picasso.Picasso;
@@ -25,7 +30,6 @@ public class ContactItemView extends RelativeLayout {
 	private OPRolodexContact mContact;
 
 	private ImageView mImageView;
-	private TextView mBadgeView;
 	private TextView mTitleView;
 
 	private View mCallView;
@@ -40,7 +44,6 @@ public class ContactItemView extends RelativeLayout {
 		super(context, attrs, defStyle);
 		LayoutInflater.from(context).inflate(R.layout.item_contact, this);
 		mImageView = (ImageView) findViewById(R.id.image_view);
-		mBadgeView = (TextView) findViewById(R.id.badge_view);
 
 		mTitleView = (TextView) findViewById(R.id.title);
 		mCallView = findViewById(R.id.call);
@@ -81,18 +84,28 @@ public class ContactItemView extends RelativeLayout {
 				@Override
 				public void onClick(View v) {
 					Log.d("test", "Call button tapped");
-					ConversationActivity.launchForCall(getContext(), ids);
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+					builder.setPositiveButton(R.string.audio, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							ConversationActivity.launchForCall(getContext(), ids, true, false);
+						}
+					}).setNeutralButton(R.string.video, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							ConversationActivity.launchForCall(getContext(), ids, true, true);
+						}
+					}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+					builder.create().show();
 				}
 			});
 			// show unread messages badge if any
 			int numberofUnreadMessages = OPDataManager.getDatastoreDelegate()
 					.getNumberofUnreadMessages(stableId);
-			if (numberofUnreadMessages > 0) {
-				mBadgeView.setText("" + numberofUnreadMessages);
-				mBadgeView.setVisibility(View.VISIBLE);
-			} else {
-				mBadgeView.setVisibility(View.GONE);
-			}
+
 		} else {
 			mInviteView.setVisibility(View.VISIBLE);
 
