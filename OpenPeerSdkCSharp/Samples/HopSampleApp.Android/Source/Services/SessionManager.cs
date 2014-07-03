@@ -88,7 +88,7 @@ namespace HopSampleApp
 		{
 			Console.WriteLine ("Empty");
 		}
-
+		/*
 		public void onCallPreparing(HOPCall call)
 		{
 		}
@@ -128,7 +128,7 @@ namespace HopSampleApp
 		{
 			Console.WriteLine ("Empty");
 		}
-
+		*/
 		public void onFaceDetected()
 		{
 			Console.WriteLine ("Empty");

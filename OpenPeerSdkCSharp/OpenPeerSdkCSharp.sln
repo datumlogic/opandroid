@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zxing.monoandroid", "..\lib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.MonoDroid", "..\libs\Newtonsoft.Json\Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj", "{E6C3413C-919B-486D-8B6C-225CBD921B98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JavaSDK", "JavaSDK\JavaSDK.csproj", "{ACF94FAB-67A8-488F-B431-0B3DBCA8A383}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC17589E-C817-4FA8-B3EC-CCEB25E55E59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACF94FAB-67A8-488F-B431-0B3DBCA8A383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACF94FAB-67A8-488F-B431-0B3DBCA8A383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACF94FAB-67A8-488F-B431-0B3DBCA8A383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACF94FAB-67A8-488F-B431-0B3DBCA8A383}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Release|Any CPU.ActiveCfg = Release|Any CPU

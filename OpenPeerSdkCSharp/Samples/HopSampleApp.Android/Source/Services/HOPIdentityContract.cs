@@ -52,9 +52,9 @@ namespace HopSampleApp
 		{
 			Console.WriteLine ("Empty");
 			//WORD lastErrorCode;
-			string lastErrorCode;
+			//string lastErrorCode;
 
-			byte[] lastErrorReason;
+			//byte[] lastErrorReason;
 
 			// zsLib::String lastErrorReason;
 			//HOPIdentityStates state = (HOPIdentityStates)identityPtr.getState(lastErrorCode, lastErrorReason);

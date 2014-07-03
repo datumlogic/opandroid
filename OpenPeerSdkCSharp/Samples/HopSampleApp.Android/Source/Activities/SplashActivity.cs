@@ -68,7 +68,7 @@ namespace HopSampleApp
 
 					}else
 					{
-						Intent intent = new Intent (this, typeof(SessionActivity));
+						Intent intent = new Intent (this, typeof(LoginActivity));
 						StartActivity (intent);
 
 

@@ -32,26 +32,39 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
-/*
-#import "IdentityLookupDelegate.h"
-#import <OpenpeerSDK/HOPIdentityLookup.h>
-#import "ContactsManager.h"
-*/
+using Com.Openpeer.Delegates;
+using Com.Openpeer.Javaapi;
 namespace HopSampleApp
 {
-	//Only for translation
-	public class HOPIdentityLookup{}
-	//end
-
-	class IdentityLookupDelegate
+	public class CSOPIdentityDelegate:OPIdentityDelegate
 	{
-
-		void OnIdentityLookupCompleted(HOPIdentityLookup lookup)
+		public override void OnIdentityStateChanged (OPIdentity account,IdentityStates state)
 		{
-			ContactsManager.SharedContactsManager().updateContactsWithDataFromLookup(lookup);
+			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToBeLoaded) {
+				LoginManager.SharedLoginManager().loadOuterFrame ();
+			}
+			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToBeMadeVisible) {
+				LoginManager.mIdentity.NotifyBrowserWindowVisible ();
+			}
+			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToClose)
+			{
+				LoginManager.mIdentity.NotifyBrowserWindowClosed ();
+			}
+			if (state == IdentityStates.IdentityStateReady) {
+				//LoginManager.mIdentity;
+			}
+
+
 		}
 
+		public override void OnIdentityPendingMessageForInnerBrowserWindowFrame (OPIdentity identity)
+		{
+			LoginManager.SharedLoginManager().pendingMessageForInnerFrame();
+		}
+		public override void OnIdentityRolodexContactsDownloaded (OPIdentity identity)
+		{
+			LoginManager.SharedLoginManager().onDownloadedRolodexContacts (identity);
+		}
 	}
 }
 

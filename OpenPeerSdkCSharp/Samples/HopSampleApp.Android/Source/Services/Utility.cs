@@ -176,13 +176,28 @@ namespace HopSampleApp
 			}
 		}
 
+		//Get Device id
+		public static string GetDeviceID(Context context)
+		{
+			try
+			{
+				return  Android.Provider.Settings.Secure.GetString (context.ContentResolver, Android.Provider.Settings.Secure.AndroidId).ToString ();
+			}
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("GetDeviceID Error:{0}",error.Message));
+			}
+		}
+
+		//Get Device model name
 		public static string GetDeviceModelName()
 		{
 			try
 			{
 				var device = Android.OS.Build.Model;
 				return device;
-			}catch(Exception error)
+			}
+			catch(Exception error)
 			{
 				throw new Exception(String.Format("GetDeviceModelName Error:{0}",error.Message));
 			}
@@ -275,14 +290,40 @@ namespace HopSampleApp
 			
 
 		#region Methods for Various checks
+
+		public static string GetAndroidVersionRelease()
+		{
+			try
+			{
+				return Android.OS.Build.VERSION.Release.ToString();
+			}
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("GetAndroidVersionRelease Error:{0}",error.Message));
+			}
+		}
+
+		//Get Java UUID
+		public static string GetInstanceIDJavaUUID()
+		{
+			try
+			{
+				return Java.Util.UUID.RandomUUID().ToString().Replace("-","");
+			}
+			catch(Exception error)
+			{
+				throw new Exception(String.Format("GetInstanceIDJavaUUID Error:{0}",error.Message));
+			}
+		}
+
 		//Get GUID string.
-		public static string GetGUIDstring()
+		public static string GetGUIDInstanceID()
 		{
 			try
 			{
 				// Outputs "8c1d1c4b-df68-454c-bf30-953e5701949f"
 			    Guid guid = Guid.NewGuid();
-			    return guid.ToString();
+				return guid.ToString().Replace("-","");
 			}
 			catch(Exception error) 
 			{
@@ -443,7 +484,11 @@ namespace HopSampleApp
 					if (json.IsValid(schema))
 					{
 						return ret=json.IsValid(schema);
-					}else{ return ret; }
+					}
+					else
+					{ 
+						return ret;
+					}
 				}
 				catch (Exception error)
 				{ 

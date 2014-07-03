@@ -18,7 +18,7 @@ namespace HopSampleApp
 		public ArrayList ParticipantsArray {get; set;}
 
 		HOPConversationThread _conversationThread;
-		public HOPCall CurrentCall {get; set;}
+		//public HOPCall CurrentCall {get; set;}
 
 		public bool IsRedial {get; set;}
 

@@ -682,17 +682,17 @@ namespace HopSampleApp
 			}
 			return plistDictionary;
 		}*/
-		public void updateDeviceInfo()
-		{
-			string deviceId = HOPUtility.hashString(Utility.GetGUIDstring());
-			if (deviceId.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(deviceId, "openpeer/calculated/device-id");
-			string str = Utility.GetDeviceOs();
-			if (str.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(str, "openpeer/calculated/os");
-			string system = Utility.GetPlatform();
-			if (system.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(system, "openpeer/calculated/system");
+		//public void updateDeviceInfo()
+		//{
+		//	string deviceId = HOPUtility.hashString(Utility.GetGUIDInstanceID);
+		//	if (deviceId.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(deviceId, "openpeer/calculated/device-id");
+		//	string str = Utility.GetDeviceOs();
+		//	if (str.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(str, "openpeer/calculated/os");
+		//	string system = Utility.GetPlatform();
+		//	if (system.Length > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(system, "openpeer/calculated/system");
 			//string userAgent = Utility.getUserAgentName();
 			//if (userAgent.length() > 0) HOPSettings.sharedSettings().storeCalculatedSettingObjectKey(userAgent, HOPSettings.sharedSettings().getCoreKeyForAppKey(settingsKeyUserAgent));
-		}
+		//}
 		public void snapshotCurrentSettings()
 		{
 			//Dictionary<string,object> currentSettings = HOPSettings.sharedSettings ().getCurrentSettingsDictionary ();

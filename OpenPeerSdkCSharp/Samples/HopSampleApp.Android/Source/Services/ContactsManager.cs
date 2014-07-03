@@ -56,10 +56,10 @@ namespace HopSampleApp
 
 		}
 
-		public void updateContactsWithDataFromLookup(HOPIdentityLookup identityLookup)
-		{
+		//public void updateContactsWithDataFromLookup(HOPIdentityLookup identityLookup)
+		//{
 
-		}
+		//}
 
 		public bool checkIsContactValid(HOPContact contact)
 		{
