@@ -20,10 +20,8 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 
 /**
- * A session represents extact state of a conversation thread.Any state change
- * of a conversation thread will cause an existing session to terminate and a
- * new session to be crated. The state change includes: -- Adding/Removing a
- * contact from the conversation thread.
+ * A session represents extact state of a conversation thread.Any state change of a conversation thread will cause an existing session to
+ * terminate and a new session to be crated. The state change includes: -- Adding/Removing a contact from the conversation thread.
  * 
  * @author brucexia
  * 
@@ -47,6 +45,15 @@ public class OPSession extends Observable {
 	private OPMessage mLastMessage;
 	private Hashtable<String, OPMessage> mMessageDeliveryQueue;
 	long mCurrentWindowId;
+
+	/**
+	 * This is currently the thread id.
+	 * 
+	 * @return
+	 */
+	public String getId() {
+		return mConvThread.getThreadID();
+	}
 
 	Hashtable<String, OPMessage> getMessageDeliveryQueue() {
 		if (mMessageDeliveryQueue == null) {
@@ -90,8 +97,7 @@ public class OPSession extends Observable {
 	}
 
 	/**
-	 * Get the message that's displayed. Used to decide from which message to
-	 * display
+	 * Get the message that's displayed. Used to decide from which message to display
 	 * 
 	 * @return
 	 */
@@ -125,8 +131,7 @@ public class OPSession extends Observable {
 	}
 
 	/**
-	 * If an session existed for an incoming message and thread is null, set
-	 * thread.
+	 * If an session existed for an incoming message and thread is null, set thread.
 	 * 
 	 * @param thread
 	 */
@@ -162,13 +167,12 @@ public class OPSession extends Observable {
 			}
 			// new contact
 			OPUser user = new OPUser(contact, mConvThread.getIdentityContactList(contact));
-			mParticipants.add(user);
+			user = OPDataManager.getDatastoreDelegate().saveUser(user);
 			// This function will also set the userId so don't worry
-			OPDataManager.getDatastoreDelegate().saveUser(user);
+			mParticipants.add(user);
 		}
 		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
 		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
-		OPSessionManager.getInstance().addSession(this);
 	}
 
 	// public OPSession(List<OPIdentityContact> contacts) {
@@ -194,7 +198,6 @@ public class OPSession extends Observable {
 		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
 				.getSharedAccount(), OPDataManager.getInstance()
 				.getSelfContacts());
-		OPSessionManager.getInstance().addSession(this);
 
 		mParticipants = users;
 		addContactToThread(users);
@@ -223,13 +226,14 @@ public class OPSession extends Observable {
 		// TODO Auto-generated constructor stub
 	}
 
-	public OPCall placeCall(OPCallDelegate delegate,
-			boolean includeAudio, boolean includeVideo) {
+	public OPCall placeCall(boolean includeAudio, boolean includeVideo) {
 
 		currentCall = OPCall.placeCall(mConvThread, mParticipants.get(0).getOPContact(), includeAudio,
 				includeVideo);
-		CallbackHandler.getInstance().registerCallDelegate(currentCall,
-				delegate);
+		currentCall.setPeerUser(mParticipants.get(0));
+
+		//		CallbackHandler.getInstance().registerCallDelegate(currentCall,
+		//				delegate);
 		return currentCall;
 
 	}
@@ -290,8 +294,7 @@ public class OPSession extends Observable {
 	}
 
 	/**
-	 * Find the added/deleted contacts and inform listener -- probably better to
-	 * be done in core
+	 * Find the added/deleted contacts and inform listener -- probably better to be done in core
 	 * 
 	 * @param contacts
 	 */
@@ -307,9 +310,8 @@ public class OPSession extends Observable {
 				contactsChanged = true;
 				// new contact
 				OPUser user = new OPUser(contact, mConvThread.getIdentityContactList(contact));
-				mParticipants.add(user);
 				// This function will also set the userId so don't worry
-				OPDataManager.getDatastoreDelegate().saveUser(user);
+				mParticipants.add(OPDataManager.getDatastoreDelegate().saveUser(user));
 			}
 		}
 		if (contactsChanged) {
@@ -366,7 +368,11 @@ public class OPSession extends Observable {
 		Log.d("test", "thread " + mConvThread.getNativeClassPtr() + " received message " + message);
 		OPUser user = getUserByContact(message.getFrom());
 		message.setSenderId(user.getUserId());
-		OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
+		if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
+			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
+		} else {
+			Log.d("test", "SessionManager onMessageReceived " + message.getMessageType());
+		}
 	}
 
 	private OPUser getUserByContact(OPContact from) {
@@ -385,5 +391,14 @@ public class OPSession extends Observable {
 			}
 		}
 		return null;
+	}
+
+	public OPCall placeCall(List<OPUser> users, boolean audio, boolean video) {
+		currentCall = OPCall.placeCall(mConvThread, users.get(0).getOPContact(), audio,
+				video);
+		currentCall.setPeerUser(users.get(0));
+
+		return currentCall;
+
 	}
 }

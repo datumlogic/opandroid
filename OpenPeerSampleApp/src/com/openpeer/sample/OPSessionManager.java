@@ -6,10 +6,12 @@ import java.util.List;
 
 import android.util.Log;
 
+import com.openpeer.app.OPChatWindow;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPHelper;
 import com.openpeer.app.OPSession;
 import com.openpeer.app.OPUser;
+import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
@@ -57,7 +59,6 @@ public class OPSessionManager {
 			if (session.getThread() != null && thread.getThreadID().equals(session.getThread().getThreadID())) {
 				Log.d("test", "found session for thread " + thread.getThreadID() + " sessions " + mSessions.size());
 				return session;
-
 			}
 		}
 		// No existing session with the thread, now lets try to find
@@ -122,7 +123,8 @@ public class OPSessionManager {
 	}
 
 	OPCall mActiveCall;
-	Hashtable<Long, OPCall> mStandbyCalls;
+	//<callId,call>
+	Hashtable<String, OPCall> mCalls;
 
 	private OPCallDelegate mBackgroundCallHandler;
 
@@ -147,8 +149,24 @@ public class OPSessionManager {
 		mBackgroundCallHandler = delegate;
 	}
 
+	public OPCall placeCall(long[] userIDs, boolean audio, boolean video) {
+		//		long windowId = OPChatWindow.getWindowId(userIDs);
+		OPSession mSession = OPSessionManager.getInstance().getSessionForUsers(userIDs);
+		if (mSession == null) {
+			// this is user intiiated session
+			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
+			mSession = new OPSession(users);
+		}
+		addSession(mSession);
+
+		OPCall call = mSession.placeCall(audio, video);
+		mCalls.put(call.getPeerUser().getPeerUri(), call);
+		return call;
+	}
+
 	void init() {
-		OPConversationThreadDelegate threadDelegate =new  OPConversationThreadDelegate() {
+		mCalls = new Hashtable<String, OPCall>();
+		OPConversationThreadDelegate threadDelegate = new OPConversationThreadDelegate() {
 
 			@Override
 			public void onConversationThreadNew(OPConversationThread conversationThread) {
@@ -188,19 +206,46 @@ public class OPSessionManager {
 
 			}
 		};
-		OPCallDelegate callDelegate = new OPCallDelegate(){
+		OPCallDelegate callDelegate = new OPCallDelegate() {
 
 			@Override
 			public void onCallStateChanged(OPCall call, CallStates state) {
-				switch(state){
+				switch (state) {
 				case CallState_Incoming:
-					ConversationActivity.launchForIncomingCall(OPApplication.getInstance(),call.getCallID());
-				}
-				
-			}
-			
-		};
+					OPContact caller = call.getCaller();
+					Log.d("test",
+							"OPSessionManager onCallStateChanged " + call.getNativeClsPtr() + " caller " + caller.getNativeClassPointer());
+					OPCall currentCall = getOngoingCallForPeer(caller.getPeerURI());
+					if (currentCall != null) {
+						//TODO: auto answer and swap calls
+						Log.d("test", "found existing call.");
+						//						return;
+					}
 
-		
+					mCalls.put(caller.getPeerURI(), call);
+					ConversationActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
+
+				}
+			}
+		};
+		CallbackHandler.getInstance().registerConversationThreadDelegate(threadDelegate);
+		CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
+	}
+
+	public OPCall getCallById(String id) {
+		for (OPCall call : mCalls.values()) {
+			if (call.getCallID().equals(id)) {
+				return call;
+			}
+		}
+		return null;
+	}
+
+	public OPCall getOngoingCallForPeer(String peerUri) {
+		return mCalls.get(peerUri);
+	}
+
+	public void onCallEnd(OPCall mCall) {
+		mCalls.remove(mCall.getPeerUser().getPeerUri());
 	}
 }

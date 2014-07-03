@@ -30,6 +30,7 @@ import com.openpeer.app.OPSession;
 import com.openpeer.app.OPUser;
 import com.openpeer.datastore.DatabaseContracts;
 import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
@@ -88,14 +89,9 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		mSession = OPSessionManager.getInstance().getSessionForUsers(userIDs);
 		if (mSession == null) {
 			// this is user intiiated session
-			List<OPUser> users = new ArrayList<OPUser>();
-			for (long userId : userIDs) {
-				Cursor cursor = getActivity().getContentResolver().query(ContactsViewEntry.CONTENT_URI, null,
-						ContactsViewEntry.COLUMN_NAME_USER_ID + "=" + userId, null, null);
-				OPUser user = OPUser.fromDetailCursor(cursor);
-				users.add(user);
-			}
+			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
 			mSession = new OPSession(users);
+			OPSessionManager.getInstance().addSession(mSession);
 		}
 		// mPeerContact =
 		// OPDataManager.getDatastoreDelegate().getIdentityContact(
@@ -185,7 +181,12 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		@Override
 		public int getItemViewType(int position) {
-			return position % 2;
+			Cursor cursor = (Cursor) getItem(position);
+			long sender_id = cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
+			if (sender_id == 0) {
+				return 0;
+			}
+			return 1;
 
 		}
 
@@ -294,7 +295,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		}
 	}
 
-	// After adding a new participant we'll have switch chat window
+	// After adding a new participant we'll have to switch chat window
 	private void addParticipant() {
 		Cursor cursor = getActivity().getContentResolver().query(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null,
 				ContactsViewEntry.COLUMN_NAME_CONTACT_NAME + "=?", new String[] { "David Gotwo" }, null);

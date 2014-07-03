@@ -22,11 +22,12 @@ public class OPUser {
 	String mAvatarUri;
 
 	/**
-	 * If the user is a contact, or a stranger in group chat
+	 * If the user is a contact, or a stranger
+	 * 
+	 * This is used primarily in group chat to determine if a participant is a known contact.
 	 * 
 	 * @return
 	 */
-
 	public boolean isContact() {
 		if (mIdentityContacts != null) {
 			for (OPIdentityContact contact : mIdentityContacts) {

@@ -2,14 +2,15 @@ package com.openpeer.delegates;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 import android.text.format.Time;
 import android.util.Log;
 
+import com.openpeer.app.OPCallManager;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPHelper;
-import com.openpeer.app.OPSessionManager;
 import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
@@ -209,19 +210,19 @@ public class CallbackHandler {
 	// CALL DELEGATE GLUE
 	// ///////////////////////////////////////////////////////////////////
 	// OPCallDelegate support
-	private static OPCall mCall;
+	//	private static OPCall mCall;
+	private static Hashtable<Long, OPCall> mCalls = new Hashtable<Long, OPCall>();
 	static ArrayList<OPCallDelegate> callDelegates = new ArrayList<OPCallDelegate>();
 
-	public static void onCallStateChanged(int state) {
-
-		if (callDelegates.size() == 0 && mBackgroundCallHandler != null) {
-			mBackgroundCallHandler.onCallStateChanged(mCall,
-					CallStates.values()[state]);
+	public static void onCallStateChanged(long nativeClsPtr, int state) {
+		Log.d("test", "onCallStateChanged " + nativeClsPtr + " state " + state);
+		OPCall call = mCalls.get(nativeClsPtr);
+		if (call == null) {
+			call = new OPCall(nativeClsPtr);
+			mCalls.put(nativeClsPtr, call);
 		}
 		for (OPCallDelegate delegate : callDelegates) {
-			if (mCall != null && delegate != null) {
-				delegate.onCallStateChanged(mCall, CallStates.values()[state]);
-			}
+			delegate.onCallStateChanged(call, CallStates.values()[state]);
 		}
 	}
 
@@ -238,12 +239,12 @@ public class CallbackHandler {
 
 	// Call delegate register/unregister methods
 	public boolean registerCallDelegate(OPCall call, OPCallDelegate delegate) {
-		if (call == null || delegate == null) {
-			return false;
-		}
+		//		if (call == null || delegate == null) {
+		//			return false;
+		//		}
 
-		if (mCall == null) {
-			mCall = call;
+		if (call != null) {
+			mCalls.put(call.getNativeClsPtr(), call);
 		}
 
 		// Store the delegate object
@@ -252,8 +253,7 @@ public class CallbackHandler {
 		return true;
 	}
 
-	public void unregisterCallDelegate(OPCallDelegate delegate) {
-		mCall = null;
+	public void unregisterCallDelegate(OPCall call,OPCallDelegate delegate) {
 		this.callDelegates.remove(delegate);
 
 	}
@@ -317,25 +317,6 @@ public class CallbackHandler {
 		convThread = mThreads.get(convThread.getNativeClassPtr());
 		OPMessage message = convThread.getMessage(messageID);
 
-		// OPAccount account = convThread.getAssociatedAccount();
-		// if (account != null) {
-		// List<OPIdentity> identities = account.getAssociatedIdentities();
-		// if (identities != null && identities.size() > 0) {
-		// Log.d("test", "found identities for account " + identities.size() +
-		// identities.get(0).getIdentityURI());
-		// }
-		// }
-		for (OPContact contact : convThread.getContacts()) {
-			List<OPIdentityContact> iContacts = convThread.getIdentityContactList(contact);
-			if (iContacts != null) {
-				for (OPIdentityContact oContact : iContacts) {
-					Log.d("test",
-							"onConversationThreadMessage identityContact name " + oContact.getName() + " identity uri "
-									+ oContact.getIdentityURI() + " opcontact peer uri "
-									+ contact.getPeerURI());
-				}
-			}
-		}
 		if (conversationThreadDelegates.size() == 0
 				&& mBackgroundConversationHandler != null) {
 			mBackgroundConversationHandler.onConversationThreadMessage(
@@ -352,7 +333,6 @@ public class CallbackHandler {
 		}
 
 		Log.d("test", "received message " + message);
-		OPSessionManager.getInstance().getSessionOfThread(convThread).onMessageReceived(message);
 	}
 
 	public static void onConversationThreadMessageDeliveryStateChanged(
@@ -398,9 +378,9 @@ public class CallbackHandler {
 	// Conversation Thread delegate register/unregister methods
 	public boolean registerConversationThreadDelegate(
 			OPConversationThreadDelegate delegate) {
-		if (delegate == null) {
-			return false;
-		}
+		//		if (delegate == null) {
+		//			return false;
+		//		}
 
 		// Store the delegate object
 		this.conversationThreadDelegates.add(delegate);

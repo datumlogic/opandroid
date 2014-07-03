@@ -2,6 +2,10 @@ package com.openpeer.sample.contacts;
 
 import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
 import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -17,13 +21,19 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.openpeer.app.OPChatWindow;
 import com.openpeer.app.OPDataManager;
+import com.openpeer.app.OPSession;
+import com.openpeer.app.OPUser;
+import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
+import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.conversation.ConversationActivity;
+import com.openpeer.sample.conversation.CallFragment.OPCallDelegateImplementation;
 import com.squareup.picasso.Picasso;
 
 public class ContactItemView extends RelativeLayout {
@@ -88,11 +98,14 @@ public class ContactItemView extends RelativeLayout {
 					AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 					builder.setPositiveButton(R.string.audio, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							ConversationActivity.launchForCall(getContext(), ids, true, false);
+							OPCall call = OPSessionManager.getInstance().placeCall(ids, true, false);
+
+							ConversationActivity.launchForCall(getContext(), call.getPeerUser().getPeerUri());
 						}
 					}).setNeutralButton(R.string.video, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							ConversationActivity.launchForCall(getContext(), ids, true, true);
+							OPCall call = OPSessionManager.getInstance().placeCall(ids, true, true);
+							ConversationActivity.launchForCall(getContext(), call.getPeerUser().getPeerUri());
 						}
 					}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {

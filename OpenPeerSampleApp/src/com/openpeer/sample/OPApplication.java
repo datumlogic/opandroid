@@ -29,6 +29,7 @@ public class OPApplication extends Application {
 		instance = this;
 		OPHelper.getInstance().init(this, null);
 		OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
+		OPSessionManager.getInstance().init();
 	}
 
 	public static void notify(int notificationId, int notificationDrawableRes,
@@ -52,6 +53,5 @@ public class OPApplication extends Application {
 		// TODO Auto-generated method stub
 		return instance;
 	}
-		
-	
+
 }

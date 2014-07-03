@@ -88,7 +88,9 @@ public interface OPDatastoreDelegate {
 
 	public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long stableID);
 
-	void saveUser(OPUser user);
+	OPUser saveUser(OPUser user);
+
+	public List<OPUser> getUsers(long[] ids);
 
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record);

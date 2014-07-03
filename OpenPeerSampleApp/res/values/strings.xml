@@ -18,6 +18,7 @@
     <!-- Beginning of call state strings -->
     <string name="CallState_Incoming">Incoming</string>
     <string name="CallState_Placed">Calling</string>
+    <string name="CallState_Ringing">Ringing</string>
     <string name="CallState_Ringback">Ringing</string>
     <string name="CallState_Open">In progress</string>
     <string name="CallState_Active">Active</string>

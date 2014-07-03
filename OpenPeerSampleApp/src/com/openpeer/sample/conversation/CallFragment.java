@@ -22,6 +22,7 @@ import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPSession;
 import com.openpeer.app.OPUser;
 import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.CameraTypes;
@@ -43,6 +44,7 @@ public class CallFragment extends BaseFragment {
 	private OPSession mSession;
 
 	OPCall mCall;
+	OPCallDelegateImplementation mDelegate;
 	private long mWindowId;
 	private SurfaceView myLocalSurface;
 	private SurfaceView myRemoteSurface;
@@ -55,6 +57,15 @@ public class CallFragment extends BaseFragment {
 		args.putLongArray(IntentData.ARG_PEER_USER_IDS, peerContactId);
 		args.putBoolean(IntentData.ARG_AUDIO, audio);
 		args.putBoolean(IntentData.ARG_VIDEO, video);
+
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	public static CallFragment newInstance(String peerUri) {
+		CallFragment fragment = new CallFragment();
+		Bundle args = new Bundle();
+		args.putString(IntentData.ARG_PEER_URI, peerUri);
 
 		fragment.setArguments(args);
 		return fragment;
@@ -75,20 +86,11 @@ public class CallFragment extends BaseFragment {
 		super.onCreate(savedInstanceState);
 		Bundle args = getArguments();
 
-		long[] userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
-		mWindowId = OPChatWindow.getWindowId(userIDs);
-		mSession = OPSessionManager.getInstance().getSessionForUsers(userIDs);
-		if (mSession == null) {
-			// this is user intiiated session
-			List<OPUser> users = new ArrayList<OPUser>();
-			for (long userId : userIDs) {
-				Cursor cursor = getActivity().getContentResolver().query(ContactsViewEntry.CONTENT_URI, null,
-						ContactsViewEntry.COLUMN_NAME_USER_ID + "=" + userId, null, null);
-				OPUser user = OPUser.fromDetailCursor(cursor);
-				users.add(user);
-			}
-			mSession = new OPSession(users);
-		}
+		String peerUri = args.getString(IntentData.ARG_PEER_URI);
+		mCall = OPSessionManager.getInstance().getOngoingCallForPeer(peerUri);
+		CallbackHandler.getInstance().registerCallDelegate(mCall, new OPCallDelegateImplementation());
+		mVideo = mCall.hasVideo();
+
 	}
 
 	private View setupView(View view) {
@@ -100,18 +102,25 @@ public class CallFragment extends BaseFragment {
 
 			@Override
 			public void onClick(View v) {
-				mCall.hangup(CallClosedReasons.CallClosedReason_User);
+				if (mCall.getState() == CallStates.CallState_Incoming) {
+					mCall.answer();
+				} else {
+					mCall.hangup(CallClosedReasons.CallClosedReason_User);
+					OPSessionManager.getInstance().onCallEnd(mCall);
+					CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
+
+				}
 			}
 		});
 		Bundle args = getArguments();
-		mVideo = args.getBoolean(IntentData.ARG_VIDEO, false);
+		//		mVideo = args.getBoolean(IntentData.ARG_VIDEO, false);
 		if (mVideo) {
 			mVideoView.setVisibility(View.VISIBLE);
 		}
 		initMedia(true, view);
 
-		mCall = mSession.placeCall(new OPCallDelegateImplementation(),
-				args.getBoolean(IntentData.ARG_AUDIO, true), mVideo);
+		//		mCall = mSession.placeCall(new OPCallDelegateImplementation(),
+		//				args.getBoolean(IntentData.ARG_AUDIO, true), mVideo);
 		return view;
 	}
 
@@ -123,16 +132,14 @@ public class CallFragment extends BaseFragment {
 			setStateText(mCall.getState());
 		}
 	}
-	
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		if(mCall!=null && mCall.getState()==CallStates.CallState_Active){
-			
+		if (mCall != null && mCall.getState() == CallStates.CallState_Active) {
+
 		}
 	}
-
 
 	public class OPCallDelegateImplementation extends OPCallDelegate {
 
@@ -184,7 +191,8 @@ public class CallFragment extends BaseFragment {
 				}
 
 				private void onCallClosed() {
-
+					OPSessionManager.getInstance().onCallEnd(mCall);
+					CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
 				}
 			});
 		}
@@ -202,7 +210,7 @@ public class CallFragment extends BaseFragment {
 			R.string.CallState_Incoming, // call is incoming from a remote party
 			R.string.CallState_Placed, // call has been placed to the remote party
 			0,//CallState_Early,      // call is outgoing to a remote party and is receiving early media (media before being answered)
-			0,//CallState_Ringing,    // call is incoming from a remote party and is ringing
+			R.string.CallState_Ringing,//CallState_Ringing,    // call is incoming from a remote party and is ringing
 			R.string.CallState_Ringback, // call is outgoing to a remote party and remote party is ringing
 			R.string.CallState_Open, // call is open
 			R.string.CallState_Active, // call is open, and participant is actively communicating
@@ -238,7 +246,7 @@ public class CallFragment extends BaseFragment {
 			OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
 		}
 
-		OPMediaEngine.init(OPApplication.getInstance());
+		//		OPMediaEngine.init(OPApplication.getInstance());
 	}
 
 	private long startTime;

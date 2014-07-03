@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.openpeer.datastore.OPDatastoreDelegate;
@@ -39,15 +40,9 @@ public class OPHelper {
 	private static OPHelper instance;
 	Context mContext;
 
-	// static {
-	// try {
-	// System.loadLibrary("z_shared");
-	// System.loadLibrary("openpeer");
-	//
-	// } catch (UnsatisfiedLinkError use) {
-	// use.printStackTrace();
-	// }
-	// }
+	public Context getApplicationContext() {
+		return mContext;
+	}
 
 	public static OPHelper getInstance() {
 		if (instance == null) {
@@ -69,6 +64,7 @@ public class OPHelper {
 	}
 
 	private void initMediaEngine() {
+		long start = SystemClock.uptimeMillis();
 		OPMediaEngine.getInstance().setEcEnabled(true);
 		OPMediaEngine.getInstance().setAgcEnabled(true);
 		OPMediaEngine.getInstance().setNsEnabled(false);
@@ -79,10 +75,13 @@ public class OPHelper {
 		OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
 		OPMediaEngine.getInstance().setFaceDetection(false);
 
-		OPMediaEngine.init(mContext);
+		Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
+		//		OPMediaEngine.init(mContext);
 	}
 
 	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
+		long start = SystemClock.uptimeMillis();
+
 		mContext = context;
 		OPMediaEngine.init(mContext);
 
@@ -126,6 +125,8 @@ public class OPHelper {
 				new OPCallDelegateImplementation());
 
 		stack.setup(null, null);
+		initMediaEngine();
+		Log.d("performance", "OPHelper init time " + (SystemClock.uptimeMillis() - start));
 
 	}
 
@@ -182,6 +183,11 @@ public class OPHelper {
 	}
 
 	private MessageDispatcher mDispatcher;
+	private boolean mAppInBackground;
+
+	public boolean isAppInBackground() {
+		return mAppInBackground;
+	}
 
 	public void dispatchMessage(OPConversationThread thread, OPMessage message) {
 		mDispatcher.dispatch(thread, message);
@@ -189,6 +195,16 @@ public class OPHelper {
 
 	public void registerMessageReceiver(MessageReceiver receiver) {
 
+	}
+
+	public void onEnteringForeground() {
+		mAppInBackground = false;
+		OPCallManager.getInstance().onEnteringForeground();
+	}
+
+	public void onEnteringBackground() {
+		mAppInBackground = true;
+		OPCallManager.getInstance().onEnteringForeground();
 	}
 
 }

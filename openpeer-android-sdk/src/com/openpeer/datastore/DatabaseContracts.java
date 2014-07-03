@@ -212,14 +212,14 @@ public class DatabaseContracts {
 	}
 
 	public static abstract class CallEntry implements BaseColumns {
-		public static final String TABLE_NAME = "CALL";
-		public static final String COLUMN_NAME_CALL_ID = "stable_id";
-		public static final String COLUMN_NAME_CALL_PROVIDER = "provider";
-		public static final String COLUMN_NAME_CALL_URI = "uri";
+		public static final String TABLE_NAME = "call";		
+		public static final String COLUMN_NAME_CALL_ID = "call_id";
+		public static final String COLUMN_NAME_THREAD_ID = "thread_id";
+		public static final String COLUMN_NAME_CALLER = "caller";
+		public static final String COLUMN_NAME_CALLEE = "callee";
 		// The "selfContact" of the CALL
-		public static final String COLUMN_NAME_CALL_CONTACT_ID = "contact_id";
-		public static final String COLUMN_NAME_CALL_CONTACTS_VERSION = "contacts_version";
-
+		public static final String COLUMN_NAME_ANSWER_TIME = "answer_time";
+		public static final String COLUMN_NAME_CLOSE_TIME = "closed_time";
 		// TODO add other columns
 	}
 
@@ -448,6 +448,14 @@ public class DatabaseContracts {
 	public static final String SQL_CREATE_GROUP = CREATE_TABLE + BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
 			+ GroupEntry.TABLE_NAME + " (" + BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + GroupEntry.COLUMN_NAME_GROUP_ID
 			+ TEXT_TYPE + COMMA_SEP + GroupEntry.COLUMN_NAME_GROUP_NAME + TEXT_TYPE + " )";
+	public static final String SQL_CREATE_CALL = CREATE_TABLE + CallEntry.TABLE_NAME + " (" +
+			BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP +
+			CallEntry.COLUMN_NAME_CALL_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP +
+			CallEntry.COLUMN_NAME_CALLER + INTEGER_TYPE + COMMA_SEP +
+			CallEntry.COLUMN_NAME_CALLEE + INTEGER_TYPE + COMMA_SEP +
+			CallEntry.COLUMN_NAME_ANSWER_TIME + INTEGER_TYPE + COMMA_SEP +
+			CallEntry.COLUMN_NAME_CLOSE_TIME + INTEGER_TYPE + " )";
+
 	public static final String SQL_CREATE_CONVERSATION_PARTICIPANT = CREATE_TABLE + WindowParticipantEntry.TABLE_NAME + " ("
 			+ WindowParticipantEntry._ID + INTEGER_TYPE + COMMA_SEP
 			+ WindowParticipantEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
@@ -468,6 +476,7 @@ public class DatabaseContracts {
 			MessageEntry.COLUMN_NAME_MESSAGE_TEXT + TEXT_TYPE + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_MESSAGE_TIME + TEXT_TYPE + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE + " )";
+
 	public static final String CREATE_STATEMENTS[] = {
 			DatabaseContracts.SQL_CREATE_IDENTITY,
 			DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT,

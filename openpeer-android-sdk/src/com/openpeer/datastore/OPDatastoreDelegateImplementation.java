@@ -37,8 +37,7 @@ import com.openpeer.model.OPHomeUser;
 import com.openpeer.sdk.BuildConfig;
 
 /**
- * The data being stored in preference: -- Relogin information for account --
- * stableId
+ * The data being stored in preference: -- Relogin information for account -- stableId
  * 
  * The data being stored in database Contacts Conversation history Call history
  * 
@@ -617,8 +616,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	/**
-	 * Get all private messages with the contact. This function retrieves all
-	 * private sessions with the contact and messages associated
+	 * Get all private messages with the contact. This function retrieves all private sessions with the contact and messages associated
 	 * 
 	 * @param contactId
 	 *            stableId of the OPContact(or OPIdentityContact?)
@@ -656,8 +654,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	/**
-	 * Get all private messages with the contact. This function retrieves all
-	 * private sessions with the contact and messages associated
+	 * Get all private messages with the contact. This function retrieves all private sessions with the contact and messages associated
 	 * 
 	 * @param contactId
 	 *            stableId of the OPContact(or OPIdentityContact?)
@@ -756,21 +753,29 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	/**
-	 * Save a user from incoming thread. If the use is already in database, set
-	 * the userId and update user info
+	 * Save a user from incoming thread. If the use is already in database, set the userId and update user info
 	 * 
 	 * @param user
 	 */
 	@Override
-	public void saveUser(OPUser user) {
+	public OPUser saveUser(OPUser user) {
 		long userID = -1;
 		ContentValues values = new ContentValues();
+		if (user.getLockboxStableId() == null) {
+			Log.d("test", "user doesn't have a stableId");
+			return getUserByPeerUri(user.getPeerUri());
+		}
+		if (user.getAvatarUri() != null) {
+			values.put(UserEntry.COLUMN_NAME_AVTAR_URI, user.getAvatarUri());
+		}
 
-		values.put(UserEntry.COLUMN_NAME_AVTAR_URI, user.getAvatarUri());
 		values.put(UserEntry.COLUMN_NAME_IDENTITY_URI, user.getIdentityUri());
 		values.put(UserEntry.COLUMN_NAME_STABLE_ID, user.getLockboxStableId());
-		values.put(UserEntry.COLUMN_NAME_USER_NAME, user.getName());
+		if (user.getName() != null) {
+			values.put(UserEntry.COLUMN_NAME_USER_NAME, user.getName());
+		}
 		values.put(UserEntry.COLUMN_NAME_PEER_URI, user.getPeerUri());
+		Log.d("test", "saveUser values " + Arrays.deepToString(values.valueSet().toArray()));
 
 		String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
 				UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
@@ -799,6 +804,33 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			}
 		}
 		user.setUserId(userID);
+		return user;
 
+	}
+
+	OPUser getUserByPeerUri(String peerUri) {
+		String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + " in (select _id from " + UserEntry.TABLE_NAME + " where "
+				+ UserEntry.COLUMN_NAME_PEER_URI + "=?)";
+		Cursor cursor = mContext.getContentResolver().query(ContactsViewEntry.CONTENT_URI, null,
+				selection, new String[] { peerUri }, null);
+		Log.d("test", "getUserByPeerUri " + cursor.getCount());
+		if (cursor != null && cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			return OPUser.fromDetailCursor(cursor);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public List<OPUser> getUsers(long[] userIDs) {
+		List<OPUser> users = new ArrayList<OPUser>();
+		for (long userId : userIDs) {
+			Cursor cursor = mContext.getContentResolver().query(ContactsViewEntry.CONTENT_URI, null,
+					ContactsViewEntry.COLUMN_NAME_USER_ID + "=" + userId, null, null);
+			OPUser user = OPUser.fromDetailCursor(cursor);
+			users.add(user);
+		}
+		return users;
 	}
 }

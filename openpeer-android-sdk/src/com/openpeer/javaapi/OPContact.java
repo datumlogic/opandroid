@@ -6,6 +6,14 @@ public class OPContact {
 
 	private long nativeClassPointer;
 	
+	public long getNativeClassPointer() {
+		return nativeClassPointer;
+	}
+
+	public void setNativeClassPointer(long nativeClassPointer) {
+		this.nativeClassPointer = nativeClassPointer;
+	}
+
 	public static native String toDebugString(OPContact contact, boolean includeCommaPrefix);
 
     public static native OPContact createFromPeerFilePublic(

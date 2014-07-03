@@ -38,6 +38,14 @@ public class ConversationActivity extends BaseFragmentActivity {
 		context.startActivity(intent);
 	}
 
+	public static void launchForCall(Context context, String peerUri) {
+		Intent intent = new Intent(context, ConversationActivity.class);
+		intent.putExtra(IntentData.ARG_CONVERSATION_ACTION, IntentData.ACTION_CALL);
+		intent.putExtra(IntentData.ARG_PEER_URI, peerUri);
+
+		context.startActivity(intent);
+	}
+
 	public static void launchForCall(Context context, long[] peerContactId, boolean audio, boolean video) {
 		Intent intent = new Intent(context, ConversationActivity.class);
 		intent.putExtra(IntentData.ARG_CONVERSATION_ACTION,
@@ -62,10 +70,11 @@ public class ConversationActivity extends BaseFragmentActivity {
 					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS));
 			setContentFragment(cFragment);
 		} else if (action.equals(IntentData.ACTION_CALL)) {
-			CallFragment cFragment = CallFragment.newInstance(intent
-					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS),
-					intent.getBooleanExtra(IntentData.ARG_AUDIO, true),
-					intent.getBooleanExtra(IntentData.ARG_VIDEO, false));
+			CallFragment cFragment = CallFragment.newInstance(intent.getStringExtra(IntentData.ARG_PEER_URI));
+			//			CallFragment cFragment = CallFragment.newInstance(intent
+			//					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS),
+			//					intent.getBooleanExtra(IntentData.ARG_AUDIO, true),
+			//					intent.getBooleanExtra(IntentData.ARG_VIDEO, false));
 			setContentFragment(cFragment);
 		}
 	}
@@ -80,8 +89,13 @@ public class ConversationActivity extends BaseFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public static void launchForIncomingCall(Context instance, String callID) {
+	public static void launchForIncomingCall(Context context, String peerUri) {
+		Intent intent = new Intent(context, ConversationActivity.class);
+		intent.putExtra(IntentData.ARG_CONVERSATION_ACTION, IntentData.ACTION_CALL);
+		intent.putExtra(IntentData.ARG_PEER_URI, peerUri);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+		context.startActivity(intent);
 	}
 
 	@Override
