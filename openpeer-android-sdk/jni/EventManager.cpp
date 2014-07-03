@@ -6,20 +6,20 @@
 #include "OpenPeerCoreManager.h"
 
 //IStackMessageQueueDelegate implementation
-void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread()
-{
+void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread() {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread",
+			"()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -32,16 +32,14 @@ void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread
 }
 
 //IStackDelegate implementation
-void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
-{
+void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
@@ -59,20 +57,20 @@ void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
 }
 
 //IMediaEngine implementation
-void EventManager::onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute)
-{
+void EventManager::onMediaEngineAudioRouteChanged(
+		openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioRouteChanged", "(I)V");
+	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioRouteChanged",
+			"(I)V");
 	jni_env->CallStaticVoidMethod(cls, method, (jint) audioRoute);
 
 	if (jni_env->ExceptionCheck()) {
@@ -82,20 +80,19 @@ void EventManager::onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::
 	android_jvm->DetachCurrentThread();
 
 }
-void EventManager::onMediaEngineAudioSessionInterruptionBegan()
-{
+void EventManager::onMediaEngineAudioSessionInterruptionBegan() {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioSessionInterruptionBegan", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onMediaEngineAudioSessionInterruptionBegan", "()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -104,20 +101,19 @@ void EventManager::onMediaEngineAudioSessionInterruptionBegan()
 
 	android_jvm->DetachCurrentThread();
 }
-void EventManager::onMediaEngineAudioSessionInterruptionEnded()
-{
+void EventManager::onMediaEngineAudioSessionInterruptionEnded() {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioSessionInterruptionEnded", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onMediaEngineAudioSessionInterruptionEnded", "()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -127,8 +123,7 @@ void EventManager::onMediaEngineAudioSessionInterruptionEnded()
 	android_jvm->DetachCurrentThread();
 }
 
-void EventManager::onMediaEngineFaceDetected()
-{
+void EventManager::onMediaEngineFaceDetected() {
 
 	jclass cls;
 	jmethodID method;
@@ -136,12 +131,12 @@ void EventManager::onMediaEngineFaceDetected()
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineFaceDetected", "()V");
+	method = jni_env->GetStaticMethodID(cls, "onMediaEngineFaceDetected",
+			"()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -150,8 +145,7 @@ void EventManager::onMediaEngineFaceDetected()
 
 	android_jvm->DetachCurrentThread();
 }
-void EventManager::onMediaEngineVideoCaptureRecordStopped()
-{
+void EventManager::onMediaEngineVideoCaptureRecordStopped() {
 
 	jclass cls;
 	jmethodID method;
@@ -159,12 +153,12 @@ void EventManager::onMediaEngineVideoCaptureRecordStopped()
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineVideoCaptureRecordStopped", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onMediaEngineVideoCaptureRecordStopped", "()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -175,8 +169,8 @@ void EventManager::onMediaEngineVideoCaptureRecordStopped()
 }
 
 //IAccountDelegate implementation
-void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountStates state)
-{
+void EventManager::onAccountStateChanged(IAccountPtr account,
+		IAccount::AccountStates state) {
 
 	jclass cls;
 	jmethodID method;
@@ -184,13 +178,13 @@ void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountS
 	//JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0)
-	{
+	if (attach_result < 0 || gEnv == 0) {
 		return;
 	}
 
 	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onAccountStateChanged", "(I)V");
+	method = gEnv->GetStaticMethodID(callbackClass, "onAccountStateChanged",
+			"(I)V");
 	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
 
 	if (gEnv->ExceptionCheck()) {
@@ -200,8 +194,7 @@ void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountS
 	android_jvm->DetachCurrentThread();
 
 }
-void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
-{
+void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account) {
 
 	jclass cls;
 	jmethodID method;
@@ -209,12 +202,12 @@ void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onAccountAssociatedIdentitiesChanged", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onAccountAssociatedIdentitiesChanged", "()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -223,8 +216,8 @@ void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
 
 	android_jvm->DetachCurrentThread();
 }
-void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account)
-{
+void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(
+		IAccountPtr account) {
 
 	jclass cls;
 	jmethodID method;
@@ -232,12 +225,12 @@ void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onAccountPendingMessageForInnerBrowserWindowFrame", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onAccountPendingMessageForInnerBrowserWindowFrame", "()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -248,23 +241,23 @@ void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr
 }
 
 //IConversationThreadDelegate implementation
-void EventManager::onConversationThreadNew(IConversationThreadPtr conversationThreadPtr)
-{
+void EventManager::onConversationThreadNew(
+		IConversationThreadPtr conversationThreadPtr) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 
 	cls = findClass("com/openpeer/javaapi/OPConversationThread");
 	method = jni_env->GetMethodID(cls, "<init>", "()V");
 	object = jni_env->NewObject(cls, method);
-	OpenPeerCoreManager::coreConversationThreadList.push_back(conversationThreadPtr);
+	OpenPeerCoreManager::coreConversationThreadList.push_back(
+			conversationThreadPtr);
 	//conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThread));
 
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -272,7 +265,8 @@ void EventManager::onConversationThreadNew(IConversationThreadPtr conversationTh
 	jni_env->SetLongField(object, fid, convThread);
 
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onConversationThreadNew", "(Lcom/openpeer/javaapi/OPConversationThread;)V");
+	method = jni_env->GetStaticMethodID(cls, "onConversationThreadNew",
+			"(Lcom/openpeer/javaapi/OPConversationThread;)V");
 	jni_env->CallStaticVoidMethod(cls, method, object);
 
 	if (jni_env->ExceptionCheck()) {
@@ -281,8 +275,8 @@ void EventManager::onConversationThreadNew(IConversationThreadPtr conversationTh
 
 	android_jvm->DetachCurrentThread();
 }
-void EventManager::onConversationThreadContactsChanged(IConversationThreadPtr conversationThread)
-{
+void EventManager::onConversationThreadContactsChanged(
+		IConversationThreadPtr conversationThread) {
 
 	jclass cls;
 	jmethodID method;
@@ -290,8 +284,7 @@ void EventManager::onConversationThreadContactsChanged(IConversationThreadPtr co
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 
@@ -304,7 +297,9 @@ void EventManager::onConversationThreadContactsChanged(IConversationThreadPtr co
 	jni_env->SetLongField(object, fid, convThread);
 
 	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(callbackClass, "onConversationThreadContactsChanged", "(Lcom/openpeer/javaapi/OPConversationThread;)V");
+	method = jni_env->GetStaticMethodID(callbackClass,
+			"onConversationThreadContactsChanged",
+			"(Lcom/openpeer/javaapi/OPConversationThread;)V");
 	jni_env->CallStaticVoidMethod(callbackClass, method, object);
 
 	if (jni_env->ExceptionCheck()) {
@@ -314,11 +309,8 @@ void EventManager::onConversationThreadContactsChanged(IConversationThreadPtr co
 	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadContactStateChanged(
-		IConversationThreadPtr conversationThread,
-		IContactPtr contactPtr,
-		IConversationThread::ContactStates state
-)
-{
+		IConversationThreadPtr conversationThread, IContactPtr contactPtr,
+		IConversationThread::ContactStates state) {
 
 	jclass cls;
 	jmethodID method;
@@ -327,8 +319,7 @@ void EventManager::onConversationThreadContactStateChanged(
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 
@@ -340,19 +331,22 @@ void EventManager::onConversationThreadContactStateChanged(
 	jlong convThread = (jlong) conversationThread.get();
 	jni_env->SetLongField(convThreadObject, ctfid, convThread);
 
-
 	jclass contactCls = findClass("com/openpeer/javaapi/OPContact");
-	jmethodID contactConstructor = jni_env->GetMethodID(contactCls, "<init>", "()V");
+	jmethodID contactConstructor = jni_env->GetMethodID(contactCls, "<init>",
+			"()V");
 	contactObject = jni_env->NewObject(contactCls, contactConstructor);
 
 	jfieldID fid = jni_env->GetFieldID(contactCls, "nativeClassPointer", "J");
 	jlong contact = (jlong) contactPtr.get();
 	jni_env->SetLongField(contactObject, fid, contact);
 
-
 	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(callbackClass, "onConversationThreadContactStateChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;I)V");
-	jni_env->CallStaticVoidMethod(callbackClass, method, convThreadObject, contactObject, (jint) state);
+	method =
+			jni_env->GetStaticMethodID(callbackClass,
+					"onConversationThreadContactStateChanged",
+					"(Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;I)V");
+	jni_env->CallStaticVoidMethod(callbackClass, method, convThreadObject,
+			contactObject, (jint) state);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -361,23 +355,19 @@ void EventManager::onConversationThreadContactStateChanged(
 	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadMessage(
-		IConversationThreadPtr conversationThread,
-		const char *messageID
-)
-{
+		IConversationThreadPtr conversationThread, const char *messageID) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 
-
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onConversationThreadMessage");
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
+			"EventManager::onConversationThreadMessage");
 
 	jclass Ctcls = findClass("com/openpeer/javaapi/OPConversationThread");
 	jmethodID ctmethod = jni_env->GetMethodID(Ctcls, "<init>", "()V");
@@ -387,11 +377,11 @@ void EventManager::onConversationThreadMessage(
 	jlong convThread = (jlong) conversationThread.get();
 	jni_env->SetLongField(convThreadObject, ctfid, convThread);
 
-
 	jstring messageIDStr = jni_env->NewStringUTF(messageID);
 
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onConversationThreadMessage", "(Lcom/openpeer/javaapi/OPConversationThread;Ljava/lang/String;)V");
+	method = jni_env->GetStaticMethodID(cls, "onConversationThreadMessage",
+			"(Lcom/openpeer/javaapi/OPConversationThread;Ljava/lang/String;)V");
 	jni_env->CallStaticVoidMethod(cls, method, convThreadObject, messageIDStr);
 
 	if (jni_env->ExceptionCheck()) {
@@ -401,21 +391,19 @@ void EventManager::onConversationThreadMessage(
 	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadMessageDeliveryStateChanged(
-		IConversationThreadPtr conversationThread,
-		const char *messageID,
-		IConversationThread::MessageDeliveryStates state
-)
-{
+		IConversationThreadPtr conversationThread, const char *messageID,
+		IConversationThread::MessageDeliveryStates state) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onConversationThreadMessageDeliveryStateChanged state = %d", (jint)state);
+	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+			"onConversationThreadMessageDeliveryStateChanged state = %d",
+			(jint) state);
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 
@@ -430,8 +418,12 @@ void EventManager::onConversationThreadMessageDeliveryStateChanged(
 	jstring messageIDStr = jni_env->NewStringUTF(messageID);
 
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onConversationThreadMessageDeliveryStateChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Ljava/lang/String;I)V");
-	jni_env->CallStaticVoidMethod(cls, method, object, messageIDStr, (jint)state);
+	method =
+			jni_env->GetStaticMethodID(cls,
+					"onConversationThreadMessageDeliveryStateChanged",
+					"(Lcom/openpeer/javaapi/OPConversationThread;Ljava/lang/String;I)V");
+	jni_env->CallStaticVoidMethod(cls, method, object, messageIDStr,
+			(jint) state);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -440,11 +432,8 @@ void EventManager::onConversationThreadMessageDeliveryStateChanged(
 	android_jvm->DetachCurrentThread();
 }
 void EventManager::onConversationThreadPushMessage(
-		IConversationThreadPtr conversationThread,
-		const char *messageID,
-		IContactPtr contactPtr
-)
-{
+		IConversationThreadPtr conversationThread, const char *messageID,
+		IContactPtr contactPtr) {
 	jclass cls;
 	jmethodID method;
 	jobject convThreadObject;
@@ -452,8 +441,7 @@ void EventManager::onConversationThreadPushMessage(
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 
@@ -465,9 +453,9 @@ void EventManager::onConversationThreadPushMessage(
 	jlong convThread = (jlong) conversationThread.get();
 	jni_env->SetLongField(convThreadObject, ctfid, convThread);
 
-
 	jclass contactCls = findClass("com/openpeer/javaapi/OPContact");
-	jmethodID contactConstructor = jni_env->GetMethodID(contactCls, "<init>", "()V");
+	jmethodID contactConstructor = jni_env->GetMethodID(contactCls, "<init>",
+			"()V");
 	contactObject = jni_env->NewObject(contactCls, contactConstructor);
 
 	jfieldID fid = jni_env->GetFieldID(contactCls, "nativeClassPointer", "J");
@@ -477,8 +465,11 @@ void EventManager::onConversationThreadPushMessage(
 	jstring messageIDStr = jni_env->NewStringUTF(messageID);
 
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onConversationThreadPushMessage", "(Lcom/openpeer/javaapi/OPConversationThread;Ljava/lang/String;Lcom/openpeer/javaapi/OPContact;)V");
-	jni_env->CallStaticVoidMethod(cls, method, convThreadObject, messageIDStr, contactObject);
+	method =
+			jni_env->GetStaticMethodID(cls, "onConversationThreadPushMessage",
+					"(Lcom/openpeer/javaapi/OPConversationThread;Ljava/lang/String;Lcom/openpeer/javaapi/OPContact;)V");
+	jni_env->CallStaticVoidMethod(cls, method, convThreadObject, messageIDStr,
+			contactObject);
 
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -488,21 +479,31 @@ void EventManager::onConversationThreadPushMessage(
 }
 
 //ICallDelegate implementation
-void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
-{
+void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+	if (state == CallStates::CallState_Incoming) {
+		OpenPeerCoreManager::coreCallList.push_back(call);
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+				"onCallStateChanged push call ptr = %Lu state %d", call.get(),
+				state);
+	}
 
 	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0)
-	{
+	if (attach_result < 0 || gEnv == 0) {
 		return;
 	}
 	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onCallStateChanged", "(I)V");
-	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
+	method = gEnv->GetStaticMethodID(callbackClass, "onCallStateChanged",
+			"(JI)V");
+	jlong nativeClsPtr = (jlong) call.get();
+	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+			"onCallStateChanged call ptr = %Lu", nativeClsPtr);
+
+	gEnv->CallStaticVoidMethod(callbackClass, method, nativeClsPtr,
+			(jint) state);
 
 	if (gEnv->ExceptionCheck()) {
 		gEnv->ExceptionDescribe();
@@ -512,24 +513,21 @@ void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
 }
 
 //IIdentityDelegate implementation
-void EventManager::onIdentityStateChanged(
-		IIdentityPtr identity,
-		IIdentity::IdentityStates state
-)
-{
+void EventManager::onIdentityStateChanged(IIdentityPtr identity,
+		IIdentity::IdentityStates state) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	//JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0)
-	{
+	if (attach_result < 0 || gEnv == 0) {
 		return;
 	}
 
 	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged", "(I)V");
+	method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged",
+			"(I)V");
 	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
 
 	if (gEnv->ExceptionCheck()) {
@@ -538,20 +536,20 @@ void EventManager::onIdentityStateChanged(
 
 	android_jvm->DetachCurrentThread();
 }
-void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity)
-{
+void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(
+		IIdentityPtr identity) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onIdentityPendingMessageForInnerBrowserWindowFrame", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onIdentityPendingMessageForInnerBrowserWindowFrame", "()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -560,20 +558,19 @@ void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityP
 
 	android_jvm->DetachCurrentThread();
 }
-void EventManager::onIdentityRolodexContactsDownloaded(IIdentityPtr identity)
-{
+void EventManager::onIdentityRolodexContactsDownloaded(IIdentityPtr identity) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onIdentityRolodexContactsDownloaded", "()V");
+	method = jni_env->GetStaticMethodID(cls,
+			"onIdentityRolodexContactsDownloaded", "()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -582,25 +579,21 @@ void EventManager::onIdentityRolodexContactsDownloaded(IIdentityPtr identity)
 
 	android_jvm->DetachCurrentThread();
 }
-
 
 //IIdentityLookupDelegate implementation
-void EventManager::onIdentityLookupCompleted(
-		IIdentityLookupPtr identity
-)
-{
+void EventManager::onIdentityLookupCompleted(IIdentityLookupPtr identity) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onIdentityLookupCompleted", "()V");
+	method = jni_env->GetStaticMethodID(cls, "onIdentityLookupCompleted",
+			"()V");
 	jni_env->CallStaticVoidMethod(cls, method);
 
 	if (jni_env->ExceptionCheck()) {
@@ -611,19 +604,15 @@ void EventManager::onIdentityLookupCompleted(
 }
 
 //ILoggerDelegate implementation
-void EventManager::onNewSubsystem(
-		SubsystemID subsystemUniqueID,
-		const char *subsystemName
-)
-{
+void EventManager::onNewSubsystem(SubsystemID subsystemUniqueID,
+		const char *subsystemName) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
@@ -636,25 +625,17 @@ void EventManager::onNewSubsystem(
 
 	android_jvm->DetachCurrentThread();
 }
-void EventManager::onLog(
-		SubsystemID subsystemUniqueID,
-		const char *subsystemName,
-		Severity severity,
-		Level level,
-		const char *message,
-		const char *function,
-		const char *filePath,
-		ULONG lineNumber
-)
-{
+void EventManager::onLog(SubsystemID subsystemUniqueID,
+		const char *subsystemName, Severity severity, Level level,
+		const char *message, const char *function, const char *filePath,
+		ULONG lineNumber) {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
+	if (attach_result < 0 || jni_env == 0) {
 		return;
 	}
 	cls = findClass("com/openpeer/delegates/CallbackHandler");
@@ -668,6 +649,5 @@ void EventManager::onLog(
 	android_jvm->DetachCurrentThread();
 }
 
-EventManager::~EventManager()
-{
+EventManager::~EventManager() {
 }
