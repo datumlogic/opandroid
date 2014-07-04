@@ -206,13 +206,15 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_MESSAGE_TEXT = "text";
 		// sent or receive time
 		public static final String COLUMN_NAME_MESSAGE_TIME = "time";
+		public static final String COLUMN_NAME_MESSAGE_READ = "read";
+
 		public static final String COLUMN_NAME_MESSAGE_DELIVERY_STATUS = "delivery_status";
 		public String[] PROJECTIONS = { COLUMN_NAME_MESSAGE_ID, COLUMN_NAME_WINDOW_ID, COLUMN_NAME_MESSAGE_TYPE, COLUMN_NAME_SENDER_ID,
-				COLUMN_NAME_MESSAGE_TEXT, COLUMN_NAME_MESSAGE_TIME, COLUMN_NAME_MESSAGE_DELIVERY_STATUS };
+				COLUMN_NAME_MESSAGE_TEXT, COLUMN_NAME_MESSAGE_TIME, COLUMN_NAME_MESSAGE_READ, COLUMN_NAME_MESSAGE_DELIVERY_STATUS };
 	}
 
 	public static abstract class CallEntry implements BaseColumns {
-		public static final String TABLE_NAME = "call";		
+		public static final String TABLE_NAME = "call";
 		public static final String COLUMN_NAME_CALL_ID = "call_id";
 		public static final String COLUMN_NAME_THREAD_ID = "thread_id";
 		public static final String COLUMN_NAME_CALLER = "caller";
@@ -275,6 +277,7 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_PARTICIPANT_NAMES = "name";
 		public static final String COLUMN_NAME_AVATARS = "avatar_urls";
+		public static final String COLUMN_NAME_UNREAD_COUNT = "unread_count";
 
 		private static final String COLUMNS = "a." + BaseColumns._ID + " as " + BaseColumns._ID + "," +
 				"a." + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + COLUMN_NAME_WINDOW_ID + "," +
@@ -290,21 +293,6 @@ public class DatabaseContracts {
 		// "c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as " +
 		// COLUMN_NAME_LAST_MESSAGE_TIME;
 	}
-
-	public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW + WindowViewEntry.TABLE_NAME + " AS SELECT d." + BaseColumns._ID
-			+ " as " + BaseColumns._ID + "," +
-			"d." + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + "," +
-			"d." + WindowViewEntry.COLUMN_NAME_USER_ID + " as " + WindowViewEntry.COLUMN_NAME_USER_ID + "," +
-			"d." + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + " as " + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + "," +
-			"c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as " + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE + "," +
-			"c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as " + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME + " from (SELECT " +
-			WindowViewEntry.COLUMNS +
-			" from " + ConversationWindowEntry.TABLE_NAME + " a " +
-			" left join " + WindowParticipantEntry.TABLE_NAME + " b " +
-			" using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + "))  d" +
-			" left join " + MessageEntry.TABLE_NAME + " c " +
-			" using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + ")" +
-			" group by " + WindowViewEntry.COLUMN_NAME_WINDOW_ID;
 
 	public static abstract class GroupParticipantEntry implements BaseColumns {
 		public static final String TABLE_NAME = "window_participants";
@@ -385,6 +373,21 @@ public class DatabaseContracts {
 				IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_EXPIRE + " as " + COLUMN_NAME_EXPIRE;
 	}
 
+	public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW + WindowViewEntry.TABLE_NAME + " AS SELECT d." + BaseColumns._ID
+			+ " as " + BaseColumns._ID + "," +
+			"d." + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + "," +
+			"d." + WindowViewEntry.COLUMN_NAME_USER_ID + " as " + WindowViewEntry.COLUMN_NAME_USER_ID + "," +
+			"d." + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + " as " + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + "," +
+			"c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as " + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE + "," +
+			"c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as " + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME + "," +
+			" e.count as " + WindowViewEntry.COLUMN_NAME_UNREAD_COUNT +
+			" from (SELECT " + WindowViewEntry.COLUMNS + " from " + ConversationWindowEntry.TABLE_NAME + " a " +
+			" left join " + WindowParticipantEntry.TABLE_NAME + " b " +
+			" using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + ") group by window_id)  d" +
+			" inner join (select window_id,text,time from " + MessageEntry.TABLE_NAME + " group by window_id) c using(window_id) " +
+			" left join (select count(*) as count,window_id from message where read=0 group by window_id) e " +
+			" using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + ")" +
+			" group by " + WindowViewEntry.COLUMN_NAME_WINDOW_ID;
 	public static final String SQL_CREATE_VIEW_CONTACT = CREATE_VIEW + ContactsViewEntry.TABLE_NAME + " AS SELECT " +
 			ContactsViewEntry.COLUMNS +
 			" from " + ContactEntry.TABLE_NAME +
@@ -475,6 +478,7 @@ public class DatabaseContracts {
 			MessageEntry.COLUMN_NAME_SENDER_ID + INTEGER_TYPE + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_MESSAGE_TEXT + TEXT_TYPE + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_MESSAGE_TIME + TEXT_TYPE + COMMA_SEP +
+			MessageEntry.COLUMN_NAME_MESSAGE_READ + INTEGER_TYPE + " default 0" + COMMA_SEP +
 			MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE + " )";
 
 	public static final String CREATE_STATEMENTS[] = {
