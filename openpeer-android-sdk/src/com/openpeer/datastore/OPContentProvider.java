@@ -53,7 +53,7 @@ public class OPContentProvider extends ContentProvider {
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int result = super.bulkInsert(uri, values);
 		Log.d("test", "bulkinsert " + uri + " values" + values.length + " result " + result);
-		test();
+//		test();
 		return result;
 	}
 
@@ -102,7 +102,7 @@ public class OPContentProvider extends ContentProvider {
 		Log.d("test", "result " + result + " inserting uri " + uri);
 		getContext().getContentResolver().notifyChange(uri, null);
 		getContext().getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
-		test();
+//		test();
 		return uri;
 	}
 

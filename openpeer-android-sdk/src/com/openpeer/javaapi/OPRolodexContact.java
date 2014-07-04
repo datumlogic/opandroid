@@ -6,6 +6,7 @@ import java.util.List;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.openpeer.app.OPDataManager;
 import com.openpeer.datastore.DatabaseContracts.ContactEntry;
 import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
 import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
@@ -237,10 +238,10 @@ public class OPRolodexContact {
 				cursor.getString(nameIndex), cursor.getString(profileURLIndex),
 				cursor.getString(vprofileURLIndex), null,
 				cursor.getLong(assoiatedIdentityIdIndex));
-
-		// contact.setAvatars(this.getAvatars(contact.getId()));
+		List<OPAvatar> avatars = OPDataManager.getDatastoreDelegate().getAvatars(contact.getId());
+		Log.d("test", "OPRolodexContact contactFromCursor avatars " + avatars.size());
+		contact.setAvatars(avatars);
 
 		return contact;
 	}
-
 }

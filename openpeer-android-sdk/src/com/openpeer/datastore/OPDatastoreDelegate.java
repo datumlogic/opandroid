@@ -7,6 +7,7 @@ import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
+import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.model.OPHomeUser;
 import com.openpeer.app.OPSession;
 import com.openpeer.app.OPUser;
@@ -28,8 +29,7 @@ public interface OPDatastoreDelegate {
 	 * Retrieve stored OpenPeer contacts for identity
 	 * 
 	 * @param identityId
-	 *            The stableId of the identity. If null, all contacts will be
-	 *            returned
+	 *            The stableId of the identity. If null, all contacts will be returned
 	 * @return list of OpenPeer contacts for specific identity
 	 */
 	public List<OPRolodexContact> getOPContacts(String identityId);
@@ -38,8 +38,7 @@ public interface OPDatastoreDelegate {
 	 * Retrieve stored rolodex contacts for identity
 	 * 
 	 * @param identityId
-	 *            The stableId of the identity. If null, all contacts will be
-	 *            returned
+	 *            The stableId of the identity. If null, all contacts will be returned
 	 * @return list of Rolodex contacts for specific identity
 	 */
 	public List<OPRolodexContact> getContacts(long identityId);
@@ -92,12 +91,11 @@ public interface OPDatastoreDelegate {
 
 	public List<OPUser> getUsers(long[] ids);
 
+	public List<OPAvatar> getAvatars(long contactId);
+
 	/*
-	 * public boolean saveConversationRecord(OPConversationRecord record);
-	 * public boolean saveCallRecord(OPConversationRecord record); public
-	 * List<OPConversationRecord> getConversationRecords(String contactId, int
-	 * pageNumber, int numberofRecords); public List<OPCallRecord>
-	 * getConversationRecords(String contactId, int pageNumber, int
-	 * numberofRecords);
+	 * public boolean saveConversationRecord(OPConversationRecord record); public boolean saveCallRecord(OPConversationRecord record);
+	 * public List<OPConversationRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords); public
+	 * List<OPCallRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords);
 	 */
 }

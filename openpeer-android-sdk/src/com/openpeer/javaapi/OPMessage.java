@@ -11,6 +11,10 @@ public class OPMessage {
 	public static class OPMessageType {
 		public static final String TYPE_TEXT = "text/x-application-hookflash-message-text";
 		public static final String TYPE_CONTROL = "text/x-application-hookflash-message-system";
+		//Used to record/show call record
+		//		public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
+		//		public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
+
 	}
 
 	public static class SystemMessageType {
@@ -31,14 +35,14 @@ public class OPMessage {
 	private Time mTime;
 	private long mSenderId;
 	private String mMessageId;
-	private long readTimeInMillis;// read time in millis
+	private boolean mRead;// read time in millis
 
-	public long getReadTimeInMillis() {
-		return readTimeInMillis;
+	public boolean isRead() {
+		return mRead;
 	}
 
-	public void setReadTimeInMillis(long readTimeInMillis) {
-		this.readTimeInMillis = readTimeInMillis;
+	public void setRead(boolean read) {
+		this.mRead = read;
 	}
 
 	public String getMessageId() {

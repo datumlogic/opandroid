@@ -479,7 +479,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 						iCursor.getLong(0));
 	}
 
-	private List<OPAvatar> getAvatars(long contactId) {
+	@Override
+	public List<OPAvatar> getAvatars(long contactId) {
 		Cursor cursor = mOpenHelper.getWritableDatabase().query(
 				AvatarEntry.TABLE_NAME, null,
 				AvatarEntry.COLUMN_NAME_CONTACT_ID + "=" + contactId, null,
@@ -603,6 +604,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				message.getMessageType());
 		values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
 		values.put(MessageEntry.COLUMN_NAME_WINDOW_ID, windowId);
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.isRead() ? 1 : 0);
 
 		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + windowId;
 		// mContext.getContentResolver().notifyChange(Uri.parse(url), null);
