@@ -200,13 +200,13 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID,
-			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
-			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
-			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
-
-			WindowViewEntry.COLUMN_NAME_USER_ID,
-			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
+//	static final String LIST_PROJECTION[] = { BaseColumns._ID,
+//			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
+//			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
+//			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
+//
+//			WindowViewEntry.COLUMN_NAME_USER_ID,
+//			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {

@@ -59,6 +59,7 @@ public class ChatInfoItemView extends RelativeLayout {
 		String msg = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE));
 		Long time = cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME));
 		final String idListString = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_USER_ID));
+		int unreadCount = cursor.getInt(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_UNREAD_COUNT));
 		Log.d("test", "ChatInfo user_id " + idListString);
 		if (idListString != null) {
 			String idStrings[] = idListString.split(",");
@@ -77,6 +78,13 @@ public class ChatInfoItemView extends RelativeLayout {
 		if (msg != null) {
 			mLastMessageView.setText(msg);
 			mTimeView.setText(DateFormatUtils.getSameDayTime(time));
+		}
+		if (unreadCount > 0) {
+			mBadgeView.setVisibility(View.VISIBLE);
+			mBadgeView.setText(""+unreadCount);
+		} else {
+			mBadgeView.setVisibility(View.GONE);
+
 		}
 
 	}
