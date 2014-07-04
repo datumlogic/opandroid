@@ -61,10 +61,10 @@ namespace HopSampleApp
 
 		//}
 
-		public bool checkIsContactValid(HOPContact contact)
-		{
-			return false;
-		}
+		//public bool checkIsContactValid(HOPContact contact)
+		//{
+		//	return false;
+		//}
 
 		public ArrayList getBaseURIsForStableId(string stableID)
 		{

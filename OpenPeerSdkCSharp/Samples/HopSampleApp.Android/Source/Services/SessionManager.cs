@@ -36,11 +36,11 @@ namespace HopSampleApp
 
 		}
 		*/
-		Session createSessionForConversationThread(HOPConversationThread inConversationThread)
-		{
-			Console.WriteLine ("Empty");
-			return null;
-		}
+		//Session createSessionForConversationThread(HOPConversationThread inConversationThread)
+		//{
+		//	Console.WriteLine ("Empty");
+		//	return null;
+		//}
 		//
 		Session createSessionInitiatedFromSessionForContactPeerURIs(Session inSession, string peerURIs)
 		{
@@ -56,11 +56,11 @@ namespace HopSampleApp
 		{
 			Console.WriteLine ("Empty");
 		}
-		Session proceedWithExistingSessionForContactNewConversationThread(HOPContact contact, HOPConversationThread inConversationThread)
-		{
-			Console.WriteLine ("Empty");
-			return null;
-		}
+		//Session proceedWithExistingSessionForContactNewConversationThread(HOPContact contact, HOPConversationThread inConversationThread)
+		//	{
+		//	Console.WriteLine ("Empty");
+		//	return null;
+		//}
 		//need fix
 		/*
 		Session getSessionForContact(HOPRolodexContact contact)
@@ -166,10 +166,10 @@ namespace HopSampleApp
 			Console.WriteLine ("Empty");
 		}
 
-		public void setLatestValidConversationThread(HOPConversationThread inConversationThread)
-		{
-			Console.WriteLine ("Empty");
-		}
+		//public void setLatestValidConversationThread(HOPConversationThread inConversationThread)
+		//{
+		//	Console.WriteLine ("Empty");
+		//}
 
 		int totalNumberOfUnreadMessages()
 		{

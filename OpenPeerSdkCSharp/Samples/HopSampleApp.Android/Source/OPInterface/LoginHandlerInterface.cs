@@ -22,58 +22,21 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Android.Util;
-using Com.Openpeer.Delegates;
-using Com.Openpeer.Javaapi;
 
+using System;
+using Com.Openpeer.Javaapi;
+using Com.Openpeer.Delegates;
 namespace HopSampleApp
 {
-	public class CSOPAccountDelegate:OPAccountDelegate
+	public interface LoginHandlerInterface
 	{
-		public override  void OnAccountStateChanged (OPAccount account,AccountStates state)
-		{
-			if (state == AccountStates.AccountStateWaitingForAssociationToIdentity) {
-				//LoginManager.loadOuterFrame();
-			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToBeLoaded) {
-				LoginManager.SharedLoginManager().startAccountLogin ();
-			}
-			if (state ==AccountStates.AccountStateWaitingForBrowserWindowToBeMadeVisible)
-			{
-				LoginManager.mAccount.NotifyBrowserWindowVisible();
-			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToClose)
-			{
-				LoginManager.mAccount.NotifyBrowserWindowClosed();
-			}
-			if (state == AccountStates.AccountStateReady)
-			{
-				Log.Warn ("JNI", "READY !!!!!!!!!!!!");
-				IList<OPIdentity> identityList = account.AssociatedIdentities;
-				Log.Warn ("JNI", identityList.ToString());
-
-				//LoginManager.loadOuterFrame();
-			}
-		}
-
-		public override void OnAccountAssociatedIdentitiesChanged (OPAccount p0)
-		{
-			//throw new NotImplementedException ();
-		}
-		public override  void OnAccountPendingMessageForInnerBrowserWindowFrame (OPAccount p0)
-		{
-			LoginManager.SharedLoginManager().pendingMessageForNamespaceGrantInnerFrame();
-		}
+		void onLoadOuterFrameHandle(Object obj);
+		void onInnerFrameInitialized(String innerFrameUrl);
+		void passMessageToJS(String msg);
+		void onNamespaceGrantInnerFrameInitialized(String innerFrameUrl);
+		void onDownloadedRolodexContacts(OPIdentity identity);
+		void onAccountStateReady();
+		void onLookupCompleted();
 
 	}
 }

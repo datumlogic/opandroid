@@ -17,7 +17,7 @@ namespace HopSampleApp
 	{
 		public ArrayList ParticipantsArray {get; set;}
 
-		HOPConversationThread _conversationThread;
+		//HOPConversationThread _conversationThread;
 		//public HOPCall CurrentCall {get; set;}
 
 		public bool IsRedial {get; set;}
@@ -30,7 +30,7 @@ namespace HopSampleApp
 
 		public ArrayList ArrayMergedConversationThreads {get; set;}
 
-
+		/*
 		public HOPConversationThread ConversationThread
 		{ 
 			get
@@ -51,7 +51,7 @@ namespace HopSampleApp
 			}
 		}
 
-		
+		*/
 			
 
 		/*
@@ -66,7 +66,7 @@ namespace HopSampleApp
 			this.ConversationThread= inConverationThread;
 			this.SessionIdsHistory.Add(inConverationThread.GetThreadId());
 		}*/
-
+		/*
 		public Session(ArrayList inContacts, HOPConversationThread inConverationThread)
 		{
 			this.ParticipantsArray = new ArrayList();
@@ -78,7 +78,7 @@ namespace HopSampleApp
 			this.UnreadMessageArray = new ArrayList();
 			this.ConversationThread = inConverationThread;
 			this.SessionIdsHistory.Add(inConverationThread.GetThreadId());
-		}
+		}*/
 
 	}
 }

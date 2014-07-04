@@ -87,7 +87,6 @@
     <Compile Include="Source\Activities\ChatItem.cs" />
     <Compile Include="Source\Services\AppConsts.cs" />
     <Compile Include="Source\Services\Utility.cs" />
-    <Compile Include="Source\OPDelegates\ConversationThreadDelegate.cs" />
     <Compile Include="Source\Services\SessionManager.cs" />
     <Compile Include="Source\Services\MessageManager.cs" />
     <Compile Include="Source\Services\ContactsManager.cs" />
@@ -106,7 +105,6 @@
     <Compile Include="Source\Services\ActivityIndicatorViewController.cs" />
     <Compile Include="Source\Services\HOPHomeUser.cs" />
     <Compile Include="Source\Services\HOPModelManager.cs" />
-    <Compile Include="Source\Login\MyWebViewClient.cs" />
     <Compile Include="Source\OPDelegates\CSOPCacheDelegate.cs" />
     <Compile Include="Source\OPDelegates\CSOPMediaEngineDelegate.cs" />
     <Compile Include="Source\OPDelegates\CSOPStackDelegate.cs" />
@@ -115,6 +113,14 @@
     <Compile Include="Source\OPDelegates\CSOPIdentityLookupDelegate.cs" />
     <Compile Include="Source\Settings\CSOPFakeSettings.cs" />
     <Compile Include="Source\OPDelegates\CSOPConversationThreadDelegate.cs" />
+    <Compile Include="EnumBaseClass\EnumBaseType.cs" />
+    <Compile Include="Source\Login\AsyncTaskClasses\AccountLogin.cs" />
+    <Compile Include="Source\Login\AsyncTaskClasses\CoreLogin.cs" />
+    <Compile Include="Source\Login\AsyncTaskClasses\IdentityLogin.cs" />
+    <Compile Include="Source\Login\WebClientProperties\PropertiesForWebClient.cs" />
+    <Compile Include="Source\Login\MyWebViewClient.cs" />
+    <Compile Include="Source\OPInterface\LoginHandlerInterface.cs" />
+    <Compile Include="Source\LoadingLibrary\CSOPLoadLibrary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -291,6 +297,11 @@
     <Folder Include="Source\Login\" />
     <Folder Include="Source\Model\" />
     <Folder Include="Source\Settings\" />
+    <Folder Include="EnumBaseClass\" />
+    <Folder Include="Source\Login\AsyncTaskClasses\" />
+    <Folder Include="Source\Login\WebClientProperties\" />
+    <Folder Include="Source\OPInterface\" />
+    <Folder Include="Source\LoadingLibrary\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">

@@ -23,58 +23,55 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.Util;
+using Android.Webkit;
+using Android.OS;
 using Com.Openpeer.Delegates;
 using Com.Openpeer.Javaapi;
+using Java.Net;
+using Org.Json;
+using Java.Util;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Android.Util;
+using Java.Interop;
 
-namespace HopSampleApp
+namespace HopSampleApp.CSCoreLogin
 {
-	public class CSOPAccountDelegate:OPAccountDelegate
+	public class CoreLogin:AsyncTask
 	{
-		public override  void OnAccountStateChanged (OPAccount account,AccountStates state)
+		protected  override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)
 		{
-			if (state == AccountStates.AccountStateWaitingForAssociationToIdentity) {
-				//LoginManager.loadOuterFrame();
-			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToBeLoaded) {
-				LoginManager.SharedLoginManager().startAccountLogin ();
-			}
-			if (state ==AccountStates.AccountStateWaitingForBrowserWindowToBeMadeVisible)
+			try
 			{
-				LoginManager.mAccount.NotifyBrowserWindowVisible();
-			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToClose)
+				LoginManager.SharedLoginManager().LoginWithFacebook();
+			} 
+			catch (Exception e)
 			{
-				LoginManager.mAccount.NotifyBrowserWindowClosed();
-			}
-			if (state == AccountStates.AccountStateReady)
-			{
-				Log.Warn ("JNI", "READY !!!!!!!!!!!!");
-				IList<OPIdentity> identityList = account.AssociatedIdentities;
-				Log.Warn ("JNI", identityList.ToString());
 
-				//LoginManager.loadOuterFrame();
+				Log.Error("Error",String.Format ("Error CoreLogin:{0}", e.StackTrace));
 			}
+
+			return null;
+		}
+		protected override void OnPostExecute (Java.Lang.Object result)
+		{
+
 		}
 
-		public override void OnAccountAssociatedIdentitiesChanged (OPAccount p0)
+		protected override void OnPreExecute ()
 		{
-			//throw new NotImplementedException ();
-		}
-		public override  void OnAccountPendingMessageForInnerBrowserWindowFrame (OPAccount p0)
-		{
-			LoginManager.SharedLoginManager().pendingMessageForNamespaceGrantInnerFrame();
+
 		}
 
+		protected override void OnProgressUpdate (params Java.Lang.Object[] values)
+		{
+
+		}
 	}
 }
 

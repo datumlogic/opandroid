@@ -32,6 +32,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using System.Threading;
 using Com.Openpeer.Delegates;
 using Com.Openpeer.Javaapi;
 namespace HopSampleApp
@@ -40,17 +41,23 @@ namespace HopSampleApp
 	{
 		public override void OnConversationThreadContactsChanged (OPConversationThread conversationThread)
 		{
-			//throw new NotImplementedException ();
+			ThreadPool.QueueUserWorkItem( delegate {
+
+			});
 		}
 
 		public override void OnConversationThreadContactStateChanged (OPConversationThread conversationThread, OPContact contact, ContactStates contactState)
 		{
-			//throw new NotImplementedException ();
+			ThreadPool.QueueUserWorkItem( delegate {
+
+			});
 		}
 
 		public override void OnConversationThreadMessage (OPConversationThread conversationThread, string p1)
 		{
-			//throw new NotImplementedException ();
+			ThreadPool.QueueUserWorkItem( delegate {
+
+			});
 		}
 
 		public override void OnConversationThreadMessageDeliveryStateChanged (OPConversationThread conversationThread, string p1, MessageDeliveryStates p2)
@@ -60,7 +67,9 @@ namespace HopSampleApp
 
 		public override void OnConversationThreadNew (OPConversationThread conversationThread)
 		{
-			//throw new NotImplementedException ();
+			ThreadPool.QueueUserWorkItem( delegate {
+
+			});
 		}
 
 		public override void OnConversationThreadPushMessage (OPConversationThread conversationThread, string p1, OPContact contact)
