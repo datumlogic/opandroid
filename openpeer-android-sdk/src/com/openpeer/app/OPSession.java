@@ -45,6 +45,15 @@ public class OPSession extends Observable {
 	private OPMessage mLastMessage;
 	private Hashtable<String, OPMessage> mMessageDeliveryQueue;
 	long mCurrentWindowId;
+	private boolean mWindowAttached;
+
+	public boolean isWindowAttached() {
+		return mWindowAttached;
+	}
+
+	public void setWindowAttached(boolean windowAttached) {
+		this.mWindowAttached = windowAttached;
+	}
 
 	/**
 	 * This is currently the thread id.
@@ -143,21 +152,6 @@ public class OPSession extends Observable {
 		return mConvThread;
 	}
 
-	public OPConversationThread getThreadForContact(OPIdentityContact contact) {
-		return null;
-	}
-
-	// public boolean hasContact(OPIdentityContact contact) {
-	// if (mParticipants == null)
-	// return false;
-	// for (OPIdentityContact oc : mParticipants) {
-	// if (oc.getStableID().equals(contact.getStableID())) {
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
-
 	public OPSession(OPConversationThread thread) {
 		mConvThread = thread;
 		List<OPContact> contacts = this.mConvThread.getContacts();
@@ -175,20 +169,11 @@ public class OPSession extends Observable {
 		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
 	}
 
-	// public OPSession(List<OPIdentityContact> contacts) {
-	// mParticipants = contacts;
-	// }
-
 	public void getSessionId() {
 	}
 
 	public long getCurrentWindowId() {
 		return mCurrentWindowId;
-	}
-
-	List<OPMessage> getHistoryMessages() {
-
-		return null;
 	}
 
 	public OPSession(List<OPUser> users) {
@@ -226,30 +211,17 @@ public class OPSession extends Observable {
 		// TODO Auto-generated constructor stub
 	}
 
-	public OPCall placeCall(boolean includeAudio, boolean includeVideo) {
-
-		currentCall = OPCall.placeCall(mConvThread, mParticipants.get(0).getOPContact(), includeAudio,
-				includeVideo);
-		currentCall.setPeerUser(mParticipants.get(0));
-
-		//		CallbackHandler.getInstance().registerCallDelegate(currentCall,
-		//				delegate);
-		return currentCall;
-
-	}
-
-	public OPCall placeCall(OPIdentityContact contact, OPCallDelegate delegate,
+	public OPCall placeCall(OPUser user,
 			boolean includeAudio, boolean includeVideo) {
 
-		OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
-				.getInstance().getSharedAccount(), contact.getPeerFilePublic()
-				.getPeerFileString());
+		OPContact newContact = user.getOPContact();
 
-		currentCall = OPCall.placeCall(mConvThread, newContact, includeAudio,
+		OPCall call = OPCall.placeCall(mConvThread, newContact, includeAudio,
 				includeVideo);
-		CallbackHandler.getInstance().registerCallDelegate(currentCall,
-				delegate);
-		return currentCall;
+		call.setPeerUser(user);
+		//		CallbackHandler.getInstance().registerCallDelegate(call,
+		//				delegate);
+		return call;
 
 	}
 
@@ -368,6 +340,9 @@ public class OPSession extends Observable {
 		Log.d("test", "thread " + mConvThread.getNativeClassPtr() + " received message " + message);
 		OPUser user = getUserByContact(message.getFrom());
 		message.setSenderId(user.getUserId());
+		if (isWindowAttached()) {
+			message.setRead(true);
+		}
 		if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
 			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
 		} else {
@@ -393,12 +368,12 @@ public class OPSession extends Observable {
 		return null;
 	}
 
-	public OPCall placeCall(List<OPUser> users, boolean audio, boolean video) {
-		currentCall = OPCall.placeCall(mConvThread, users.get(0).getOPContact(), audio,
-				video);
-		currentCall.setPeerUser(users.get(0));
-
-		return currentCall;
-
-	}
+	//	public OPCall placeCall(List<OPUser> users, boolean audio, boolean video) {
+	//		currentCall = OPCall.placeCall(mConvThread, users.get(0).getOPContact(), audio,
+	//				video);
+	//		currentCall.setPeerUser(users.get(0));
+	//
+	//		return currentCall;
+	//
+	//	}
 }
