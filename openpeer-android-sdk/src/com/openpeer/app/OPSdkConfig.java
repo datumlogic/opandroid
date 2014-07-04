@@ -17,11 +17,9 @@ import android.util.Log;
 
 /**
  * 
- * Global SDK configurations. TODO: put them in a file like
- * openpeersdk.properties
+ * Global SDK configurations. TODO: put them in a file like openpeersdk.properties
  * 
- * All configurable items should have a default value and the value will be
- * overwritten if the configuration file exists
+ * All configurable items should have a default value and the value will be overwritten if the configuration file exists
  */
 public class OPSdkConfig {
 	// TODO add configuration items in
@@ -45,6 +43,12 @@ public class OPSdkConfig {
 	private Context mContext;
 	private Properties mProperties = new Properties();
 	private static OPSdkConfig instance;
+	private static final String instanceId = java.util.UUID
+			.randomUUID().toString();
+
+	public static String getInstanceid() {
+		return instanceId;
+	}
 
 	private OPSdkConfig() {
 
@@ -113,8 +117,7 @@ public class OPSdkConfig {
 					android.os.Build.VERSION.RELEASE);
 			jsonObject
 					.put("openpeer/calculated/system", android.os.Build.MODEL);
-			jsonObject.put("openpeer/calculated/instance-id", java.util.UUID
-					.randomUUID().toString());
+			jsonObject.put("openpeer/calculated/instance-id", instanceId);
 			parent.put("root", jsonObject);
 			Log.d("output", parent.toString(2));
 			return parent.toString(2);
@@ -128,9 +131,8 @@ public class OPSdkConfig {
 	public void init(Context context) {
 		// try {
 		/**
-		 * getAssets() Return an AssetManager instance for your application's
-		 * package. AssetManager Provides access to an application's raw asset
-		 * files;
+		 * getAssets() Return an AssetManager instance for your application's package. AssetManager Provides access to an application's raw
+		 * asset files;
 		 */
 		instance.mContext = context;
 		AssetManager assetManager = context.getAssets();

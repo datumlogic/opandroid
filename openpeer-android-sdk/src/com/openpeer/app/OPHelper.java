@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
+import android.provider.Settings.Secure;
 import android.util.Log;
 
 import com.openpeer.datastore.OPDatastoreDelegate;
@@ -51,6 +52,24 @@ public class OPHelper {
 		return instance;
 	}
 
+	public void toggleOutgoingTelnetLogging(boolean enable) {
+		if (enable) {
+			OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
+			OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
+			OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+			String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
+			String instanceId = OPSdkConfig.getInstanceid();
+			String telnetLogString = deviceId + "-" + instanceId + "\n";
+			Log.d("output", "Outgoing log string = " + telnetLogString);
+			OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true, telnetLogString);
+		} else {
+			OPLogger.setLogLevel(OPLogLevel.LogLevel_None);
+			OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
+			OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_None);
+			OPLogger.uninstallOutgoingTelnetLogger();
+		}
+	}
+
 	public void enableTelnetLogging() {
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
@@ -83,6 +102,7 @@ public class OPHelper {
 		long start = SystemClock.uptimeMillis();
 
 		mContext = context;
+		enableTelnetLogging();
 		OPMediaEngine.init(mContext);
 
 		// initMediaEngine();
@@ -100,9 +120,7 @@ public class OPHelper {
 		// stackMessageQueue.interceptProcessing(null);
 		OPStack stack = OPStack.singleton();
 		OPSdkConfig.getInstance().init(mContext);
-		if (OPSdkConfig.debug) {
-			enableTelnetLogging();
-		}
+
 		//
 		OPCacheDelegate cacheDelegate = OPCacheDelegateImplementation
 				.getInstance(mContext);
@@ -125,7 +143,8 @@ public class OPHelper {
 				new OPCallDelegateImplementation());
 
 		stack.setup(null, null);
-		initMediaEngine();
+		//		initMediaEngine();
+		//		this.toggleOutgoingTelnetLogging(true);
 		Log.d("performance", "OPHelper init time " + (SystemClock.uptimeMillis() - start));
 
 	}
