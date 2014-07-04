@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,12 +35,14 @@ import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPApplication;
+import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 
 public class CallFragment extends BaseFragment {
+	public static final String TAG = CallFragment.class.getSimpleName();
 	TextView mStatusView;
-	View mEndButton;
+	Button mEndButton, mAnswerButton;
 	private OPIdentityContact mPeerContact, mSelfContact;
 	private OPSession mSession;
 
@@ -49,7 +52,8 @@ public class CallFragment extends BaseFragment {
 	private SurfaceView myLocalSurface;
 	private SurfaceView myRemoteSurface;
 	private View mVideoView;
-	private boolean mVideo;
+	private boolean mAudio, mVideo;
+	private long[] userIDs;
 
 	public static CallFragment newInstance(long[] peerContactId, boolean audio, boolean video) {
 		CallFragment fragment = new CallFragment();
@@ -62,11 +66,14 @@ public class CallFragment extends BaseFragment {
 		return fragment;
 	}
 
-	public static CallFragment newInstance(String peerUri) {
+	public static CallFragment newInstance(long[] peerContactId, String peerUri, boolean audio, boolean video) {
 		CallFragment fragment = new CallFragment();
 		Bundle args = new Bundle();
-		args.putString(IntentData.ARG_PEER_URI, peerUri);
+		args.putLongArray(IntentData.ARG_PEER_USER_IDS, peerContactId);
 
+		args.putString(IntentData.ARG_PEER_URI, peerUri);
+		args.putBoolean(IntentData.ARG_AUDIO, audio);
+		args.putBoolean(IntentData.ARG_VIDEO, video);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -87,9 +94,34 @@ public class CallFragment extends BaseFragment {
 		Bundle args = getArguments();
 
 		String peerUri = args.getString(IntentData.ARG_PEER_URI);
-		mCall = OPSessionManager.getInstance().getOngoingCallForPeer(peerUri);
-		CallbackHandler.getInstance().registerCallDelegate(mCall, new OPCallDelegateImplementation());
-		mVideo = mCall.hasVideo();
+		userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+
+		mDelegate = new OPCallDelegateImplementation();
+		Log.d("test", "CallFragment received peerUri" + peerUri);
+		if (peerUri != null) {
+			mCall = OPSessionManager.getInstance().getOngoingCallForPeer(peerUri);
+		} else if (userIDs != null) {
+			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
+			if (users != null && users.size() > 0) {
+				peerUri = users.get(0).getPeerUri();
+				mCall = OPSessionManager.getInstance().getOngoingCallForPeer(peerUri);
+			}
+		}
+		if (mCall != null) {
+			//			long userIDs[] = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+			//
+			//			mAudio = args.getBoolean(IntentData.ARG_AUDIO, true);
+			//			mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
+			//
+			//			mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio, mVideo);
+			//		}
+			CallbackHandler.getInstance().registerCallDelegate(mCall, mDelegate);
+			mVideo = mCall.hasVideo();
+		} else {
+
+			mAudio = args.getBoolean(IntentData.ARG_AUDIO, true);
+			mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
+		}
 
 	}
 
@@ -97,17 +129,47 @@ public class CallFragment extends BaseFragment {
 		mStatusView = (TextView) view.findViewById(R.id.text);
 		mTimingView = (TextView) view.findViewById(R.id.time);
 		mVideoView = view.findViewById(R.id.video);
-		mEndButton = view.findViewById(R.id.end);
+		mAnswerButton = (Button) view.findViewById(R.id.answer);
+		mEndButton = (Button) view.findViewById(R.id.end);
+		mAnswerButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				switch (mCall.getState()) {
+				case CallState_Incoming:
+					mCall.answer();
+
+					break;
+				case CallState_Hold:
+					break;
+				case CallState_Closing:
+				case CallState_Closed:
+					break;
+				default:
+
+				}
+			}
+		});
+
 		mEndButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				switch (mCall.getState()) {
+
+				case CallState_Closing:
+				case CallState_Closed:
+					break;
+				default:
+					OPSessionManager.getInstance().hangupCall(mCall, CallClosedReasons.CallClosedReason_User);
+					CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
+				}
+
 				if (mCall.getState() == CallStates.CallState_Incoming) {
 					mCall.answer();
 				} else {
 					mCall.hangup(CallClosedReasons.CallClosedReason_User);
 					OPSessionManager.getInstance().onCallEnd(mCall);
-					CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
 
 				}
 			}
@@ -118,26 +180,55 @@ public class CallFragment extends BaseFragment {
 			mVideoView.setVisibility(View.VISIBLE);
 		}
 		initMedia(true, view);
+		if (mCall == null) {
+
+			mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio, mVideo);
+			CallbackHandler.getInstance().registerCallDelegate(mCall, mDelegate);
+		}
 
 		//		mCall = mSession.placeCall(new OPCallDelegateImplementation(),
 		//				args.getBoolean(IntentData.ARG_AUDIO, true), mVideo);
 		return view;
 	}
 
-	@Override
+	//	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
 		if (mCall != null) {
-			setStateText(mCall.getState());
+			updateCallView(mCall.getState());
+		}
+	}
+
+	void updateCallView(CallStates state) {
+		setStateText(state);
+		switch (state) {
+		case CallState_Incoming:
+			mAnswerButton.setText(R.string.label_answer);
+			mEndButton.setText(R.string.label_decline);
+
+			break;
+		case CallState_Hold:
+			mAnswerButton.setText(R.string.label_unhold);
+			mEndButton.setText(R.string.label_hangup);
+			break;
+		case CallState_Closing:
+		case CallState_Closed:
+			break;
+		default:
+			mAnswerButton.setText(R.string.hint_call);
+			//			mAnswerButton.setEnabled(false);
+
+			mEndButton.setText(R.string.label_hangup);
+
 		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (mCall != null && mCall.getState() == CallStates.CallState_Active) {
-
+		if (mCall != null && mCall.getState() != CallStates.CallState_Closing && mCall.getState() != CallStates.CallState_Closed) {
+			OPNotificationBuilder.showNotificationForCall(mCall);
 		}
 	}
 
@@ -145,7 +236,7 @@ public class CallFragment extends BaseFragment {
 
 		@Override
 		public void onCallStateChanged(OPCall call, final CallStates state) {
-			Log.d("output", "onCallStateChanged " + state.toString() + " call "
+			Log.d(TAG, "onCallStateChanged " + state.toString() + " call "
 					+ call);
 			if (getActivity() == null || isDetached()) {
 				return;
@@ -153,7 +244,7 @@ public class CallFragment extends BaseFragment {
 			getActivity().runOnUiThread(new Runnable() {
 
 				public void run() {
-					setStateText(state);
+					updateCallView(state);
 					switch (state) {
 					case CallState_Placed:
 						if (!isDetached()) {
@@ -181,6 +272,7 @@ public class CallFragment extends BaseFragment {
 						break;
 					case CallState_Closed:
 						onCallClosed();
+						break;
 					}
 				}
 

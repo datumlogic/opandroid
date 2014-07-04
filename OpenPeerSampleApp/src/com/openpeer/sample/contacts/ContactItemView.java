@@ -98,14 +98,14 @@ public class ContactItemView extends RelativeLayout {
 					AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 					builder.setPositiveButton(R.string.audio, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							OPCall call = OPSessionManager.getInstance().placeCall(ids, true, false);
+							//							OPCall call = OPSessionManager.getInstance().placeCall(ids, true, false);
 
-							ConversationActivity.launchForCall(getContext(), call.getPeerUser().getPeerUri());
+							ConversationActivity.launchForCall(getContext(), ids, true, false);
 						}
 					}).setNeutralButton(R.string.video, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							OPCall call = OPSessionManager.getInstance().placeCall(ids, true, true);
-							ConversationActivity.launchForCall(getContext(), call.getPeerUser().getPeerUri());
+							//							OPCall call = OPSessionManager.getInstance().placeCall(ids, true, true);
+							ConversationActivity.launchForCall(getContext(), ids, true, true);
 						}
 					}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {

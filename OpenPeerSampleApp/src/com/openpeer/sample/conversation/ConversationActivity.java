@@ -8,12 +8,13 @@ import android.view.MenuItem;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.sample.BaseActivity;
 import com.openpeer.sample.BaseFragmentActivity;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 
-public class ConversationActivity extends BaseFragmentActivity {
+public class ConversationActivity extends BaseActivity {
 
 	public static Intent getIntentForNotification(Context context,
 			OPConversationThread thread, String messageId, OPContact contact) {
@@ -70,11 +71,12 @@ public class ConversationActivity extends BaseFragmentActivity {
 					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS));
 			setContentFragment(cFragment);
 		} else if (action.equals(IntentData.ACTION_CALL)) {
-			CallFragment cFragment = CallFragment.newInstance(intent.getStringExtra(IntentData.ARG_PEER_URI));
-			//			CallFragment cFragment = CallFragment.newInstance(intent
-			//					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS),
-			//					intent.getBooleanExtra(IntentData.ARG_AUDIO, true),
-			//					intent.getBooleanExtra(IntentData.ARG_VIDEO, false));
+			//			CallFragment cFragment = CallFragment.newInstance(intent.getStringExtra(IntentData.ARG_PEER_URI));
+			CallFragment cFragment = CallFragment.newInstance(intent
+					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS),
+					intent.getStringExtra(IntentData.ARG_PEER_URI),
+					intent.getBooleanExtra(IntentData.ARG_AUDIO, true),
+					intent.getBooleanExtra(IntentData.ARG_VIDEO, false));
 			setContentFragment(cFragment);
 		}
 	}
