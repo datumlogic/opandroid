@@ -835,4 +835,14 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		}
 		return users;
 	}
+
+	@Override
+	public void markMessagesRead(long windowId) {
+		ContentValues values = new ContentValues();
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, 1);
+		String where = MessageEntry.COLUMN_NAME_WINDOW_ID + "=" + windowId + " and " + MessageEntry.COLUMN_NAME_MESSAGE_READ + "=0";
+		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + windowId;
+		int count = mContext.getContentResolver().update(Uri.parse(url), values, where, null);
+		Log.d("test", "markMessagesRead update count " + count);
+	}
 }

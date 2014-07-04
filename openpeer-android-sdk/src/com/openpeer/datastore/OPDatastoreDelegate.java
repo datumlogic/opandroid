@@ -93,6 +93,8 @@ public interface OPDatastoreDelegate {
 
 	public List<OPAvatar> getAvatars(long contactId);
 
+	public void markMessagesRead(long mCurrentWindowId);
+
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record); public boolean saveCallRecord(OPConversationRecord record);
 	 * public List<OPConversationRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords); public

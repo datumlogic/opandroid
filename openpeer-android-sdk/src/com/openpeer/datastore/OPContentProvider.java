@@ -53,7 +53,7 @@ public class OPContentProvider extends ContentProvider {
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int result = super.bulkInsert(uri, values);
 		Log.d("test", "bulkinsert " + uri + " values" + values.length + " result " + result);
-//		test();
+		//		test();
 		return result;
 	}
 
@@ -102,7 +102,7 @@ public class OPContentProvider extends ContentProvider {
 		Log.d("test", "result " + result + " inserting uri " + uri);
 		getContext().getContentResolver().notifyChange(uri, null);
 		getContext().getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
-//		test();
+		//		test();
 		return uri;
 	}
 
@@ -133,7 +133,7 @@ public class OPContentProvider extends ContentProvider {
 				null, // uses the default SQLite cursor
 				OPDatabaseHelper.DATABASE_VERSION);
 		initMatcher();
-	return true;
+		return true;
 	}
 
 	@Override
@@ -193,28 +193,34 @@ public class OPContentProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
-		// switch (mUriMatcher.match(uri)) {
-		// // If the incoming URI is for notes, chooses the Notes projection
-		// case CONTACT:
-		// result = updateContacts(uri, values, selection, selectionArgs);
-		// break;
-		// case MESSAGES:
-		// result = updateMessages(uri, values, selection, selectionArgs);
-		// break;
-		// case WINDOWS:
-		// return 0;
-		// }
-		String table = uri.getLastPathSegment();
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		int result = db.update(table, values, selection, selectionArgs);
-		Log.d("test", "query uri for messages " + uri + " result " + result);
-
+		int result;
+		switch (mUriMatcher.match(uri)) {
+		// If the incoming URI is for notes, chooses the Notes projection
+		//		case CONTACT:
+		//			result = updateContacts(uri, values, selection, selectionArgs);
+		//			break;
+		case MESSAGES:
+			return updateMessages(uri, values, selection, selectionArgs);
+			//		case WINDOWS:
+			//			return 0;
+		default:
+			String table = uri.getLastPathSegment();
+			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+			result = db.update(table, values, selection, selectionArgs);
+			Log.d("test", "update uri for messages " + uri + " result " + result);
+		}
 		return result;
 	}
 
 	private int updateMessages(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+		int result = db.update(MessageEntry.TABLE_NAME, values, selection, selectionArgs);
+		if (result != 0) {
+			getContext().getContentResolver().notifyChange(uri, null);
+			notifyChatGroupChange();
+		}
+		return result;
 	}
 
 	private int updateContacts(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
@@ -286,6 +292,10 @@ public class OPContentProvider extends ContentProvider {
 		Log.d("test", "query uri " + uri + " result " + cursor.getCount());
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
+	}
+
+	void notifyChatGroupChange() {
+		getContext().getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
 	}
 
 	void test() {
