@@ -12,6 +12,7 @@ import com.openpeer.app.OPHelper;
 import com.openpeer.app.OPSession;
 import com.openpeer.app.OPUser;
 import com.openpeer.delegates.CallbackHandler;
+import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
@@ -92,19 +93,26 @@ public class OPSessionManager {
 	 * @param video
 	 * @return
 	 */
-	public OPCall findOrMakeCall(long[] ids, boolean audio, boolean video) {
-		OPSession session = getSessionWithUsers(ids);
-		if (session != null && session.getCurrentCall() != null) {
-			return session.getCurrentCall();
-		} else {
-			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(ids);
-			session = new OPSession(users);
-			if (session != null) {
-				session.placeCall(users, audio, video);
-			}
-		}
-		return null;
-	}
+	//	public OPCall findOrMakeCall(long[] ids, boolean audio, boolean video) {
+	//		OPSession session = getSessionWithUsers(ids);
+	//		List<OPUser> users = null;
+	//		if (session != null) {
+	//			if (session.getCurrentCall() != null) {
+	//				return session.getCurrentCall();
+	//			} else {
+	//				users = session.getParticipants();
+	//			}
+	//		} else {
+	//			users = OPDataManager.getDatastoreDelegate().getUsers(ids);
+	//			session = new OPSession(users);
+	//			addSession(session);
+	//		}
+	//
+	//		OPCall call = session.placeCall(users, audio, video);
+	//		mCalls.put(call.getPeerUser().getPeerUri(), call);
+	//		return call;
+	//
+	//	}
 
 	public OPCall findAndReplaceCall(long[] ids, boolean audio, boolean video) {
 		return null;
@@ -152,14 +160,17 @@ public class OPSessionManager {
 	public OPCall placeCall(long[] userIDs, boolean audio, boolean video) {
 		//		long windowId = OPChatWindow.getWindowId(userIDs);
 		OPSession mSession = OPSessionManager.getInstance().getSessionForUsers(userIDs);
+		List<OPUser> users = null;
 		if (mSession == null) {
 			// this is user intiiated session
-			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
+			users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
 			mSession = new OPSession(users);
+		} else {
+			users = mSession.getParticipants();
 		}
 		addSession(mSession);
 
-		OPCall call = mSession.placeCall(audio, video);
+		OPCall call = mSession.placeCall(users.get(0), audio, video);
 		mCalls.put(call.getPeerUser().getPeerUri(), call);
 		return call;
 	}
@@ -224,6 +235,10 @@ public class OPSessionManager {
 
 					mCalls.put(caller.getPeerURI(), call);
 					ConversationActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
+					break;
+				case CallState_Closed:
+					onCallEnd(call);
+					break;
 
 				}
 			}
@@ -247,5 +262,10 @@ public class OPSessionManager {
 
 	public void onCallEnd(OPCall mCall) {
 		mCalls.remove(mCall.getPeerUser().getPeerUri());
+	}
+
+	public void hangupCall(OPCall mCall, CallClosedReasons callclosedreasonUser) {
+		mCall.hangup(CallClosedReasons.CallClosedReason_User);
+		onCallEnd(mCall);
 	}
 }

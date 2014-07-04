@@ -25,7 +25,7 @@ public class BaseFragmentActivity extends FragmentActivity {
 		Log.d("BaseFragmentActivity", "switching fragment " + fragment
 				+ " for activity " + this);
 		this.getSupportFragmentManager().beginTransaction()
-				.replace(R.id.fragment_container, fragment).commit();
+				.replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
 
 	}
 

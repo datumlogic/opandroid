@@ -1,6 +1,7 @@
 package com.openpeer.sample.conversation;
 
 import java.text.DateFormat;
+import com.openpeer.sample.BaseActivity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,13 +38,15 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseFragment;
+import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.squareup.picasso.Picasso;
 
-public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+		ProfilePickerFragment.ProfilePickerListener {
 	private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
 	private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
 	private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
@@ -52,6 +56,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	private View mSendButton;
 	private MessagesAdaptor mAdapter;
 	private List<OPMessage> mMessages;
+	private LinearLayout usersContainer;
 
 	private OPIdentityContact mSelfContact;
 	private OPConversationThread mConvThread;
@@ -114,23 +119,42 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	@Override
 	public void onResume() {
 		super.onResume();
-		// CallbackHandler.getInstance().registerConversationThreadDelegate(
-		// mConvThreadDelegate);
+		mSession.setWindowAttached(true);
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onPause() {
+		super.onPause();
+		mSession.setWindowAttached(false);
+	}
 
+	void updateUsersView(List<OPUser> users) {
+		int width = (int) (getActivity().getResources().getDisplayMetrics().density * 50);
+		this.usersContainer.removeAllViews();
+		for (OPUser user : users) {
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, width);
+			ImageView view = (ImageView) LayoutInflater.from(getActivity()).inflate(R.layout.imageview_profile, null);
+			usersContainer.addView(view, lp);
+			if (user.getAvatarUri() != null) {
+				Picasso.with(getActivity())
+						.load(user.getAvatarUri())
+						.into(view);
+			}
+		}
 	}
 
 	View setupView(View view) {
+		View emptyView = view.findViewById(R.id.empty_view);
 		mMessagesList = (ListView) view.findViewById(R.id.listview);
+		mMessagesList.setEmptyView(emptyView);
 		mAdapter = new MessagesAdaptor(getActivity(), null);
 		mMessagesList.setAdapter(mAdapter);
 		View layout = view.findViewById(R.id.layout_compose);
 		mComposeBox = (TextView) layout.findViewById(R.id.text);
 		mSendButton = layout.findViewById(R.id.send);
+		usersContainer = (LinearLayout) view.findViewById(R.id.users_container);
+
+		updateUsersView(mSession.getParticipants());
 		mSendButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -147,6 +171,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 				OPMessage msg = new OPMessage(0,
 						OPMessageType.TYPE_TEXT, mComposeBox.getText()
 								.toString(), System.currentTimeMillis(), messageId);
+				msg.setRead(true);
 
 				mComposeBox.setText("");
 
@@ -190,6 +215,15 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		}
 
+		public int getItemViewType(Cursor cursor) {
+			long sender_id = cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
+			if (sender_id == 0) {
+				return 0;
+			}
+			return 1;
+
+		}
+
 		@Override
 		public int getViewTypeCount() {
 			// TODO Auto-generated method stub
@@ -204,7 +238,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup arg2) {
-			int viewType = 0;
+			int viewType = getItemViewType(cursor);
 			View view = null;
 			switch (viewType) {
 			case VIEWTYPE_SELF_MESSAGE_VIEW:
@@ -225,11 +259,14 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	class ViewHolder {
 		ImageView avatarView;
+		TextView title;
+
 		TextView time;
 		TextView text;
 		int viewType;
 
 		public ViewHolder(View view, int viewType) {
+			title = (TextView) view.findViewById(R.id.user);
 			avatarView = (ImageView) view.findViewById(R.id.avatar);
 			text = (TextView) view.findViewById(R.id.message);
 			time = (TextView) view.findViewById(R.id.time);
@@ -262,6 +299,9 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 				OPUser user = mSession.getUserBySenderId(data.getSenderId());
 				if (user != null) {
 					avatar = user.getAvatarUri();
+					if (user.getName() != null) {
+						title.setText(user.getName());
+					}
 				}
 			}
 			if (avatar != null) {
@@ -295,21 +335,47 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		}
 	}
 
-	// After adding a new participant we'll have to switch chat window
-	private void addParticipant() {
-		Cursor cursor = getActivity().getContentResolver().query(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null,
-				ContactsViewEntry.COLUMN_NAME_CONTACT_NAME + "=?", new String[] { "David Gotwo" }, null);
-		if (cursor != null) {
-			cursor.moveToFirst();
-			OPUser user = OPUser.fromDetailCursor(cursor);
-			Log.d("test", "loaded user " + user.getName());
-			List<OPUser> users = new ArrayList<OPUser>();
-			users.add(user);
+	@Override
+	public void onDone(List<Long> userIds) {
+
+		long ids[] = new long[userIds.size()];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = userIds.get(i);
+		}
+		List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(ids);
+		Log.d("test", "ChatFragment user counts " + users.size());
+		if (users != null) {
 			mSession.addParticipant(users);
+			updateUsersView(mSession.getParticipants());
 			mWindowId = mSession.getCurrentWindowId();
 			LoaderManager.enableDebugLogging(true);
 			getLoaderManager().restartLoader(URL_LOADER, null, this);
 		}
+	}
+
+	// After adding a new participant we'll have to switch chat window
+	private void addParticipant() {
+		ProfilePickerFragment fragment = new ProfilePickerFragment();
+		fragment.setTargetFragment(this, 0);
+		((BaseActivity) this.getActivity()).switchFragment(fragment);
+
+		//		if (BuildConfig.DEBUG) {
+		//			Toast.makeText(getActivity(), "TODO: group chat is not supported yet", Toast.LENGTH_LONG);
+		//			//			return;
+		//		}
+		//		Cursor cursor = getActivity().getContentResolver().query(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null,
+		//				ContactsViewEntry.COLUMN_NAME_CONTACT_NAME + "=?", new String[] { "David Gotwo" }, null);
+		//		if (cursor != null) {
+		//			cursor.moveToFirst();
+		//			OPUser user = OPUser.fromDetailCursor(cursor);
+		//			Log.d("test", "loaded user " + user.getName());
+		//			List<OPUser> users = new ArrayList<OPUser>();
+		//			users.add(user);
+		//			mSession.addParticipant(users);
+		//			mWindowId = mSession.getCurrentWindowId();
+		//			LoaderManager.enableDebugLogging(true);
+		//			getLoaderManager().restartLoader(URL_LOADER, null, this);
+		//		}
 	}
 
 	private void makeCall(OPIdentityContact peerContact) {
