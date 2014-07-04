@@ -145,6 +145,7 @@ public class MainActivity extends BaseActivity {
 		case R.id.search:
 			break;
 		case R.id.menu_settings:
+			SettingsActivity.launch(this);
 			break;
 		default:
 		}
