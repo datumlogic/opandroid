@@ -53,15 +53,25 @@
             android:layout_marginTop="5dp"
             android:layout_toRightOf="@id/peer_image" />
 
-        <ImageButton
-            android:id="@+id/end"
+        <Button
+            android:id="@+id/answer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/time"
             android:layout_marginTop="10dp"
             android:layout_toRightOf="@id/peer_image"
             android:contentDescription="@string/label_endcall"
-            android:src="@drawable/ic_action_end_call" />
+           />
+
+        <Button
+            android:id="@+id/end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/time"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/answer"
+            android:contentDescription="@string/label_endcall"
+           />
     </RelativeLayout>
 
 </FrameLayout>
