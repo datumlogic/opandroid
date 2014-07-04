@@ -120,6 +120,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	public void onResume() {
 		super.onResume();
 		mSession.setWindowAttached(true);
+		OPDataManager.getDatastoreDelegate().markMessagesRead(mWindowId);
 	}
 
 	@Override
