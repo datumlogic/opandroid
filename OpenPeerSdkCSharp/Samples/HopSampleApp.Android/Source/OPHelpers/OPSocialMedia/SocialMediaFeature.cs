@@ -13,6 +13,8 @@ namespace HopSampleApp
 {
 	class SocialMediaFeature
 	{
+		#region Expands url
+
 		public string Expands_URL(string url)
 		{
 			string[] splits;
@@ -46,8 +48,10 @@ namespace HopSampleApp
 			return returns;
 		}
 
-		/* Social time stamp "less than 5 seconds" */
+		#endregion
 
+		#region Modern time stamp
+		/* Social time stamp "less than 5 seconds" */
 		public string Time_stamp(DateTime session_time)
 		{
 			DateTime StartTime = DateTime.Now;
@@ -130,8 +134,10 @@ namespace HopSampleApp
 			}
 		}
 
-		/* String to link */
+		#endregion
 
+		#region String to link
+		/* String to link */
 		public string StringToLink(string text)
 		{
 			text = " " + text;
@@ -161,8 +167,10 @@ namespace HopSampleApp
 			return text;
 		}
 
-		/* Text link */
+		#endregion
 
+		#region text link
+		/* Text link */
 		public string TextLink(string text)
 		{
 			string a = "";
@@ -180,8 +188,10 @@ namespace HopSampleApp
 
 		}
 
-		/* html code */
+		#endregion
 
+		#region html code
+		/* html code */
 		public string HtmlCode(string text)
 		{
 			string[] real = { "<", ">" };
@@ -192,11 +202,17 @@ namespace HopSampleApp
 			return text;
 		}
 
+		#endregion
+
+		#region clear text
+
 		public string Clear(string text)
 		{
 			string Result = System.Text.RegularExpressions.Regex.Replace(text, @"(\\)([\000\010\011\012\015\032\042\047\134\140])", "$2");
 			return Result;
 		}
+
+		#endregion
 
 	}
 }

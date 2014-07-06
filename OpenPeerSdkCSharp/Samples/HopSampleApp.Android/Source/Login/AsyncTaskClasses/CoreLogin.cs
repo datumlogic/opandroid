@@ -52,7 +52,6 @@ namespace HopSampleApp.CSCoreLogin
 			} 
 			catch (Exception e)
 			{
-
 				Log.Error("Error",String.Format ("Error CoreLogin:{0}", e.StackTrace));
 			}
 

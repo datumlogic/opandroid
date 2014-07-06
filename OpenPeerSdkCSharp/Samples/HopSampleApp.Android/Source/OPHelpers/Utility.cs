@@ -46,16 +46,46 @@ using Android.Hardware;
 using HopSampleApp.Enums;
 using Mono;
 
-
 namespace HopSampleApp
 {
-
+	/// <summary>
+	/// #################################################################################
+	///                                    UTILITY
+	/// #################################################################################
+	/// Utility class contains methods:
+	/// ---------------------------------------------------------------------------------
+	/// - base64Encode (Base 64 Encription Encoding.)
+	/// - base64Decode (Base 64 Encription Decoding.)
+	/// 
+	/// - GetDeviceOs (Get Device release and os version.)
+	/// - GetManufacturer (Get device manufacturer.)
+	/// - GetPlatform (Get device platform and api level.)
+	/// - GetDeviceID (Get Device id.)
+	/// - GetDeviceModelName (Get Device model name.)
+	/// - GetDeviceFullNameOfModel (Get device model full name.)
+	/// - GetNumberOfDeviceCameras (Count number of cameras that current device have.)
+	/// - HasCamera (Check if current device have camera.)
+	/// - GetAndroidVersionRelease (Get Android version release.)
+	/// 
+	/// - GetInstanceIDJavaUUID (Generate new random Java UUID and replace "-" with "".)
+	/// - GetGUIDInstanceID (Generate new GUID and replace "-" with "".)
+	/// - GetCallStateAsString (Get Call states as string.)
+	/// - GetMessageDeliveryStateAsString (Get Message Delivery state as string.)
+	/// - RemoveCookiesAndClearCredentials (Remove Cookies And Clear Credentials.)
+	/// - IsValidURL (Check if is url valid using regular expression.)
+	/// - IsValidJSON (Check if is Json valid.)
+	/// - StringFromDate (Get date string from date.)
+	/// - DateFromTimeString (Get date from string.)
+	/// - IsAppUpdated (Check if app setting need to be updated.)
+	/// 
+	/// </summary>
 	public static class Utility
 	{
 
 		#region Base 64 Encription (Encoding/Decoding)
 
-		//Base 64 Encoding.
+		#region Base 64 Encoding.
+
 		public static string base64Encode(string data)
 		{
 			try
@@ -71,7 +101,9 @@ namespace HopSampleApp
 			}
 		}
 
-		//Base 64 Decoding.
+		#endregion
+
+		#region Base 64 Decoding.
 		public static string base64Decode(string data)
 		{
 			try
@@ -91,11 +123,15 @@ namespace HopSampleApp
 				throw new Exception("Error in base64Decode" + e.Message);
 			}
 		}
+
+		#endregion
+
 		#endregion
 
 		#region Device Informacion
 
-		//Get Device os info.
+		#region Get Device release and os version.
+
 		public static string GetDeviceOs()
 		{
 			try
@@ -108,10 +144,12 @@ namespace HopSampleApp
 				throw new Exception(String.Format("GetDeviceOS Error:{0}",error.Message));
 
 			}
-
 		}
 
-		//Get device manufacturer
+		#endregion
+
+		#region Get device manufacturer.
+
 		public static string GetManufacturer()
 		{
 			try
@@ -125,7 +163,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Get device platform.
+		#endregion
+
+		#region Get device platform and api level.
+
 		public static string GetPlatform()
 		{
 			try{
@@ -176,7 +217,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Get Device id
+		#endregion
+
+		#region Get Device id.
+
 		public static string GetDeviceID(Context context)
 		{
 			try
@@ -189,7 +233,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Get Device model name
+		#endregion
+
+		#region Get Device model name.
+
 		public static string GetDeviceModelName()
 		{
 			try
@@ -203,7 +250,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Count number of cameras that current device have. 
+		#endregion
+
+		#region Count number of cameras that current device have. 
+
 		public static int GetNumberOfDeviceCameras()
 		{
 			try
@@ -216,9 +266,10 @@ namespace HopSampleApp
 			}
 		}
 
+		#endregion
 
+		#region Check if current device have camera.
 
-		//Check if current device have camera.
 		public static bool HasCamera()
 		{
 			try
@@ -240,8 +291,10 @@ namespace HopSampleApp
 
 		}
 
+		#endregion
 
-		//Get device model full name
+		#region Get device model full name.
+
 		public static string GetDeviceFullNameOfModel()
 		{
 			try
@@ -283,13 +336,11 @@ namespace HopSampleApp
 				throw new Exception (String.Format("GetDeviceFullNameOfModel Error:{0}",error.Message));
 			}
 
-
-
 		}
-		#endregion
-			
 
-		#region Methods for Various checks
+		#endregion
+
+		#region Get Android version release.
 
 		public static string GetAndroidVersionRelease()
 		{
@@ -302,8 +353,16 @@ namespace HopSampleApp
 				throw new Exception(String.Format("GetAndroidVersionRelease Error:{0}",error.Message));
 			}
 		}
+		#endregion
 
-		//Get Java UUID
+		#endregion
+			
+
+		#region Methods for Various checks
+
+
+		#region Get Java UUID
+
 		public static string GetInstanceIDJavaUUID()
 		{
 			try
@@ -316,7 +375,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Get GUID string.
+		#endregion
+
+		#region Get GUID string.
+
 		public static string GetGUIDInstanceID()
 		{
 			try
@@ -332,7 +394,10 @@ namespace HopSampleApp
 
 		}
 
-		//Get Call states as string
+		#endregion
+
+		#region Get Call states as string.
+		//need to change
 		public static string GetCallStateAsString(HOPCallStates callState)
 		{
 			string res = null;
@@ -383,7 +448,11 @@ namespace HopSampleApp
 			return res;
 		}
 
-		//Get Message Delivery state as string
+		#endregion
+
+		#region Get Message Delivery state as string
+
+		//need to change
 		public static string GetMessageDeliveryStateAsString(HOPConversationThreadMessageDeliveryStates messageState)
 		{
 			string res = null;
@@ -405,6 +474,7 @@ namespace HopSampleApp
 			return res;
 		}
 
+		#endregion
 
 
 		/*
@@ -440,7 +510,8 @@ namespace HopSampleApp
 		}
 		*/
 
-		//Remove Cookies And Clear Credentials.
+		#region Remove Cookies And Clear Credentials.
+
 		public static void RemoveCookiesAndClearCredentials()
 		{
 			try
@@ -455,7 +526,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Check if is url valid using regular expression.
+		#endregion
+
+		#region Check if is url valid using regular expression.
+
 		public static bool IsValidURL(string candidate)
 		{
 			try
@@ -471,7 +545,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Check if is Json valid.
+		#endregion
+
+		#region Check if is Json valid.
+
 		public static bool IsValidJSON(string data)
 		{
 			bool ret = false;
@@ -497,9 +574,12 @@ namespace HopSampleApp
 				}
 			}
 			return ret;
-
 		}
-		//Get date string from date.
+
+		#endregion
+
+		#region Get date string from date.
+
 		public static string StringFromDate(DateTime date)
 		{
 			try
@@ -514,7 +594,11 @@ namespace HopSampleApp
 				throw new Exception(String.Format("StringFromDate Error:{0}",error.Message));
 			}
 		}
-		//get date from string.
+
+		#endregion
+
+		#region get date from string.
+
 		public static DateTime DateFromTimeString(string date)
 		{
 			try
@@ -529,7 +613,10 @@ namespace HopSampleApp
 			}
 		}
 
-		//Check if app setting need to be updated.
+		#endregion
+
+		#region Check if app setting need to be updated.
+
 		public static bool IsAppUpdated()
 		{
 			try
@@ -547,14 +634,15 @@ namespace HopSampleApp
 					ret=false;
 					return ret;
 				}
-			
-
 			}
 			catch(Exception error)
 			{
 				throw new Exception (String.Format ("IsAppUpdated Error:{0}", error.Message));
 			}
 		}
+
+		#endregion
+
 		#endregion
 
 

@@ -23,57 +23,38 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Android.App;
 using Android.Content;
+using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.Webkit;
-using Android.OS;
-using Com.Openpeer.Delegates;
-using Com.Openpeer.Javaapi;
-using Java.Net;
-using Org.Json;
-using Java.Util;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Android.Util;
-using Java.Interop;
 
-namespace HopSampleApp.CSAccountLogin
+namespace HopSampleApp
 {
-	public class AccountLogin:AsyncTask
+	/// <summary>
+	/// ############################################################################
+	///                           JSON PARSER PROPERTY
+	/// ############################################################################
+	/// These are propertyes for JSON PARSER CLASS
+	/// </summary>
+	class JSONParserProperty
 	{
-		protected override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)
-		{
-			try
-			{
-				LoginManager.SharedLoginManager().AccountLogin();
-			} 
-			catch (Exception e) 
-			{
-				Log.Error("Error",String.Format ("Error AccountLogin:{0}", e.StackTrace));
-
-			}
-
-			return null;
-
-		}
-
-		protected override void OnPostExecute (Java.Lang.Object result)
-		{
-			//base.OnPostExecute (result);
-		}
-
-		protected override void OnPreExecute ()
-		{
-			//base.OnPreExecute ();
-		}
-
-		protected override void OnProgressUpdate (params Java.Lang.Object[] values)
-		{
-			//base.OnProgressUpdate (values);
-		}
+		/*  Propertyes for JsonParser class  */
+		public static DateTime date{ get; set; }
+		public string outerFrameURL { get; set;}
+		public string identityProviderDomain { get; set;}
+		public string identityFederateBaseURI { get; set;}
+		public string namespaceGrantServiceURL { get; set;}
+		public string lockBoxServiceDomain { get; set;}
+		public string archiveOutgoingTelnetLoggerServer { get; set;}
+		public string defaultOutgoingTelnetServer{ get; set; }
+		public string openpeer_stack_bootstrapper_force_well_known_over_insecure_http { get; set;}
+		public string openpeer_stack_bootstrapper_force_well_known_using_post { get; set;}
+		public static bool GestureOption{ get; set;}
 	}
 }
 

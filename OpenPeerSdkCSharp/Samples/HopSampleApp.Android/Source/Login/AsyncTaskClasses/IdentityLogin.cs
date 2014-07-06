@@ -46,14 +46,13 @@ namespace HopSampleApp.CSIdentityLogin
 	{
 		protected override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)
 		{
-
 			try
 			{
 				LoginManager.SharedLoginManager().StartIdentityLogin();
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine (String.Format ("Error IdentityLogin:{0}", e.StackTrace));
+				Log.Error("Error",String.Format ("Error IdentityLogin:{0}", e.StackTrace));
 			}
 
 			return null;

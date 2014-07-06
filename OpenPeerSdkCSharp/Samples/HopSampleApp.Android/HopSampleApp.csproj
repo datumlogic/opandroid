@@ -56,8 +56,6 @@
     <Compile Include="Source\Services\ImageCachingService.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Source\Services\GestureListener.cs" />
-    <Compile Include="Source\Services\JSONParserProperty.cs" />
-    <Compile Include="Source\Services\JSONParser.cs" />
     <Compile Include="Source\Activities\ChatActivity.cs" />
     <Compile Include="Source\Activities\ChatAdapter.cs" />
     <Compile Include="Source\Activities\ContactAdapter.cs" />
@@ -73,7 +71,6 @@
     <Compile Include="Source\Activities\SplashActivity.cs" />
     <Compile Include="Source\Activities\VideoCallActivity.cs" />
     <Compile Include="Source\Activities\WaitingResponseActivity.cs" />
-    <Compile Include="Source\Services\SocialMediaFeature.cs" />
     <Compile Include="Source\Activities\AlertActivity.cs" />
     <Compile Include="Source\Activities\SessionActivity.cs" />
     <Compile Include="Source\Activities\SessionAdapter.cs" />
@@ -83,10 +80,8 @@
     <Compile Include="Source\Activities\InviteItemsAcc.cs" />
     <Compile Include="Source\Activities\SessionItem.cs" />
     <Compile Include="Source\Activities\LettersAdapter.cs" />
-    <Compile Include="Source\Services\Emotions.cs" />
     <Compile Include="Source\Activities\ChatItem.cs" />
     <Compile Include="Source\Services\AppConsts.cs" />
-    <Compile Include="Source\Services\Utility.cs" />
     <Compile Include="Source\Services\SessionManager.cs" />
     <Compile Include="Source\Services\MessageManager.cs" />
     <Compile Include="Source\Services\ContactsManager.cs" />
@@ -97,10 +92,7 @@
     <Compile Include="Source\Model\Session.cs" />
     <Compile Include="Source\OPDelegates\Delegates.cs" />
     <Compile Include="Source\Services\HTTPDownloader.cs" />
-    <Compile Include="Source\Settings\Settings.cs" />
-    <Compile Include="Source\Settings\HOPSettings.cs" />
     <Compile Include="Source\Services\HOPUtility.cs" />
-    <Compile Include="Source\Settings\IsolatedStorageSettings.cs" />
     <Compile Include="Source\Services\HOPAssociatedIdentity.cs" />
     <Compile Include="Source\Services\ActivityIndicatorViewController.cs" />
     <Compile Include="Source\Services\HOPHomeUser.cs" />
@@ -111,7 +103,6 @@
     <Compile Include="Source\OPDelegates\CSOPIdentityDelegate.cs" />
     <Compile Include="Source\OPDelegates\CSOPAccountDelegate.cs" />
     <Compile Include="Source\OPDelegates\CSOPIdentityLookupDelegate.cs" />
-    <Compile Include="Source\Settings\CSOPFakeSettings.cs" />
     <Compile Include="Source\OPDelegates\CSOPConversationThreadDelegate.cs" />
     <Compile Include="EnumBaseClass\EnumBaseType.cs" />
     <Compile Include="Source\Login\AsyncTaskClasses\AccountLogin.cs" />
@@ -120,7 +111,16 @@
     <Compile Include="Source\Login\WebClientProperties\PropertiesForWebClient.cs" />
     <Compile Include="Source\Login\MyWebViewClient.cs" />
     <Compile Include="Source\OPInterface\LoginHandlerInterface.cs" />
-    <Compile Include="Source\LoadingLibrary\CSOPLoadLibrary.cs" />
+    <Compile Include="Source\OPSettings\Settings.cs" />
+    <Compile Include="Source\OPSettings\HOPSettings.cs" />
+    <Compile Include="Source\OPSettings\IsolatedStorageSettings.cs" />
+    <Compile Include="Source\OPSettings\CSOPFakeSettings.cs" />
+    <Compile Include="Source\OPSettings\JsonParser\JSONParser.cs" />
+    <Compile Include="Source\OPSettings\JsonParser\JSONParserProperty.cs" />
+    <Compile Include="Source\OPHelpers\Utility.cs" />
+    <Compile Include="Source\OPHelpers\LoadingLibrary\CSOPLoadLibrary.cs" />
+    <Compile Include="Source\OPHelpers\OPSocialMedia\Emotions.cs" />
+    <Compile Include="Source\OPHelpers\OPSocialMedia\SocialMediaFeature.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -296,12 +296,13 @@
     <Folder Include="Source\OPDelegates\" />
     <Folder Include="Source\Login\" />
     <Folder Include="Source\Model\" />
-    <Folder Include="Source\Settings\" />
     <Folder Include="EnumBaseClass\" />
     <Folder Include="Source\Login\AsyncTaskClasses\" />
     <Folder Include="Source\Login\WebClientProperties\" />
     <Folder Include="Source\OPInterface\" />
-    <Folder Include="Source\LoadingLibrary\" />
+    <Folder Include="Source\OPSettings\" />
+    <Folder Include="Source\OPSettings\JsonParser\" />
+    <Folder Include="Source\OPHelpers\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">

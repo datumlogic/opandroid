@@ -15,10 +15,12 @@ using Java.Lang;
 
 namespace HopSampleApp
 {
+	#region Emotions class
 	public static class Emotions
 	{
 		private static Dictionary<string,int>Smiles;
 
+		#region Emotions constructor
 		//Emotions constructor
 		static Emotions()
 		{
@@ -29,6 +31,10 @@ namespace HopSampleApp
 			Smiles.Add ("ios phone", Resource.Drawable.iosphone);
 			Smiles.Add ("android", Resource.Drawable.andorid);
 		}
+
+		#endregion
+
+		#region Smiles add
 
 		public static bool SmilesAdd(Context context, ISpannable ispan)
 		{
@@ -61,6 +67,11 @@ namespace HopSampleApp
 			}
 			return hasChanges;
 		}
+
+		#endregion
+
+		#region Get smiledText
+
 		public static ISpannable GetSmiledText(Context context, ICharSequence text)
 		{
 			var spannable = SpannableFactory.Instance.NewSpannable(text);
@@ -68,14 +79,26 @@ namespace HopSampleApp
 			return spannable;
 		}
 
+		#endregion
+
+		#region Add Smiley
 
 		public static void AddSmiley(string textSmiley, int smileyResource)
 		{
 			Smiles.Add(textSmiley, smileyResource);
 		}
+
+		#endregion
 	}
+
+	#endregion
+
+	#region StringExtensions class
+
 	public static class StringExtensions
 	{
+		#region IndexesOf
+
 		public static IEnumerable<int> IndexesOf(this string haystack, string needle)
 		{
 			var lastIndex = 0;
@@ -90,6 +113,10 @@ namespace HopSampleApp
 				lastIndex = index + needle.Length;
 			}
 		}
+
+		#endregion
 	}
+
+	#endregion
 }
 
