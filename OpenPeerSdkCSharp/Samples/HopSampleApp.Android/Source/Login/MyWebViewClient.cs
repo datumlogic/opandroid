@@ -44,17 +44,22 @@ namespace HopSampleApp
 {
 	public class MyWebViewClient:WebViewClient
 	{
+		#region ShouldOverrideUrlLoading
 		public override bool ShouldOverrideUrlLoading (WebView view, string url)
 		{
 			view.LoadUrl (url);
 			return true;
 		}
+		#endregion
 
+		#region OnPageStarted
 		public override void OnPageStarted (WebView view, string url, Android.Graphics.Bitmap favicon)
 		{
 			base.OnPageStarted (view, url, favicon);
 		}
+		#endregion
 
+		#region OnLoadResource
 		public override void OnLoadResource (WebView view, string url)
 		{
 			//view.loadUrl(url);
@@ -68,7 +73,9 @@ namespace HopSampleApp
 				base.OnLoadResource (view, url);
 			}
 		}
+		#endregion
 
+		#region ShouldInterceptRequest
 		public override WebResourceResponse ShouldInterceptRequest (WebView view, string url)
 		{
 			if (url.Contains("datapass"))
@@ -111,6 +118,9 @@ namespace HopSampleApp
 			}
 
 		}
+		#endregion
+
+		#region OnPageFinished
 
 		public override void OnPageFinished (WebView view, string url)
 		{
@@ -144,12 +154,16 @@ namespace HopSampleApp
 			}
 
 		}
+		#endregion
+
+		#region OnReceivedError
 		public void OnReceivedError (WebView view, int errorCode, string description, string failingUrl)
 		{
 			errorCode = 1;
 			errorCode++;
 			//base.OnReceivedError (view, errorCode, description, failingUrl);
 		}
+		#endregion
 	}
 }
 
