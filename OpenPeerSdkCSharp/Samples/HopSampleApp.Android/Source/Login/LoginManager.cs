@@ -81,7 +81,7 @@ namespace HopSampleApp
 			String appSettings = CSOPFakeSettings.createFakeApplicationSettings();
 			OPSettings.Apply(appSettings);
 
-			stack.Setup(stackdelegate,mediaenginedelegate);
+			stack.Setup(null,null);
 
 		}
 
@@ -100,7 +100,7 @@ namespace HopSampleApp
 		public static OPAccount mAccount;
 		public static OPAccountDelegate mAccountDelegate;
 		public static OPIdentity mIdentity;
-
+		public static OPIdentityLookupDelegate mIdentityLookupDelegate;
 		public static OPIdentityDelegate mIdentityDelegate;
 		//public static OPMediaEngine mMediaEngine;
 		//public static OPIdentityLookupDelegate mIdentityLookupDelegate;
@@ -113,6 +113,9 @@ namespace HopSampleApp
 		public static OPStackDelegate stackdelegate;
 		public static OPMediaEngineDelegate mediaenginedelegate;
 		//public static OPCallDelegate mCallDelegate;
+		public static List<OPIdentityContact> mIdentityContacts = new List<OPIdentityContact> ();
+		public static List<OPMessage> mMessages = new List<OPMessage> ();
+
 
 		public void setHandlerListener(LoginHandlerInterface listener)
 		{
@@ -160,7 +163,7 @@ namespace HopSampleApp
 			mIdentity = OPIdentity.Login(mAccount, null,
 				"identity-v1-beta-1-i.hcs.io", 
 				"identity://identity-v1-beta-1-i.hcs.io/",
-				"http://jsouter-v1-beta-1-i.hcs.io/identity.html?view=choose&federated=false?reload=true");
+				"http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
 
 		}
 			
@@ -199,20 +202,38 @@ namespace HopSampleApp
 		public void onIdentityLookupCompleted(OPIdentityLookup lookup) {
 
 			LoginManager.mIdentityLookup = lookup;
-
-			mLoginHandler.onLookupCompleted();
+			LoginManager.mIdentityContacts = LoginManager.mIdentityLookup.UpdatedIdentities.ToList();
+			foreach (var con in mIdentityContacts) 
+			{
+				Log.Debug ("Identity Contacts", con.ToString());
+			}
+			mLoginHandler.onIdentityLookupCompleted();
 		}
 
 		public void onDownloadedRolodexContacts(OPIdentity identity) {
 
-			//LoginManager.mIdentityLookupDelegate = new OPIdentityDelegateImplementation();
-			//LoginManager.mIdentityLookup = new OPIdentityLookup();
-			//mCallbackHandler.RegisterIdentityLookupDelegate(LoginManager.mIdentityLookup, LoginManager.mIdentityLookupDelegate);
+			LoginManager.mIdentityLookupDelegate = new CSOPIdentityLookupDelegate();
+			LoginManager.mIdentityLookup = new OPIdentityLookup();
+			mCallbackHandler.RegisterIdentityLookupDelegate(LoginManager.mIdentityLookup,LoginManager.mIdentityLookupDelegate);
 
-			//mLoginHandler.onDownloadedRolodexContacts(identity);
+			mLoginHandler.onDownloadedRolodexContacts(identity);
 
 		}
 		public void onAccountStateReady() {
+
+			List<OPIdentity> identityList = mAccount.AssociatedIdentities.ToList();
+			foreach (OPIdentity ident in identityList)
+			{
+				if (!ident.IsDelegateAttached)
+				{
+					mIdentityDelegate = new CSOPIdentityDelegate();
+					//mIdentity = new OPIdentity();
+					mCallbackHandler.RegisterIdentityDelegate(ident, mIdentityDelegate);
+					ident.AttachDelegate(mIdentityDelegate, "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
+				}
+				mIdentity = ident;
+			}
+
 
 			mLoginHandler.onAccountStateReady();
 

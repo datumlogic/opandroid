@@ -59,8 +59,8 @@ namespace HopSampleApp
 			if (state == AccountStates.AccountStateReady)
 			{
 				Log.Warn ("JNI", "READY !!!!!!!!!!!!");
-				IList<OPIdentity> identityList = account.AssociatedIdentities;
-				Log.Warn ("JNI", identityList.ToString());
+				LoginManager.SharedLoginManager ().onAccountStateReady ();
+
 
 				//LoginManager.loadOuterFrame();
 			}

@@ -121,6 +121,9 @@
     <Compile Include="Source\OPHelpers\LoadingLibrary\CSOPLoadLibrary.cs" />
     <Compile Include="Source\OPHelpers\OPSocialMedia\Emotions.cs" />
     <Compile Include="Source\OPHelpers\OPSocialMedia\SocialMediaFeature.cs" />
+    <Compile Include="Source\OPTesting\CSOPTestAccount.cs" />
+    <Compile Include="Source\OPTesting\CSOPTestIdentity.cs" />
+    <Compile Include="Source\OPTesting\CSOPTestIdentityLookup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -303,6 +306,7 @@
     <Folder Include="Source\OPSettings\" />
     <Folder Include="Source\OPSettings\JsonParser\" />
     <Folder Include="Source\OPHelpers\" />
+    <Folder Include="Source\OPTesting\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">

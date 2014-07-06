@@ -47,12 +47,6 @@
   <ItemGroup>
     <None Include="Additions\AboutAdditions.txt" />
     <None Include="Jars\AboutJars.txt" />
-    <None Include="..\..\..\..\sdknovi\armeabi-v7a\.DS_Store">
-      <Link>armeabi-v7a\.DS_Store</Link>
-    </None>
-    <None Include="..\..\..\..\sdknovi\armeabi-v7a\._.DS_Store">
-      <Link>armeabi-v7a\._.DS_Store</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <TransformFile Include="Transforms\EnumFields.xml" />
@@ -71,11 +65,9 @@
   <ItemGroup>
     <EmbeddedNativeLibrary Include="..\..\..\..\sdknovi\armeabi-v7a\libopenpeer.so">
       <Link>armeabi-v7a\libopenpeer.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="..\..\..\..\sdknovi\armeabi-v7a\libz_shared.so">
       <Link>armeabi-v7a\libz_shared.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
   </ItemGroup>
 </Project>

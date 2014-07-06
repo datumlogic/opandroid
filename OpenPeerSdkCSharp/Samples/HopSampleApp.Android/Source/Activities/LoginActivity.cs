@@ -186,17 +186,19 @@ namespace HopSampleApp
 
 			public void onAccountStateReady()
 			{
-
+				CSOPTestIdentityLookup.execute(LoginManager.mIdentity);
 			}
 
-			public void onLookupCompleted()
+			public void onIdentityLookupCompleted()
 			{
-
+				Intent intent = new Intent (this, typeof(InviteActivity));
+				StartActivity (intent);
 			}
 
 			public void onDownloadedRolodexContacts(OPIdentity identity)
 			{
-
+				CSOPTestIdentityLookup.isContactsDownloaded = true;
+				CSOPTestIdentityLookup.execute(identity);
 			}
 
 			public void passMessageToJS(String msg)
