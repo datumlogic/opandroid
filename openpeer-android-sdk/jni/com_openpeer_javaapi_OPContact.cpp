@@ -163,6 +163,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerURI
 	if (coreContact)
 	{
 		ret = env->NewStringUTF(coreContact->getPeerURI().c_str());
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact_getPeerURI peerURI = %s", coreContact->getPeerURI().c_str());
 	}
 	return ret;
 }

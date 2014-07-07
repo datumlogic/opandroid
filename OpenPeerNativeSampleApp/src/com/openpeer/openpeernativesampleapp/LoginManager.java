@@ -224,7 +224,7 @@ public class LoginManager {
 			jsonObject.put("openpeer/common/application-url", "http://fake-application-url");
 
 			Time expires = new Time ();
-			expires.set(30, 5, 2014);
+			expires.set(30, 8, 2014);
 			//rel-dev2
 			//jsonObject.put("openpeer/calculated/authorizated-application-id", OPStack.createAuthorizedApplicationID("com.openpeer.nativeApp", "8f1ff375433b6e11026cb806a32ae4d04a59d7b1", expires ));
 			//lespaul
@@ -359,7 +359,7 @@ public class LoginManager {
 
 	public static void onIdentityLookupCompleted(OPIdentityLookup lookup) {
 		// TODO Auto-generated method stub
-		LoginManager.mIdentityLookup = lookup;
+		//LoginManager.mIdentityLookup = lookup;
 		LoginManager.mIdentityContacts = LoginManager.mIdentityLookup.getUpdatedIdentities();
 
 		mLoginHandler.onLookupCompleted();

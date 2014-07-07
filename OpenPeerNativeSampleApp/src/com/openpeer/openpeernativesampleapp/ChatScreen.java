@@ -203,6 +203,7 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 			OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
 			OPMediaEngine.getInstance().setFaceDetection(false);
 			OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+			OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
 			
 			OPMediaEngine.init(OpenPeerApplication.getAppContext());
 
