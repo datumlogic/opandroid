@@ -36,11 +36,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/time"
-        android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/padding_spacing_internal"
         android:layout_marginTop="@dimen/padding_spacing_internal"
         android:layout_toLeftOf="@+id/avatar"
-        android:background="@drawable/speech_bubble_green" >
+        android:background="@drawable/speech_bubble_green" android:text="dd">
     </TextView>
 
 </RelativeLayout>

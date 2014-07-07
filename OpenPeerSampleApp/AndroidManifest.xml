@@ -53,7 +53,23 @@
             android:name=".conversation.ConversationActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity android:name=".SearchActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
 
         <provider
@@ -62,6 +78,20 @@
             android:exported="true" >
             <grant-uri-permission android:pathPattern=".*" />
         </provider>
+
+        <!--
+        <service android:name="com.openpeer.sample.OPService" >
+        </service>
+
+        <receiver android:name="om.openpeer.sample.OPReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        -->
     </application>
 
 </manifest>

@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,10 +39,12 @@ import com.openpeer.sample.OPApplication;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.squareup.picasso.Picasso;
 
 public class CallFragment extends BaseFragment {
 	public static final String TAG = CallFragment.class.getSimpleName();
 	TextView mStatusView;
+	ImageView mPeerAvatarView;
 	Button mEndButton, mAnswerButton;
 	private OPIdentityContact mPeerContact, mSelfContact;
 	private OPSession mSession;
@@ -126,6 +129,7 @@ public class CallFragment extends BaseFragment {
 	}
 
 	private View setupView(View view) {
+		mPeerAvatarView = (ImageView) view.findViewById(R.id.peer_image);
 		mStatusView = (TextView) view.findViewById(R.id.text);
 		mTimingView = (TextView) view.findViewById(R.id.time);
 		mVideoView = view.findViewById(R.id.video);
@@ -185,6 +189,9 @@ public class CallFragment extends BaseFragment {
 			mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio, mVideo);
 			CallbackHandler.getInstance().registerCallDelegate(mCall, mDelegate);
 		}
+		Picasso.with(getActivity())
+				.load(mCall.getPeerUser().getAvatarUri())
+				.into(mPeerAvatarView);
 
 		//		mCall = mSession.placeCall(new OPCallDelegateImplementation(),
 		//				args.getBoolean(IntentData.ARG_AUDIO, true), mVideo);
