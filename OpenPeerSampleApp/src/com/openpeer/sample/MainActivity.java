@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
+import android.app.SearchableInfo;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -140,19 +141,23 @@ public class MainActivity extends BaseActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_main, menu);
 		// Get the SearchView and set the searchable configuration
-	    SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-	    SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-	    // Assumes current activity is the searchable activity
-	    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//	    searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+//		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+//		// Assumes current activity is the searchable activity
+//		//		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//		SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+//		searchView.setSearchableInfo(info);
+//
+//		searchView.setSubmitButtonEnabled(true);
+//		searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-//		case R.id.search:
-//			break;
+		//		case R.id.search:
+		//			break;
 		case R.id.menu_settings:
 			SettingsActivity.launch(this);
 			break;

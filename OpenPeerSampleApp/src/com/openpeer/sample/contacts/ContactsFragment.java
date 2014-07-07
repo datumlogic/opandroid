@@ -5,6 +5,8 @@ import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_
 
 import java.util.List;
 
+import android.app.SearchManager;
+import android.app.SearchableInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,14 +19,20 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.FilterQueryProvider;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.openpeer.app.OPDataManager;
 import com.openpeer.datastore.DatabaseContracts;
@@ -34,7 +42,8 @@ import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
 
 public class ContactsFragment extends BaseFragment implements
-		SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
+		SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener,
+		SearchView.OnCloseListener {
 
 	private SwipeRefreshLayout mRootLayout;
 	private ListView mListView;
@@ -83,11 +92,9 @@ public class ContactsFragment extends BaseFragment implements
 				((ContactItemView) view).onClick();
 			}
 		});
-		if (mTest) {
-			fillTestView();
-		} else {
-			setupContent();
-		}
+
+		setupContent();
+
 		return view;
 	}
 
@@ -95,13 +102,21 @@ public class ContactsFragment extends BaseFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		// this.setHasOptionsMenu(true);
+		this.setHasOptionsMenu(true);
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_contacts, menu);
-		super.onCreateOptionsMenu(menu, inflater);
+		//		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		searchView.setOnQueryTextListener(this);
+		// Assumes current activity is the searchable activity
+		//		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		//		SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+		//		searchView.setSearchableInfo(info);
+
+		//		searchView.setSubmitButtonEnabled(true);
 	}
 
 	@Override
@@ -146,37 +161,12 @@ public class ContactsFragment extends BaseFragment implements
 		mRootLayout.setRefreshing(false);
 	}
 
+	static String oldQuery;
+
 	void setupContent() {
 		// mAdapter.mContacts = OPDataManager.getDatastoreDelegate()
 		// .getContacts(0);
 		//
-		// mAdapter.notifyDataSetChanged();
-	}
-
-	// fill in test data to the view
-	void fillTestView() {
-		// ProfileURL Name David Gotwo identityUrl
-		// identity://facebook.com/100003823387069 IdentityProvider facebook.com
-		// Disposition Disposition_Update,
-		// com.openpeer.javaapi.OPRolodexContact@4266cc90 ProfileURL Name David
-		// Gofour identityUrl identity://facebook.com/100003952283621
-		// IdentityProvider facebook.com Disposition Disposition_Update,
-		// com.openpeer.javaapi.OPRolodexContact@4266d098 ProfileURL Name Cindy
-		// Love identityUrl
-		// mAdapter.mContacts = Arrays
-		// .asList(new OPRolodexContact[] {
-		// new OPRolodexContact(
-		// "identity://facebook.com/100003823387069",
-		// "facebook.com", "David Gotwo", null, null,
-		// null, 0),
-		// new OPRolodexContact(
-		// "identity://facebook.com/100003952283621",
-		// "facebook.com", "David Gofour", null, null,
-		// null, 0),
-		// new OPIdentityContact(new OPRolodexContact(
-		// "identity://facebook.com/100003952283621",
-		// "facebook.com", "David Gofour", null, null,
-		// null, 0)) });
 		// mAdapter.notifyDataSetChanged();
 	}
 
@@ -199,6 +189,18 @@ public class ContactsFragment extends BaseFragment implements
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
+		String selection = null;
+		String slectionArgs[] = null;
+		if (arg1 != null) {
+			String query = arg1.getString("query");
+			Log.d("test", "ContactsFragment onCreateLoader query " + query);
+			if (!TextUtils.isEmpty(query)) {
+				//Note: instr is available from sqlite 3.7.15
+				selection = "name like ?";
+				slectionArgs = new String[] { "%"+query+"%" };
+			}
+
+		}
 		switch (loaderID) {
 		case URL_LOADER:
 			// Returns a new CursorLoader
@@ -207,8 +209,8 @@ public class ContactsFragment extends BaseFragment implements
 					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
 																		// query
 					LIST_PROJECTION, // Projection to return
-					null, // No selection clause
-					null, // No selection arguments
+					selection, // No selection clause
+					slectionArgs, // No selection arguments
 					null // Default sort order
 			);
 		default:
@@ -228,6 +230,41 @@ public class ContactsFragment extends BaseFragment implements
 		mAdapter.changeCursor(null);
 
 	}
+
 	// End: CursorCallback implementation
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.search:
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	//BEGINNING OF INTERFACE IMPLEMENTATION
+
+	public boolean onQueryTextChange(String newText) {
+
+		if (oldQuery == null && TextUtils.isEmpty(newText)) {
+			return true;
+		}
+		oldQuery = newText;
+		Bundle params = new Bundle();
+		params.putString("query", newText);
+		getLoaderManager().restartLoader(URL_LOADER, params, ContactsFragment.this);
+
+		return true;
+	}
+
+	public boolean onQueryTextSubmit(String query) {
+		return false;
+	}
+
+	public boolean onClose() {
+		return false;
+	}
+
+	//END OF INTERFACE IMPLEMENTATION
 
 }

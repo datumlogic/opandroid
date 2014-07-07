@@ -12,7 +12,7 @@ public class BaseFragmentActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_container);
+//		setContentView(R.layout.activity_container);
 	}
 
 	public Fragment setContentFragment(Fragment fragment) {
