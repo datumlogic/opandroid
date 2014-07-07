@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +17,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener,
 		SearchView.OnCloseListener, Button.OnClickListener {
@@ -28,7 +30,11 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-
+		Intent intent = getIntent();
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			doMySearch(query);
+		}
 		setContentView(R.layout.activity_container);
 		this.setContentFragment(ContactsFragment.newInstance());
 
@@ -45,6 +51,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 	//
 	//        return true;
 	//    }
+
+	private void doMySearch(String query) {
+		Toast.makeText(this, "Search recieved " + query, Toast.LENGTH_LONG);
+	}
 
 	private void setupSearchView() {
 
