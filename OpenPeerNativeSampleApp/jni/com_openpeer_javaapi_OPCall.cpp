@@ -523,6 +523,28 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
 	}
 }
 
+/*
+ * Class:     com_openpeer_javaapi_OPCall
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_releaseCoreObjects
+  (JNIEnv *, jobject javaObject)
+{
+	if(javaObject != NULL)
+	{
+		JNIEnv *jni_env = getEnv();
+		jclass cls = findClass("com/openpeer/javaapi/OPCall");
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (ICallPtr*)pointerValue;
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+
+	}
+	__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+}
+
 #ifdef __cplusplus
 }
 #endif

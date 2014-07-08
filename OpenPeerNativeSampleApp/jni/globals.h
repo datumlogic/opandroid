@@ -2,6 +2,7 @@
 #include "EventManager.h"
 #include "CacheDelegateWrapper.h"
 #include "SettingsDelegateWrapper.h"
+#include "CallDelegateWrapper.h"
 
 #ifndef _ANDROID_OPENPEER_GLOBALS_H_
 #define _ANDROID_OPENPEER_GLOBALS_H_
@@ -32,5 +33,6 @@ extern IStackMessageQueuePtr queuePtr;
 extern IMediaEnginePtr mediaEnginePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
+extern CallDelegateWrapperPtr callDelegatePtr;
 
 #endif

@@ -310,7 +310,6 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 									Log.d("output", "ovaj nije self = " + iter.getPeerURI());
 								}
 							}
-							LoginManager.mCallDelegate = new OPCallDelegateImplementation();
 
 							Log.d("output", "java contact peer uri = "+callContact.getPeerURI());
 							//Log.d("output", "java contact peer file = "+callContact.getPeerFilePublic());
@@ -318,7 +317,7 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 
 
 							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
-							LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
+							//LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
 
 						}
 					});

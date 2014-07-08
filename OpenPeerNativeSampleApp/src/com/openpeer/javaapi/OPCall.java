@@ -1,6 +1,7 @@
 package com.openpeer.javaapi;
 
 import android.text.format.Time;
+import android.util.Log;
 
 
 
@@ -53,5 +54,18 @@ public class OPCall {
     public native void hold(boolean hold); // place the call on hold (or remove from hold)
     
     public native void hangup(CallClosedReasons reason);        // end the call
+    
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0)
+    	{
+    		Log.d("output", "Cleaning core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 
 }
