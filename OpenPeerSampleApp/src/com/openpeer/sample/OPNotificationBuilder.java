@@ -35,7 +35,7 @@ public class OPNotificationBuilder {
 		Notification.Builder builder = new Notification.Builder(context)
 				.setAutoCancel(true)
 				.setContentText(message)
-				.setSmallIcon(R.drawable.ic_action_call);
+				.setSmallIcon(R.drawable.ic_action_call_light);
 		// Create the notification
 		launchIntent = new Intent(context, ConversationActivity.class);
 		String peerUri = call.getPeerUser().getPeerUri();
