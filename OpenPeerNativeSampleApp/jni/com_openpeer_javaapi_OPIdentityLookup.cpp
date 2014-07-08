@@ -105,16 +105,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 			globalEventManager,
 			identityLookupInfosForCore,
 			identityServiceDomainStr);
-//	boost::shared_ptr<IIdentityLookupPtr> storePtr = boost::make_shared<IIdentityLookupPtr>(IIdentityLookup::create(OpenPeerCoreManager::accountPtr,
-//			globalEventManager,
-//			identityLookupInfosForCore,
-//			identityServiceDomainStr));
-//	OpenPeerCoreManager::identityLookupPtr = IIdentityLookup::create(OpenPeerCoreManager::accountPtr,
-//			globalEventManager,
-//			identityLookupInfosForCore,
-//			identityServiceDomainStr);
 
-	//if(OpenPeerCoreManager::identityLookupPtr)
 	if(identityLookup)
 	{
 		IIdentityLookupPtr* ptrToIdentityLookup = new boost::shared_ptr<IIdentityLookup>(identityLookup);
