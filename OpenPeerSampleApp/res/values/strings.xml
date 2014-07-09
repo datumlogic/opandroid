@@ -37,6 +37,6 @@
     <string name="out_telnet_logger">Outgoing telnet logger</string>
     <string name="local_telnet_logger">Local telnet logger</string>
     <string name="file_logger">File logger</string>
-        <string name="no_recent_chats">No recent chats</string>
-    
+    <string name="no_recent_chats">No recent chats</string>
+	<string name="menu_done">Done(%s)</string>
 </resources>

@@ -1,4 +1,4 @@
-package utils;
+package com.openpeer.sdk.utils;
 
 import com.openpeer.app.OPUser;
 import com.openpeer.javaapi.OPCall;

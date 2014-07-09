@@ -1,11 +1,12 @@
 package com.openpeer.sample.conversation;
 
 import java.text.DateFormat;
-import com.openpeer.sample.BaseActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,26 +32,28 @@ import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPSession;
 import com.openpeer.app.OPUser;
 import com.openpeer.datastore.DatabaseContracts;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
 import com.openpeer.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
+import com.openpeer.sample.BaseActivity;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.openpeer.sample.contacts.ProfilePickerActivity;
+import com.openpeer.sample.contacts.ProfilePickerFragment;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.squareup.picasso.Picasso;
 
-public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-		ProfilePickerFragment.ProfilePickerListener {
+public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
 	private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
 	private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
 	private static final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+	private static final String TAG = ChatFragment.class.getSimpleName();
 	private ListView mMessagesList;
 	private TextView mComposeBox;
 	private View mSendButton;
@@ -62,6 +65,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	private OPConversationThread mConvThread;
 	private long mWindowId;
 	private OPSession mSession;
+	long[] mUserIDs;
 
 	public static ChatFragment newInstance(long[] userIdList) {
 		ChatFragment fragment = new ChatFragment();
@@ -88,13 +92,17 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		Bundle args = getArguments();
-		long[] userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
-		mWindowId = OPChatWindow.getWindowId(userIDs);
-		mSession = OPSessionManager.getInstance().getSessionForUsers(userIDs);
+		if (savedInstanceState == null) {
+			Bundle args = getArguments();
+			mUserIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+		} else {
+			mUserIDs = savedInstanceState.getLongArray(IntentData.ARG_PEER_USER_IDS);
+		}
+		mWindowId = OPChatWindow.getWindowId(mUserIDs);
+		mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
 		if (mSession == null) {
 			// this is user intiiated session
-			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
+			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(mUserIDs);
 			mSession = new OPSession(users);
 			OPSessionManager.getInstance().addSession(mSession);
 		}
@@ -109,8 +117,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.fragment_chat, null);
 		return setupView(view);
@@ -137,9 +144,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			ImageView view = (ImageView) LayoutInflater.from(getActivity()).inflate(R.layout.imageview_profile, null);
 			usersContainer.addView(view, lp);
 			if (user.getAvatarUri() != null) {
-				Picasso.with(getActivity())
-						.load(user.getAvatarUri())
-						.into(view);
+				Picasso.with(getActivity()).load(user.getAvatarUri()).into(view);
 			}
 		}
 	}
@@ -162,16 +167,14 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				Log.d("TODO", "call actual send function");
-				if (mComposeBox.getText() == null
-						|| mComposeBox.getText().length() == 0) {
+				if (mComposeBox.getText() == null || mComposeBox.getText().length() == 0) {
 					return;
 				}
 
 				String messageId = java.util.UUID.randomUUID().toString();
 				// we use 0 for home user
-				OPMessage msg = new OPMessage(0,
-						OPMessageType.TYPE_TEXT, mComposeBox.getText()
-								.toString(), System.currentTimeMillis(), messageId);
+				OPMessage msg = new OPMessage(0, OPMessageType.TYPE_TEXT, mComposeBox.getText().toString(), System.currentTimeMillis(),
+						messageId);
 				msg.setRead(true);
 
 				mComposeBox.setText("");
@@ -243,12 +246,10 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			View view = null;
 			switch (viewType) {
 			case VIEWTYPE_SELF_MESSAGE_VIEW:
-				view = View.inflate(getActivity(),
-						R.layout.item_message_self, null);
+				view = View.inflate(getActivity(), R.layout.item_message_self, null);
 				break;
 			case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-				view = View.inflate(getActivity(),
-						R.layout.item_message_peer, null);
+				view = View.inflate(getActivity(), R.layout.item_message_peer, null);
 
 				break;
 			}
@@ -278,15 +279,11 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		void update(OPMessage data) {
 			switch (viewType) {
 			case VIEWTYPE_SELF_MESSAGE_VIEW:
-				Picasso.with(getActivity())
-						.load(mSelfContact.getDefaultAvatarUrl())
-						.into(avatarView);
+				Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
 				break;
 			case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
 				OPUser sender = mSession.getUserBySenderId(data.getSenderId());
-				Picasso.with(getActivity())
-						.load(sender.getAvatarUri())
-						.into(avatarView);
+				Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
 
 				break;
 			}
@@ -306,9 +303,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 				}
 			}
 			if (avatar != null) {
-				Picasso.with(getActivity())
-						.load(avatar)
-						.into(avatarView);
+				Picasso.with(getActivity()).load(avatar).into(avatarView);
 			}
 
 			time.setText(DateFormatUtils.getSameDayTime(data.getTime().toMillis(true)));
@@ -325,9 +320,9 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_call:
-			// makeCall(mPeerContact);
-			return true;
+		// case R.id.menu_call:
+		// makeCall();
+		// return true;
 		case R.id.menu_add:
 			addParticipant();
 			return true;
@@ -336,52 +331,57 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		}
 	}
 
-	@Override
-	public void onDone(List<Long> userIds) {
+	public void onDone(long[] userIds) {
 
-		long ids[] = new long[userIds.size()];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = userIds.get(i);
+		long _ids[] = new long[mUserIDs.length + userIds.length];
+		for (int i = 0; i < mUserIDs.length; i++) {
+			_ids[i] = mUserIDs[i];
 		}
-		List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(ids);
-		Log.d("test", "ChatFragment user counts " + users.size());
+		for (int i = 0; i < userIds.length; i++) {
+			_ids[i + mUserIDs.length] = userIds[i];
+		}
+		mUserIDs = _ids;
+		List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIds);
 		if (users != null) {
 			mSession.addParticipant(users);
 			updateUsersView(mSession.getParticipants());
 			mWindowId = mSession.getCurrentWindowId();
-			LoaderManager.enableDebugLogging(true);
 			getLoaderManager().restartLoader(URL_LOADER, null, this);
 		}
 	}
 
-	// After adding a new participant we'll have to switch chat window
-	private void addParticipant() {
-		ProfilePickerFragment fragment = new ProfilePickerFragment();
-		fragment.setTargetFragment(this, 0);
-		((BaseActivity) this.getActivity()).switchFragment(fragment);
-
-		//		if (BuildConfig.DEBUG) {
-		//			Toast.makeText(getActivity(), "TODO: group chat is not supported yet", Toast.LENGTH_LONG);
-		//			//			return;
-		//		}
-		//		Cursor cursor = getActivity().getContentResolver().query(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null,
-		//				ContactsViewEntry.COLUMN_NAME_CONTACT_NAME + "=?", new String[] { "David Gotwo" }, null);
-		//		if (cursor != null) {
-		//			cursor.moveToFirst();
-		//			OPUser user = OPUser.fromDetailCursor(cursor);
-		//			Log.d("test", "loaded user " + user.getName());
-		//			List<OPUser> users = new ArrayList<OPUser>();
-		//			users.add(user);
-		//			mSession.addParticipant(users);
-		//			mWindowId = mSession.getCurrentWindowId();
-		//			LoaderManager.enableDebugLogging(true);
-		//			getLoaderManager().restartLoader(URL_LOADER, null, this);
-		//		}
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putLongArray(IntentData.ARG_PEER_USER_IDS, mUserIDs);
+		super.onSaveInstanceState(outState);
 	}
 
-	private void makeCall(OPIdentityContact peerContact) {
-		Toast.makeText(getActivity(),
-				"makeCall to be implmented" + peerContact, Toast.LENGTH_LONG);
+	// After adding a new participant we'll have to switch chat window
+	private void addParticipant() {
+		Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
+		intent.putExtra(IntentData.ARG_PEER_USER_IDS, mUserIDs);
+		startActivityForResult(intent, ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS);
+
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "onActivityResult requestCode " + requestCode + " resultCode " + resultCode);
+		}
+		switch (requestCode) {
+		case ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS:
+			if (resultCode == Activity.RESULT_OK) {
+				long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
+				onDone(userIds);
+			}
+			break;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private void makeCall() {
+		Toast.makeText(getActivity(), "makeCall to be implmented", Toast.LENGTH_LONG);
 	}
 
 	// Begin: CursorCallback implementation
@@ -398,10 +398,9 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		switch (loaderID) {
 		case URL_LOADER:
 			// Returns a new CursorLoader
-			return new CursorLoader(
-					getActivity(), // Parent activity context
-					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + mWindowId),
-					null, // Projection to return
+			return new CursorLoader(getActivity(), // Parent activity context
+					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + mWindowId), null, // Projection to
+																													// return
 					null, // No selection clause
 					null, // No selection arguments
 					null // Default sort order

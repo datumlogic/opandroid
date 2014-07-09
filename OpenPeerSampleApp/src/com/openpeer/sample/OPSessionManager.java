@@ -244,7 +244,9 @@ public class OPSessionManager {
 			}
 		};
 		CallbackHandler.getInstance().registerConversationThreadDelegate(threadDelegate);
-		CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
+		if (AppConfig.DEBUG) {
+			CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
+		}
 	}
 
 	public OPCall getCallById(String id) {

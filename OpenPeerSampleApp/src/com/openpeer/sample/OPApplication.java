@@ -32,22 +32,6 @@ public class OPApplication extends Application {
 		OPSessionManager.getInstance().init();
 	}
 
-	public static void notify(int notificationId, int notificationDrawableRes,
-			String title, String contentText, Intent intent) {
-		NotificationManager nMan = (NotificationManager) instance
-				.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		Notification.Builder builder = new Notification.Builder(instance)
-				.setSmallIcon(notificationDrawableRes)
-				.setContentTitle(title)
-				.setContentText(contentText)
-				.setAutoCancel(true)
-				.setContentIntent(
-						PendingIntent.getActivity(instance, notificationId,
-								intent, PendingIntent.FLAG_UPDATE_CURRENT));
-
-		nMan.notify(notificationId, builder.build());
-	}
 
 	public static Context getInstance() {
 		// TODO Auto-generated method stub

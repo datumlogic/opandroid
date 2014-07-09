@@ -2,10 +2,12 @@ package com.openpeer.sample;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,9 +17,11 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.SearchView;
 
 import com.openpeer.app.OPDataManager;
+import com.openpeer.app.OPHelper;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.sample.contacts.ContactsFragment;
@@ -37,7 +41,9 @@ public class MainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		this.getActionBar().setHomeButtonEnabled(true);
 		setContentView(R.layout.activity_main);
+
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 		String reloginInfo = OPDataManager.getInstance().getReloginInfo();
 		// Launching app so account hasn't been constructed, and login process
@@ -141,23 +147,24 @@ public class MainActivity extends BaseActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_main, menu);
 		// Get the SearchView and set the searchable configuration
-//		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-//		// Assumes current activity is the searchable activity
-//		//		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//		SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
-//		searchView.setSearchableInfo(info);
-//
-//		searchView.setSubmitButtonEnabled(true);
-//		searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+		//		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		//		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		//		// Assumes current activity is the searchable activity
+		//		//		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		//		SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+		//		searchView.setSearchableInfo(info);
+		//
+		//		searchView.setSubmitButtonEnabled(true);
+		//		searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		//		case R.id.search:
-		//			break;
+		case android.R.id.home:
+			showLogDialog();
+			break;
 		case R.id.menu_settings:
 			SettingsActivity.launch(this);
 			break;
@@ -165,5 +172,26 @@ public class MainActivity extends BaseActivity {
 		}
 		return super.onOptionsItemSelected(item);
 
+	}
+
+	void showLogDialog() {
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+		builder.setMessage("this will enable all logging neccessary for debugging");
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		}).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				OPHelper.getInstance().enableAllLogging();
+			}
+
+		});
+		builder.create().show();
 	}
 }

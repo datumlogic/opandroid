@@ -20,7 +20,7 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
-			Log.d("test", "create statement" + sql);
+//			Log.d("test", "create statement" + sql);
 			db.execSQL(sql);
 		}
 	}

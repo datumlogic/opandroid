@@ -50,6 +50,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/padding_spacing_internal"
         android:layout_toLeftOf="@id/call"
+        android:layout_alignWithParentIfMissing="true"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_action_chat" />
 
