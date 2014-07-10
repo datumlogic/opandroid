@@ -1,6 +1,5 @@
 #include "openpeer/core/ISettings.h"
 #include "openpeer/core/ILogger.h"
-#include <android/log.h>;
 
 #include "globals.h"
 
@@ -171,20 +170,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_applyDefaults
 (JNIEnv *, jclass)
 {
 	ISettings::applyDefaults();
-}
-
-JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_redirectLog(JNIEnv* env, jclass cls)
-{
-    int pipes[2];
-    pipe(pipes);
-    dup2(pipes[1], STDERR_FILENO);
-    close(pipes[1]);
-    FILE *inputFile = fdopen(pipes[0], "r");
-    char readBuffer[256];
-    while (1) {
-        fgets(readBuffer, sizeof(readBuffer), inputFile);
-        __android_log_write(2, "stderr", readBuffer);
-    }
 }
 
 #ifdef __cplusplus

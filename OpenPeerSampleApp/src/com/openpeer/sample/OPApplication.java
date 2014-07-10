@@ -31,11 +31,6 @@ public class OPApplication extends Application {
 		OPHelper.getInstance().init(this, null);
 		OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
 		OPSessionManager.getInstance().init();
-		new Thread() {
-			public void run() {
-				OPSettings.redirectLog();
-			}
-		}.start();
 	}
 
 	public static void notify(int notificationId, int notificationDrawableRes, String title, String contentText, Intent intent) {
