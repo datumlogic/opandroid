@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.openpeer.app.LoginManager;
-import com.openpeer.app.LoginUIListener;
-import com.openpeer.app.OPDataManager;
-import com.openpeer.datastore.OPDatastoreDelegateImplementation;
+import com.openpeer.sdk.app.LoginManager;
+import com.openpeer.sdk.app.LoginUIListener;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.sample.contacts.ContactsFragment;
 import com.openpeer.sample.delegates.OPCallDelegateImplementation;
 

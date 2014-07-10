@@ -1,17 +1,9 @@
 package com.openpeer.sample.contacts;
 
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -21,19 +13,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.openpeer.app.OPChatWindow;
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPSession;
-import com.openpeer.app.OPUser;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPRolodexContact;
-import com.openpeer.sample.IntentData;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.conversation.ConversationActivity;
-import com.openpeer.sample.conversation.CallFragment.OPCallDelegateImplementation;
+import com.openpeer.sdk.app.OPDataManager;
 import com.squareup.picasso.Picasso;
 
 public class ContactItemView extends RelativeLayout {

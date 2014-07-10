@@ -1,12 +1,5 @@
 package com.openpeer.sample.contacts;
 
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
-
-import java.util.List;
-
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,22 +21,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.SearchView;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.datastore.DatabaseContracts;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
 
-public class ContactsFragment extends BaseFragment implements
-		SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener,
-		SearchView.OnCloseListener {
+public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
+		SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
 	private SwipeRefreshLayout mRootLayout;
 	private ListView mListView;
@@ -62,8 +51,7 @@ public class ContactsFragment extends BaseFragment implements
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mReceiver = new DataChangeReceiver();
 		return setupView(inflater.inflate(R.layout.fragment_contacts, null));
 	}
@@ -87,8 +75,7 @@ public class ContactsFragment extends BaseFragment implements
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				((ContactItemView) view).onClick();
 			}
 		});
@@ -108,15 +95,15 @@ public class ContactsFragment extends BaseFragment implements
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_contacts, menu);
-		//		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		// SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 		searchView.setOnQueryTextListener(this);
 		// Assumes current activity is the searchable activity
-		//		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-		//		SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
-		//		searchView.setSearchableInfo(info);
+		// searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		// SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+		// searchView.setSearchableInfo(info);
 
-		//		searchView.setSubmitButtonEnabled(true);
+		// searchView.setSubmitButtonEnabled(true);
 	}
 
 	@Override
@@ -130,8 +117,7 @@ public class ContactsFragment extends BaseFragment implements
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		getActivity().registerReceiver(mReceiver,
-				new IntentFilter(OPDataManager.INTENT_CONTACTS_CHANGED));
+		getActivity().registerReceiver(mReceiver, new IntentFilter(OPDataManager.INTENT_CONTACTS_CHANGED));
 
 	}
 
@@ -181,11 +167,8 @@ public class ContactsFragment extends BaseFragment implements
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID,
-			COLUMN_NAME_CONTACT_NAME,
-			COLUMN_NAME_AVATAR_URL,
-			ContactsViewEntry.COLUMN_NAME_STABLE_ID,
-			ContactsViewEntry.COLUMN_NAME_USER_ID };
+	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
+			ContactsViewEntry.COLUMN_NAME_STABLE_ID, ContactsViewEntry.COLUMN_NAME_USER_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
@@ -195,17 +178,16 @@ public class ContactsFragment extends BaseFragment implements
 			String query = arg1.getString("query");
 			Log.d("test", "ContactsFragment onCreateLoader query " + query);
 			if (!TextUtils.isEmpty(query)) {
-				//Note: instr is available from sqlite 3.7.15
+				// Note: instr is available from sqlite 3.7.15
 				selection = "name like ?";
-				slectionArgs = new String[] { "%"+query+"%" };
+				slectionArgs = new String[] { "%" + query + "%" };
 			}
 
 		}
 		switch (loaderID) {
 		case URL_LOADER:
 			// Returns a new CursorLoader
-			return new CursorLoader(
-					getActivity(), // Parent activity context
+			return new CursorLoader(getActivity(), // Parent activity context
 					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
 																		// query
 					LIST_PROJECTION, // Projection to return
@@ -242,7 +224,7 @@ public class ContactsFragment extends BaseFragment implements
 		}
 	}
 
-	//BEGINNING OF INTERFACE IMPLEMENTATION
+	// BEGINNING OF INTERFACE IMPLEMENTATION
 
 	public boolean onQueryTextChange(String newText) {
 
@@ -265,6 +247,6 @@ public class ContactsFragment extends BaseFragment implements
 		return false;
 	}
 
-	//END OF INTERFACE IMPLEMENTATION
+	// END OF INTERFACE IMPLEMENTATION
 
 }

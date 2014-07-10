@@ -1,12 +1,9 @@
 package com.openpeer.sample.conversation;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.TimerTask;
 
 import org.webrtc.videoengine.ViERenderer;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -19,11 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.openpeer.app.OPChatWindow;
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPSession;
-import com.openpeer.app.OPUser;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
@@ -35,10 +27,12 @@ import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
-import com.openpeer.sample.OPApplication;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.app.OPUser;
 import com.squareup.picasso.Picasso;
 
 public class CallFragment extends BaseFragment {

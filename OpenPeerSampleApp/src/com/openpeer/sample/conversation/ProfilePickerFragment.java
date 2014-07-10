@@ -1,8 +1,5 @@
 package com.openpeer.sample.conversation;
 
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +26,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.datastore.DatabaseContracts;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.datastore.DatabaseContracts.UserEntry;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ContactItemView;
 import com.openpeer.sample.contacts.ContactsFragment;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
+
 import com.squareup.picasso.Picasso;
 
 public class ProfilePickerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener,

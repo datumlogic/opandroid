@@ -6,11 +6,6 @@ import java.util.List;
 
 import android.util.Log;
 
-import com.openpeer.app.OPChatWindow;
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPHelper;
-import com.openpeer.app.OPSession;
-import com.openpeer.app.OPUser;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
@@ -23,6 +18,10 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.ConversationActivity;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPHelper;
+import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.app.OPUser;
 
 public class OPSessionManager {
 	List<OPSession> mSessions;

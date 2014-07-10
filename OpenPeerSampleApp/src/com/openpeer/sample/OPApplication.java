@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.openpeer.app.OPHelper;
+import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.javaapi.OPSettings;
 
 public class OPApplication extends Application {

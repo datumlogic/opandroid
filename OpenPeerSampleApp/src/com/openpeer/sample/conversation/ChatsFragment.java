@@ -1,14 +1,11 @@
 package com.openpeer.sample.conversation;
 
-import static com.openpeer.datastore.DatabaseContracts.WindowViewEntry.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -21,10 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.openpeer.app.OPSession;
-import com.openpeer.datastore.DatabaseContracts;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
@@ -34,6 +27,8 @@ import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
+import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.datastore.DatabaseContracts;
 
 public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 

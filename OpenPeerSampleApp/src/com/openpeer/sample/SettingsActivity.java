@@ -1,18 +1,15 @@
 package com.openpeer.sample;
 
-import com.openpeer.app.OPHelper;
-import com.openpeer.app.OPSdkConfig;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
-import android.provider.Settings.Secure;
+
+import com.openpeer.sdk.app.OPHelper;
 
 public class SettingsActivity extends Activity {
 	static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";

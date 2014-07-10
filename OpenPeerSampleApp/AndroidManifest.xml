@@ -77,7 +77,7 @@
         </activity>
 
         <provider
-            android:name="com.openpeer.datastore.OPContentProvider"
+            android:name="com.openpeer.sdk.datastore.OPContentProvider"
             android:authorities="com.openpeer.sample.provider"
             android:exported="true" >
             <grant-uri-permission android:pathPattern=".*" />

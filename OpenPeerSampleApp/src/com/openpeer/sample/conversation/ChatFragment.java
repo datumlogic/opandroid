@@ -1,7 +1,6 @@
 package com.openpeer.sample.conversation;
 
 import java.text.DateFormat;
-import com.openpeer.sample.BaseActivity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,23 +25,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.openpeer.app.OPChatWindow;
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPSession;
-import com.openpeer.app.OPUser;
-import com.openpeer.datastore.DatabaseContracts;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
+import com.openpeer.sample.BaseActivity;
 import com.openpeer.sample.BaseFragment;
-import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
+import com.openpeer.sdk.app.OPChatWindow;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.app.OPUser;
+import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.squareup.picasso.Picasso;
 
 public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,

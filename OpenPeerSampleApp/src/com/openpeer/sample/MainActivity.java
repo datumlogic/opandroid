@@ -17,7 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
-import com.openpeer.app.OPDataManager;
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.sample.contacts.ContactsFragment;
