@@ -1,6 +1,6 @@
 package com.openpeer.javaapi;
 
-import com.openpeer.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 
 import android.database.Cursor;
 import android.text.format.Time;

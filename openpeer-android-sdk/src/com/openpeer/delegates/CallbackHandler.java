@@ -8,10 +8,7 @@ import java.util.List;
 import android.text.format.Time;
 import android.util.Log;
 
-import com.openpeer.app.OPCallManager;
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPHelper;
-import com.openpeer.datastore.OPDatastoreDelegate;
+import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
@@ -38,6 +35,10 @@ import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPMediaEngineDelegate;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackDelegate;
+import com.openpeer.sdk.app.OPCallManager;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPHelper;
+import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 
 public class CallbackHandler {
 
