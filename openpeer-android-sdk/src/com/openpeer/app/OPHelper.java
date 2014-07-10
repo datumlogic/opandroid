@@ -54,38 +54,31 @@ public class OPHelper {
 
 	public void toggleOutgoingTelnetLogging(boolean enable) {
 		if (enable) {
-			enableAllLogging();
-
-			String deviceId = Secure.getString(mContext.getContentResolver(),
-					Secure.ANDROID_ID);
+			OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
+			OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
+			OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+			String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
 			String instanceId = OPSdkConfig.getInstanceid();
 			String telnetLogString = deviceId + "-" + instanceId + "\n";
 			Log.d("output", "Outgoing log string = " + telnetLogString);
-			OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true,
-					telnetLogString);
+			OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true, telnetLogString);
 		} else {
-			disableLogging();
+			OPLogger.setLogLevel(OPLogLevel.LogLevel_None);
+			OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
+			OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_None);
 			OPLogger.uninstallOutgoingTelnetLogger();
 		}
 	}
 
 	public void enableTelnetLogging() {
-		// OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-		// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
-		// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 
-		String deviceId = Secure.getString(mContext.getContentResolver(),
-				Secure.ANDROID_ID);
-		String instanceId = OPSdkConfig.getInstanceid();
-		String telnetLogString = deviceId + "-" + instanceId + "\n";
-		Log.d("output", "Outgoing log string = " + telnetLogString);
-		OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true,
-				telnetLogString);
-
-		// OPLogger.installTelnetLogger(59999, 60, true);
+		OPLogger.setLogLevel("openpeer_services_transport_stream",
+				OPLogLevel.LogLevel_None);
+		OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_None);
+		OPLogger.installTelnetLogger(59999, 60, true);
 		OPLogger.installFileLogger("/storage/emulated/0/HFLog1.txt", true);
 	}
 
@@ -97,23 +90,19 @@ public class OPHelper {
 		OPMediaEngine.getInstance().setMuteEnabled(false);
 		OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
 		OPMediaEngine.getInstance().setContinuousVideoCapture(true);
-		OPMediaEngine.getInstance().setDefaultVideoOrientation(
-				VideoOrientations.VideoOrientation_Portrait);
-		OPMediaEngine.getInstance().setRecordVideoOrientation(
-				VideoOrientations.VideoOrientation_LandscapeRight);
+		OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
+		OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
 		OPMediaEngine.getInstance().setFaceDetection(false);
 
-		Log.d("performance",
-				"initMediaEngine time " + (SystemClock.uptimeMillis() - start));
-		// OPMediaEngine.init(mContext);
+		Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
+		//		OPMediaEngine.init(mContext);
 	}
 
 	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
 		long start = SystemClock.uptimeMillis();
 
 		mContext = context;
-		enableTelnetLogging();
-		// toggleOutgoingTelnetLogging(true);
+//		enableTelnetLogging();
 		OPMediaEngine.init(mContext);
 
 		// initMediaEngine();
@@ -154,10 +143,9 @@ public class OPHelper {
 				new OPCallDelegateImplementation());
 
 		stack.setup(null, null);
-		// initMediaEngine();
-		// this.toggleOutgoingTelnetLogging(true);
-		Log.d("performance",
-				"OPHelper init time " + (SystemClock.uptimeMillis() - start));
+		//		initMediaEngine();
+		//		this.toggleOutgoingTelnetLogging(true);
+		Log.d("performance", "OPHelper init time " + (SystemClock.uptimeMillis() - start));
 
 	}
 
@@ -236,88 +224,6 @@ public class OPHelper {
 	public void onEnteringBackground() {
 		mAppInBackground = true;
 		OPCallManager.getInstance().onEnteringForeground();
-	}
-
-	public void enableAllLogging() {
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_APPLICATION.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_WIRE.ordinal(),
-				OPLogLevel.LogLevel_Debug);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_ICE.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_TURN.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_RUDP.ordinal(),
-				OPLogLevel.LogLevel_Debug);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_HTTP.ordinal(),
-				OPLogLevel.LogLevel_Debug);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_MLS.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_TCP.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(
-				OPCoreLogModules.MODULE_SERVICES_TRANSPORT.ordinal(),
-				OPLogLevel.LogLevel_Debug);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_CORE.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_STACK.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_ZSLIB.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_ZSLIB_SOCKET.ordinal(),
-				OPLogLevel.LogLevel_Debug);
-		OPLogger.setLogLevel(OPCoreLogModules.MODEULE_SDK.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_WEBRTC.ordinal(),
-				OPLogLevel.LogLevel_Detail);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_MEDIA.ordinal(),
-				OPLogLevel.LogLevel_Detail);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_JAVASCRIPT.ordinal(),
-				OPLogLevel.LogLevel_Trace);
-	}
-
-	void disableLogging() {
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_APPLICATION.ordinal(),
-				OPLogLevel.LogLevel_None);
-
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_WIRE.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_ICE.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_TURN.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_RUDP.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_HTTP.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_MLS.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_SERVICES_TCP.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(
-				OPCoreLogModules.MODULE_SERVICES_TRANSPORT.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_CORE.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_STACK.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_ZSLIB.ordinal(),
-				OPLogLevel.LogLevel_None);
-		// OPLogger.setLogLevel(OPCoreLogModules.MODULE_ZSLIB_SOCKET.ordinal(),OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODEULE_SDK.ordinal(),
-				OPLogLevel.LogLevel_None);
-
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_WEBRTC.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_MEDIA.ordinal(),
-				OPLogLevel.LogLevel_None);
-		OPLogger.setLogLevel(OPCoreLogModules.MODULE_JAVASCRIPT.ordinal(),
-				OPLogLevel.LogLevel_None);
 	}
 
 }
