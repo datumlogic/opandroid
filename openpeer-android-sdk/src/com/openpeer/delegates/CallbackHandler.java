@@ -8,7 +8,6 @@ import java.util.List;
 import android.text.format.Time;
 import android.util.Log;
 
-import com.openpeer.app.OPCallManager;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.app.OPHelper;
 import com.openpeer.datastore.OPDatastoreDelegate;

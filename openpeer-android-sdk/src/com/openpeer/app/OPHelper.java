@@ -218,12 +218,10 @@ public class OPHelper {
 
 	public void onEnteringForeground() {
 		mAppInBackground = false;
-		OPCallManager.getInstance().onEnteringForeground();
 	}
 
 	public void onEnteringBackground() {
 		mAppInBackground = true;
-		OPCallManager.getInstance().onEnteringForeground();
 	}
 
 }

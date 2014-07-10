@@ -188,7 +188,7 @@ public class MainActivity extends BaseActivity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				OPHelper.getInstance().enableAllLogging();
+				OPHelper.getInstance().enableTelnetLogging();
 			}
 
 		});
