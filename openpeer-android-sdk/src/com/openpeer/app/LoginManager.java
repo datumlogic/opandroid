@@ -12,6 +12,7 @@ import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
+import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 
@@ -20,6 +21,7 @@ public class LoginManager {
 	private LoginUIListener mListener;
 	private WebView mAccountLoginWebView;
 	private WebView mIdentityLoginWebView;
+	private OPCallDelegate mCallDelegate;
 
 	private static LoginManager instance;
 
@@ -31,10 +33,11 @@ public class LoginManager {
 	}
 
 	public LoginManager setup(LoginUIListener mListener,
-			WebView mAccountLoginWebView, WebView mIdentityLoginWebView) {
+			WebView mAccountLoginWebView, WebView mIdentityLoginWebView, OPCallDelegate callDelegate) {
 		this.mListener = mListener;
 		this.mAccountLoginWebView = mAccountLoginWebView;
 		this.mIdentityLoginWebView = mIdentityLoginWebView;
+		this.mCallDelegate = callDelegate;
 		return this;
 	}
 
@@ -66,7 +69,7 @@ public class LoginManager {
 		CallbackHandler.getInstance().registerAccountDelegate(account,
 				accountDelegate);
 
-		account = OPAccount.login(null, null, null,
+		account = OPAccount.login(null, null, mCallDelegate,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
 				"bojanGrantID", "identity-v1-rel-lespaul-i.hcs.io", false);
 		OPDataManager.getInstance().setSharedAccount(account);
@@ -86,7 +89,7 @@ public class LoginManager {
 				account);
 		mAccountLoginWebView.setWebViewClient(client);
 
-		account = OPAccount.relogin(null, null, null,
+		account = OPAccount.relogin(null, null, mCallDelegate,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html"
 																	// namespaceGrantOuterFrameURLUponReload
 				reloginInfo);

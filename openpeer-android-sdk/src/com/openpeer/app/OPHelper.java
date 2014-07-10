@@ -72,7 +72,7 @@ public class OPHelper {
 
 	public void enableTelnetLogging() {
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
+		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 
 		OPLogger.setLogLevel("openpeer_services_transport_stream",
@@ -102,7 +102,7 @@ public class OPHelper {
 		long start = SystemClock.uptimeMillis();
 
 		mContext = context;
-		enableTelnetLogging();
+//		enableTelnetLogging();
 		OPMediaEngine.init(mContext);
 
 		// initMediaEngine();

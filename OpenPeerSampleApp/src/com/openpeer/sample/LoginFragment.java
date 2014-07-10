@@ -13,6 +13,7 @@ import com.openpeer.app.LoginUIListener;
 import com.openpeer.app.OPDataManager;
 import com.openpeer.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.sample.contacts.ContactsFragment;
+import com.openpeer.sample.delegates.OPCallDelegateImplementation;
 
 public class LoginFragment extends BaseFragment implements LoginUIListener {
 	WebView mAccountLoginWebView;
@@ -59,13 +60,13 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 		if (reloginInfo == null || reloginInfo.length() == 0) {
 			Log.d("login", "LoginFragment startLogin() logging in");
 			LoginManager.getInstance()
-					.setup(this, mAccountLoginWebView, mIdentityLoginWebView)
+					.setup(this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation())
 					.login();
 		} else {
 			Log.d("login", "LoginFragment startLogin() relogging in");
 
 			LoginManager.getInstance()
-					.setup(this, mAccountLoginWebView, mIdentityLoginWebView)
+					.setup(this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation())
 					.relogin(OPDataManager.getInstance().getReloginInfo());
 		}
 

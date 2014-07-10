@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.openpeer.app.OPHelper;
+import com.openpeer.javaapi.OPSettings;
 
 public class OPApplication extends Application {
 	private static OPApplication instance;
@@ -30,21 +31,19 @@ public class OPApplication extends Application {
 		OPHelper.getInstance().init(this, null);
 		OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
 		OPSessionManager.getInstance().init();
+		new Thread() {
+			public void run() {
+				OPSettings.redirectLog();
+			}
+		}.start();
 	}
 
-	public static void notify(int notificationId, int notificationDrawableRes,
-			String title, String contentText, Intent intent) {
-		NotificationManager nMan = (NotificationManager) instance
-				.getSystemService(Context.NOTIFICATION_SERVICE);
+	public static void notify(int notificationId, int notificationDrawableRes, String title, String contentText, Intent intent) {
+		NotificationManager nMan = (NotificationManager) instance.getSystemService(Context.NOTIFICATION_SERVICE);
 
-		Notification.Builder builder = new Notification.Builder(instance)
-				.setSmallIcon(notificationDrawableRes)
-				.setContentTitle(title)
-				.setContentText(contentText)
-				.setAutoCancel(true)
-				.setContentIntent(
-						PendingIntent.getActivity(instance, notificationId,
-								intent, PendingIntent.FLAG_UPDATE_CURRENT));
+		Notification.Builder builder = new Notification.Builder(instance).setSmallIcon(notificationDrawableRes).setContentTitle(title)
+				.setContentText(contentText).setAutoCancel(true)
+				.setContentIntent(PendingIntent.getActivity(instance, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT));
 
 		nMan.notify(notificationId, builder.build());
 	}

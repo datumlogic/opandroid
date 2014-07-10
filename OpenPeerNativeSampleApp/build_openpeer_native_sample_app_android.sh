@@ -55,4 +55,4 @@ echo "-------- Installing ortc-lib -----"
 cp -r ./obj/local/armeabi/lib* ./../../ortc/build/android-test/
 
 #clean
-rm -rf ./obj
+#rm -rf ./obj
