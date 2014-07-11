@@ -16,6 +16,7 @@ import android.util.Log;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPAccountDelegateImplementation;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
+import com.openpeer.delegates.OPCallDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
 import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
@@ -224,7 +225,7 @@ public class LoginManager {
 			jsonObject.put("openpeer/common/application-url", "http://fake-application-url");
 
 			Time expires = new Time ();
-			expires.set(30, 5, 2014);
+			expires.set(30, 8, 2014);
 			//rel-dev2
 			//jsonObject.put("openpeer/calculated/authorizated-application-id", OPStack.createAuthorizedApplicationID("com.openpeer.nativeApp", "8f1ff375433b6e11026cb806a32ae4d04a59d7b1", expires ));
 			//lespaul
@@ -279,10 +280,12 @@ public class LoginManager {
 
 			String reloginInfo = sharedPref.getString("/openpeer/reloginInformation", "");
 
+			mCallDelegate = new OPCallDelegateImplementation();
 			if(reloginInfo.length() == 0)
 			{
 
-				mAccount = OPAccount.login(null, null, null, 
+				
+				mAccount = OPAccount.login(null, null, mCallDelegate, 
 						"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
 						"bojanGrantID", 
 						"identity-v1-rel-lespaul-i.hcs.io", false);
@@ -291,7 +294,7 @@ public class LoginManager {
 			else
 			{
 				//stableId = mAccount.getStableID();
-				mAccount = OPAccount.relogin(null, null, null, 
+				mAccount = OPAccount.relogin(null, null, mCallDelegate, 
 						"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
 						reloginInfo);
 
@@ -359,7 +362,7 @@ public class LoginManager {
 
 	public static void onIdentityLookupCompleted(OPIdentityLookup lookup) {
 		// TODO Auto-generated method stub
-		LoginManager.mIdentityLookup = lookup;
+		//LoginManager.mIdentityLookup = lookup;
 		LoginManager.mIdentityContacts = LoginManager.mIdentityLookup.getUpdatedIdentities();
 
 		mLoginHandler.onLookupCompleted();

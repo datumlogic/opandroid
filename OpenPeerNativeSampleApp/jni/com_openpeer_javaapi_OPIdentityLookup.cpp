@@ -4,6 +4,7 @@
 #include "openpeer/core/IHelper.h"
 #include "OpenPeerCoreManager.h"
 #include <android/log.h>
+#include <boost/make_shared.hpp>
 
 #include "globals.h"
 
@@ -100,13 +101,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 		}
 	}
 
-	OpenPeerCoreManager::identityLookupPtr = IIdentityLookup::create(OpenPeerCoreManager::accountPtr,
+	IIdentityLookupPtr identityLookup = IIdentityLookup::create(OpenPeerCoreManager::accountPtr,
 			globalEventManager,
 			identityLookupInfosForCore,
 			identityServiceDomainStr);
 
-	if(OpenPeerCoreManager::identityLookupPtr)
+	if(identityLookup)
 	{
+		IIdentityLookupPtr* ptrToIdentityLookup = new boost::shared_ptr<IIdentityLookup>(identityLookup);
 		jni_env = getEnv();
 		if(jni_env)
 		{
@@ -115,8 +117,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 			object = jni_env->NewObject(cls, method);
 
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong identityLookup = (jlong) OpenPeerCoreManager::identityLookupPtr.get();
-			jni_env->SetLongField(object, fid, identityLookup);
+			jlong lookup = (jlong) ptrToIdentityLookup;
+			jni_env->SetLongField(object, fid, lookup);
 		}
 	}
 	return object;
@@ -200,7 +202,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedIdentities
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
@@ -208,11 +210,20 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPIdentityLookup");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IIdentityLookupPtr* identityLookupPtr = (IIdentityLookupPtr*)pointerValue;
+
 	IdentityContact coreContact;
 	IdentityContactListPtr coreContactList;
-	if(OpenPeerCoreManager::identityLookupPtr)
+	//if(OpenPeerCoreManager::identityLookupPtr)
+	if(identityLookupPtr)
 	{
-		coreContactList = OpenPeerCoreManager::identityLookupPtr->getUpdatedIdentities();
+		//coreContactList = OpenPeerCoreManager::identityLookupPtr->getUpdatedIdentities();
+		coreContactList = identityLookupPtr->get()->getUpdatedIdentities();
 
 	}
 	jni_env = getEnv();

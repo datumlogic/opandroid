@@ -497,30 +497,30 @@ void EventManager::onConversationThreadPushMessage(
 	android_jvm->DetachCurrentThread();
 }
 
-//ICallDelegate implementation
-void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onCallStateChanged state = %d", (jint)state);
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(callbackClass, "onCallStateChanged", "(I)V");
-	jni_env->CallStaticVoidMethod(callbackClass, method, (jint) state);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
+////ICallDelegate implementation
+//void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onCallStateChanged state = %d", (jint)state);
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(callbackClass, "onCallStateChanged", "(I)V");
+//	jni_env->CallStaticVoidMethod(callbackClass, method, (jint) state);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
 //IIdentityDelegate implementation
 void EventManager::onIdentityStateChanged(

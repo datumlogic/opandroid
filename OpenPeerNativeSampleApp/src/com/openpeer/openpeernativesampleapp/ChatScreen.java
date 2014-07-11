@@ -203,6 +203,7 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 			OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
 			OPMediaEngine.getInstance().setFaceDetection(false);
 			OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+			OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
 			
 			OPMediaEngine.init(OpenPeerApplication.getAppContext());
 
@@ -309,7 +310,6 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 									Log.d("output", "ovaj nije self = " + iter.getPeerURI());
 								}
 							}
-							LoginManager.mCallDelegate = new OPCallDelegateImplementation();
 
 							Log.d("output", "java contact peer uri = "+callContact.getPeerURI());
 							//Log.d("output", "java contact peer file = "+callContact.getPeerFilePublic());
@@ -317,7 +317,7 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 
 
 							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
-							LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
+							//LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
 
 						}
 					});
