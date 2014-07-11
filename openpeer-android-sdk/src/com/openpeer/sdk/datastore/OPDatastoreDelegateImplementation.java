@@ -2,7 +2,6 @@ package com.openpeer.sdk.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -20,7 +19,6 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
-import com.openpeer.sdk.BuildConfig;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSession;
 import com.openpeer.sdk.app.OPUser;
@@ -791,8 +789,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			selection = UserEntry.COLUMN_NAME_STABLE_ID + "=" + userID;
 			cursor.close();
 			int count = mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, "_id=" + userID, null);
-			if (BuildConfig.DEBUG)
-				Log.d(TAG, "saveUser updated " + count + " for id " + userID);
+
 
 		} else {
 			// Insert

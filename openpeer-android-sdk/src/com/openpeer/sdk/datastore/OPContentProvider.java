@@ -1,7 +1,5 @@
 package com.openpeer.sdk.datastore;
 
-import com.openpeer.sdk.BuildConfig;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -78,9 +76,7 @@ public class OPContentProvider extends ContentProvider {
 			String table = uri.getLastPathSegment();
 			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 			long rowId = db.insert(table, null, values);
-			if (BuildConfig.DEBUG) {
-				Log.d(TAG, "insert " + uri + " result " + rowId);
-			}
+
 			if (rowId != -1) {
 				getContext().getContentResolver().notifyChange(uri, null);
 				return ContentUris.withAppendedId(uri, rowId);

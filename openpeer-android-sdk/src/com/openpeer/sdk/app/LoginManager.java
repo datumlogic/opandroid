@@ -124,7 +124,6 @@ public class LoginManager {
 				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
 		client.setIdentity(identity);
 		identityDelegate.setmIdentity(identity);
-		Log.d("login", "identity after login call " + identity);
 
 	}
 
