@@ -4,6 +4,7 @@ import com.openpeer.sdk.utils.OPModelUtils;
 
 import com.openpeer.sdk.app.OPUser;
 import android.text.format.Time;
+import android.util.Log;
 
 public class OPCall {
 	public OPCall() {
@@ -74,5 +75,19 @@ public class OPCall {
 		// TODO Auto-generated method stub
 		return nativeClassPointer;
 	}
+	
+private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0)
+    	{
+    		Log.d("output", "Cleaning core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
+
 
 }
