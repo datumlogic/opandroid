@@ -26,6 +26,8 @@ public:
 	static jobject getJavaEnumObject(String enumClassName, jint index);
 	static jint getIntValueFromEnumObject(jobject enumObject, String enumClassName);
 
+	static String getObjectClassName (jobject delegate);
+
 	static void shutdown();
 
 

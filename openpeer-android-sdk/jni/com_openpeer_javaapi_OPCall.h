@@ -175,6 +175,14 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hold
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
   (JNIEnv *, jobject, jobject);
 
+/*
+ * Class:     com_openpeer_javaapi_OPCall
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_releaseCoreObjects
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

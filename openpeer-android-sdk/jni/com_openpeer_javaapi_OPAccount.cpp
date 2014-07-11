@@ -49,7 +49,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/openpeer/javaapi/OPAccount
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
-(JNIEnv *env, jclass, jobject, jobject, jobject,
+(JNIEnv *env, jclass, jobject, jobject,
+		jobject javaCallDelegate,
 		jstring namespaceGrantOuterFrameURLUponReload,
 		jstring grantID,
 		jstring lockboxServiceDomain,
@@ -78,7 +79,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 		return object;
 	}
 
-	OpenPeerCoreManager::accountPtr = IAccount::login(globalEventManager, globalEventManager, globalEventManager,
+	if (javaCallDelegate == NULL)
+	{
+		return object;
+	}
+	//set java delegate to call delegate wrapper and init shared pointer for wrappers
+	callDelegatePtr = CallDelegateWrapperPtr(new CallDelegateWrapper(javaCallDelegate));
+
+	OpenPeerCoreManager::accountPtr = IAccount::login(globalEventManager, globalEventManager, callDelegatePtr,
 			namespaceGrantOuterFrameURLUponReloadStr, grantIDStr, lockboxServiceDomainStr, forceCreateNewLockboxAccount);
 
 	if (OpenPeerCoreManager::accountPtr)
@@ -111,7 +119,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
  * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPAccount;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
-(JNIEnv *env, jclass, jobject, jobject, jobject,
+(JNIEnv *env, jclass, jobject, jobject,
+		jobject javaCallDelegate,
 		jstring namespaceGrantOuterFrameURLUponReload,
 		jstring reloginInformation)
 {
@@ -132,9 +141,16 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 		return object;
 	}
 
+	if (javaCallDelegate == NULL)
+	{
+		return object;
+	}
+	//set java delegate to call delegate wrapper and init shared pointer for wrappers
+	callDelegatePtr = CallDelegateWrapperPtr(new CallDelegateWrapper(javaCallDelegate));
+
 
 	ElementPtr reloginElement = IHelper::createElement(reloginInformationStr);
-	OpenPeerCoreManager::accountPtr = IAccount::relogin(globalEventManager, globalEventManager, globalEventManager,
+	OpenPeerCoreManager::accountPtr = IAccount::relogin(globalEventManager, globalEventManager, callDelegatePtr,
 			namespaceGrantOuterFrameURLUponReloadStr, reloginElement);
 
 	if (OpenPeerCoreManager::accountPtr)
@@ -390,12 +406,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 
 		}
 		//return known identities from map
-//		for (std::map<jobject, IIdentityPtr>::iterator it = identityMap.begin();
-//				it != identityMap.end(); it++)
-//		{
-//			jni_env->CallBooleanMethod(returnListObject,listAddMethodID , it->first);
-//
-//		}
+		//		for (std::map<jobject, IIdentityPtr>::iterator it = identityMap.begin();
+		//				it != identityMap.end(); it++)
+		//		{
+		//			jni_env->CallBooleanMethod(returnListObject,listAddMethodID , it->first);
+		//
+		//		}
 
 	}
 	return returnListObject;

@@ -15,8 +15,10 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    toString
  * Signature: (Lcom/openpeer/javaapi/CallStates;)Ljava/lang/String;
- */JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_toString__Lcom_openpeer_javaapi_CallStates_2(
-		JNIEnv *, jclass, jobject) {
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_toString__Lcom_openpeer_javaapi_CallStates_2
+(JNIEnv *, jclass, jobject)
+{
 
 }
 
@@ -24,8 +26,10 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    toString
  * Signature: (Lcom/openpeer/javaapi/CallClosedReasons;)Ljava/lang/String;
- */JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_toString__Lcom_openpeer_javaapi_CallClosedReasons_2(
-		JNIEnv *, jclass, jobject) {
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_toString__Lcom_openpeer_javaapi_CallClosedReasons_2
+(JNIEnv *, jclass, jobject)
+{
 
 }
 
@@ -33,8 +37,10 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPCall;Z)Ljava/lang/String;
- */JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_toDebugString(
-		JNIEnv *, jclass, jobject, jboolean) {
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_toDebugString
+(JNIEnv *, jclass, jobject, jboolean)
+{
 
 }
 
@@ -42,43 +48,44 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    placeCall
  * Signature: (Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;ZZ)Lcom/openpeer/javaapi/OPCall;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall(JNIEnv *,
-		jclass, jobject conversationThread, jobject toContact,
-		jboolean includeAudio, jboolean includeVideo) {
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
+(JNIEnv *, jclass, jobject conversationThread, jobject toContact, jboolean includeAudio, jboolean includeVideo)
+{
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 	ICallPtr callPtr;
 
-	IConversationThreadPtr convThread =
-			OpenPeerCoreManager::getConversationThreadFromList(
-					conversationThread);
+	IConversationThreadPtr convThread = OpenPeerCoreManager::getConversationThreadFromList(conversationThread);
 	IContactPtr contact = OpenPeerCoreManager::getContactFromList(toContact);
-	if (convThread && contact) {
+	if(convThread && contact)
+	{
 
-		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-				"Placing call...");
-		callPtr = ICall::placeCall(convThread, contact, includeAudio,
-				includeVideo);
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Placing call...");
+		callPtr = ICall::placeCall(convThread, contact ,includeAudio, includeVideo);
 
 	}
 
-	if (callPtr) {
+	if(callPtr)
+	{
 		jni_env = getEnv();
-		if (jni_env) {
+		if(jni_env)
+		{
+			ICallPtr* ptrToCall = new boost::shared_ptr<ICall>(callPtr);
 			cls = findClass("com/openpeer/javaapi/OPCall");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
 
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong call = (jlong) callPtr.get();
+			jlong call = (jlong) ptrToCall;
 			jni_env->SetLongField(object, fid, call);
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"CorePtr raw = %p, ptr as long = %Lu", callPtr.get(), call);
+					"CorePtr raw = %p, ptr as long = %Lu",callPtr.get(), call);
 
-			OpenPeerCoreManager::coreCallList.push_back(callPtr);
+			//OpenPeerCoreManager::coreCallList.push_back(callPtr);
 
 		}
 	}
@@ -89,12 +96,22 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getStableID
  * Signature: ()J
- */JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPCall_getStableID(JNIEnv *,
-		jobject owner) {
+ */
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPCall_getStableID
+(JNIEnv *, jobject owner)
+{
 	jlong ret = 0;
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		ret = coreCall->getID();
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
+		ret = coreCallPtr->get()->getID();
 	}
 	return ret;
 }
@@ -103,12 +120,23 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getCallID
  * Signature: ()Ljava/lang/String;
- */JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_getCallID(
-		JNIEnv *env, jobject owner) {
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_getCallID
+(JNIEnv *env , jobject owner)
+{
 	jstring ret;
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		ret = env->NewStringUTF(coreCall->getCallID().c_str());
+	JNIEnv *jni_env = 0;
+	jni_env = getEnv();
+
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+
+	if (coreCallPtr)
+	{
+		ret = env->NewStringUTF(coreCallPtr->get()->getCallID().c_str());
 	}
 	return ret;
 }
@@ -117,29 +145,34 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getConversationThread
  * Signature: ()Lcom/openpeer/javaapi/OPConversationThread;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread(
-		JNIEnv *, jobject owner) {
-	jobject object;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread
+(JNIEnv *, jobject owner)
+{
+	jobject ret;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+
 	IConversationThreadPtr convThread;
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		convThread = coreCall->getConversationThread();
-		JNIEnv *jni_env = getEnv();
-		if (jni_env) {
-			jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
-			jmethodID method = jni_env->GetMethodID(cls, "<init>", "()V");
-			object = jni_env->NewObject(cls, method);
-
-			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong nativeClsPtr = (jlong) convThread.get();
-			jni_env->SetLongField(object, fid, nativeClsPtr);
-
-			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"OPCall_getConversationThread %Lu", nativeClsPtr);
-
+	if (coreCallPtr)
+	{
+		convThread = coreCallPtr->get()->getConversationThread();
+		for(std::map<jobject, IConversationThreadPtr>::iterator iter = conversationThreadMap.begin(); iter != conversationThreadMap.end(); ++iter)
+		{
+			if (iter->second == convThread)
+			{
+				ret = iter->first;
+				break;
+			}
 		}
 	}
-	return object;
+	return ret;
 
 }
 
@@ -147,81 +180,90 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getCaller
  * Signature: ()Lcom/openpeer/javaapi/OPContact;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller(JNIEnv *,
-		jobject owner) {
-	jobject contactObject;
-	IContactPtr contact;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller
+(JNIEnv *, jobject owner)
+{
+	jobject ret;
 	JNIEnv *jni_env = 0;
 
 	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
-			"OPCall_getCaller found coreCall ptr = %Lu", coreCall.get());
-	if (coreCall) {
-		contact = coreCall->getCaller();
-		jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
-		jmethodID contactConstructorMethodID = jni_env->GetMethodID(
-				contactClass, "<init>", "()V");
-		contactObject = jni_env->NewObject(contactClass,
-				contactConstructorMethodID);
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
 
-		jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer",
-				"J");
-		jlong nativeClsPtr = (jlong) contact.get();
-		jni_env->SetLongField(contactObject, fid, nativeClsPtr);
-	} else {
-
+	IContactPtr contact;
+	if (coreCallPtr)
+	{
+		contact = coreCallPtr->get()->getCaller();
+		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
+		{
+			if (iter->second == contact)
+			{
+				ret = iter->first;
+				break;
+			}
+		}
 	}
-	return contactObject;
+	return ret;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getCallee
  * Signature: ()Lcom/openpeer/javaapi/OPContact;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee(JNIEnv *,
-		jobject owner) {
-	jobject contactObject;
-	IContactPtr contact;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee
+(JNIEnv *, jobject owner)
+{
+	jobject ret;
 	JNIEnv *jni_env = 0;
 
 	jni_env = getEnv();
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		contact = coreCall->getCallee();
-		contact = coreCall->getCaller();
-		jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
-		jmethodID contactConstructorMethodID = jni_env->GetMethodID(
-				contactClass, "<init>", "()V");
-		contactObject = jni_env->NewObject(contactClass,
-				contactConstructorMethodID);
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
-		jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer",
-				"J");
-		jlong nativeClsPtr = (jlong) contact.get();
-		jni_env->SetLongField(contactObject, fid, nativeClsPtr);
-//		for (std::map<jobject, IContactPtr>::iterator iter = contactMap.begin();
-//				iter != contactMap.end(); ++iter) {
-//			if (iter->second == contact) {
-//				ret = iter->first;
-//				break;
-//			}
-//		}
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+
+	IContactPtr contact;
+	if (coreCallPtr)
+	{
+		contact = coreCallPtr->get()->getCallee();
+		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
+		{
+			if (iter->second == contact)
+			{
+				ret = iter->first;
+				break;
+			}
+		}
 	}
-	return contactObject;
+	return ret;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    hasAudio
  * Signature: ()Z
- */JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasAudio(JNIEnv *,
-		jobject owner) {
+ */
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasAudio
+(JNIEnv *, jobject owner)
+{
 	jboolean ret;
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		ret = coreCall->hasAudio();
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
+		ret = coreCallPtr->get()->hasAudio();
 	}
 	return ret;
 }
@@ -230,12 +272,22 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    hasVideo
  * Signature: ()Z
- */JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasVideo(JNIEnv *,
-		jobject owner) {
+ */
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasVideo
+(JNIEnv *, jobject owner)
+{
 	jboolean ret;
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		ret = coreCall->hasVideo();
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
+		ret = coreCallPtr->get()->hasVideo();
 	}
 	return ret;
 }
@@ -244,89 +296,107 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getState
  * Signature: ()Lcom/openpeer/javaapi/CallStates;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState(JNIEnv *,
-		jobject owner) {
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
+(JNIEnv *, jobject owner)
+{
 	jint state = 0;
+	jobject ret;
+	JNIEnv *jni_env = 0;
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		state = (jint) coreCall->getState();
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
+		state = (jint) coreCallPtr->get()->getState();
 
 		jni_env = getEnv();
-		if (jni_env) {
-			object = OpenPeerCoreManager::getJavaEnumObject(
-					"com/openpeer/javaapi/CallStates", state);
+		if(jni_env)
+		{
+			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallStates", state);
 
 		}
 	}
 
-	return object;
+	return ret;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getClosedReason
  * Signature: ()Lcom/openpeer/javaapi/CallClosedReasons;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason(
-		JNIEnv *, jobject owner) {
-	jclass cls;
-	jmethodID method;
-	jobject object;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
+(JNIEnv *, jobject owner)
+{
+	jint reason = 0;
+	jobject ret;
 	JNIEnv *jni_env = 0;
-	jint state = 0;
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		state = (jint) coreCall->getClosedReason();
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
+		reason = (jint) coreCallPtr->get()->getClosedReason();
 
 		jni_env = getEnv();
-		if (jni_env) {
-			object = OpenPeerCoreManager::getJavaEnumObject(
-					"com/openpeer/javaapi/CallClosedReason", state);
+		if(jni_env)
+		{
+			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallClosedReason", reason);
 
 		}
 	}
 
-	return object;
+	return ret;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getCreationTime
  * Signature: ()Landroid/text/format/Time;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCreationTime(
-		JNIEnv *, jobject owner) {
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCreationTime
+(JNIEnv *, jobject owner)
+{
 	jclass cls;
 	jmethodID method;
 	jobject object;
+
 	JNIEnv *jni_env = 0;
 
-	Time creationTime;
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		creationTime = coreCall->getcreationTime();
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+
+	Time creationTime;
+	if (coreCallPtr)
+	{
+		creationTime = coreCallPtr->get()->getcreationTime();
 
 		jni_env = getEnv();
-		if (jni_env) {
+		if(jni_env)
+		{
 			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
-			Time time_t_epoch = boost::posix_time::time_from_string(
-					"1970-01-01 00:00:00.000");
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 			jclass timeCls = findClass("android/text/format/Time");
-			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>",
-					"()V");
-			jmethodID timeSetMillisMethodID = jni_env->GetMethodID(timeCls,
-					"set", "(J)V");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
 			//calculate and set Ring time
 			zsLib::Duration creationTimeDuration = creationTime - time_t_epoch;
 			object = jni_env->NewObject(timeCls, timeMethodID);
-			jni_env->CallVoidMethod(object, timeSetMillisMethodID,
-					creationTimeDuration.total_milliseconds());
+			jni_env->CallVoidMethod(object, timeSetMillisMethodID, creationTimeDuration.total_milliseconds());
 		}
 	}
 	return object;
@@ -336,35 +406,40 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getRingTime
  * Signature: ()Landroid/text/format/Time;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getRingTime(
-		JNIEnv *, jobject owner) {
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getRingTime
+(JNIEnv *, jobject owner)
+{
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	Time ringTime;
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		ringTime = coreCall->getRingTime();
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+
+	Time ringTime;
+	if (coreCallPtr)
+	{
+		ringTime = coreCallPtr->get()->getRingTime();
 
 		jni_env = getEnv();
-		if (jni_env) {
+		if(jni_env)
+		{
 			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
-			Time time_t_epoch = boost::posix_time::time_from_string(
-					"1970-01-01 00:00:00.000");
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 			jclass timeCls = findClass("android/text/format/Time");
-			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>",
-					"()V");
-			jmethodID timeSetMillisMethodID = jni_env->GetMethodID(timeCls,
-					"set", "(J)V");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
 			//calculate and set Ring Time
 			zsLib::Duration ringTimeDuration = ringTime - time_t_epoch;
 			object = jni_env->NewObject(timeCls, timeMethodID);
-			jni_env->CallVoidMethod(object, timeSetMillisMethodID,
-					ringTimeDuration.total_milliseconds());
+			jni_env->CallVoidMethod(object, timeSetMillisMethodID, ringTimeDuration.total_milliseconds());
 		}
 	}
 	return object;
@@ -374,35 +449,40 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getAnswerTime
  * Signature: ()Landroid/text/format/Time;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getAnswerTime(
-		JNIEnv *, jobject owner) {
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getAnswerTime
+(JNIEnv *, jobject owner)
+{
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	Time answerTime;
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		answerTime = coreCall->getAnswerTime();
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+
+	Time answerTime;
+	if (coreCallPtr)
+	{
+		answerTime = coreCallPtr->get()->getAnswerTime();
 
 		jni_env = getEnv();
-		if (jni_env) {
+		if(jni_env)
+		{
 			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
-			Time time_t_epoch = boost::posix_time::time_from_string(
-					"1970-01-01 00:00:00.000");
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 			jclass timeCls = findClass("android/text/format/Time");
-			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>",
-					"()V");
-			jmethodID timeSetMillisMethodID = jni_env->GetMethodID(timeCls,
-					"set", "(J)V");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
 			//calculate and set Answer Time
 			zsLib::Duration answerTimeDuration = answerTime - time_t_epoch;
 			object = jni_env->NewObject(timeCls, timeMethodID);
-			jni_env->CallVoidMethod(object, timeSetMillisMethodID,
-					answerTimeDuration.total_milliseconds());
+			jni_env->CallVoidMethod(object, timeSetMillisMethodID, answerTimeDuration.total_milliseconds());
 		}
 	}
 	return object;
@@ -412,35 +492,41 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    getClosedTime
  * Signature: ()Landroid/text/format/Time;
- */JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedTime(
-		JNIEnv *, jobject owner) {
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedTime
+(JNIEnv *, jobject owner)
+{
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+
 	Time closedTime;
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		closedTime = coreCall->getClosedTime();
+	if (coreCallPtr)
+	{
+		closedTime = coreCallPtr->get()->getClosedTime();
 
 		jni_env = getEnv();
-		if (jni_env) {
+		if(jni_env)
+		{
 			//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
-			Time time_t_epoch = boost::posix_time::time_from_string(
-					"1970-01-01 00:00:00.000");
+			Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
 			jclass timeCls = findClass("android/text/format/Time");
-			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>",
-					"()V");
-			jmethodID timeSetMillisMethodID = jni_env->GetMethodID(timeCls,
-					"set", "(J)V");
+			jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+			jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
 			//calculate and set Answer Time
 			zsLib::Duration closedTimeDuration = closedTime - time_t_epoch;
 			object = jni_env->NewObject(timeCls, timeMethodID);
-			jni_env->CallVoidMethod(object, timeSetMillisMethodID,
-					closedTimeDuration.total_milliseconds());
+			jni_env->CallVoidMethod(object, timeSetMillisMethodID, closedTimeDuration.total_milliseconds());
 		}
 	}
 	return object;
@@ -450,12 +536,21 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    ring
  * Signature: ()V
- */JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_ring(JNIEnv *,
-		jobject owner) {
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		;
-		coreCall->ring();
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_ring
+(JNIEnv *, jobject owner)
+{
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{;
+	coreCallPtr->get()->ring();
 	}
 }
 
@@ -463,11 +558,21 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    answer
  * Signature: ()V
- */JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_answer(JNIEnv *,
-		jobject owner) {
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		coreCall->answer();
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_answer
+(JNIEnv *, jobject owner)
+{
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
+		coreCallPtr->get()->answer();
 	}
 }
 
@@ -475,11 +580,21 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    hold
  * Signature: (Z)V
- */JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hold(JNIEnv *,
-		jobject owner, jboolean hold) {
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
-		coreCall->hold(hold);
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hold
+(JNIEnv *, jobject owner, jboolean hold)
+{
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
+		coreCallPtr->get()->hold(hold);
 	}
 }
 
@@ -487,26 +602,56 @@ extern "C" {
  * Class:     com_openpeer_javaapi_OPCall
  * Method:    hangup
  * Signature: (Lcom/openpeer/javaapi/CallClosedReasons;)V
- */JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup(JNIEnv *,
-		jobject owner, jobject callClosedReasonObj) {
-	jclass cls;
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
+(JNIEnv *, jobject owner, jobject callClosedReasonObj)
+{
 	JNIEnv *jni_env = 0;
 
-	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
-	if (coreCall) {
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPCall");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
+	if (coreCallPtr)
+	{
 		jni_env = getEnv();
 
 		cls = findClass("com/openpeer/javaapi/CallClosedReasons");
-		if (jni_env->IsInstanceOf(callClosedReasonObj, cls) == JNI_TRUE) {
-			jint intValue = OpenPeerCoreManager::getIntValueFromEnumObject(
-					callClosedReasonObj,
-					"com/openpeer/javaapi/CallClosedReasons");
+		if(jni_env->IsInstanceOf(callClosedReasonObj, cls) == JNI_TRUE)
+		{
+			jint intValue = OpenPeerCoreManager::getIntValueFromEnumObject(callClosedReasonObj, "com/openpeer/javaapi/CallClosedReasons");
 
-			ICall::CallClosedReasons reason =
-					(ICall::CallClosedReasons) intValue;
-			coreCall->hangup(reason);
+			ICall::CallClosedReasons reason = (ICall::CallClosedReasons)intValue;
+			coreCallPtr->get()->hangup(reason);
 			//todo Catch call ended state, and reset and remove call from OpenPeerCoreManager call vector
 		}
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPCall
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_releaseCoreObjects
+(JNIEnv *, jobject javaObject)
+{
+	if(javaObject != NULL)
+	{
+		JNIEnv *jni_env = getEnv();
+		jclass cls = findClass("com/openpeer/javaapi/OPCall");
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (ICallPtr*)pointerValue;
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
 	}
 }
 

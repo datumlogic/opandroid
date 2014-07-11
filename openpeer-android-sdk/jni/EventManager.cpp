@@ -478,56 +478,50 @@ void EventManager::onConversationThreadPushMessage(
 	android_jvm->DetachCurrentThread();
 }
 
-//ICallDelegate implementation
-void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state) {
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-	if (state == CallStates::CallState_Incoming) {
-		OpenPeerCoreManager::coreCallList.push_back(call);
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
-				"onCallStateChanged push call ptr = %Lu state %d", call.get(),
-				state);
-	}
-
-	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0) {
-		return;
-	}
-	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onCallStateChanged",
-			"(JI)V");
-	jlong nativeClsPtr = (jlong) call.get();
-	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
-			"onCallStateChanged call ptr = %Lu", nativeClsPtr);
-
-	gEnv->CallStaticVoidMethod(callbackClass, method, nativeClsPtr,
-			(jint) state);
-
-	if (gEnv->ExceptionCheck()) {
-		gEnv->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
+////ICallDelegate implementation
+//void EventManager::onCallStateChanged(ICallPtr call, ICall::CallStates state)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//	__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onCallStateChanged state = %d", (jint)state);
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(callbackClass, "onCallStateChanged", "(I)V");
+//	jni_env->CallStaticVoidMethod(callbackClass, method, (jint) state);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
 //IIdentityDelegate implementation
-void EventManager::onIdentityStateChanged(IIdentityPtr identity,
-		IIdentity::IdentityStates state) {
+void EventManager::onIdentityStateChanged(
+		IIdentityPtr identity,
+		IIdentity::IdentityStates state
+)
+{
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	//JNIEnv *jni_env = 0;
 
 	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0) {
+	if (attach_result < 0 || gEnv == 0)
+	{
 		return;
 	}
 
 	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged",
-			"(I)V");
+	method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged", "(I)V");
 	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
 
 	if (gEnv->ExceptionCheck()) {

@@ -4,7 +4,7 @@
 #include "openpeer/core/IIdentity.h"
 #include "openpeer/core/IIdentityLookup.h"
 #include "openpeer/core/IConversationThread.h"
-#include "openpeer/core/ICall.h"
+//#include "openpeer/core/ICall.h"
 #include "openpeer/core/IMediaEngine.h"
 #include "openpeer/core/ILogger.h"
 //#define NULL ((void*) 0)
@@ -20,7 +20,7 @@ public IMediaEngineDelegate,
 public IAccountDelegate,
 public IIdentityDelegate,
 public IConversationThreadDelegate,
-public ICallDelegate,
+//public ICallDelegate,
 public IIdentityLookupDelegate,
 public ILoggerDelegate
 {
@@ -66,8 +66,8 @@ public:
 			IContactPtr contact
 	);
 
-	//ICallDelegate implementation
-	virtual void onCallStateChanged(ICallPtr call, ICall::CallStates state);
+//	//ICallDelegate implementation
+//	virtual void onCallStateChanged(ICallPtr call, ICall::CallStates state);
 
 	//IIdentityDelegate implementation
 	virtual void onIdentityStateChanged(
