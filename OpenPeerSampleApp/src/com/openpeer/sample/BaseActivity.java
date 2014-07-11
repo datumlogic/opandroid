@@ -1,6 +1,6 @@
 package com.openpeer.sample;
 
-import com.openpeer.app.OPHelper;
+import com.openpeer.sdk.app.OPHelper;
 
 public class BaseActivity extends BaseFragmentActivity {
 

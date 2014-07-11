@@ -1,4 +1,4 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +69,7 @@ public class LoginManager {
 		CallbackHandler.getInstance().registerAccountDelegate(account,
 				accountDelegate);
 
-		account = OPAccount.login(null, null, mCallDelegate,
+		account = OPAccount.login(null, null, null,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
 				"bojanGrantID", "identity-v1-rel-lespaul-i.hcs.io", false);
 		OPDataManager.getInstance().setSharedAccount(account);
@@ -89,7 +89,7 @@ public class LoginManager {
 				account);
 		mAccountLoginWebView.setWebViewClient(client);
 
-		account = OPAccount.relogin(null, null, mCallDelegate,
+		account = OPAccount.relogin(null, null, null,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html"
 																	// namespaceGrantOuterFrameURLUponReload
 				reloginInfo);
@@ -124,7 +124,6 @@ public class LoginManager {
 				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
 		client.setIdentity(identity);
 		identityDelegate.setmIdentity(identity);
-		Log.d("login", "identity after login call " + identity);
 
 	}
 

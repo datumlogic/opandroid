@@ -3,26 +3,17 @@ package com.openpeer.delegates;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 
 import android.text.format.Time;
 import android.util.Log;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPHelper;
-import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.javaapi.AccountStates;
-import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
+import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPIdentityContact;
-import com.openpeer.javaapi.OPMessage;
-import com.openpeer.javaapi.OPSettingsDelegate;
-import com.openpeer.javaapi.OutputAudioRoutes;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
-import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
@@ -35,8 +26,11 @@ import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupDelegate;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPMediaEngineDelegate;
-import com.openpeer.javaapi.OPStack;
+import com.openpeer.javaapi.OPMessage;
+import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OPStackDelegate;
+import com.openpeer.javaapi.OutputAudioRoutes;
+import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 
 public class CallbackHandler {
 

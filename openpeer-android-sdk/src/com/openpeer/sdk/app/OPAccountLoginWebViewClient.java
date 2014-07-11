@@ -1,9 +1,7 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-
-import com.openpeer.javaapi.OPIdentity;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -11,18 +9,16 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class OPIdentityLoginWebViewClient extends WebViewClient {
+import com.openpeer.javaapi.OPAccount;
 
-	OPIdentity mIdentity;
+public class OPAccountLoginWebViewClient extends WebViewClient {
 
-	public void setIdentity(OPIdentity identity) {
-		mIdentity = identity;
-	}
-
+	OPAccount mAccount;
 	boolean mInnerFrameLoaded;
+	boolean mNamespaceGrantInnerFrameLoaded;
 
-	public OPIdentityLoginWebViewClient(OPIdentity identity) {
-		mIdentity = identity;
+	public OPAccountLoginWebViewClient(OPAccount account) {
+		mAccount = account;
 	}
 
 	@Override
@@ -51,7 +47,7 @@ public class OPIdentityLoginWebViewClient extends WebViewClient {
 	@Override
 	public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
 		if (url.contains("datapass")) {
-			Log.w("login", "url to intercept " + url);
+			Log.d("login", "Account client " + url);
 			String data = url.substring(url.lastIndexOf("data="));
 			data = data.substring(5);
 			// Log.w("JNI", data);
@@ -62,8 +58,9 @@ public class OPIdentityLoginWebViewClient extends WebViewClient {
 				e.printStackTrace();
 			}
 
-			Log.w("login", "Identity Received from JS: " + data);
-			mIdentity.handleMessageFromInnerBrowserWindowFrame(data);
+			Log.d("login", "Account Client Namespace grant Received from JS: " + data);
+			// mAccount.handleMessageFromInnerBrowserWindowFrame(data);
+			mAccount.handleMessageFromInnerBrowserWindowFrame(data);
 
 			return null;
 		} else if (url.contains("?reload=true")) {
@@ -79,17 +76,16 @@ public class OPIdentityLoginWebViewClient extends WebViewClient {
 	@Override
 	public void onPageFinished(WebView view, String url) {
 
-		if (!mInnerFrameLoaded) {
-			mInnerFrameLoaded = true;
+		if (!mNamespaceGrantInnerFrameLoaded) {
+			mNamespaceGrantInnerFrameLoaded = true;
 			String cmd = String.format("javascript:initInnerFrame(\'%s\')",
-					mIdentity.getInnerBrowserWindowFrameURL());
-			Log.w("login", "INIT INNER FRAME: " + cmd);
+					mAccount.getInnerBrowserWindowFrameURL());
+			Log.d("login", "Account Client INIT NAMESPACE GRANT INNER FRAME: " + cmd);
 			view.loadUrl(cmd);
-			// LoginManager.initInnerFrame();
+
 		} else {
 			super.onPageFinished(view, url);
 		}
-
 	}
 
 	@Override

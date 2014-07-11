@@ -1,4 +1,4 @@
-package com.openpeer.delegates;
+package com.openpeer.sdk.delegates;
 
 import com.openpeer.javaapi.OPMessage;
 

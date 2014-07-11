@@ -1,8 +1,7 @@
-package com.openpeer.datastore;
+package com.openpeer.sdk.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -13,19 +12,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPSession;
-import com.openpeer.app.OPUser;
-import com.openpeer.datastore.DatabaseContracts.AvatarEntry;
-import com.openpeer.datastore.DatabaseContracts.ContactEntry;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.datastore.DatabaseContracts.ConversationWindowEntry;
-import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
-import com.openpeer.datastore.DatabaseContracts.IdentityEntry;
-import com.openpeer.datastore.DatabaseContracts.MessageEntry;
-import com.openpeer.datastore.DatabaseContracts.UserEntry;
-import com.openpeer.datastore.DatabaseContracts.WindowParticipantEntry;
-import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
@@ -33,8 +19,20 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
-import com.openpeer.model.OPHomeUser;
-import com.openpeer.sdk.BuildConfig;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.app.OPUser;
+import com.openpeer.sdk.datastore.DatabaseContracts.AvatarEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ConversationWindowEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.IdentityContactEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.IdentityEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.UserEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.WindowParticipantEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
+import com.openpeer.sdk.model.OPHomeUser;
 
 /**
  * The data being stored in preference: -- Relogin information for account -- stableId
@@ -791,8 +789,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			selection = UserEntry.COLUMN_NAME_STABLE_ID + "=" + userID;
 			cursor.close();
 			int count = mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, "_id=" + userID, null);
-			if (BuildConfig.DEBUG)
-				Log.d(TAG, "saveUser updated " + count + " for id " + userID);
+
 
 		} else {
 			// Insert

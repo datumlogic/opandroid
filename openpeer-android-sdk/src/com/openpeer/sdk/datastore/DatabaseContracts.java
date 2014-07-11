@@ -1,4 +1,4 @@
-package com.openpeer.datastore;
+package com.openpeer.sdk.datastore;
 
 import android.net.Uri;
 import android.provider.BaseColumns;

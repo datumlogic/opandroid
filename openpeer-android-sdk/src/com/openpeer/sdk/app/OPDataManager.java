@@ -1,4 +1,4 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +8,6 @@ import java.util.List;
 import android.content.Intent;
 import android.util.Log;
 
-import com.openpeer.datastore.OPDatastoreDelegate;
 import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
@@ -18,7 +17,7 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
-import com.openpeer.sdk.BuildConfig;
+import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 
 /**
  * Hold reference to objects that cannot be constructed from database, and
@@ -156,9 +155,7 @@ public class OPDataManager {
 
 	public void identityLookup(OPIdentity identity,
 			List<OPRolodexContact> contacts) {
-		if (BuildConfig.DEBUG) {
-			Log.d("login", "start identity lookup");
-		}
+
 		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation(
 				identity);
 		OPIdentityLookup mIdentityLookup = new OPIdentityLookup();

@@ -1,4 +1,4 @@
-package com.openpeer.model;
+package com.openpeer.sdk.model;
 
 public class OPHomeUser {
 	private String reloginInfo;

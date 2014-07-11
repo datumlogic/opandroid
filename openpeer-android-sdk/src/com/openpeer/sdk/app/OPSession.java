@@ -1,18 +1,15 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Observable;
 
 import android.os.Bundle;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;

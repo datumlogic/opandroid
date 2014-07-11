@@ -1,4 +1,4 @@
-package com.openpeer.delegates;
+package com.openpeer.sdk.delegates;
 
 import java.util.Hashtable;
 

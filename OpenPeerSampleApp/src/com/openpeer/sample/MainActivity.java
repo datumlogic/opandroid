@@ -2,12 +2,10 @@ package com.openpeer.sample;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,19 +15,18 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.SearchView;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPHelper;
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.sample.contacts.ContactsFragment;
 import com.openpeer.sample.conversation.ChatsFragment;
 import com.openpeer.sample.conversation.DiscoveryFragment;
 import com.openpeer.sample.util.NetworkUtil;
+import com.openpeer.sdk.app.OPHelper;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements OPHelper.InitListener {
 	TabsAdapter mTabsAdapter;
 	ViewPager mViewPager;
 	private static final int TAB_CHATS = 0;
@@ -41,13 +38,34 @@ public class MainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		this.getActionBar().setHomeButtonEnabled(true);
 		setContentView(R.layout.activity_main);
+		if (OPHelper.getInstance().initialized) {
+			go();
+		} else {
+			OPHelper.getInstance().initListener = this;
+		}
+		// OPAccount account = OPDataManager.getInstance().getSharedAccount();
+		// String reloginInfo = OPDataManager.getInstance().getReloginInfo();
+		// // Launching app so account hasn't been constructed, and login process
+		// // hasn't started
+		// setupContentView();
+		// if (account == null) {
+		// // if (reloginInfo == null) {
+		// doLogin();
+		// // } else {
+		// // doRelogin();
+		// // }
+		// } else if (account.getState(0, "") == AccountStates.AccountState_Shutdown && reloginInfo != null && NetworkUtil.isConnected()) {
+		// doRelogin();
+		// } else {
+		// // present UI
+		//
+		// }
+	}
 
+	void go() {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 		String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-		// Launching app so account hasn't been constructed, and login process
-		// hasn't started
 		setupContentView();
 		if (account == null) {
 			// if (reloginInfo == null) {
@@ -55,8 +73,7 @@ public class MainActivity extends BaseActivity {
 			// } else {
 			// doRelogin();
 			// }
-		} else if (account.getState(0, "") == AccountStates.AccountState_Shutdown
-				&& reloginInfo != null && NetworkUtil.isConnected()) {
+		} else if (account.getState(0, "") == AccountStates.AccountState_Shutdown && reloginInfo != null && NetworkUtil.isConnected()) {
 			doRelogin();
 		} else {
 			// present UI
@@ -97,17 +114,15 @@ public class MainActivity extends BaseActivity {
 			}
 		};
 
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						getActionBar().setSelectedNavigationItem(position);
-					}
-				});
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				getActionBar().setSelectedNavigationItem(position);
+			}
+		});
 
 		for (int i = 0; i < 3; i++) {
-			actionBar.addTab(actionBar.newTab().setText(tabNames[i])
-					.setTabListener(tabListener));
+			actionBar.addTab(actionBar.newTab().setText(tabNames[i]).setTabListener(tabListener));
 		}
 	}
 
@@ -147,24 +162,23 @@ public class MainActivity extends BaseActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_main, menu);
 		// Get the SearchView and set the searchable configuration
-		//		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		//		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-		//		// Assumes current activity is the searchable activity
-		//		//		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-		//		SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
-		//		searchView.setSearchableInfo(info);
+		// SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		// SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		// // Assumes current activity is the searchable activity
+		// // searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		// SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+		// searchView.setSearchableInfo(info);
 		//
-		//		searchView.setSubmitButtonEnabled(true);
-		//		searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+		// searchView.setSubmitButtonEnabled(true);
+		// searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			showLogDialog();
-			break;
+		// case R.id.search:
+		// break;
 		case R.id.menu_settings:
 			SettingsActivity.launch(this);
 			break;
@@ -174,24 +188,8 @@ public class MainActivity extends BaseActivity {
 
 	}
 
-	void showLogDialog() {
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-		builder.setMessage("this will enable all logging neccessary for debugging");
-		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		}).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				OPHelper.getInstance().enableTelnetLogging();
-			}
-
-		});
-		builder.create().show();
+	@Override
+	public void onInitialized() {
+		go();
 	}
 }

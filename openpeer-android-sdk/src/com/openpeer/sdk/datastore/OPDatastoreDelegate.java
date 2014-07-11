@@ -1,4 +1,4 @@
-package com.openpeer.datastore;
+package com.openpeer.sdk.datastore;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
-import com.openpeer.model.OPHomeUser;
-import com.openpeer.app.OPSession;
-import com.openpeer.app.OPUser;
+import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.app.OPUser;
+import com.openpeer.sdk.model.OPHomeUser;
 
 import android.content.Context;
 

@@ -1,6 +1,6 @@
 package com.openpeer.sdk.utils;
 
-import com.openpeer.app.OPUser;
+import com.openpeer.sdk.app.OPUser;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
 

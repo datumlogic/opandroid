@@ -20,6 +20,7 @@ import com.openpeer.sample.AppConfig;
 import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.R;
 import com.openpeer.sample.conversation.ConversationActivity;
+
 import com.squareup.picasso.Picasso;
 
 public class ContactItemView extends RelativeLayout {

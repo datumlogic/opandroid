@@ -1,4 +1,4 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 import java.io.IOException;
 import java.io.InputStream;

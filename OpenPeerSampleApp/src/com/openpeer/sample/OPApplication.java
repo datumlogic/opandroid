@@ -1,14 +1,9 @@
 package com.openpeer.sample;
 
 import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 
-import com.openpeer.app.OPHelper;
+import com.openpeer.sdk.app.OPHelper;
 
 public class OPApplication extends Application {
 	private static OPApplication instance;

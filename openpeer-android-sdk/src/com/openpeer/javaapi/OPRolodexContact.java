@@ -6,10 +6,10 @@ import java.util.List;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.datastore.DatabaseContracts.ContactEntry;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.datastore.DatabaseContracts.IdentityContactEntry;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.IdentityContactEntry;
 
 public class OPRolodexContact {
 

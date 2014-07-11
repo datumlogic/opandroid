@@ -1,10 +1,9 @@
 package com.openpeer.javaapi;
 
-
-import android.text.format.Time;
-
-import com.openpeer.app.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
+
+import com.openpeer.sdk.app.OPUser;
+import android.text.format.Time;
 
 public class OPCall {
 	public OPCall() {
@@ -23,12 +22,8 @@ public class OPCall {
 
 	public static native String toDebugString(OPCall call, boolean includeCommaPrefix);
 
-	public static native OPCall placeCall(
-			OPConversationThread conversationThread,
-			OPContact toContact,
-			boolean includeAudio,
-			boolean includeVideo
-			);
+	public static native OPCall placeCall(OPConversationThread conversationThread, OPContact toContact, boolean includeAudio,
+			boolean includeVideo);
 
 	public native long getStableID();
 

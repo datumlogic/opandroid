@@ -1,10 +1,10 @@
-package com.openpeer.delegates;
+package com.openpeer.sdk.delegates;
 
 import java.util.Hashtable;
 
-import com.openpeer.app.OPDataManager;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPMessage;
+import com.openpeer.sdk.app.OPDataManager;
 
 public class ContactsBasedMessageDispatcher implements MessageDispatcher {
 	// key: windowId, which is derived from participants

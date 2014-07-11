@@ -1,4 +1,4 @@
-package com.openpeer.datastore;
+package com.openpeer.sdk.datastore;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

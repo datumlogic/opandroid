@@ -1,4 +1,4 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 import android.content.Context;
 import android.webkit.WebView;

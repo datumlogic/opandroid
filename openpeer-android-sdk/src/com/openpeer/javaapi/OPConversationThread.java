@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.openpeer.app.OPDataManager;
+import com.openpeer.sdk.app.OPDataManager;
 
 import android.text.format.Time;
 

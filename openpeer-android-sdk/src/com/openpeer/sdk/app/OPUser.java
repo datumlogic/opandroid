@@ -1,14 +1,14 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import android.database.Cursor;
 
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentityContact;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
 
 public class OPUser {
 	long mUserId;// locally maintained user id

@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.format.Time;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,16 +13,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.app.OPSession;
-import com.openpeer.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.javaapi.OPIdentityContact;
-import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.R;
-import com.openpeer.sample.conversation.ConversationActivity;
 import com.openpeer.sample.util.DateFormatUtils;
-import com.squareup.picasso.Picasso;
+import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 
 public class ChatInfoItemView extends RelativeLayout {
 	private OPRolodexContact mContact;

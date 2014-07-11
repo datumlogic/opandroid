@@ -1,8 +1,5 @@
 package com.openpeer.sample.contacts;
 
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
-import static com.openpeer.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,26 +22,25 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.SearchView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.openpeer.app.OPDataManager;
-import com.openpeer.datastore.DatabaseContracts;
-import com.openpeer.datastore.DatabaseContracts.ContactsViewEntry;
-import com.openpeer.datastore.DatabaseContracts.UserEntry;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
+
 import com.squareup.picasso.Picasso;
 
-public class ProfilePickerFragment extends BaseFragment implements
-		SwipeRefreshLayout.OnRefreshListener,
+public class ProfilePickerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener,
 		LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
 
 	static final String PARAM_IDS_EXCLUDE = "exclude";
@@ -66,12 +62,10 @@ public class ProfilePickerFragment extends BaseFragment implements
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.setHasOptionsMenu(true);
 		mIdsExclude = getArguments().getLongArray(PARAM_IDS_EXCLUDE);
-		return setupView(inflater.inflate(R.layout.fragment_profile_picker,
-				null));
+		return setupView(inflater.inflate(R.layout.fragment_profile_picker, null));
 	}
 
 	@Override
@@ -105,8 +99,7 @@ public class ProfilePickerFragment extends BaseFragment implements
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_profile_picker, menu);
 		mDoneMenu = menu.findItem(R.id.menu_done);
-		SearchView searchView = (SearchView) menu.findItem(R.id.search)
-				.getActionView();
+		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 		searchView.setOnQueryTextListener(this);
 		updateDoneText();
 		super.onCreateOptionsMenu(menu, inflater);
@@ -133,8 +126,7 @@ public class ProfilePickerFragment extends BaseFragment implements
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup arg2) {
-			View view = LayoutInflater.from(context).inflate(
-					R.layout.item_contact_picker, null);
+			View view = LayoutInflater.from(context).inflate(R.layout.item_contact_picker, null);
 			view.setTag(new ViewHolder(view));
 			return view;
 		}
@@ -151,21 +143,15 @@ public class ProfilePickerFragment extends BaseFragment implements
 			}
 
 			public void update(Cursor cursor) {
-				final long userId = cursor.getLong(cursor
-						.getColumnIndex(ContactsViewEntry.COLUMN_NAME_USER_ID));
-				String avatar = cursor
-						.getString(cursor
-								.getColumnIndex(ContactsViewEntry.COLUMN_NAME_AVATAR_URL));
-				String name = cursor
-						.getString(cursor
-								.getColumnIndex(ContactsViewEntry.COLUMN_NAME_CONTACT_NAME));
+				final long userId = cursor.getLong(cursor.getColumnIndex(ContactsViewEntry.COLUMN_NAME_USER_ID));
+				String avatar = cursor.getString(cursor.getColumnIndex(ContactsViewEntry.COLUMN_NAME_AVATAR_URL));
+				String name = cursor.getString(cursor.getColumnIndex(ContactsViewEntry.COLUMN_NAME_CONTACT_NAME));
 				Picasso.with(getActivity()).load(avatar).into(imageView);
 				nameView.setText(name);
 				checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 					@Override
-					public void onCheckedChanged(CompoundButton arg0,
-							boolean arg1) {
+					public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 						if (arg1) {
 							chosenUserIds.add(userId);
 						} else {
@@ -188,10 +174,8 @@ public class ProfilePickerFragment extends BaseFragment implements
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID,
-			COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
-			ContactsViewEntry.COLUMN_NAME_STABLE_ID,
-			ContactsViewEntry.COLUMN_NAME_USER_ID };
+	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
+			ContactsViewEntry.COLUMN_NAME_STABLE_ID, ContactsViewEntry.COLUMN_NAME_USER_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
@@ -247,8 +231,7 @@ public class ProfilePickerFragment extends BaseFragment implements
 
 	// End: CursorCallback implementation
 	private void updateDoneText() {
-		mDoneMenu.setTitle(getActivity().getString(R.string.menu_done,
-				"" + chosenUserIds.size()));
+		mDoneMenu.setTitle(getActivity().getString(R.string.menu_done, "" + chosenUserIds.size()));
 	}
 
 	@Override
@@ -261,8 +244,7 @@ public class ProfilePickerFragment extends BaseFragment implements
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = chosenUserIds.get(i);
 			}
-			data.putExtra(IntentData.ARG_PEER_USER_IDS,
-					ids);
+			data.putExtra(IntentData.ARG_PEER_USER_IDS, ids);
 			this.getActivity().setResult(Activity.RESULT_OK, data);
 			getActivity().finish();
 
@@ -286,8 +268,7 @@ public class ProfilePickerFragment extends BaseFragment implements
 		oldQuery = newText;
 		Bundle params = new Bundle();
 		params.putString("query", newText);
-		getLoaderManager().restartLoader(URL_LOADER, params,
-				ProfilePickerFragment.this);
+		getLoaderManager().restartLoader(URL_LOADER, params, ProfilePickerFragment.this);
 
 		return true;
 	}
