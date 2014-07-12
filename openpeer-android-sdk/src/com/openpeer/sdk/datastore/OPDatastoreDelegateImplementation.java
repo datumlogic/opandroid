@@ -192,6 +192,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	@Override
 	public boolean saveOrUpdateIdentity(OPIdentity identity, long accountId) {
 		OPIdentityContact selfContact = identity.getSelfIdentityContact();
+		selfContact.setUserId(0);
 		ContentValues values = new ContentValues();
 		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_ID,
 				identity.getStableID());
