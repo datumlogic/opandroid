@@ -172,14 +172,14 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
-		String selection = null;
+		StringBuilder builder = new StringBuilder(ContactsViewEntry.COLUMN_NAME_USER_ID + "!=0");
 		String slectionArgs[] = null;
 		if (arg1 != null) {
 			String query = arg1.getString("query");
 			Log.d("test", "ContactsFragment onCreateLoader query " + query);
 			if (!TextUtils.isEmpty(query)) {
 				// Note: instr is available from sqlite 3.7.15
-				selection = "name like ?";
+				builder.append(" and name like ?");
 				slectionArgs = new String[] { "%" + query + "%" };
 			}
 
@@ -191,7 +191,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
 																		// query
 					LIST_PROJECTION, // Projection to return
-					selection, // No selection clause
+					builder.toString(), // No selection clause
 					slectionArgs, // No selection arguments
 					null // Default sort order
 			);

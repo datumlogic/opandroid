@@ -182,7 +182,7 @@ public class ProfilePickerFragment extends BaseFragment implements SwipeRefreshL
 		switch (loaderID) {
 		case URL_LOADER:
 			// Returns a new CursorLoader
-			StringBuilder builder = new StringBuilder("user_id not in (");
+			StringBuilder builder = new StringBuilder("user_id not in (0,");
 			for (int i = 0; i < mIdsExclude.length; i++) {
 				if (i == mIdsExclude.length - 1) {
 					builder.append(mIdsExclude[i] + ")");
