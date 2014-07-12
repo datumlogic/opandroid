@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.provider.Settings.Secure;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.openpeer.delegates.CallbackHandler;
@@ -28,8 +29,6 @@ import com.openpeer.sdk.delegates.GroupBasedMessageDispatcher;
 import com.openpeer.sdk.delegates.MessageDispatcher;
 import com.openpeer.sdk.delegates.MessageReceiver;
 import com.openpeer.sdk.delegates.OPCacheDelegateImplementation;
-import com.openpeer.sdk.delegates.OPCallDelegateImplementation;
-import com.openpeer.sdk.delegates.OPConversationThreadDelegateImplementation;
 
 /**
  * 
@@ -52,8 +51,8 @@ public class OPHelper {
 		return instance;
 	}
 
-	public void toggleOutgoingTelnetLogging(boolean enable) {
-		if (enable) {
+	public void toggleOutgoingTelnetLogging(boolean enable, String url) {
+		if (enable && !TextUtils.isEmpty(url)) {
 			OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 			// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 			// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
@@ -61,17 +60,17 @@ public class OPHelper {
 			String instanceId = OPSdkConfig.getInstanceid();
 			String telnetLogString = deviceId + "-" + instanceId + "\n";
 			Log.d("output", "Bruce Outgoing log string = " + telnetLogString);
-			OPLogger.installOutgoingTelnetLogger("log.opp.me:8115", true, telnetLogString);
+			OPLogger.installOutgoingTelnetLogger(url, true, telnetLogString);
 		} else {
-			OPLogger.setLogLevel(OPLogLevel.LogLevel_None);
-			OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
-			OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_None);
+			// OPLogger.setLogLevel(OPLogLevel.LogLevel_None);
+			// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
+			// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_None);
 			OPLogger.uninstallOutgoingTelnetLogger();
 		}
 	}
 
-	public void enableFileLogger() {
-		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
+	public void toggleFileLogger(boolean enabled, String fileName) {
+		// OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 		// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
 		// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 
@@ -79,19 +78,19 @@ public class OPHelper {
 		// OPLogLevel.LogLevel_None);
 		// OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_None);
 		// OPLogger.installTelnetLogger(59999, 60, true);
-		OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
+		if (enabled && !TextUtils.isEmpty(fileName)) {
+			OPLogger.installFileLogger(fileName, true);
+		} else {
+			OPLogger.uninstallDebuggerLogger();
+		}
 	}
 
-	public void enableTelnetLogging() {
-		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-		// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
-		// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
-
-		// OPLogger.setLogLevel("openpeer_services_transport_stream",
-		// OPLogLevel.LogLevel_None);
-		// OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_None);
-		OPLogger.installTelnetLogger(59999, 60, true);
-		// OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
+	public void toggleTelnetLogging(boolean enable, int port) {
+		if (enable) {
+			OPLogger.installTelnetLogger(port, 60, true);
+		} else {
+			OPLogger.uninstallTelnetLogger();
+		}
 	}
 
 	private void initMediaEngine() {
@@ -151,7 +150,7 @@ public class OPHelper {
 	}
 
 	public static boolean initialized = false;
-	public  InitListener initListener;
+	public InitListener initListener;
 
 	public interface InitListener {
 		public void onInitialized();
