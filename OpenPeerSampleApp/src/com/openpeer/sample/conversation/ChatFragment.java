@@ -401,7 +401,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 																													// return
 					null, // No selection clause
 					null, // No selection arguments
-					null // Default sort order
+					"time asc" // Default sort order
 			);
 		default:
 			// An invalid id was passed in
