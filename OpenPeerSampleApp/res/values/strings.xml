@@ -39,4 +39,6 @@
     <string name="file_logger">File logger</string>
     <string name="no_recent_chats">No recent chats</string>
 	<string name="menu_done">Done(%s)</string>
+	<string name="label_chat">Chat</string>
+	<string name="label_select_contact">Select friends</string>
 </resources>
