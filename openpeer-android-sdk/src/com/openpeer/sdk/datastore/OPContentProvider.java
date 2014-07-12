@@ -18,6 +18,7 @@ public class OPContentProvider extends ContentProvider {
 	static final int WINDOWS = 2;
 	static final int GROUPS = 3;
 	static final int USERS = 4;
+	static final int MESSAGE = 5;
 
 	static final int USER = 100;
 	private static final int CONTACT = 4;
@@ -51,7 +52,7 @@ public class OPContentProvider extends ContentProvider {
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int result = super.bulkInsert(uri, values);
 		Log.d("test", "bulkinsert " + uri + " values" + values.length + " result " + result);
-		//		test();
+		// test();
 		return result;
 	}
 
@@ -96,9 +97,9 @@ public class OPContentProvider extends ContentProvider {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		long result = db.insert(DatabaseContracts.MessageEntry.TABLE_NAME, null, values);
 		Log.d("test", "result " + result + " inserting uri " + uri);
-		getContext().getContentResolver().notifyChange(uri, null);
+		getContext().getContentResolver().notifyChange(ContentUris.withAppendedId(uri, result), null);
 		getContext().getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
-		//		test();
+		// test();
 		return uri;
 	}
 
@@ -140,8 +141,9 @@ public class OPContentProvider extends ContentProvider {
 		case CONTACTS:
 			return queryContacts(uri, projection, selection, selectionArgs, sortOrder);
 		case MESSAGES:
-
 			return queryMessages(uri, projection, selection, selectionArgs, sortOrder);
+		case MESSAGE:
+			return queryMessage(uri, projection, selection, selectionArgs, sortOrder);
 		case WINDOWS:
 			return queryWindows(uri, projection, selection, selectionArgs, sortOrder);
 		case USERS:
@@ -192,13 +194,13 @@ public class OPContentProvider extends ContentProvider {
 		int result;
 		switch (mUriMatcher.match(uri)) {
 		// If the incoming URI is for notes, chooses the Notes projection
-		//		case CONTACT:
-		//			result = updateContacts(uri, values, selection, selectionArgs);
-		//			break;
+		// case CONTACT:
+		// result = updateContacts(uri, values, selection, selectionArgs);
+		// break;
 		case MESSAGES:
 			return updateMessages(uri, values, selection, selectionArgs);
-			//		case WINDOWS:
-			//			return 0;
+			// case WINDOWS:
+			// return 0;
 		default:
 			String table = uri.getLastPathSegment();
 			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -234,6 +236,8 @@ public class OPContentProvider extends ContentProvider {
 				WindowViewEntry.TABLE_NAME, WINDOWS);
 		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
 				UserEntry.TABLE_NAME, USERS);
+		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
+				MessageEntry.TABLE_NAME + "/window/#/#", USERS);
 	}
 
 	Cursor queryContacts(Uri uri, String[] projection, String selection,
@@ -269,6 +273,27 @@ public class OPContentProvider extends ContentProvider {
 				sortOrder // The sort order
 				);
 		Log.d("test", "query uri for messages " + uri + " result " + cursor.getCount());
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		return cursor;
+	}
+
+	private Cursor queryMessage(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+		String finalWhere = MessageEntry._ID + "=" + uri.getLastPathSegment();
+		if (selection != null) {
+			finalWhere = finalWhere + " AND " + selection;
+		}
+		Cursor cursor = db.query(
+				DatabaseContracts.MessageEntry.TABLE_NAME,
+				projection, // The columns to return from the query
+				finalWhere, // The columns for the where clause
+				selectionArgs, // The values for the where clause
+				null, // don't group the rows
+				null, // don't filter by row groups
+				sortOrder // The sort order
+				);
+		Log.d("test", "query uri for message " + uri + " result " + cursor.getCount());
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
 	}
