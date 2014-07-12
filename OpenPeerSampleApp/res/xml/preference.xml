@@ -4,21 +4,36 @@
     <PreferenceCategory
         android:key="debug_settings"
         android:title="@string/debug_settings" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="log_level"
+            android:title="Log level" />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="out_telnet_logger"
             android:title="@string/out_telnet_logger" />
 
+        <EditTextPreference
+            android:defaultValue="log.opp.me:8115"
+            android:key="log_server_url"
+            android:title="Server url" />
+
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="local_telnet_logger"
             android:title="@string/local_telnet_logger" />
-
         <SwitchPreference
             android:defaultValue="false"
             android:key="file_logger"
             android:title="@string/file_logger" />
+
+        <EditTextPreference
+            android:defaultValue="/storage/emulated/0/oplog.txt"
+            android:key="log_file"
+            android:title="Log file" />
     </PreferenceCategory>
 
 </PreferenceScreen>
