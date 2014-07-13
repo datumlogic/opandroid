@@ -18,7 +18,7 @@ namespace HopSampleApp
 	namespace Activities
 	{
 		[LoggerSubsystem("hop_sample_app")]
-		[Activity (Label = "Open Peer Sample App")]
+		[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]
 		public class MainActivity : ActivityGroup
 		{
 			protected override void OnCreate (Bundle bundle)
@@ -38,7 +38,7 @@ namespace HopSampleApp
 				Intent intent;
 
 				tabSpec1.SetIndicator ("Contacts");
-				intent = new Intent (this, typeof(ContactsActivity));
+				intent = new Intent (this, typeof(AndroidLookContactActivity));
 				intent.AddFlags (ActivityFlags.NewTask);
 				tabSpec1.SetContent (intent);
 
@@ -52,7 +52,7 @@ namespace HopSampleApp
 
 				tabHost.CurrentTab = 0;
 
-				intent = new Intent (this, typeof(LoginActivity));
+				intent = new Intent (this, typeof(PopupCallActivity));
 				StartActivity (intent);
 
 			}

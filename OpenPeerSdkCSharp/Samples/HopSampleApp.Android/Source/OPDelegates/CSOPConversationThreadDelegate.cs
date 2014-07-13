@@ -41,7 +41,8 @@ namespace HopSampleApp
 	{
 		public override void OnConversationThreadContactsChanged (OPConversationThread conversationThread)
 		{
-			ThreadPool.QueueUserWorkItem( delegate {
+			ThreadPool.QueueUserWorkItem( 
+				delegate {
 
 			});
 		}
@@ -55,7 +56,9 @@ namespace HopSampleApp
 
 		public override void OnConversationThreadMessage (OPConversationThread conversationThread, string p1)
 		{
-			ThreadPool.QueueUserWorkItem( delegate {
+			ThreadPool.QueueUserWorkItem(
+				delegate
+				{
 
 			});
 		}

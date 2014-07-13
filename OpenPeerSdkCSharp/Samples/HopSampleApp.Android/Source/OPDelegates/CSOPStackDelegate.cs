@@ -47,7 +47,7 @@ namespace HopSampleApp
 			ThreadPool.QueueUserWorkItem( delegate {
 
 			});
-			//throw new NotImplementedException ();
+
 		}
 
 

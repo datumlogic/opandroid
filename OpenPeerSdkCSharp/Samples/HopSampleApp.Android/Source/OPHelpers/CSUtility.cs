@@ -43,6 +43,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Android.Hardware;
+using Android.Graphics;
 using HopSampleApp.Enums;
 using Mono;
 
@@ -66,6 +67,7 @@ namespace HopSampleApp
 	/// - GetNumberOfDeviceCameras (Count number of cameras that current device have.)
 	/// - HasCamera (Check if current device have camera.)
 	/// - GetAndroidVersionRelease (Get Android version release.)
+	/// - currentTimeMillis
 	/// 
 	/// - GetInstanceIDJavaUUID (Generate new random Java UUID and replace "-" with "".)
 	/// - GetGUIDInstanceID (Generate new GUID and replace "-" with "".)
@@ -79,7 +81,7 @@ namespace HopSampleApp
 	/// - IsAppUpdated (Check if app setting need to be updated.)
 	/// 
 	/// </summary>
-	public static class Utility
+	public static class CSUtility
 	{
 
 		#region Base 64 Encription (Encoding/Decoding)
@@ -258,7 +260,7 @@ namespace HopSampleApp
 		{
 			try
 			{
-				return Camera.NumberOfCameras;
+				return Android.Hardware.Camera.NumberOfCameras;
 			}
 			catch(Exception error)
 			{
@@ -274,7 +276,7 @@ namespace HopSampleApp
 		{
 			try
 			{
-				int NumberOfCammera = Camera.NumberOfCameras;
+				int NumberOfCammera = Android.Hardware.Camera.NumberOfCameras;
 				if (NumberOfCammera > 0)
 				{
 					return true;
@@ -639,6 +641,36 @@ namespace HopSampleApp
 			{
 				throw new Exception (String.Format ("IsAppUpdated Error:{0}", error.Message));
 			}
+		}
+
+		#endregion
+
+
+		#region Image from internet
+		public static Bitmap GetImageBitmapFromUrl(string url)
+		{
+			Bitmap imageBitmap = null;
+
+			using (var webClient = new WebClient())
+			{
+				var imageBytes = webClient.DownloadData(url);
+				if (imageBytes != null && imageBytes.Length > 0)
+				{
+					imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
+				}
+			}
+
+			return imageBitmap;
+		}
+		#endregion
+
+		#region Date to currentTimeMillis
+
+		public static long currentTimeMillis()
+		{
+			DateTime staticDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+			TimeSpan timeSpan = DateTime.UtcNow - staticDate;
+			return (long)timeSpan.TotalMilliseconds;
 		}
 
 		#endregion

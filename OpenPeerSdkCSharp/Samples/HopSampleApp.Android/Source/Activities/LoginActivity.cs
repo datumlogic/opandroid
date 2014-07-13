@@ -40,69 +40,71 @@ using System.Threading;
 using Android.Util;
 using Java.Interop;
 using OpenPeerSdk.Helpers;
-using HopSampleApp.CSAccountLogin;
+using HopSampleApp.CSCoreReLogin;
 using HopSampleApp.CSCoreLogin;
-using HopSampleApp.CSIdentityLogin;
+
 
 namespace HopSampleApp
 {
 	namespace Activities
 	{
 		[LoggerSubsystem("hop_sample_app")]
-		[Activity (Label = "LoginActivity")]			
+		[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]			
 		public class LoginActivity : Activity , LoginHandlerInterface
 		{
 			public WebView myWebView;
 			public WebViewClient myWebViewClient = new MyWebViewClient();
+
+			public override void OnBackPressed ()
+			{
+				//This is ugly way to quit application on back pressed
+				//in order to allow user to login or relogin if  
+				//accident leave login screen or activity
+				Android.OS.Process.KillProcess (Android.OS.Process.MyPid());
+			}
 
 			protected override void OnCreate (Bundle bundle)
 			{
 				base.OnCreate (bundle);
 				//Load OP *.so openpeer and z_shared library
 				CSOPLoadLibrary.SharedLoadLibrary ().OPLoadLibrary ();
+				//initialize
+				OPMediaEngine.Init(Application.Context);
 				// Set our view from the "main" layout resource
 				SetContentView (Resource.Layout.Login);
-				OPMediaEngine.Init(Android.App.Application.Context);
-
-				setupFacebookButton();
-				setupAccountButton();
-				setupIdentityButton();
+				//WebView setup
 				setupWebView();
+				//Initialize
 				initializeCore();
+				//Login
+				ApplicationLogin ();
 
 			}
-			private  void setupFacebookButton()
+
+			#region Application Login
+			public void ApplicationLogin() 
 			{
-				Button facebookButton = FindViewById<Button> (Resource.Id.btnFacebookLogin);
-				facebookButton.Text="Facebook Login";
-				facebookButton.Click += delegate 
-				{
-					new CoreLogin().Execute();
+				String reloginInfo =CSOPDataManager.SharedCSOPDataManager().getReloginInfo();
 
-				};
+				if (reloginInfo ==null || reloginInfo.Length==0 )
+				{
+
+					Log.Debug("Login","Login Started");
+					//new StartLogin().Execute();//If you want to login with AsyncTask
+					LoginManager.SharedLoginManager ().Login ();
+				}
+				else
+				{
+					Log.Debug ("RELOGIN INFO", reloginInfo);
+					Log.Debug("ReLogin","ReLogin Started");
+					//new StartReLogin ().Execute ();//if you want to relogin with AsyncTask
+					LoginManager.SharedLoginManager ().ReLogin (CSOPDataManager.SharedCSOPDataManager().getReloginInfo());
+
+				}
+
 			}
 
-			private void setupAccountButton()
-			{
-				Button accountButton = FindViewById<Button> (Resource.Id.buttonAccountLogin);
-				accountButton.Text = "Account Login";
-				accountButton.Click += delegate 
-				{
-					new AccountLogin().Execute();
-
-				};
-			}
-
-			private void setupIdentityButton()
-			{
-				Button accountButton = FindViewById<Button>(Resource.Id.buttonIdentityLogin);
-				accountButton.Text = "Identity Login";
-				accountButton.Click += delegate 
-				{
-					new IdentityLogin().Execute();
-
-				};
-			}
+			#endregion
 
 			private void initializeCore()
 			{
@@ -191,14 +193,23 @@ namespace HopSampleApp
 
 			public void onIdentityLookupCompleted()
 			{
-				Intent intent = new Intent (this, typeof(InviteActivity));
+				//Intent intent = new Intent (this, typeof(AndroidLookContactActivity));
+				Intent intent = new Intent (this, typeof(AndroidLookContactActivity));
 				StartActivity (intent);
+
+			}
+
+			public void onIdentityStateReady()
+			{
+				//Test
 			}
 
 			public void onDownloadedRolodexContacts(OPIdentity identity)
 			{
 				CSOPTestIdentityLookup.isContactsDownloaded = true;
 				CSOPTestIdentityLookup.execute(identity);
+
+
 			}
 
 			public void passMessageToJS(String msg)

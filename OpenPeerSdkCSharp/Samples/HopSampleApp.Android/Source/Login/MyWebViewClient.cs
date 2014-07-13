@@ -131,7 +131,7 @@ namespace HopSampleApp
 					RelativeLayout.LayoutParams linearLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FillParent,RelativeLayout.LayoutParams.FillParent);
 					linearLayoutParams.SetMargins(0, 0, 0, 0);
 					view.LayoutParameters = linearLayoutParams;
-					LoginManager.SharedLoginManager().initInnerFrame();
+					CSFramesHandler.SharedCSFramesHandler ().initInnerFrame ();
 				}
 				else
 				{
@@ -145,7 +145,7 @@ namespace HopSampleApp
 					RelativeLayout.LayoutParams linearLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FillParent,RelativeLayout.LayoutParams.FillParent);
 					linearLayoutParams.SetMargins(0, 0, 0, 0);
 					view.LayoutParameters = linearLayoutParams;
-					LoginManager.SharedLoginManager().initNamespaceGrantInnerFrame();
+					CSFramesHandler.SharedCSFramesHandler ().initNamespaceGrantInnerFrame ();
 				}
 				else
 				{

@@ -156,37 +156,37 @@ namespace HopSampleApp
 		public void enableMediaAEC(bool enable)
 		{
 			this.IsMediaAECOn = enable;
-			HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsMediaAECOn),AppConsts.settingsKeyMediaAEC);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsMediaAECOn),AppConsts.settingsKeyMediaAEC);
 		}
 
 		public void enableMediaAGC(bool enable)
 		{
 			this.IsMediaAGCOn = enable;
-			HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsMediaAGCOn),AppConsts.settingsKeyMediaAGC);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsMediaAGCOn),AppConsts.settingsKeyMediaAGC);
 		}
 
 		public void enableMediaNS(bool enable)
 		{
 			this.IsMediaNSOn = enable;
-			HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsMediaNSOn), AppConsts.settingsKeyMediaNS);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsMediaNSOn), AppConsts.settingsKeyMediaNS);
 		}
 
 		public void enableRemoteSessionActivationMode(bool enable)
 		{
 			this.IsRemoteSessionActivationModeOn = enable;
-			HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsRemoteSessionActivationModeOn), AppConsts.archiveRemoteSessionActivationMode);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsRemoteSessionActivationModeOn), AppConsts.archiveRemoteSessionActivationMode);
 		}
 
 		public void enableFaceDetectionMode(bool enable)
 		{
 			this.IsFaceDetectionModeOn = enable;
-			HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsFaceDetectionModeOn), AppConsts.archiveFaceDetectionMode);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsFaceDetectionModeOn), AppConsts.archiveFaceDetectionMode);
 		}
 
 		public void enableRedialMode(bool enable)
 		{
 			this.IsRedialModeOn = enable;
-			HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsRedialModeOn), AppConsts.archiveRedialMode);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(this.IsRedialModeOn), AppConsts.archiveRedialMode);
 		}
 		//
 		public string getArchiveKeyForLoggerType(LoggerTypes type)
@@ -216,7 +216,7 @@ namespace HopSampleApp
 			if (key.Length > 0)
 			{
 				key = new StringBuilder (key).Append(AppConsts.archiveEnabled).ToString();// key.stringByAppendingString(archiveEnabled);
-				HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(enable), key);
+				//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(enable), key);
 
 
 			}
@@ -241,7 +241,7 @@ namespace HopSampleApp
 			if (key.Length > 0)
 			{
 				//key = new StringBuilder (key).Append (AppConsts.archiveServer).ToString ();
-				HOPSettings.sharedSettings().storeSettingsObjectKey(server, key);
+				//HOPSettings.sharedSettings().storeSettingsObjectKey(server, key);
 			}
 
 		}
@@ -264,7 +264,7 @@ namespace HopSampleApp
 			if (key.Length > 0)
 			{
 				key = new StringBuilder (key).Append (AppConsts.archiveColorized).ToString ();
-				HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(colorized), key);
+				//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(colorized), key);
 			}
 
 		}
@@ -312,7 +312,7 @@ namespace HopSampleApp
 
 		public void saveModuleLogLevels()
 		{
-			HOPSettings.sharedSettings().storeSettingsObjectKey(this.AppModulesLoggerLevel,AppConsts.archiveModulesLogLevels);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(this.AppModulesLoggerLevel,AppConsts.archiveModulesLogLevels);
 
 		}
 
@@ -513,7 +513,7 @@ namespace HopSampleApp
 		}
 		public void enableQRSettingsReset(bool enable)
 		{
-			HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(enable),AppConsts.settingsKeyRemoveSettingsAppliedByQRCode);
+			//HOPSettings.sharedSettings().storeSettingsObjectKey(Convert.ToBoolean(enable),AppConsts.settingsKeyRemoveSettingsAppliedByQRCode);
 		}
 
 		public string getOuterFrameURL()
@@ -551,16 +551,17 @@ namespace HopSampleApp
 		public bool isAppDataSet()
 		{
 			//need fix
-			bool ret = true;
-			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey (HOPSettings.sharedSettings ().getCoreKeyForAppKey (AppConsts.settingsKeyAppId));
-			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppIdSharedSecret));
-			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppName));
-			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppURL));
-			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppImageURL));
-			#if APNS_ENABLED
-			ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyUrbanAirShipAPIPushURL));
-			#endif
-			return ret;
+			//bool ret = true;
+			//ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey (HOPSettings.sharedSettings ().getCoreKeyForAppKey (AppConsts.settingsKeyAppId));
+			//ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppIdSharedSecret));
+			//ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppName));
+			//ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppURL));
+			//ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyAppImageURL));
+			//#if APNS_ENABLED
+			//ret &= IsolatedStorageSettings.ApplicationSettings.ContainsKey(HOPSettings.sharedSettings().getCoreKeyForAppKey(AppConsts.settingsKeyUrbanAirShipAPIPushURL));
+			//#endif
+			//return ret;
+			return false;
 		}
 
 		public bool isLoginSettingsSet()

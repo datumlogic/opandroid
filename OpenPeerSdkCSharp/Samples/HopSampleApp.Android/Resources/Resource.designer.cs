@@ -564,365 +564,383 @@ namespace HopSampleApp
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f0b001d
-			public const int AddButton = 2131427357;
-			
-			// aapt resource value: 0x7f0b005b
-			public const int AphabaticalLayout = 2131427419;
-			
-			// aapt resource value: 0x7f0b006c
-			public const int ButtonMuteMic = 2131427436;
-			
-			// aapt resource value: 0x7f0b006d
-			public const int ButtonStartChat = 2131427437;
-			
-			// aapt resource value: 0x7f0b006b
-			public const int ButtonSwitchCam = 2131427435;
-			
-			// aapt resource value: 0x7f0b0040
-			public const int CallerIDCenter = 2131427392;
-			
-			// aapt resource value: 0x7f0b0018
-			public const int CallerIDTop = 2131427352;
-			
-			// aapt resource value: 0x7f0b0046
-			public const int CallerVideoIDCenter = 2131427398;
-			
-			// aapt resource value: 0x7f0b0034
-			public const int ChatIcon = 2131427380;
-			
-			// aapt resource value: 0x7f0b002d
-			public const int ContactsButton = 2131427373;
-			
-			// aapt resource value: 0x7f0b0019
-			public const int DurationText = 2131427353;
-			
-			// aapt resource value: 0x7f0b0029
-			public const int FacebookIcon = 2131427369;
-			
-			// aapt resource value: 0x7f0b002a
-			public const int Image = 2131427370;
-			
-			// aapt resource value: 0x7f0b003f
-			public const int ImageCallAvatar = 2131427391;
-			
-			// aapt resource value: 0x7f0b0045
-			public const int ImageVideoCallAvatar = 2131427397;
-			
-			// aapt resource value: 0x7f0b002e
-			public const int InviteButton = 2131427374;
-			
-			// aapt resource value: 0x7f0b002b
-			public const int InviteList = 2131427371;
-			
-			// aapt resource value: 0x7f0b0031
-			public const int ItemBody = 2131427377;
-			
-			// aapt resource value: 0x7f0b006e
-			public const int LayoutBg = 2131427438;
-			
-			// aapt resource value: 0x7f0b005c
-			public const int LettersList = 2131427420;
-			
-			// aapt resource value: 0x7f0b001f
-			public const int LinearLayout02 = 2131427359;
-			
-			// aapt resource value: 0x7f0b0017
-			public const int LinearLayout03 = 2131427351;
-			
-			// aapt resource value: 0x7f0b0028
-			public const int LinkedinIcon = 2131427368;
-			
-			// aapt resource value: 0x7f0b0059
-			public const int ListHolder = 2131427417;
-			
-			// aapt resource value: 0x7f0b0071
-			public const int LoadingImage = 2131427441;
-			
-			// aapt resource value: 0x7f0b0073
-			public const int LocalCallerIDCenter = 2131427443;
-			
-			// aapt resource value: 0x7f0b0072
-			public const int LocalImageCallAvatar = 2131427442;
-			
-			// aapt resource value: 0x7f0b0021
-			public const int LoggingButton = 2131427361;
-			
-			// aapt resource value: 0x7f0b001b
-			public const int MicButton = 2131427355;
-			
-			// aapt resource value: 0x7f0b0025
-			public const int Name = 2131427365;
-			
-			// aapt resource value: 0x7f0b004b
-			public const int ProfileAvatarImage = 2131427403;
-			
-			// aapt resource value: 0x7f0b0030
-			public const int ProfileButton = 2131427376;
-			
-			// aapt resource value: 0x7f0b0049
-			public const int ProfileID = 2131427401;
-			
-			// aapt resource value: 0x7f0b0076
-			public const int ProfileMenuItem = 2131427446;
-			
-			// aapt resource value: 0x7f0b004e
-			public const int ProfileUserEmail = 2131427406;
-			
-			// aapt resource value: 0x7f0b004d
-			public const int ProfileUserName = 2131427405;
-			
-			// aapt resource value: 0x7f0b0022
-			public const int QRButton2 = 2131427362;
-			
-			// aapt resource value: 0x7f0b001e
-			public const int RecordButton = 2131427358;
-			
-			// aapt resource value: 0x7f0b0070
-			public const int RemoteCallerIDCenter = 2131427440;
-			
-			// aapt resource value: 0x7f0b006f
-			public const int RemoteImageCallAvatar = 2131427439;
-			
-			// aapt resource value: 0x7f0b005e
-			public const int SearchButton = 2131427422;
-			
-			// aapt resource value: 0x7f0b005d
-			public const int SearchSessionItem = 2131427421;
-			
-			// aapt resource value: 0x7f0b002f
-			public const int SessionButton = 2131427375;
-			
-			// aapt resource value: 0x7f0b0033
-			public const int SessionDate = 2131427379;
-			
-			// aapt resource value: 0x7f0b0032
-			public const int SessionHeadTitle = 2131427378;
-			
-			// aapt resource value: 0x7f0b005a
-			public const int SessionList = 2131427418;
-			
-			// aapt resource value: 0x7f0b0023
-			public const int SkipButton1 = 2131427363;
-			
-			// aapt resource value: 0x7f0b001c
-			public const int SpikerButton = 2131427356;
-			
-			// aapt resource value: 0x7f0b0024
-			public const int Text = 2131427364;
-			
-			// aapt resource value: 0x7f0b0027
-			public const int TwiterIcon = 2131427367;
-			
-			// aapt resource value: 0x7f0b0026
-			public const int Username = 2131427366;
-			
-			// aapt resource value: 0x7f0b0043
-			public const int VideoCallerIDTop = 2131427395;
-			
-			// aapt resource value: 0x7f0b0035
-			public const int VideoIcon = 2131427381;
-			
-			// aapt resource value: 0x7f0b0036
-			public const int VoiceIcon = 2131427382;
-			
-			// aapt resource value: 0x7f0b006a
-			public const int arrowimage = 2131427434;
-			
-			// aapt resource value: 0x7f0b004c
-			public const int avatarImage = 2131427404;
-			
-			// aapt resource value: 0x7f0b0006
-			public const int avatarImageView = 2131427334;
-			
-			// aapt resource value: 0x7f0b0015
-			public const int badgeAnchorTextView = 2131427349;
-			
-			// aapt resource value: 0x7f0b0013
-			public const int badgeRelativeLayout = 2131427347;
-			
-			// aapt resource value: 0x7f0b0014
-			public const int badgeSpacerRelativeLayout = 2131427348;
-			
-			// aapt resource value: 0x7f0b0041
-			public const int btnAnswer = 2131427393;
-			
-			// aapt resource value: 0x7f0b0047
-			public const int btnAnswerVideoCall = 2131427399;
-			
-			// aapt resource value: 0x7f0b0042
-			public const int btnDecline = 2131427394;
-			
-			// aapt resource value: 0x7f0b0048
-			public const int btnDeclineVideoCall = 2131427400;
-			
-			// aapt resource value: 0x7f0b0020
-			public const int btnEndCall = 2131427360;
-			
-			// aapt resource value: 0x7f0b0039
-			public const int btnFacebookLogin = 2131427385;
-			
-			// aapt resource value: 0x7f0b0008
-			public const int bubbleImageView = 2131427336;
-			
-			// aapt resource value: 0x7f0b0007
-			public const int bubbleTextRelativeLayout = 2131427335;
-			
-			// aapt resource value: 0x7f0b0009
-			public const int bubbleTextView = 2131427337;
-			
-			// aapt resource value: 0x7f0b003a
-			public const int buttonAccountLogin = 2131427386;
-			
-			// aapt resource value: 0x7f0b003b
-			public const int buttonIdentityLogin = 2131427387;
-			
-			// aapt resource value: 0x7f0b0058
-			public const int buttonZxingFlash = 2131427416;
-			
-			// aapt resource value: 0x7f0b003e
-			public const int callInfo = 2131427390;
-			
-			// aapt resource value: 0x7f0b0012
-			public const int chatIcon = 2131427346;
-			
-			// aapt resource value: 0x7f0b000d
-			public const int contactItemLinearLayout = 2131427341;
-			
-			// aapt resource value: 0x7f0b000e
-			public const int contactItemRelativeLayout = 2131427342;
-			
-			// aapt resource value: 0x7f0b0074
-			public const int contentFrame = 2131427444;
-			
-			// aapt resource value: 0x7f0b000f
-			public const int detailsRelativeLayout = 2131427343;
-			
-			// aapt resource value: 0x7f0b0003
-			public const int editText = 2131427331;
-			
-			// aapt resource value: 0x7f0b0050
-			public const int header = 2131427408;
-			
-			// aapt resource value: 0x7f0b004f
-			public const int header_container = 2131427407;
-			
-			// aapt resource value: 0x7f0b004a
-			public const int holder = 2131427402;
-			
-			// aapt resource value: 0x7f0b002c
-			public const int holderbutton = 2131427372;
-			
-			// aapt resource value: 0x7f0b0052
-			public const int icon = 2131427410;
-			
-			// aapt resource value: 0x7f0b0061
-			public const int labelTextView = 2131427425;
-			
-			// aapt resource value: 0x7f0b003d
-			public const int linearLayout = 2131427389;
-			
-			// aapt resource value: 0x7f0b0054
-			public const int linearLayout1 = 2131427412;
-			
-			// aapt resource value: 0x7f0b0056
-			public const int linearLayout2 = 2131427414;
-			
-			// aapt resource value: 0x7f0b0000
-			public const int listchat = 2131427328;
-			
-			// aapt resource value: 0x7f0b0077
-			public const int logoutMenuItem = 2131427447;
-			
-			// aapt resource value: 0x7f0b0069
-			public const int myLocalViewLinearLayout = 2131427433;
-			
-			// aapt resource value: 0x7f0b0068
-			public const int myRemoteViewLinearLayout = 2131427432;
-			
-			// aapt resource value: 0x7f0b0004
-			public const int nameTextView = 2131427332;
-			
-			// aapt resource value: 0x7f0b0067
-			public const int progress_bar = 2131427431;
-			
-			// aapt resource value: 0x7f0b0016
-			public const int ptr_wrapper = 2131427350;
-			
-			// aapt resource value: 0x7f0b0051
-			public const int pullDownProgressIndicator = 2131427409;
-			
-			// aapt resource value: 0x7f0b0060
-			public const int relativeLayout = 2131427424;
-			
-			// aapt resource value: 0x7f0b0002
-			public const int sendButton = 2131427330;
-			
-			// aapt resource value: 0x7f0b0001
-			public const int sendRelativeLayout = 2131427329;
-			
-			// aapt resource value: 0x7f0b0075
-			public const int settingsMenuItem = 2131427445;
-			
-			// aapt resource value: 0x7f0b005f
-			public const int settingsSpinnerListItem = 2131427423;
-			
-			// aapt resource value: 0x7f0b0063
-			public const int settingsSwitchListItem = 2131427427;
-			
-			// aapt resource value: 0x7f0b0065
-			public const int settingsTextEditListItem = 2131427429;
-			
-			// aapt resource value: 0x7f0b0066
-			public const int settingsToggleListItem = 2131427430;
-			
-			// aapt resource value: 0x7f0b003c
-			public const int tabHost = 2131427388;
-			
-			// aapt resource value: 0x7f0b0053
-			public const int text = 2131427411;
-			
-			// aapt resource value: 0x7f0b0010
-			public const int textAreaLinearLayout = 2131427344;
-			
-			// aapt resource value: 0x7f0b0038
-			public const int textView1 = 2131427384;
-			
-			// aapt resource value: 0x7f0b0055
-			public const int textView2 = 2131427413;
-			
-			// aapt resource value: 0x7f0b0057
-			public const int textView3 = 2131427415;
-			
-			// aapt resource value: 0x7f0b0005
-			public const int timeTextView = 2131427333;
-			
-			// aapt resource value: 0x7f0b0064
-			public const int toggleButton = 2131427428;
-			
-			// aapt resource value: 0x7f0b001a
-			public const int topLeft = 2131427354;
-			
-			// aapt resource value: 0x7f0b0011
-			public const int usernameTextView = 2131427345;
-			
-			// aapt resource value: 0x7f0b0062
-			public const int valueSpinner = 2131427426;
-			
-			// aapt resource value: 0x7f0b0044
-			public const int videocallInfo = 2131427396;
-			
 			// aapt resource value: 0x7f0b000b
-			public const int web = 2131427339;
-			
-			// aapt resource value: 0x7f0b0037
-			public const int webViewLogin = 2131427383;
+			public const int ACContactAvatarImage = 2131427339;
 			
 			// aapt resource value: 0x7f0b000a
-			public const int youtube = 2131427338;
+			public const int ACFacebookIcon = 2131427338;
+			
+			// aapt resource value: 0x7f0b0007
+			public const int ACIdentity = 2131427335;
+			
+			// aapt resource value: 0x7f0b0009
+			public const int ACLinkedinIcon = 2131427337;
+			
+			// aapt resource value: 0x7f0b0008
+			public const int ACTwiterIcon = 2131427336;
+			
+			// aapt resource value: 0x7f0b0006
+			public const int ACUserName = 2131427334;
+			
+			// aapt resource value: 0x7f0b0029
+			public const int AddButton = 2131427369;
+			
+			// aapt resource value: 0x7f0b0061
+			public const int AphabaticalLayout = 2131427425;
+			
+			// aapt resource value: 0x7f0b0072
+			public const int ButtonMuteMic = 2131427442;
+			
+			// aapt resource value: 0x7f0b0073
+			public const int ButtonStartChat = 2131427443;
+			
+			// aapt resource value: 0x7f0b0071
+			public const int ButtonSwitchCam = 2131427441;
+			
+			// aapt resource value: 0x7f0b0046
+			public const int CallerIDCenter = 2131427398;
+			
+			// aapt resource value: 0x7f0b0024
+			public const int CallerIDTop = 2131427364;
+			
+			// aapt resource value: 0x7f0b004c
+			public const int CallerVideoIDCenter = 2131427404;
+			
+			// aapt resource value: 0x7f0b003d
+			public const int ChatIcon = 2131427389;
+			
+			// aapt resource value: 0x7f0b0036
+			public const int ContactsButton = 2131427382;
+			
+			// aapt resource value: 0x7f0b0025
+			public const int DurationText = 2131427365;
+			
+			// aapt resource value: 0x7f0b0033
+			public const int FacebookIcon = 2131427379;
+			
+			// aapt resource value: 0x7f0b0034
+			public const int Image = 2131427380;
+			
+			// aapt resource value: 0x7f0b0045
+			public const int ImageCallAvatar = 2131427397;
+			
+			// aapt resource value: 0x7f0b004b
+			public const int ImageVideoCallAvatar = 2131427403;
+			
+			// aapt resource value: 0x7f0b0037
+			public const int InviteButton = 2131427383;
+			
+			// aapt resource value: 0x7f0b0035
+			public const int InviteList = 2131427381;
+			
+			// aapt resource value: 0x7f0b003a
+			public const int ItemBody = 2131427386;
+			
+			// aapt resource value: 0x7f0b0074
+			public const int LayoutBg = 2131427444;
+			
+			// aapt resource value: 0x7f0b0062
+			public const int LettersList = 2131427426;
+			
+			// aapt resource value: 0x7f0b0000
+			public const int LinearLayout02 = 2131427328;
+			
+			// aapt resource value: 0x7f0b0023
+			public const int LinearLayout03 = 2131427363;
+			
+			// aapt resource value: 0x7f0b0032
+			public const int LinkedinIcon = 2131427378;
+			
+			// aapt resource value: 0x7f0b005f
+			public const int ListHolder = 2131427423;
+			
+			// aapt resource value: 0x7f0b0077
+			public const int LoadingImage = 2131427447;
+			
+			// aapt resource value: 0x7f0b0079
+			public const int LocalCallerIDCenter = 2131427449;
+			
+			// aapt resource value: 0x7f0b0078
+			public const int LocalImageCallAvatar = 2131427448;
+			
+			// aapt resource value: 0x7f0b002c
+			public const int LoggingButton = 2131427372;
+			
+			// aapt resource value: 0x7f0b0027
+			public const int MicButton = 2131427367;
+			
+			// aapt resource value: 0x7f0b002f
+			public const int Name = 2131427375;
+			
+			// aapt resource value: 0x7f0b0051
+			public const int ProfileAvatarImage = 2131427409;
+			
+			// aapt resource value: 0x7f0b0039
+			public const int ProfileButton = 2131427385;
+			
+			// aapt resource value: 0x7f0b004f
+			public const int ProfileID = 2131427407;
+			
+			// aapt resource value: 0x7f0b007c
+			public const int ProfileMenuItem = 2131427452;
+			
+			// aapt resource value: 0x7f0b0054
+			public const int ProfileUserEmail = 2131427412;
+			
+			// aapt resource value: 0x7f0b0053
+			public const int ProfileUserName = 2131427411;
+			
+			// aapt resource value: 0x7f0b002d
+			public const int QRButton2 = 2131427373;
+			
+			// aapt resource value: 0x7f0b002a
+			public const int RecordButton = 2131427370;
+			
+			// aapt resource value: 0x7f0b0076
+			public const int RemoteCallerIDCenter = 2131427446;
+			
+			// aapt resource value: 0x7f0b0075
+			public const int RemoteImageCallAvatar = 2131427445;
+			
+			// aapt resource value: 0x7f0b0064
+			public const int SearchButton = 2131427428;
+			
+			// aapt resource value: 0x7f0b0003
+			public const int SearchContactItem = 2131427331;
+			
+			// aapt resource value: 0x7f0b0004
+			public const int SearchContactsButton = 2131427332;
+			
+			// aapt resource value: 0x7f0b0063
+			public const int SearchSessionItem = 2131427427;
+			
+			// aapt resource value: 0x7f0b0038
+			public const int SessionButton = 2131427384;
+			
+			// aapt resource value: 0x7f0b003c
+			public const int SessionDate = 2131427388;
+			
+			// aapt resource value: 0x7f0b003b
+			public const int SessionHeadTitle = 2131427387;
+			
+			// aapt resource value: 0x7f0b0060
+			public const int SessionList = 2131427424;
+			
+			// aapt resource value: 0x7f0b002e
+			public const int SkipButton1 = 2131427374;
+			
+			// aapt resource value: 0x7f0b0028
+			public const int SpikerButton = 2131427368;
+			
+			// aapt resource value: 0x7f0b0005
+			public const int Text = 2131427333;
+			
+			// aapt resource value: 0x7f0b0031
+			public const int TwiterIcon = 2131427377;
+			
+			// aapt resource value: 0x7f0b0030
+			public const int Username = 2131427376;
+			
+			// aapt resource value: 0x7f0b0049
+			public const int VideoCallerIDTop = 2131427401;
+			
+			// aapt resource value: 0x7f0b003e
+			public const int VideoIcon = 2131427390;
+			
+			// aapt resource value: 0x7f0b003f
+			public const int VoiceIcon = 2131427391;
+			
+			// aapt resource value: 0x7f0b0070
+			public const int arrowimage = 2131427440;
+			
+			// aapt resource value: 0x7f0b0052
+			public const int avatarImage = 2131427410;
+			
+			// aapt resource value: 0x7f0b0012
+			public const int avatarImageView = 2131427346;
+			
+			// aapt resource value: 0x7f0b0021
+			public const int badgeAnchorTextView = 2131427361;
+			
+			// aapt resource value: 0x7f0b001f
+			public const int badgeRelativeLayout = 2131427359;
+			
+			// aapt resource value: 0x7f0b0020
+			public const int badgeSpacerRelativeLayout = 2131427360;
+			
+			// aapt resource value: 0x7f0b0047
+			public const int btnAnswer = 2131427399;
+			
+			// aapt resource value: 0x7f0b004d
+			public const int btnAnswerVideoCall = 2131427405;
+			
+			// aapt resource value: 0x7f0b0048
+			public const int btnDecline = 2131427400;
+			
+			// aapt resource value: 0x7f0b004e
+			public const int btnDeclineVideoCall = 2131427406;
+			
+			// aapt resource value: 0x7f0b002b
+			public const int btnEndCall = 2131427371;
+			
+			// aapt resource value: 0x7f0b0014
+			public const int bubbleImageView = 2131427348;
+			
+			// aapt resource value: 0x7f0b0013
+			public const int bubbleTextRelativeLayout = 2131427347;
+			
+			// aapt resource value: 0x7f0b0015
+			public const int bubbleTextView = 2131427349;
+			
+			// aapt resource value: 0x7f0b005e
+			public const int buttonZxingFlash = 2131427422;
+			
+			// aapt resource value: 0x7f0b0044
+			public const int callInfo = 2131427396;
+			
+			// aapt resource value: 0x7f0b001e
+			public const int chatIcon = 2131427358;
+			
+			// aapt resource value: 0x7f0b0001
+			public const int conList = 2131427329;
+			
+			// aapt resource value: 0x7f0b0019
+			public const int contactItemLinearLayout = 2131427353;
+			
+			// aapt resource value: 0x7f0b001a
+			public const int contactItemRelativeLayout = 2131427354;
+			
+			// aapt resource value: 0x7f0b007a
+			public const int contentFrame = 2131427450;
+			
+			// aapt resource value: 0x7f0b001b
+			public const int detailsRelativeLayout = 2131427355;
+			
+			// aapt resource value: 0x7f0b000f
+			public const int editText = 2131427343;
+			
+			// aapt resource value: 0x7f0b0056
+			public const int header = 2131427414;
+			
+			// aapt resource value: 0x7f0b0055
+			public const int header_container = 2131427413;
+			
+			// aapt resource value: 0x7f0b0050
+			public const int holder = 2131427408;
+			
+			// aapt resource value: 0x7f0b0002
+			public const int holderbutton = 2131427330;
+			
+			// aapt resource value: 0x7f0b0058
+			public const int icon = 2131427416;
+			
+			// aapt resource value: 0x7f0b0067
+			public const int labelTextView = 2131427431;
+			
+			// aapt resource value: 0x7f0b0043
+			public const int linearLayout = 2131427395;
+			
+			// aapt resource value: 0x7f0b005a
+			public const int linearLayout1 = 2131427418;
+			
+			// aapt resource value: 0x7f0b005c
+			public const int linearLayout2 = 2131427420;
 			
 			// aapt resource value: 0x7f0b000c
-			public const int youtuberight = 2131427340;
+			public const int listchat = 2131427340;
+			
+			// aapt resource value: 0x7f0b007d
+			public const int logoutMenuItem = 2131427453;
+			
+			// aapt resource value: 0x7f0b006f
+			public const int myLocalViewLinearLayout = 2131427439;
+			
+			// aapt resource value: 0x7f0b006e
+			public const int myRemoteViewLinearLayout = 2131427438;
+			
+			// aapt resource value: 0x7f0b0010
+			public const int nameTextView = 2131427344;
+			
+			// aapt resource value: 0x7f0b006d
+			public const int progress_bar = 2131427437;
+			
+			// aapt resource value: 0x7f0b0022
+			public const int ptr_wrapper = 2131427362;
+			
+			// aapt resource value: 0x7f0b0057
+			public const int pullDownProgressIndicator = 2131427415;
+			
+			// aapt resource value: 0x7f0b0066
+			public const int relativeLayout = 2131427430;
+			
+			// aapt resource value: 0x7f0b000e
+			public const int sendButton = 2131427342;
+			
+			// aapt resource value: 0x7f0b000d
+			public const int sendRelativeLayout = 2131427341;
+			
+			// aapt resource value: 0x7f0b007b
+			public const int settingsMenuItem = 2131427451;
+			
+			// aapt resource value: 0x7f0b0065
+			public const int settingsSpinnerListItem = 2131427429;
+			
+			// aapt resource value: 0x7f0b0069
+			public const int settingsSwitchListItem = 2131427433;
+			
+			// aapt resource value: 0x7f0b006b
+			public const int settingsTextEditListItem = 2131427435;
+			
+			// aapt resource value: 0x7f0b006c
+			public const int settingsToggleListItem = 2131427436;
+			
+			// aapt resource value: 0x7f0b0042
+			public const int tabHost = 2131427394;
+			
+			// aapt resource value: 0x7f0b0059
+			public const int text = 2131427417;
+			
+			// aapt resource value: 0x7f0b001c
+			public const int textAreaLinearLayout = 2131427356;
+			
+			// aapt resource value: 0x7f0b0041
+			public const int textView1 = 2131427393;
+			
+			// aapt resource value: 0x7f0b005b
+			public const int textView2 = 2131427419;
+			
+			// aapt resource value: 0x7f0b005d
+			public const int textView3 = 2131427421;
+			
+			// aapt resource value: 0x7f0b0011
+			public const int timeTextView = 2131427345;
+			
+			// aapt resource value: 0x7f0b006a
+			public const int toggleButton = 2131427434;
+			
+			// aapt resource value: 0x7f0b0026
+			public const int topLeft = 2131427366;
+			
+			// aapt resource value: 0x7f0b001d
+			public const int usernameTextView = 2131427357;
+			
+			// aapt resource value: 0x7f0b0068
+			public const int valueSpinner = 2131427432;
+			
+			// aapt resource value: 0x7f0b004a
+			public const int videocallInfo = 2131427402;
+			
+			// aapt resource value: 0x7f0b0017
+			public const int web = 2131427351;
+			
+			// aapt resource value: 0x7f0b0040
+			public const int webViewLogin = 2131427392;
+			
+			// aapt resource value: 0x7f0b0016
+			public const int youtube = 2131427350;
+			
+			// aapt resource value: 0x7f0b0018
+			public const int youtuberight = 2131427352;
 			
 			static Id()
 			{
@@ -941,109 +959,115 @@ namespace HopSampleApp
 			public const int Alert = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int Chat = 2130903041;
+			public const int AndroidLookContactLayout = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int ChatLeftSideHeaderListItem = 2130903042;
+			public const int AndroidLookContctItem = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int ChatLeftSideListItem = 2130903043;
+			public const int Chat = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int ChatMarginHeaderListItem = 2130903044;
+			public const int ChatLeftSideHeaderListItem = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int ChatRightSideHeaderListItem = 2130903045;
+			public const int ChatLeftSideListItem = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int ChatRightSideListItem = 2130903046;
+			public const int ChatMarginHeaderListItem = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int ContactListItem = 2130903047;
+			public const int ChatRightSideHeaderListItem = 2130903047;
 			
 			// aapt resource value: 0x7f030008
-			public const int Contacts = 2130903048;
+			public const int ChatRightSideListItem = 2130903048;
 			
 			// aapt resource value: 0x7f030009
-			public const int ContactsWithPull = 2130903049;
+			public const int ContactListItem = 2130903049;
 			
 			// aapt resource value: 0x7f03000a
-			public const int EndCall = 2130903050;
+			public const int Contacts = 2130903050;
 			
 			// aapt resource value: 0x7f03000b
-			public const int Gesture = 2130903051;
+			public const int ContactsWithPull = 2130903051;
 			
 			// aapt resource value: 0x7f03000c
-			public const int InviteItem = 2130903052;
+			public const int EndCall = 2130903052;
 			
 			// aapt resource value: 0x7f03000d
-			public const int InviteLayout = 2130903053;
+			public const int Gesture = 2130903053;
 			
 			// aapt resource value: 0x7f03000e
-			public const int ListItemSession = 2130903054;
+			public const int InviteItem = 2130903054;
 			
 			// aapt resource value: 0x7f03000f
-			public const int Login = 2130903055;
+			public const int InviteLayout = 2130903055;
 			
 			// aapt resource value: 0x7f030010
-			public const int Main = 2130903056;
+			public const int ListItemSession = 2130903056;
 			
 			// aapt resource value: 0x7f030011
-			public const int PopupCall = 2130903057;
+			public const int Login = 2130903057;
 			
 			// aapt resource value: 0x7f030012
-			public const int PopupVideoCall = 2130903058;
+			public const int Main = 2130903058;
 			
 			// aapt resource value: 0x7f030013
-			public const int Profile = 2130903059;
+			public const int PopupCall = 2130903059;
 			
 			// aapt resource value: 0x7f030014
-			public const int ptrsharp_header = 2130903060;
+			public const int PopupVideoCall = 2130903060;
 			
 			// aapt resource value: 0x7f030015
-			public const int PullToRefreshSession = 2130903061;
+			public const int Profile = 2130903061;
 			
 			// aapt resource value: 0x7f030016
-			public const int QROverlay = 2130903062;
+			public const int ptrsharp_header = 2130903062;
 			
 			// aapt resource value: 0x7f030017
-			public const int SessionLayout = 2130903063;
+			public const int PullToRefreshSession = 2130903063;
 			
 			// aapt resource value: 0x7f030018
-			public const int Settings = 2130903064;
+			public const int QROverlay = 2130903064;
 			
 			// aapt resource value: 0x7f030019
-			public const int SettingsPullDownViewItem = 2130903065;
+			public const int SessionLayout = 2130903065;
 			
 			// aapt resource value: 0x7f03001a
-			public const int SettingsSpinnerListItem = 2130903066;
+			public const int Settings = 2130903066;
 			
 			// aapt resource value: 0x7f03001b
-			public const int SettingsSwitchViewItem = 2130903067;
+			public const int SettingsPullDownViewItem = 2130903067;
 			
 			// aapt resource value: 0x7f03001c
-			public const int SettingsTextEditListItem = 2130903068;
+			public const int SettingsSpinnerListItem = 2130903068;
 			
 			// aapt resource value: 0x7f03001d
-			public const int SettingsTextEditViewItem = 2130903069;
+			public const int SettingsSwitchViewItem = 2130903069;
 			
 			// aapt resource value: 0x7f03001e
-			public const int SettingsToggleListItem = 2130903070;
+			public const int SettingsTextEditListItem = 2130903070;
 			
 			// aapt resource value: 0x7f03001f
-			public const int Splash = 2130903071;
+			public const int SettingsTextEditViewItem = 2130903071;
 			
 			// aapt resource value: 0x7f030020
-			public const int VideoCall = 2130903072;
+			public const int SettingsToggleListItem = 2130903072;
 			
 			// aapt resource value: 0x7f030021
-			public const int WaitingResponse = 2130903073;
+			public const int Splash = 2130903073;
 			
 			// aapt resource value: 0x7f030022
-			public const int zxingscanneractivitylayout = 2130903074;
+			public const int VideoCall = 2130903074;
 			
 			// aapt resource value: 0x7f030023
-			public const int zxingscannerfragmentlayout = 2130903075;
+			public const int WaitingResponse = 2130903075;
+			
+			// aapt resource value: 0x7f030024
+			public const int zxingscanneractivitylayout = 2130903076;
+			
+			// aapt resource value: 0x7f030025
+			public const int zxingscannerfragmentlayout = 2130903077;
 			
 			static Layout()
 			{

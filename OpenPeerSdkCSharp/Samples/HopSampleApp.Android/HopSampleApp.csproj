@@ -56,32 +56,18 @@
     <Compile Include="Source\Services\ImageCachingService.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Source\Services\GestureListener.cs" />
-    <Compile Include="Source\Activities\ChatActivity.cs" />
-    <Compile Include="Source\Activities\ChatAdapter.cs" />
-    <Compile Include="Source\Activities\ContactAdapter.cs" />
-    <Compile Include="Source\Activities\ContactsActivity.cs" />
     <Compile Include="Source\Activities\EndCallActivity.cs" />
     <Compile Include="Source\Activities\GestureActivity.cs" />
     <Compile Include="Source\Activities\LoginActivity.cs" />
     <Compile Include="Source\Activities\MainActivity.cs" />
     <Compile Include="Source\Activities\PopupCallActivity.cs" />
     <Compile Include="Source\Activities\PoupVideoCallActivity.cs" />
-    <Compile Include="Source\Activities\SettingsActivity.cs" />
-    <Compile Include="Source\Activities\SettingsAdapter.cs" />
     <Compile Include="Source\Activities\SplashActivity.cs" />
     <Compile Include="Source\Activities\VideoCallActivity.cs" />
     <Compile Include="Source\Activities\WaitingResponseActivity.cs" />
     <Compile Include="Source\Activities\AlertActivity.cs" />
-    <Compile Include="Source\Activities\SessionActivity.cs" />
-    <Compile Include="Source\Activities\SessionAdapter.cs" />
     <Compile Include="Source\Activities\ProfileActivity.cs" />
-    <Compile Include="Source\Activities\InviteActivity.cs" />
-    <Compile Include="Source\Activities\InviteAdapter.cs" />
-    <Compile Include="Source\Activities\InviteItemsAcc.cs" />
-    <Compile Include="Source\Activities\SessionItem.cs" />
     <Compile Include="Source\Activities\LettersAdapter.cs" />
-    <Compile Include="Source\Activities\ChatItem.cs" />
-    <Compile Include="Source\Services\AppConsts.cs" />
     <Compile Include="Source\Services\SessionManager.cs" />
     <Compile Include="Source\Services\MessageManager.cs" />
     <Compile Include="Source\Services\ContactsManager.cs" />
@@ -90,7 +76,6 @@
     <Compile Include="Source\Services\HOPIdentityContract.cs" />
     <Compile Include="Source\Login\LoginManager.cs" />
     <Compile Include="Source\Model\Session.cs" />
-    <Compile Include="Source\OPDelegates\Delegates.cs" />
     <Compile Include="Source\Services\HTTPDownloader.cs" />
     <Compile Include="Source\Services\HOPUtility.cs" />
     <Compile Include="Source\Services\HOPAssociatedIdentity.cs" />
@@ -105,25 +90,47 @@
     <Compile Include="Source\OPDelegates\CSOPIdentityLookupDelegate.cs" />
     <Compile Include="Source\OPDelegates\CSOPConversationThreadDelegate.cs" />
     <Compile Include="EnumBaseClass\EnumBaseType.cs" />
-    <Compile Include="Source\Login\AsyncTaskClasses\AccountLogin.cs" />
-    <Compile Include="Source\Login\AsyncTaskClasses\CoreLogin.cs" />
-    <Compile Include="Source\Login\AsyncTaskClasses\IdentityLogin.cs" />
     <Compile Include="Source\Login\WebClientProperties\PropertiesForWebClient.cs" />
     <Compile Include="Source\Login\MyWebViewClient.cs" />
     <Compile Include="Source\OPInterface\LoginHandlerInterface.cs" />
-    <Compile Include="Source\OPSettings\Settings.cs" />
-    <Compile Include="Source\OPSettings\HOPSettings.cs" />
     <Compile Include="Source\OPSettings\IsolatedStorageSettings.cs" />
     <Compile Include="Source\OPSettings\CSOPFakeSettings.cs" />
     <Compile Include="Source\OPSettings\JsonParser\JSONParser.cs" />
     <Compile Include="Source\OPSettings\JsonParser\JSONParserProperty.cs" />
-    <Compile Include="Source\OPHelpers\Utility.cs" />
     <Compile Include="Source\OPHelpers\LoadingLibrary\CSOPLoadLibrary.cs" />
     <Compile Include="Source\OPHelpers\OPSocialMedia\Emotions.cs" />
     <Compile Include="Source\OPHelpers\OPSocialMedia\SocialMediaFeature.cs" />
     <Compile Include="Source\OPTesting\CSOPTestAccount.cs" />
     <Compile Include="Source\OPTesting\CSOPTestIdentity.cs" />
     <Compile Include="Source\OPTesting\CSOPTestIdentityLookup.cs" />
+    <Compile Include="Source\OPHelpers\CSOPHelper.cs" />
+    <Compile Include="Source\OPSettings\CSSettings.cs" />
+    <Compile Include="Source\Login\AsyncTaskClasses\StartLogin.cs" />
+    <Compile Include="Source\DataMenager\CSOPDataMenager.cs" />
+    <Compile Include="Source\OPInterface\DatastoreInterfaces.cs" />
+    <Compile Include="Source\OPDelegates\CSOPDatastoreDelegate.cs" />
+    <Compile Include="Source\Login\AsyncTaskClasses\StartReLogin.cs" />
+    <Compile Include="Source\Activities\AndroidLookContacts\AndroidContactItem.cs" />
+    <Compile Include="Source\Activities\AndroidLookContacts\AndroidLookContactActivity.cs" />
+    <Compile Include="Source\Activities\AndroidLookContacts\AndroidLookContactAdapter.cs" />
+    <Compile Include="Source\Activities\ContactsSimulation\ContactAdapter.cs" />
+    <Compile Include="Source\Activities\ContactsSimulation\ContactsActivity.cs" />
+    <Compile Include="Source\Activities\ChatSimulation\ChatActivity.cs" />
+    <Compile Include="Source\Activities\ChatSimulation\ChatAdapter.cs" />
+    <Compile Include="Source\Activities\Invite\InviteActivity.cs" />
+    <Compile Include="Source\Activities\Invite\InviteAdapter.cs" />
+    <Compile Include="Source\Activities\Invite\InviteItemsAcc.cs" />
+    <Compile Include="Source\Activities\Sessions\SessionActivity.cs" />
+    <Compile Include="Source\Activities\Sessions\SessionAdapter.cs" />
+    <Compile Include="Source\Activities\Sessions\SessionItem.cs" />
+    <Compile Include="Source\Activities\OldSettings\SettingsActivity.cs" />
+    <Compile Include="Source\Activities\OldSettings\SettingsAdapter.cs" />
+    <Compile Include="Source\Activities\ChatSimulation\ChatItem.cs" />
+    <Compile Include="Source\Services\CSAppConsts.cs" />
+    <Compile Include="Source\OPHelpers\LoadingAsserts\CSLoadingAssets.cs" />
+    <Compile Include="Source\Login\CSFramesHandler.cs" />
+    <Compile Include="Source\Login\CSStatesHandler.cs" />
+    <Compile Include="Source\OPHelpers\CSUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -281,6 +288,8 @@
     <AndroidResource Include="Resources\drawable\ssad.png" />
     <AndroidResource Include="Resources\drawable\iosphone.png" />
     <AndroidResource Include="Resources\drawable\andorid.png" />
+    <AndroidResource Include="Resources\layout\AndroidLookContactLayout.axml" />
+    <AndroidResource Include="Resources\layout\AndroidLookContctItem.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -307,6 +316,14 @@
     <Folder Include="Source\OPSettings\JsonParser\" />
     <Folder Include="Source\OPHelpers\" />
     <Folder Include="Source\OPTesting\" />
+    <Folder Include="Source\DataMenager\" />
+    <Folder Include="Source\Activities\AndroidLookContacts\" />
+    <Folder Include="Source\Activities\ContactsSimulation\" />
+    <Folder Include="Source\Activities\ChatSimulation\" />
+    <Folder Include="Source\Activities\Invite\" />
+    <Folder Include="Source\Activities\Sessions\" />
+    <Folder Include="Source\Activities\OldSettings\" />
+    <Folder Include="Source\OPHelpers\LoadingAsserts\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">
@@ -333,5 +350,8 @@
       <Project>{ACF94FAB-67A8-488F-B431-0B3DBCA8A383}</Project>
       <Name>JavaSDK</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\openpeersdk.properties" />
   </ItemGroup>
 </Project>

@@ -64,13 +64,13 @@ namespace HopSampleApp
 					{
 						Intent intent = new Intent (this, typeof(HopSampleApp.GestureActivity));
 						StartActivity (intent);
-
+						Finish();
 
 					}else
 					{
 						Intent intent = new Intent (this, typeof(LoginActivity));
 						StartActivity (intent);
-
+						Finish();
 
 					}
 				});

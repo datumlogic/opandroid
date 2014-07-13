@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Android.App;
+using Android.Util;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
@@ -40,18 +41,22 @@ namespace HopSampleApp
 	{
 		public override void OnIdentityStateChanged (OPIdentity account,IdentityStates state)
 		{
-			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToBeLoaded) {
-				LoginManager.SharedLoginManager().loadOuterFrame ();
+			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToBeLoaded)
+			{
+				CSFramesHandler.SharedCSFramesHandler ().loadOuterFrame ();
 			}
-			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToBeMadeVisible) {
+			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToBeMadeVisible)
+			{
 				LoginManager.mIdentity.NotifyBrowserWindowVisible ();
 			}
 			if (state == IdentityStates.IdentityStateWaitingForBrowserWindowToClose)
 			{
 				LoginManager.mIdentity.NotifyBrowserWindowClosed ();
 			}
-			if (state == IdentityStates.IdentityStateReady) {
-				//LoginManager.mIdentity;
+			if (state == IdentityStates.IdentityStateReady)
+			{
+				Log.Debug ("JNI","IDENTITY STATE READY!");
+				CSStatesHandler.SharedCSStatesHandler ().onIdentityStateReady ();
 			}
 
 
@@ -59,11 +64,11 @@ namespace HopSampleApp
 
 		public override void OnIdentityPendingMessageForInnerBrowserWindowFrame (OPIdentity identity)
 		{
-			LoginManager.SharedLoginManager().pendingMessageForInnerFrame();
+			CSFramesHandler.SharedCSFramesHandler ().pendingMessageForInnerFrame ();
 		}
 		public override void OnIdentityRolodexContactsDownloaded (OPIdentity identity)
 		{
-			LoginManager.SharedLoginManager().onDownloadedRolodexContacts (identity);
+			CSStatesHandler.SharedCSStatesHandler ().onDownloadedRolodexContacts (identity);
 		}
 	}
 }

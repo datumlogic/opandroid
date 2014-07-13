@@ -27,8 +27,47 @@ using Android.Util;
 
 namespace HopSampleApp
 {
+	/// <summary>
+	/// #########################################################################
+	///                    CSOPLOADLIBRARY
+	/// #########################################################################
+	/// CSOPLoadLibrary class contains methods:
+	/// -------------------------------------------------------------------------
+	/// - OPLoadLibrary
+	/// - OPLoadLibrary(string your_so_library)
+	/// -------------------------------------------------------------------------
+	/// <remarks>
+	/// This class has been designed for loading all application so library using
+	/// Java.Lang.JavaSistem.LoadLibrary.
+	/// It also has a method to load additional so library If you needed to load
+	/// some addition so library.
+	/// -------------------------------------------------------------------------
+	/// NOTE:Method for loading addition so library are not tested to be aware is
+	/// you run to some problem using it.
+	/// </remarks>
+	/// </summary>
 	public class CSOPLoadLibrary
 	{
+		#region Load Addition so library
+		public void OPLoadLibrary(string your_so_library)
+		{
+			try
+			{
+				if(your_so_library != null)
+				{
+					Log.Debug("LOAD ADDITION LIBRARY LOADED",your_so_library);
+					//Loading
+					Java.Lang.JavaSystem.LoadLibrary(your_so_library);
+				}
+			}
+			catch(Exception Error)
+			{
+				//Error message
+				Log.Error("Error Loading",String.Format("{0} Error Loading:{1}",your_so_library,Error.Message));
+			}
+		}
+		#endregion
+
 		#region Method for loading SO OP library
 
 		public void OPLoadLibrary()

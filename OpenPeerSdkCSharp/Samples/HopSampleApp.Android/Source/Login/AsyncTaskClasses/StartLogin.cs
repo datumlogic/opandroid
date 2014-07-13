@@ -40,40 +40,25 @@ using System.Threading;
 using Android.Util;
 using Java.Interop;
 
-namespace HopSampleApp.CSAccountLogin
+namespace HopSampleApp.CSCoreLogin
 {
-	public class AccountLogin:AsyncTask
+	public class StartLogin:AsyncTask
 	{
-		protected override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)
+		protected  override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)
 		{
 			try
 			{
-				LoginManager.SharedLoginManager().AccountLogin();
+				//Application Login
+				LoginManager.SharedLoginManager().Login();
 			} 
-			catch (Exception e) 
+			catch (Exception e)
 			{
-				Log.Error("Error",String.Format ("Error AccountLogin:{0}", e.StackTrace));
-
+				Log.Error("Error",String.Format ("Error CoreLogin:{0}", e.StackTrace));
 			}
 
 			return null;
-
 		}
 
-		protected override void OnPostExecute (Java.Lang.Object result)
-		{
-			//base.OnPostExecute (result);
-		}
-
-		protected override void OnPreExecute ()
-		{
-			//base.OnPreExecute ();
-		}
-
-		protected override void OnProgressUpdate (params Java.Lang.Object[] values)
-		{
-			//base.OnProgressUpdate (values);
-		}
 	}
 }
 

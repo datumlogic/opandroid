@@ -47,43 +47,19 @@ namespace HopSampleApp
 {
 	class LoginManager
 	{
+		#region classes
 		public static CallbackHandler mCallbackHandler = new CallbackHandler();
 		public static Context mContext;
-
-		public void LoginWithFacebook ()
-		{
-			mediaenginedelegate = new CSOPMediaEngineDelegate();
-			stackdelegate = new CSOPStackDelegate();
-			Log.Debug ("output","instance ID =" + Utility.GetGUIDInstanceID());
-			stackMessageQueue = OPStackMessageQueue.Singleton(); 
-			OPLogger.SetLogLevel (OPLogLevel.LogLevelTrace);
-			OPLogger.SetLogLevel("openpeer_webrtc", OPLogLevel.LogLevelBasic);
-			OPLogger.SetLogLevel("zsLib_socket", OPLogLevel.LogLevelInsane);
-			String telnetLogString = Utility.GetDeviceID(mContext) + "-" + Utility.GetGUIDInstanceID() + "\n";
-			Log.Debug("output", "Outgoing log string = " + telnetLogString);
-			OPLogger.InstallTelnetLogger(59999, 60, true);
-			OPLogger.InstallFileLogger("/storage/emulated/0/HFLog.txt", true);
-			stack = OPStack.Singleton();
-
-			mCacheDelegate = new CSOPCacheDelegate();
-			mCallbackHandler.RegisterCacheDelegate(mCacheDelegate);
-			OPCache.Setup(mCacheDelegate);
-
-			//OPSettings.setup(null);
-			OPSettings.ApplyDefaults();
-
-			String httpSettings =CSOPFakeSettings.createHttpSettings();
-			OPSettings.Apply(httpSettings);
-
-			String forceDashSettings =CSOPFakeSettings.createForceDashSetting();
-			OPSettings.Apply(forceDashSettings);
-
-			String appSettings = CSOPFakeSettings.createFakeApplicationSettings();
-			OPSettings.Apply(appSettings);
-
-			stack.Setup(null,null);
-
-		}
+		public static OPAccount mAccount;
+		public static OPAccountDelegate mAccountDelegate;
+		public static OPIdentity mIdentity;
+		public static OPIdentityLookupDelegate mIdentityLookupDelegate;
+		public static OPIdentityDelegate mIdentityDelegate;
+		public static CSOPDatastoreDelegate mDataStoreDelegate;
+		public static LoginHandlerInterface mLoginHandler;
+		public static OPIdentityLookup mIdentityLookup;
+		public static OPCacheDelegate mCacheDelegate;
+		#endregion
 
 		public static OPAccount getAccount()
 		{
@@ -95,149 +71,92 @@ namespace HopSampleApp
 			LoginManager.mAccount = account;
 		}
 
-		public static OPStack stack;
-		public static OPStackMessageQueue stackMessageQueue;
-		public static OPAccount mAccount;
-		public static OPAccountDelegate mAccountDelegate;
-		public static OPIdentity mIdentity;
-		public static OPIdentityLookupDelegate mIdentityLookupDelegate;
-		public static OPIdentityDelegate mIdentityDelegate;
-		//public static OPMediaEngine mMediaEngine;
-		//public static OPIdentityLookupDelegate mIdentityLookupDelegate;
-		//public static OPLogger mLogger;
-		static LoginHandlerInterface mLoginHandler;
-		public static OPIdentityLookup mIdentityLookup;
-		//public static OPConversationThread mConvThread;
-		public static OPCacheDelegate mCacheDelegate;
-		//public static OPCall mCall;
-		public static OPStackDelegate stackdelegate;
-		public static OPMediaEngineDelegate mediaenginedelegate;
-		//public static OPCallDelegate mCallDelegate;
+		#region Op lists
+		public static List<OPIdentityContact> mSelfContacts;
+		public static List<OPIdentity> mIdentitiesList;
 		public static List<OPIdentityContact> mIdentityContacts = new List<OPIdentityContact> ();
+		public static IList<OPRolodexContact> mRolodexContact = new List<OPRolodexContact> ();
 		public static List<OPMessage> mMessages = new List<OPMessage> ();
-
+		#endregion
 
 		public void setHandlerListener(LoginHandlerInterface listener)
 		{
 			mLoginHandler=listener;
 		}
 
-		public void loadOuterFrame() 
-		{
-			if (mLoginHandler != null)
-			{
-				mLoginHandler.onLoadOuterFrameHandle (null);
-			}
-
-		}
-
-		public void initInnerFrame()
-		{
-			//Java - mLoginHandler.onInnerFrameInitialized(mIdentity.getInnerBrowserWindowFrameURL());
-			mLoginHandler.onInnerFrameInitialized(mIdentity.InnerBrowserWindowFrameURL);
-		}
-
-
-		public void pendingMessageForInnerFrame()
-		{
-			//Java - String msg = mIdentity.getNextMessageForInnerBrowerWindowFrame();
-			String msg = mIdentity.NextMessageForInnerBrowerWindowFrame;
-			mLoginHandler.passMessageToJS(msg);
-
-		}
-
-		public void pendingMessageForNamespaceGrantInnerFrame()
-		{
-			//Java - String msg = mIdentity.getNextMessageForInnerBrowerWindowFrame();
-			String msg = mAccount.NextMessageForInnerBrowerWindowFrame;
-			mLoginHandler.passMessageToJS(msg);
-
-		}
-
-		public void StartIdentityLogin()
-		{
-			mIdentityDelegate = new CSOPIdentityDelegate();
-			mIdentity = new OPIdentity();
-			mCallbackHandler.RegisterIdentityDelegate(mIdentity, mIdentityDelegate);
-
-			mIdentity = OPIdentity.Login(mAccount, null,
-				"identity-v1-beta-1-i.hcs.io", 
-				"identity://identity-v1-beta-1-i.hcs.io/",
-				"http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
-
-		}
-			
+		#region Initialize Context			
 		public static void initializeContext(Context context)
 		{
 			mContext = context;
 		}
+		#endregion
 
-		public void AccountLogin()
+		#region Simple app Login
+		public void Login()
+		{   
+			CSOPHelper.SharedCSOPHelper ().InitializeSettings (mContext,mCallbackHandler,mDataStoreDelegate);
+			mCacheDelegate = new CSOPCacheDelegate();
+			mCallbackHandler.RegisterCacheDelegate(mCacheDelegate);
+			OPCache.Setup(mCacheDelegate);
+
+			mAccountDelegate = new CSOPAccountDelegate ();
+			mAccount = new OPAccount ();
+			mCallbackHandler.RegisterAccountDelegate (mAccount,mAccountDelegate);
+			CSSettings settings = CSSettings.SharedCSSettings();
+			mAccount = OPAccount.Login
+				(null, null, null,
+					settings.getNamespaceGrantServiceUrl(),
+					settings.getGrantID(), 
+					settings.getIdentityProviderDomain(),
+					false);
+
+			CSOPDataManager.SharedCSOPDataManager ().setSharedAccount (mAccount);
+			StartIdentityLogin ();
+		}
+		#endregion
+
+		#region Simple app Identity Login
+		public void StartIdentityLogin()
+		{
+
+			mIdentityDelegate = new CSOPIdentityDelegate();
+			mIdentity = new OPIdentity();
+			mCallbackHandler.RegisterIdentityDelegate(mIdentity, mIdentityDelegate);
+			CSSettings settings = CSSettings.SharedCSSettings();
+			settings.getIdentityBaseUri ();
+			mIdentity = OPIdentity.Login(
+				mAccount,
+				null,
+				settings.getIdentityProviderDomain(),
+				settings.getIdentityBaseUri(),
+				settings.getOuterFrameURL()
+			);
+
+		}
+		#endregion
+
+		#region Simple app ReLogin
+		public void ReLogin(String relogininfo)
 		{
 			mAccountDelegate = new CSOPAccountDelegate();
-			mAccount = new OPAccount();
-			mCallbackHandler.RegisterAccountDelegate(mAccount, mAccountDelegate);
-
-			mAccount = OPAccount.Login(null, null, null, 
-				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
-				"bojanGrantID", 
-				"identity-v1-rel-lespaul-i.hcs.io", false);
-
-		}
-
-		public void startAccountLogin()
-		{
-			if (mLoginHandler != null)
+			if (CSOPDataManager.SharedCSOPDataManager().getSharedAccount() != null)
 			{
-				mLoginHandler.onLoadOuterFrameHandle ("http://jsouter-v1-rel-dev2-i.hcs.io/grant.html");
-			}		
-		}
-
-		public void initNamespaceGrantInnerFrame()
-		{
-			//Java - mLoginHandler.onNamespaceGrantInnerFrameInitialized(mAccount.getInnerBrowserWindowFrameURL());
-			mLoginHandler.onNamespaceGrantInnerFrameInitialized(mAccount.InnerBrowserWindowFrameURL);
-		}
-
-		public void onIdentityLookupCompleted(OPIdentityLookup lookup) {
-
-			LoginManager.mIdentityLookup = lookup;
-			LoginManager.mIdentityContacts = LoginManager.mIdentityLookup.UpdatedIdentities.ToList();
-			foreach (var con in mIdentityContacts) 
+				mAccount = CSOPDataManager.SharedCSOPDataManager().getSharedAccount();
+			} 
+			else
 			{
-				Log.Debug ("Identity Contacts", con.ToString());
-			}
-			mLoginHandler.onIdentityLookupCompleted();
-		}
-
-		public void onDownloadedRolodexContacts(OPIdentity identity) {
-
-			LoginManager.mIdentityLookupDelegate = new CSOPIdentityLookupDelegate();
-			LoginManager.mIdentityLookup = new OPIdentityLookup();
-			mCallbackHandler.RegisterIdentityLookupDelegate(LoginManager.mIdentityLookup,LoginManager.mIdentityLookupDelegate);
-
-			mLoginHandler.onDownloadedRolodexContacts(identity);
-
-		}
-		public void onAccountStateReady() {
-
-			List<OPIdentity> identityList = mAccount.AssociatedIdentities.ToList();
-			foreach (OPIdentity ident in identityList)
-			{
-				if (!ident.IsDelegateAttached)
-				{
-					mIdentityDelegate = new CSOPIdentityDelegate();
-					//mIdentity = new OPIdentity();
-					mCallbackHandler.RegisterIdentityDelegate(ident, mIdentityDelegate);
-					ident.AttachDelegate(mIdentityDelegate, "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
-				}
-				mIdentity = ident;
+				mAccount = new OPAccount();
 			}
 
+			mAccount = OPAccount.Relogin (null, null, null, "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", relogininfo);
 
-			mLoginHandler.onAccountStateReady();
+			mCallbackHandler.RegisterAccountDelegate (mAccount,mAccountDelegate);
+
+			CSOPDataManager.SharedCSOPDataManager().setSharedAccount(mAccount);
 
 		}
+		#endregion
+
 
 		#region Singleton pattern
 

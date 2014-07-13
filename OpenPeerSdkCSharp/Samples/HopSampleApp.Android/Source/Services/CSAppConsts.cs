@@ -34,11 +34,11 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
+using Org.Json;
 namespace HopSampleApp
 {
 
-	public static class AppConsts
+	public class CSAppConsts
 	{
 
 		public const string identityFacebookBaseURI = @"identity://facebook.com/";
@@ -55,7 +55,7 @@ namespace HopSampleApp
 		public const string settingsKeySettingsSnapshot = @"settingsSnapshot";
 		public const string settingsKeyDefaultSettingsSnapshot = @"defaultSettingsSnapshot";
 		public const string settingsKeyOverwriteExistingSettings = @"applicationOverwriteSettings";
-		public const string settingsKeyUserAgent = @"userAgent";
+
 
 		public const string settingsKeyMediaAEC = @"archiveMediaAEC";
 		public const string settingsKeyMediaAGC = @"archiveMediaAGC";
@@ -68,12 +68,15 @@ namespace HopSampleApp
 		public const string userAgentVariableVersionOS = @"versionOs";
 		public const string userAgentVariableDeviceModel = @"deviceModel";
 		public const string userAgentVariableDeveloperID = @"developerID";
-
+		public const string settingsKeyAuthAppDomain=@"authorizated-application-domain";
+		public const string settingsKeyAuthAppId=@"authorizated-application-id";
+		public const string settingsKeyGrantId=@"grantId";
 		public const string settingsKeyAppId = @"applicationId";
 		public const string settingsKeyAppIdSharedSecret = @"applicationIdSharedSecret";
-		public const string settingsKeyAppName = @"applicationName";
-		public const string settingsKeyAppImageURL = @"applicationImageURL";
-		public const string settingsKeyAppURL = @"applicationURL";
+		public const string settingsKeyAppName = @"application-name";
+		public const string settingsKeyAppImageURL = @"application-image-url";
+		public const string settingsKeyAppURL = @"application-url";
+		public const string settingsKeyAppUserAgent=@"user-agent";
 		public const string settingsKeyAPNS = @"APNS-UrbanAirShip";
 		public const string settingsKeyTelnetLogger = @"localTelnetLoggerPort";
 		public const string settingsKeyOutgoingTelnetLogger = @"defaultOutgoingTelnetServer";
@@ -96,7 +99,7 @@ namespace HopSampleApp
 		public const string archiveServer = @"Server";
 		public const string archiveColorized = @"colorized";
 
-        #if APNS_ENABLED
+		#if APNS_ENABLED
 		public const string settingsKeyUrbanAirShipMasterAppSecretDev = @"masterAppSecretDev";
 		public const string settingsKeyUrbanAirShipMasterAppSecret = @"masterAppSecret";
 		public const string settingsKeyUrbanAirShipDevelopmentAppKey = @"developmentAppKey";
@@ -109,7 +112,7 @@ namespace HopSampleApp
 
 
 
-        //Contact Profile xml tags
+		//Contact Profile xml tags
 		public const string profileXmlTagProfile = @"profile";
 		public const string profileXmlTagName = @"name";
 		public const string profileXmlTagIdentities = @"identities";
@@ -123,7 +126,7 @@ namespace HopSampleApp
 		public const string profileXmlAttributeId = @"id";
 		public const string profileXmlTagUserID = @"userID";
 
-        //Message types
+		//Message types
 		public const string messageTypeText = @"text/x-application-hookflash-message-text";
 		public const string messageTypeSystem = @"text/x-application-hookflash-message-system";
 
@@ -164,7 +167,30 @@ namespace HopSampleApp
 		public const string moduleZsLib = @"zsLib";
 		public const string moduleZsLibSocket = @"zsLib_socket";
 		public const string moduleJavaScript = @"openpeer_javascript";
-	
+		//App
+		public const string path_config_file = @"openpeersdk.properties";
+		public  const string prefix_app_common_setting = @"openpeer/common/";
+		public  const string prefix_app_calculated_setting = @"openpeer/calculated/";
+		public static long duration_one_month_in_millis = 30 * 24 * 60 * 60;
+
+
+
+
+
+		#region Singleton pattern
+		private static CSAppConsts instance;
+
+		private CSAppConsts(){	}
+
+		public static CSAppConsts SharedAppConstsr()
+		{
+			if (instance == null)
+				instance = new CSAppConsts();
+			return instance;
+		}
+
+		#endregion
+
 
 
 	}

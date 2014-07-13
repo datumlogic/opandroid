@@ -40,10 +40,11 @@ namespace HopSampleApp
 {
 	public class CSOPIdentityLookupDelegate:OPIdentityLookupDelegate
 	{
+
 		public override void OnIdentityLookupCompleted (OPIdentityLookup lookup)
 		{
 			Log.Debug("output", "Identity lookup test PASSED");
-			LoginManager.SharedLoginManager().onIdentityLookupCompleted(lookup);;
+			CSStatesHandler.SharedCSStatesHandler ().onIdentityLookupCompleted (lookup);
 		}
 	}
 }

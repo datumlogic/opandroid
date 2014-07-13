@@ -56,6 +56,7 @@ namespace HopSampleApp
 					OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
 					ilInfo.InitWithRolodexContact(contact);
 					inputLookupList.Add(ilInfo);
+					LoginManager.mRolodexContact.Add (contact);
 					contact.PrintInfo();
 				}
 

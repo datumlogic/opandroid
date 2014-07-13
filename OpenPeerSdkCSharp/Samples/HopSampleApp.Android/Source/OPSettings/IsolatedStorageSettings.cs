@@ -91,12 +91,13 @@ namespace HopSampleApp
 			prefEditor.Commit();
 		}
 
-		public void AddSettingsToSpecificSettings(string settings_name,string key, object value)
+		public static void AddSettingsToSpecificSettings(string settings_name,string key, object value)
 		{
 			var prefs = Application.Context.GetSharedPreferences(settings_name, FileCreationMode.Private);
 			var prefEditor = prefs.Edit();
 			prefEditor.PutString(key, Convert.ToString(value));
 			prefEditor.Commit();
+			prefEditor.Apply ();
 		}
 		#endregion
 
@@ -123,7 +124,7 @@ namespace HopSampleApp
 			return prefs.GetString(key,null);
 		}
 
-		public string StringForKey(string key,string settings_name)
+		public static string StringForKey(string key,string settings_name)
 		{
 			var prefs = Application.Context.GetSharedPreferences (settings_name, FileCreationMode.Private);
 			return prefs.GetString (key,null);

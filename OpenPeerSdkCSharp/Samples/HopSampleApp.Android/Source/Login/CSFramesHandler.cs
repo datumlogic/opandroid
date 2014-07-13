@@ -23,57 +23,83 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Android.App;
 using Android.Content;
+using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.Webkit;
-using Android.OS;
 using Com.Openpeer.Delegates;
 using Com.Openpeer.Javaapi;
-using Java.Net;
-using Org.Json;
-using Java.Util;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Android.Util;
-using Java.Interop;
 
-namespace HopSampleApp.CSIdentityLogin
+namespace HopSampleApp
 {
-	public class IdentityLogin:AsyncTask
+	public class CSFramesHandler
 	{
-		protected override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)
+		#region Frames
+
+		#region Outer Frame
+		public void loadOuterFrame() 
 		{
-			try
+			if (LoginManager.mLoginHandler != null)
 			{
-				LoginManager.SharedLoginManager().StartIdentityLogin();
-			}
-			catch (Exception e)
-			{
-				Log.Error("Error",String.Format ("Error IdentityLogin:{0}", e.StackTrace));
+				LoginManager.mLoginHandler.onLoadOuterFrameHandle (null);
 			}
 
-			return null;
 		}
+		#endregion
 
-		protected override void OnPostExecute (Java.Lang.Object result)
+		#region Inner Frame
+		public void initInnerFrame()
 		{
-			//base.OnPostExecute (result);
+			LoginManager.mLoginHandler.onInnerFrameInitialized(LoginManager.mIdentity.InnerBrowserWindowFrameURL);
 		}
+		#endregion
 
-		protected override void OnPreExecute ()
+		#region Message Inner Frame
+		public void pendingMessageForInnerFrame()
 		{
-			//base.OnPreExecute ();
-		}
+			String msg = LoginManager.mIdentity.NextMessageForInnerBrowerWindowFrame;
+			LoginManager.mLoginHandler.passMessageToJS(msg);
 
-		protected override void OnProgressUpdate (params Java.Lang.Object[] values)
+		}
+		#endregion
+
+		#region Message Namespace Grant Frame
+		public void pendingMessageForNamespaceGrantInnerFrame()
 		{
-			//base.OnProgressUpdate (values);
+			String msg = LoginManager.mAccount.NextMessageForInnerBrowerWindowFrame;
+			LoginManager.mLoginHandler.passMessageToJS(msg);
+
+		}
+		#endregion
+
+		#region Namespace Grant Inner Frame
+		public void initNamespaceGrantInnerFrame()
+		{
+			LoginManager.mLoginHandler.onNamespaceGrantInnerFrameInitialized(LoginManager.mAccount.InnerBrowserWindowFrameURL);
+		}
+		#endregion
+
+		#endregion
+
+		#region Singleton pattern
+
+		private static CSFramesHandler instance;
+
+		private CSFramesHandler(){	}
+
+		public static CSFramesHandler SharedCSFramesHandler()
+		{
+			if (instance == null)
+				instance = new CSFramesHandler();
+			return instance;
 		}
 
-
+		#endregion
 	}
 }
 

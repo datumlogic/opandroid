@@ -91,10 +91,10 @@ namespace HopSampleApp
 				jsonObject.Put("openpeer/calculated/authorizated-application-id", OPStack.CreateAuthorizedApplicationID("com.openpeer.nativeApp", "14b2c9df6713df465d97d0736863c42964faa678", expires ));
 
 				jsonObject.Put("openpeer/calculated/user-agent", "OpenPeerNativeSampleApp");
-				jsonObject.Put("openpeer/calculated/device-id", Utility.GetDeviceID(LoginManager.mContext));
-				jsonObject.Put("openpeer/calculated/os",Utility.GetAndroidVersionRelease());
-				jsonObject.Put("openpeer/calculated/system",Utility.GetDeviceModelName());
-				jsonObject.Put("openpeer/calculated/instance-id", Utility.GetGUIDInstanceID());
+				jsonObject.Put("openpeer/calculated/device-id", CSUtility.GetDeviceID(LoginManager.mContext));
+				jsonObject.Put("openpeer/calculated/os",CSUtility.GetAndroidVersionRelease());
+				jsonObject.Put("openpeer/calculated/system",CSUtility.GetDeviceModelName());
+				jsonObject.Put("openpeer/calculated/instance-id", CSUtility.GetGUIDInstanceID());
 				parent.Put("root", jsonObject);
 				Log.Debug("output", parent.ToString(2));
 				return parent.ToString(2);

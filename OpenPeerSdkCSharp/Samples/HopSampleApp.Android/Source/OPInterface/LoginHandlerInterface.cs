@@ -36,6 +36,7 @@ namespace HopSampleApp
 		void onNamespaceGrantInnerFrameInitialized(String innerFrameUrl);
 		void onDownloadedRolodexContacts(OPIdentity identity);
 		void onAccountStateReady();
+		void onIdentityStateReady ();
 		//void onLookupCompleted();
 		void onIdentityLookupCompleted();
 	}

@@ -26,86 +26,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Android.Util;
 
-namespace HopSampleApp
+namespace HopSampleApp.CSCoreReLogin
 {
-	class  HOPSettings
+	class StartReLogin:AsyncTask
 	{
-
-		private static HOPSettings instance;
-		private HOPSettings()
+		protected  override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)
 		{
+			try
+			{
+				//Application relogin
+				LoginManager.SharedLoginManager().ReLogin(CSOPDataManager.SharedCSOPDataManager().getReloginInfo());
+			} 
+			catch (Exception e)
+			{
+				Log.Error("Error",String.Format ("Error CoreLogin:{0}", e.StackTrace));
+			}
 
-		}
-		public static HOPSettings sharedSettings()
-		{
-			if (instance == null)
-				instance = new HOPSettings();
-			return instance;
-		}
-		//void setupWithDelegate(HOPSettingsDelegate inDelegate);
-
-		public void setup()
-		{
-
-		}
-
-		public bool applySettings(string jsonSettings)
-		{
-			return false;
-		}
-
-		public void applyDefaults()
-		{
-
-		}
-
-		public void storeSettingsFromDictionary(Dictionary<string,object> inDictionary)
-		{
-
-		}
-
-		public void storeSettingsFromPath(string path)
-		{
-
-		}
-
-		public void storeAuthorizedApplicationId(string inAuthorizedApplicationId)
-		{
-
-		}
-
-		public string getAuthorizedApplicationId()
-		{
 			return null;
 		}
 
-		public void storeCalculatedSettingObjectKey(object theObject, string key)
-		{
-
-		}
-
-		public void storeSettingsObjectKey(object theObject, string key)
-		{
-
-		}
-
-		public string getCoreKeyForAppKey(string key)
-		{
-			return null;
-		}
-
-		public Dictionary<string,object> getCurrentSettingsDictionary()
-		{
-			return null;
-		}
 	}
 }
 

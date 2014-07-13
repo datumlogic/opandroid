@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_marginBottom="48dp"
+        android:orientation="vertical">
+        <ListView
+            android:id="@+id/conList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="#FFDAFF7F" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true" />
+    <LinearLayout
+        android:id="@+id/holderbutton"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bgcontactlist"
+        android:layout_alignBottom="@+id/conList"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent">
+        <EditText
+            android:text=""
+            android:id="@+id/SearchContactItem"
+            android:layout_marginTop="3dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="fill_parent" />
+        <Button
+            android:id="@+id/SearchContactsButton"
+            android:layout_marginTop="3dp"
+            android:drawableLeft="@drawable/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</RelativeLayout>

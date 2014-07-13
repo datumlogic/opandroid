@@ -42,28 +42,41 @@ namespace HopSampleApp
 	{
 		public override  void OnAccountStateChanged (OPAccount account,AccountStates state)
 		{
-			if (state == AccountStates.AccountStateWaitingForAssociationToIdentity) {
+			#region Waiting For Association To Identity
+			if (state == AccountStates.AccountStateWaitingForAssociationToIdentity)
+			{
 				//LoginManager.loadOuterFrame();
 			}
-			if (state == AccountStates.AccountStateWaitingForBrowserWindowToBeLoaded) {
-				LoginManager.SharedLoginManager().startAccountLogin ();
+			#endregion
+
+			#region Waiting For Browser Window To BeLoaded
+			if (state == AccountStates.AccountStateWaitingForBrowserWindowToBeLoaded)
+			{
+				CSStatesHandler.SharedCSStatesHandler().startAccountLogin();
 			}
+			#endregion
+
+			#region Waiting For Browser Window To Be Made Visible
 			if (state ==AccountStates.AccountStateWaitingForBrowserWindowToBeMadeVisible)
 			{
 				LoginManager.mAccount.NotifyBrowserWindowVisible();
 			}
+			#endregion
+
+			#region Waiting For Browser Window To Close
 			if (state == AccountStates.AccountStateWaitingForBrowserWindowToClose)
 			{
 				LoginManager.mAccount.NotifyBrowserWindowClosed();
 			}
+			#endregion
+
+			#region StateReady
 			if (state == AccountStates.AccountStateReady)
 			{
-				Log.Warn ("JNI", "READY !!!!!!!!!!!!");
-				LoginManager.SharedLoginManager ().onAccountStateReady ();
-
-
-				//LoginManager.loadOuterFrame();
+				Log.Debug ("JNI", "ACCOUNT STATE READY");
+				CSStatesHandler.SharedCSStatesHandler().onAccountStateReady();
 			}
+			#endregion
 		}
 
 		public override void OnAccountAssociatedIdentitiesChanged (OPAccount p0)
@@ -72,7 +85,8 @@ namespace HopSampleApp
 		}
 		public override  void OnAccountPendingMessageForInnerBrowserWindowFrame (OPAccount p0)
 		{
-			LoginManager.SharedLoginManager().pendingMessageForNamespaceGrantInnerFrame();
+			CSFramesHandler.SharedCSFramesHandler ().pendingMessageForNamespaceGrantInnerFrame ();
+
 		}
 
 	}

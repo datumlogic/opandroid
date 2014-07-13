@@ -47,6 +47,12 @@
   <ItemGroup>
     <None Include="Additions\AboutAdditions.txt" />
     <None Include="Jars\AboutJars.txt" />
+    <None Include="..\..\..\..\sdknovi\armeabi-v7a\.DS_Store">
+      <Link>armeabi-v7a\.DS_Store</Link>
+    </None>
+    <None Include="..\..\..\..\sdknovi\armeabi-v7a\._.DS_Store">
+      <Link>armeabi-v7a\._.DS_Store</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <TransformFile Include="Transforms\EnumFields.xml" />
@@ -54,11 +60,6 @@
     <TransformFile Include="Transforms\Metadata.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Xamarin.Android.Bindings.targets" />
-  <ItemGroup>
-    <EmbeddedJar Include="..\..\..\..\sdknovi\bin\openpeer-android-sdk.jar">
-      <Link>Jars\openpeer-android-sdk.jar</Link>
-    </EmbeddedJar>
-  </ItemGroup>
   <ItemGroup>
     <Folder Include="armeabi-v7a\" />
   </ItemGroup>
@@ -69,5 +70,10 @@
     <EmbeddedNativeLibrary Include="..\..\..\..\sdknovi\armeabi-v7a\libz_shared.so">
       <Link>armeabi-v7a\libz_shared.so</Link>
     </EmbeddedNativeLibrary>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedJar Include="..\..\..\..\sdknovi\bin\openpeer-android-sdk.jar">
+      <Link>Jars\openpeer-android-sdk.jar</Link>
+    </EmbeddedJar>
   </ItemGroup>
 </Project>
