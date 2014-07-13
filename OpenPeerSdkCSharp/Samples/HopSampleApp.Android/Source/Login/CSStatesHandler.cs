@@ -40,6 +40,7 @@ namespace HopSampleApp
 {
 	public class CSStatesHandler
 	{
+		#region Start Account Login
 		public void startAccountLogin()
 		{
 			if (LoginManager.mLoginHandler != null)
@@ -47,7 +48,9 @@ namespace HopSampleApp
 				LoginManager.mLoginHandler.onLoadOuterFrameHandle ("http://jsouter-v1-rel-dev2-i.hcs.io/grant.html");
 			}		
 		}
+		#endregion
 
+		#region On Identity Lookup Completed
 		public void onIdentityLookupCompleted(OPIdentityLookup lookup)
 		{
 
@@ -56,7 +59,9 @@ namespace HopSampleApp
 
 			LoginManager.mLoginHandler.onIdentityLookupCompleted();
 		}
+		#endregion
 
+		#region On Downloaded Rolodex Contacts
 		public void onDownloadedRolodexContacts(OPIdentity identity)
 		{
 			LoginManager.mIdentityLookupDelegate = new CSOPIdentityLookupDelegate();
@@ -66,10 +71,16 @@ namespace HopSampleApp
 			LoginManager.mLoginHandler.onDownloadedRolodexContacts(identity);
 
 		}
+		#endregion
+
+		#region On Account State Ready
 		public void onAccountStateReady()
 		{
 			onAStateReady (LoginManager.mAccount);
 		}
+		#endregion
+
+		#region On AStateReady
 		public void onAStateReady(OPAccount account)
 		{
 			CSOPDataManager.SharedCSOPDataManager().setSharedAccount(account);
@@ -104,7 +115,9 @@ namespace HopSampleApp
 			LoginManager.mLoginHandler.onAccountStateReady();
 
 		}
+		#endregion
 
+		#region On Identity State Ready
 		public void onIdentityStateReady()
 		{
 			Log.Debug ("STATE READY","IDENTITY STATE READY LOGIC LOADED");
@@ -118,7 +131,7 @@ namespace HopSampleApp
 
 			}
 		}
-
+		#endregion
 
 		#region Methods that i need to move i datalayer
 		public void setIdentities(List<OPIdentity> identities)

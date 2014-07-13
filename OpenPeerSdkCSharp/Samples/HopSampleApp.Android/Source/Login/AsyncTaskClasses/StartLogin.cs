@@ -42,6 +42,14 @@ using Java.Interop;
 
 namespace HopSampleApp.CSCoreLogin
 {
+	/// <summary>
+	/// ###########################################################################
+	///                           START LOGIN
+	/// ###########################################################################
+	/// <remarks>
+	/// Starting application login using AsyncTask
+	/// </remarks>
+	/// </summary>
 	public class StartLogin:AsyncTask
 	{
 		protected  override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)

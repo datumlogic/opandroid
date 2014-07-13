@@ -43,7 +43,6 @@ namespace HopSampleApp
 	{
 		public override void OnStackShutdown ()
 		{
-
 			ThreadPool.QueueUserWorkItem( delegate {
 
 			});

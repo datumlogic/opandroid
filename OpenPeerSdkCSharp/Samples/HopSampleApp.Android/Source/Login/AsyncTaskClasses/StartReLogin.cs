@@ -36,6 +36,14 @@ using Android.Util;
 
 namespace HopSampleApp.CSCoreReLogin
 {
+	/// <summary>
+	/// ########################################################################
+	///                       START RELOGIN
+	/// ########################################################################
+	/// <remarks>
+	/// Start application relogin using AsyncTask
+	/// </remarks>
+	/// </summary>
 	class StartReLogin:AsyncTask
 	{
 		protected  override Java.Lang.Object DoInBackground (params Java.Lang.Object[] @params)

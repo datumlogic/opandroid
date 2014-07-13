@@ -58,13 +58,6 @@ namespace HopSampleApp
 		}
 
 
-
-
-
-
-
-
-
 		#region Singleton pattern
 
 		private static CSOPDatastoreDelegate instance;

@@ -19,41 +19,31 @@ namespace HopSampleApp
 	{
 		[LoggerSubsystem("hop_sample_app")]
 		[Activity (Theme = "@style/Theme.Splash",MainLauncher = false,NoHistory = true,Icon="@drawable/op")]
-		public class MainActivity : ActivityGroup
+		public class MainActivity :TabActivity
 		{
+			private void CreateTab(Type activityType, string tag, string label, int drawableId )
+			{
+				var intent = new Intent(this, activityType);
+				intent.AddFlags(ActivityFlags.NewTask);
+
+				var spec = TabHost.NewTabSpec(tag);
+				var drawableIcon = Resources.GetDrawable(drawableId);
+				spec.SetIndicator(label, drawableIcon);
+				spec.SetContent(intent);
+
+				TabHost.AddTab(spec);
+			}
+
 			protected override void OnCreate (Bundle bundle)
 			{
 				base.OnCreate (bundle);
 
 				// Set our view from the "main" layout resource
 				SetContentView (Resource.Layout.Main);//Main
+				CreateTab(typeof(AndroidLookContactActivity), "contacts", "Contacts", Resource.Drawable.hookflash);
+				CreateTab(typeof(SettingsActivity), "settings", "Settings", Resource.Drawable.hookflashsettings);
 
-				TabHost tabHost = FindViewById<TabHost> (Resource.Id.tabHost);
-				tabHost.Setup (this.LocalActivityManager);
 
-
-				TabHost.TabSpec tabSpec1 = tabHost.NewTabSpec ("Contacts");
-				TabHost.TabSpec tabSpec2 = tabHost.NewTabSpec ("Settings");
-
-				Intent intent;
-
-				tabSpec1.SetIndicator ("Contacts");
-				intent = new Intent (this, typeof(AndroidLookContactActivity));
-				intent.AddFlags (ActivityFlags.NewTask);
-				tabSpec1.SetContent (intent);
-
-				tabSpec2.SetIndicator ("Settings");
-				intent = new Intent (this, typeof(SettingsActivity));
-				intent.AddFlags (ActivityFlags.NewTask);
-				tabSpec2.SetContent (intent);
-
-				tabHost.AddTab (tabSpec1);
-				tabHost.AddTab (tabSpec2);
-
-				tabHost.CurrentTab = 0;
-
-				intent = new Intent (this, typeof(PopupCallActivity));
-				StartActivity (intent);
 
 			}
 		}

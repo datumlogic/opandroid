@@ -136,6 +136,9 @@
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Resources\layout\Main\myContacts.xml" />
+    <None Include="Resources\layout\Main\mySettings.xml" />
+    <None Include="Resources\layout\Main\mySessions.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\menu\main_menu.xml" />
@@ -290,6 +293,7 @@
     <AndroidResource Include="Resources\drawable\andorid.png" />
     <AndroidResource Include="Resources\layout\AndroidLookContactLayout.axml" />
     <AndroidResource Include="Resources\layout\AndroidLookContctItem.axml" />
+    <AndroidResource Include="Resources\drawable\hookflashsettings.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -324,6 +328,7 @@
     <Folder Include="Source\Activities\Sessions\" />
     <Folder Include="Source\Activities\OldSettings\" />
     <Folder Include="Source\OPHelpers\LoadingAsserts\" />
+    <Folder Include="Resources\layout\Main\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libs\ZXing.Net.Mobile\src\ZXing.Net.Mobile\ZXing.Net.Mobile.Android.csproj">

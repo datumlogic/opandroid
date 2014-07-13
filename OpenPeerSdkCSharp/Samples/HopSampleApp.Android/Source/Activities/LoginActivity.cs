@@ -194,7 +194,7 @@ namespace HopSampleApp
 			public void onIdentityLookupCompleted()
 			{
 				//Intent intent = new Intent (this, typeof(AndroidLookContactActivity));
-				Intent intent = new Intent (this, typeof(AndroidLookContactActivity));
+				Intent intent = new Intent (this, typeof(MainActivity));
 				StartActivity (intent);
 
 			}
