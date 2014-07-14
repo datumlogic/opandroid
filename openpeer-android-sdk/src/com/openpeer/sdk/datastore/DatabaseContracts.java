@@ -101,7 +101,6 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_WIDTH = "width";
 		public static final String COLUMN_NAME_HEIGHT = "height";
 
-
 	}
 
 	public static abstract class UserEntry implements BaseColumns {
@@ -148,7 +147,7 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_GROUP_ID = "group_id";
 		// This is window id based on participants
 		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
-		public static final String COLUMN_NAME_LAST_READ_MSG_ID = "lrm_id";
+		// public static final String COLUMN_NAME_LAST_READ_MSG_ID = "lrm_id";
 		// Am I host of group chat, not used now
 		public static final String COLUMN_NAME_THREAD_HOST = "is_host";
 		public static final String COLUMN_NAME_START_TIME = "start_time";
@@ -157,8 +156,9 @@ public class DatabaseContracts {
 	}
 
 	/**
-	 * Record the state snapshot: when and what contact is added/deleted
-	 * TODO: refine when requirements are ready
+	 * Record the state snapshot: when and what contact is added/deleted TODO: refine when requirements are ready
+	 * 
+	 * Not used for now
 	 * 
 	 */
 	public static abstract class ConversationStateChangeEntry implements BaseColumns {
@@ -169,6 +169,8 @@ public class DatabaseContracts {
 
 	/**
 	 * state_type: ADD_CONTACT, REMOVE_CONTACT, CALL_ENDED, etc
+	 * 
+	 * Not used for now
 	 * 
 	 */
 	public static abstract class ConversationStateEntry implements BaseColumns {
@@ -267,19 +269,20 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_LAST_MESSAGE_TIME = "last_message_time";
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_PARTICIPANT_NAMES = "name";
-		public static final String COLUMN_NAME_AVATARS = "avatar_urls";
+		public static final String COLUMN_NAME_AVATAR = "avatar";
 		public static final String COLUMN_NAME_UNREAD_COUNT = "unread_count";
 
 		private static final String COLUMNS = "a." + BaseColumns._ID + " as " + BaseColumns._ID + "," + "a."
 				+ ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + COLUMN_NAME_WINDOW_ID + "," + "group_concat(" + "b."
-				+ COLUMN_NAME_USER_ID + "," + "',')" + " as " + COLUMN_NAME_USER_ID + "," + "group_concat(" + "b."
-				+ COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as " + COLUMN_NAME_PARTICIPANT_NAMES;
+				+ COLUMN_NAME_USER_ID + "," + "',')" + " as " + COLUMN_NAME_USER_ID + ","
+				+ "group_concat(" + "b." + COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as " + COLUMN_NAME_PARTICIPANT_NAMES + ","
+				+ "group_concat(" + "b." + COLUMN_NAME_AVATAR + "," + "',')" + " as " + COLUMN_NAME_AVATAR;
 	}
 
 	/**
 	 * Not used for now.
 	 * 
-	 *
+	 * 
 	 */
 	public static abstract class GroupParticipantEntry implements BaseColumns {
 		public static final String TABLE_NAME = "window_participants";
@@ -293,8 +296,9 @@ public class DatabaseContracts {
 
 	/**
 	 * View to get all the information of a contact
+	 * 
 	 * @author brucexia
-	 *
+	 * 
 	 */
 	public static abstract class ContactsViewEntry implements BaseColumns {
 		public static final String TABLE_NAME = "contacts";
@@ -342,11 +346,11 @@ public class DatabaseContracts {
 				+ "." + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + " as " + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "," + ContactEntry.TABLE_NAME
 				+ "." + COLUMN_NAME_CONTACT_NAME + " as " + COLUMN_NAME_CONTACT_NAME + "," + ContactEntry.TABLE_NAME + "."
 				+ COLUMN_NAME_IDENTITY_URI + " as " + COLUMN_NAME_IDENTITY_URI + "," + ContactEntry.TABLE_NAME + "."
-				+ COLUMN_NAME_IDENTITY_PROVIDER + " as " + COLUMN_NAME_IDENTITY_PROVIDER + "," 
-				+ ContactEntry.TABLE_NAME + "."	+ COLUMN_NAME_URL + " as " + COLUMN_NAME_URL + "," 
-				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_VPROFILE_URL + " as "	+ COLUMN_NAME_VPROFILE_URL+ ","
-				+ AvatarEntry.TABLE_NAME+ "."+ AvatarEntry.COLUMN_NAME_AVATAR_URL+ " as "+ COLUMN_NAME_AVATAR_URL+ ","
-				
+				+ COLUMN_NAME_IDENTITY_PROVIDER + " as " + COLUMN_NAME_IDENTITY_PROVIDER + ","
+				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_URL + " as " + COLUMN_NAME_URL + ","
+				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_VPROFILE_URL + " as " + COLUMN_NAME_VPROFILE_URL + ","
+				+ AvatarEntry.TABLE_NAME + "." + AvatarEntry.COLUMN_NAME_AVATAR_URL + " as " + COLUMN_NAME_AVATAR_URL + ","
+
 				// IdentityContact table
 				+ IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_USER_ID + " as " + COLUMN_NAME_USER_ID + ","
 				+ IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_STABLE_ID + " as " + COLUMN_NAME_STABLE_ID + ","
@@ -363,7 +367,10 @@ public class DatabaseContracts {
 			+ " as " + BaseColumns._ID + "," + "d." + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as "
 			+ ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_USER_ID + " as "
 			+ WindowViewEntry.COLUMN_NAME_USER_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + " as "
-			+ WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + "," + "c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as "
+			+ WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + ","
+			+ WindowViewEntry.COLUMN_NAME_USER_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_AVATAR + " as "
+			+ WindowViewEntry.COLUMN_NAME_AVATAR + ","
+			+ "c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as "
 			+ WindowViewEntry.COLUMN_NAME_LAST_MESSAGE + "," + "c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as "
 			+ WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME + "," + " e.count as " + WindowViewEntry.COLUMN_NAME_UNREAD_COUNT
 			+ " from (SELECT " + WindowViewEntry.COLUMNS + " from " + ConversationWindowEntry.TABLE_NAME + " a " + " left join "
@@ -379,7 +386,7 @@ public class DatabaseContracts {
 
 	public static final String SQL_CREATE_CONTACT = CREATE_TABLE + ContactEntry.TABLE_NAME + " (" + ContactEntry._ID
 			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_ID + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP
-			+ ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE+ " default -1 "+ COMMA_SEP	+
+			+ ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + " default -1 " + COMMA_SEP +
 			// ContactEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP +
 			ContactsViewEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_NAME
 			+ TEXT_TYPE + " COLLATE NOCASE" + COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE + COMMA_SEP
@@ -425,7 +432,7 @@ public class DatabaseContracts {
 
 	public static final String SQL_CREATE_CONVERSATION_PARTICIPANT = CREATE_TABLE
 			+ WindowParticipantEntry.TABLE_NAME
-			+ " ("+ WindowParticipantEntry._ID
+			+ " (" + WindowParticipantEntry._ID
 			+ INTEGER_TYPE
 			+ COMMA_SEP
 			+ WindowParticipantEntry.COLUMN_NAME_WINDOW_ID
@@ -437,8 +444,8 @@ public class DatabaseContracts {
 			+ WindowParticipantEntry.COLUMN_NAME_USER_NAME
 			+ TEXT_TYPE
 			+ COMMA_SEP
-			+ ConversationWindowEntry.COLUMN_NAME_GROUP_ID			+ TEXT_TYPE			+ COMMA_SEP
-			+ WindowParticipantEntry.COLUMN_NAME_USER_AVATAR
+			+ ConversationWindowEntry.COLUMN_NAME_GROUP_ID + TEXT_TYPE + COMMA_SEP
+			+ WindowViewEntry.COLUMN_NAME_AVATAR
 			+ TEXT_TYPE
 			+ COMMA_SEP
 
@@ -460,6 +467,6 @@ public class DatabaseContracts {
 			DatabaseContracts.SQL_CREATE_MESSAGES,
 			// Note: always keep view creation at end
 			DatabaseContracts.SQL_CREATE_VIEW_CONTACT, DatabaseContracts.SQL_CREATE_VIEW_WINDOW, };
-	//END of create statement
+	// END of create statement
 
 }

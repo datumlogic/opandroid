@@ -510,8 +510,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		ContentValues values = new ContentValues();
 		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID,
 				session.getCurrentWindowId());
-		values.put(ConversationWindowEntry.COLUMN_NAME_LAST_READ_MSG_ID,
-				session.getReadMessageId());
+//		values.put(ConversationWindowEntry.COLUMN_NAME_LAST_READ_MSG_ID,
+//				session.getReadMessageId());
 		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
 				ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, null, values,
 				SQLiteDatabase.CONFLICT_ABORT);
