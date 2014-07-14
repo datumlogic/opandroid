@@ -34,6 +34,7 @@ import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
+import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
@@ -97,6 +98,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 			mUserIDs = savedInstanceState.getLongArray(IntentData.ARG_PEER_USER_IDS);
 		}
 		mWindowId = OPChatWindow.getWindowId(mUserIDs);
+		OPNotificationBuilder.cancelNotificationForChat((int) mWindowId);
 		mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
 		if (mSession == null) {
 			// this is user intiiated session

@@ -12,6 +12,7 @@ public class BaseActivity extends BaseFragmentActivity {
 		mStack++;
 		if (mStack == 0) {
 			OPHelper.getInstance().onEnteringForeground();
+			OPApplication.getInstance().onEnteringForeground();
 		}
 	}
 
@@ -21,6 +22,7 @@ public class BaseActivity extends BaseFragmentActivity {
 		mStack--;
 		if (mStack == 0) {
 			OPHelper.getInstance().onEnteringBackground();
+			OPApplication.getInstance().onEnteringBackground();
 		}
 	}
 
