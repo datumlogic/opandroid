@@ -37,7 +37,8 @@
     <string name="out_telnet_logger">Outgoing telnet logger</string>
     <string name="local_telnet_logger">Local telnet logger</string>
     <string name="file_logger">File logger</string>
-    <string name="no_recent_chats">No recent chats</string>
+    <string name="no_recent_chats">You do not have any active chats! Why not go ahead and start one?</string>
+    <string name="label_start_chat">Start Chat</string>
 	<string name="menu_done">Done(%s)</string>
 	<string name="label_chat">Chat</string>
 	<string name="label_select_contact">Select friends</string>

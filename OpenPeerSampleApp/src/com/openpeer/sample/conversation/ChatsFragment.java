@@ -82,7 +82,19 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	}
 
 	View setupView(View view) {
+		View emptyView = view.findViewById(R.id.empty_view);
+		emptyView.findViewById(R.id.start_chat)
+				.setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						if (getActivity() instanceof ChatsViewListener) {
+							((ChatsViewListener) getActivity()).onChatsEmptyViewClick();
+						}
+					}
+				});
 		mMessagesList = (ListView) view.findViewById(R.id.listview);
+		mMessagesList.setEmptyView(emptyView);
 		mAdapter = new ChatInfoAdaptor(getActivity(), null);
 		mMessagesList.setAdapter(mAdapter);
 		getLoaderManager().initLoader(URL_LOADER, null, this);
@@ -234,6 +246,10 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 		mAdapter.changeCursor(null);
 
 	}
+
 	// End: CursorCallback implementation
+	public static interface ChatsViewListener {
+		public void onChatsEmptyViewClick();
+	}
 
 }

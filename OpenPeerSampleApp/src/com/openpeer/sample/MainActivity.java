@@ -26,7 +26,7 @@ import com.openpeer.sample.conversation.DiscoveryFragment;
 import com.openpeer.sample.util.NetworkUtil;
 import com.openpeer.sdk.app.OPHelper;
 
-public class MainActivity extends BaseActivity implements OPHelper.InitListener {
+public class MainActivity extends BaseActivity implements OPHelper.InitListener, ChatsFragment.ChatsViewListener {
 	TabsAdapter mTabsAdapter;
 	ViewPager mViewPager;
 	private static final int TAB_CHATS = 0;
@@ -191,5 +191,10 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener 
 	@Override
 	public void onInitialized() {
 		go();
+	}
+
+	@Override
+	public void onChatsEmptyViewClick() {
+		mViewPager.setCurrentItem(TAB_CONTACTS);
 	}
 }
