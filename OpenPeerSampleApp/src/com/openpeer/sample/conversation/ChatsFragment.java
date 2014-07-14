@@ -119,7 +119,8 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
-			((ChatInfoItemView) view).updateData(cursor);
+			ChatInfo info = ChatInfo.fromCursor(cursor);
+			((ChatInfoItemView) view).updateData(info);
 		}
 
 		@Override
@@ -207,13 +208,14 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-//	static final String LIST_PROJECTION[] = { BaseColumns._ID,
-//			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
-//			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
-//			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
-//
-//			WindowViewEntry.COLUMN_NAME_USER_ID,
-//			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
+
+	// static final String LIST_PROJECTION[] = { BaseColumns._ID,
+	// WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
+	// WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
+	// WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
+	//
+	// WindowViewEntry.COLUMN_NAME_USER_ID,
+	// WindowViewEntry.COLUMN_NAME_WINDOW_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
@@ -224,7 +226,7 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 					getActivity(), // Parent activity context
 					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
 																	// query
-					null,//LIST_PROJECTION, // Projection to return
+					null,// LIST_PROJECTION, // Projection to return
 					null, // No selection clause
 					null, // No selection arguments
 					null // Default sort order
