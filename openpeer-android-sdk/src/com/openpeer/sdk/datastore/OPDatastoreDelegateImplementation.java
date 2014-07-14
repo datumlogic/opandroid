@@ -311,6 +311,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				+ "=" + id;
 		String cSelection = ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
 				+ "=" + id;
+//		mOpenHelper.getWritableDatabase().
 		mOpenHelper.getWritableDatabase().delete(
 				IdentityContactEntry.TABLE_NAME, selection, null);
 		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
