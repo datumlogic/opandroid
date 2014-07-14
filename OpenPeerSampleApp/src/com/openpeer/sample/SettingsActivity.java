@@ -40,6 +40,11 @@ public class SettingsActivity extends Activity {
 	}
 
 	public static class SettingsFragment extends PreferenceFragment {
+
+		ListPreference logLevelPref;
+		EditTextPreference logServerPref;
+		EditTextPreference logFilePref;
+
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
@@ -50,9 +55,9 @@ public class SettingsActivity extends Activity {
 			SwitchPreference localTelnetLogging = (SwitchPreference) findPreference(KEY_LOCAL_TELNET_LOGGER);
 			SwitchPreference fileLogging = (SwitchPreference) findPreference(KEY_FILE_LOGGER);
 
-			final ListPreference logLevelPref = (ListPreference) findPreference(KEY_LOG_LEVEL);
-			final EditTextPreference logServerPref = (EditTextPreference) findPreference(KEY_OUT_LOG_SERVER);
-			final EditTextPreference logFilePref = (EditTextPreference) findPreference(KEY_FILE_LOGGER_PATH);
+			logLevelPref = (ListPreference) findPreference(KEY_LOG_LEVEL);
+			logServerPref = (EditTextPreference) findPreference(KEY_OUT_LOG_SERVER);
+			logFilePref = (EditTextPreference) findPreference(KEY_FILE_LOGGER_PATH);
 
 			outTelnetLogging.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -90,6 +95,20 @@ public class SettingsActivity extends Activity {
 					return true;
 				}
 			});
+		}
+
+		void setupSettingDisplays() {
+			logLevelPref.setTitle("Log level       " + logLevelPref.getEntry());
+			logServerPref.setTitle("Log server:  " + logServerPref.getText());
+			logFilePref.setTitle("Log file:  " + logFilePref.getText());
+
+		}
+
+		@Override
+		public void onResume() {
+			// TODO Auto-generated method stub
+			super.onResume();
+			setupSettingDisplays();
 		}
 	}
 
