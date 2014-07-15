@@ -11,27 +11,10 @@ namespace DatabaseCreate
 	public class CreateTables
 	{
 		/// <summary>
-		/// The name of the db.
+		/// Creating tables
 		/// </summary>
-		public static string dbName="charp_opandroid.db3";
 
-		private static SqliteConnection GetConnection()
-		{
-			var dbPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), dbName);
-			bool Exists = File.Exists (dbPath);
-			if (!Exists)
-				SqliteConnection.CreateFile (dbPath);
-
-			var conn = new SqliteConnection (String.Format("Data Source={0}",dbPath));
-
-			//Create table...
-			if (!Exists)
-				CreateAccountTable (conn);
-
-			return conn;
-			
-		}
-
+		#region Create Tables
 		//Create Account
 		public static void CreateAccountTable(SqliteConnection Connection)
 		{
@@ -138,7 +121,7 @@ namespace DatabaseCreate
 		}
 
 		//Create Conversation Window
-		public static void CreateWindowTable(SqliteConnection Connection)
+		public static void CreateConversationWindowTable(SqliteConnection Connection)
 		{
 			var sqlclause = "";
 			Connection.Open ();
@@ -257,8 +240,8 @@ namespace DatabaseCreate
 			Connection.Close ();
 		}
 
-		//Create Windows
-		public static void CreateWindowsTable(SqliteConnection Connection)
+		//Create Conversation Window
+		public static void CreateWindowTable(SqliteConnection Connection)
 		{
 			var sqlclause = "";
 			Connection.Open ();
@@ -272,6 +255,7 @@ namespace DatabaseCreate
 			Connection.Close ();
 		}
 
+		#endregion
 
 	}
 }
