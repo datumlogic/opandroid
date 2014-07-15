@@ -13,7 +13,7 @@ namespace DatabaseCreate
 		/// <summary>
 		/// The name of the db.
 		/// </summary>
-		public static string dbName="charp_opandroid";
+		public static string dbName="charp_opandroid.db3";
 
 		private static SqliteConnection GetConnection()
 		{
