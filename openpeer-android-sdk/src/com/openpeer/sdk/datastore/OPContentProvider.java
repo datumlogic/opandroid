@@ -4,6 +4,9 @@ import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -227,16 +230,32 @@ public class OPContentProvider extends ContentProvider {
 	}
 
 	void initMatcher() {
+		String authority = "";
+		try {
+			ProviderInfo providers[] = this.getContext().getPackageManager()
+					.getPackageInfo(getContext().getPackageName(), PackageManager.GET_PROVIDERS).providers;
+			if (providers != null && providers.length > 0) {
+				String myName = OPContentProvider.class.getCanonicalName();
+				for (ProviderInfo provider : providers) {
+					if (myName.equals(provider.name)) {
+						authority = provider.authority;
+					}
+				}
+			}
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
+		mUriMatcher.addURI(authority,
 				MessageEntry.TABLE_NAME + "/window/#", MESSAGES);
-		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
+		mUriMatcher.addURI(authority,
 				ContactsViewEntry.TABLE_NAME, CONTACTS);
-		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
+		mUriMatcher.addURI(authority,
 				WindowViewEntry.TABLE_NAME, WINDOWS);
-		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
+		mUriMatcher.addURI(authority,
 				UserEntry.TABLE_NAME, USERS);
-		mUriMatcher.addURI(DatabaseContracts.AUTHORITY,
+		mUriMatcher.addURI(authority,
 				MessageEntry.TABLE_NAME + "/window/#/#", USERS);
 	}
 
