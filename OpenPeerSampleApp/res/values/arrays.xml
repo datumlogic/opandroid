@@ -17,5 +17,10 @@
         <item name="4">4</item>
         <item name="5">5</item>
     </string-array>
+    <string-array name="tabs">
+        <item>@string/label_chats</item>
+        <item>@string/label_contacts</item>
+        <item>@string/label_favorites</item>
+    </string-array>
 
 </resources>
