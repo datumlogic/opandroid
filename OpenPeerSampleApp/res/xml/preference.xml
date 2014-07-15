@@ -35,5 +35,15 @@
             android:key="log_file"
             android:title="Log file" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="about"
+        android:title="@string/label_about" >
+        <Preference
+            android:key="version"
+            android:title="@string/label_version" />
+        <Preference
+            android:key="build"
+            android:title="@string/label_build" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

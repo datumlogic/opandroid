@@ -3,6 +3,9 @@ package com.openpeer.sample;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -95,6 +98,27 @@ public class SettingsActivity extends Activity {
 					return true;
 				}
 			});
+			setupAboutInfo();
+		}
+
+		private static final String KEY_VERSION = "version";
+		private static final String KEY_BUILD = "build";
+
+		void setupAboutInfo() {
+			Preference versionPref = findPreference(KEY_VERSION);
+			Preference buildPref = findPreference(KEY_BUILD);
+			PackageInfo pInfo;
+			try {
+				pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+				String version = pInfo.versionName;
+				String versionCode = "" + pInfo.versionCode;
+				versionPref.setSummary(version);
+				buildPref.setSummary(versionCode);
+			} catch (NameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
 		void setupSettingDisplays() {
