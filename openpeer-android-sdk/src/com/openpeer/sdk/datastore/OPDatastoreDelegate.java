@@ -12,8 +12,6 @@ import com.openpeer.sdk.app.OPSession;
 import com.openpeer.sdk.app.OPUser;
 import com.openpeer.sdk.model.OPHomeUser;
 
-import android.content.Context;
-
 public interface OPDatastoreDelegate {
 	public String getReloginInfo();
 
@@ -21,9 +19,6 @@ public interface OPDatastoreDelegate {
 
 	public boolean saveHomeUser(OPHomeUser user);
 
-	public List<OPIdentity> getIdentities();
-
-	public OPIdentity getIdentity();
 
 	/**
 	 * Retrieve stored OpenPeer contacts for identity
@@ -33,15 +28,6 @@ public interface OPDatastoreDelegate {
 	 * @return list of OpenPeer contacts for specific identity
 	 */
 	public List<OPRolodexContact> getOPContacts(String identityId);
-
-	/**
-	 * Retrieve stored rolodex contacts for identity
-	 * 
-	 * @param identityId
-	 *            The stableId of the identity. If null, all contacts will be returned
-	 * @return list of Rolodex contacts for specific identity
-	 */
-	public List<OPRolodexContact> getContacts(long identityId);
 
 	public boolean saveOrUpdateAccount(OPAccount account);
 
@@ -57,7 +43,7 @@ public interface OPDatastoreDelegate {
 
 	public boolean deleteIdentity(long id);
 
-	public boolean deleteContact(long id);
+	public boolean deleteContact(String identityUri);
 
 	public String getDownloadedContactsVersion(long identityId);
 
@@ -65,23 +51,7 @@ public interface OPDatastoreDelegate {
 
 	boolean flushContactsForIdentity(long id);
 
-	public List<OPIdentityContact> getSelfIdentityContacts();
-
-	public OPIdentityContact getIdentityContact(String identityContactId);
-
-	public List<OPMessage> getMessagesWithContact(long contactId, int max,
-			String lastMessageId);
-
 	public boolean saveMessage(OPMessage message, long sessionId, String threadId);
-
-	public boolean saveSession(OPSession session);
-
-	int getNumberofUnreadMessages(String contactId);
-
-	List<OPMessage> getMessagesWithSession(long sessionId, int max,
-			String lastMessageId);
-
-	List<OPSession> getRecentSessions();
 
 	void saveWindow(long windowId, List<OPUser> userList);
 
@@ -89,11 +59,13 @@ public interface OPDatastoreDelegate {
 
 	OPUser saveUser(OPUser user);
 
-	public List<OPUser> getUsers(long[] ids);
-
-	public List<OPAvatar> getAvatars(long contactId);
+	public List<OPAvatar> getAvatars(String identityUri);
 
 	public void markMessagesRead(long mCurrentWindowId);
+
+	List<OPUser> getUsers(long[] userIDs);
+
+	OPIdentityContact getIdentityContact(String identityContactId);
 
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record); public boolean saveCallRecord(OPConversationRecord record);

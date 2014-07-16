@@ -19,6 +19,8 @@ public class DatabaseContracts {
 	public static final String AUTHORITY = "com.openpeer.sample.provider";
 	static final String SCHEME = "content://";
 	public static final String URI_PREFIX = SCHEME + AUTHORITY;
+	public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
+	public static final String COLUMN_NAME_AVATAR_URI = "avatar_uri";
 
 	static String getCompositePrimaryKey(String[] columnNames) {
 		StringBuilder stringBuilder = new StringBuilder("PRIMARY KEY (");
@@ -56,9 +58,7 @@ public class DatabaseContracts {
 
 		public static final String TABLE_NAME = "contact";
 
-		public static final String COLUMN_NAME_CONTACT_ID = "contact_id";
 		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
-		public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
 		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "identity_provider";
 		public static final String COLUMN_NAME_CONTACT_NAME = "name";
 		public static final String COLUMN_NAME_URL = "profile_url";
@@ -71,7 +71,6 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
 		// This is acutally hash of identityUri of OPRolodexContact, kinda redundant but keeping it for now
-		public static final String COLUMN_NAME_CONTACT_ID = "contact_id";
 		public static final String COLUMN_NAME_PEERFILE_PUBLIC = "peerfile_public";
 		public static final String COLUMN_NAME_IDENTITY_PROOF_BUNDLE = "identity_proof_bundle";
 		public static final String COLUMN_NAME_PRORITY = "priority";
@@ -84,7 +83,6 @@ public class DatabaseContracts {
 		public static final String TABLE_NAME = "identities";
 		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
 		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
-		public static final String COLUMN_NAME_IDENTITY_URI = "uri";
 		// The "selfContact" of the identity
 		public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
 		public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
@@ -92,10 +90,7 @@ public class DatabaseContracts {
 
 	public static abstract class AvatarEntry implements BaseColumns {
 		public static final String TABLE_NAME = "avatars";
-		public static final String COLUMN_NAME_CONTACT_ID = "contact_id";
-
 		public static final String COLUMN_NAME_AVATAR_NAME = "name";
-		public static final String COLUMN_NAME_AVATAR_URL = "url";
 		public static final String COLUMN_NAME_WIDTH = "width";
 		public static final String COLUMN_NAME_HEIGHT = "height";
 
@@ -115,11 +110,9 @@ public class DatabaseContracts {
 
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
 		public static final String COLUMN_NAME_PEER_URI = "peer_uri";
-		public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
 
 		// A bit redundant informatin but to simplify querying
 		public static final String COLUMN_NAME_USER_NAME = "name";
-		public static final String COLUMN_NAME_AVTAR_URI = "avatar_uri";
 	}
 
 	public static abstract class GroupEntry implements BaseColumns {
@@ -180,10 +173,8 @@ public class DatabaseContracts {
 		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 2;
 
-
 		// for content provider insert() call
 		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
-
 
 		public static final String COLUMN_NAME_MESSAGE_ID = "message_id";
 		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
@@ -223,7 +214,6 @@ public class DatabaseContracts {
 		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 1;
 
-
 		// content://com.afzaln.restclient.provider/message/
 		// for content provider insert() call
 		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
@@ -234,7 +224,6 @@ public class DatabaseContracts {
 		// this is neccessary in case group chat with unknown participants
 		public static final String COLUMN_NAME_USER_NAME = "name";
 		// This is the default avatar
-		public static final String COLUMN_NAME_USER_AVATAR = "avatar";
 	}
 
 	public static abstract class WindowViewEntry implements BaseColumns {
@@ -251,14 +240,13 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_LAST_MESSAGE_TIME = "last_message_time";
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_PARTICIPANT_NAMES = "name";
-		public static final String COLUMN_NAME_AVATAR = "avatar";
 		public static final String COLUMN_NAME_UNREAD_COUNT = "unread_count";
 
 		public static final String COLUMNS = "a." + BaseColumns._ID + " as " + BaseColumns._ID + "," + "a."
 				+ ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + COLUMN_NAME_WINDOW_ID + "," + "group_concat(" + "b."
 				+ COLUMN_NAME_USER_ID + "," + "',')" + " as " + COLUMN_NAME_USER_ID + ","
 				+ "group_concat(" + "b." + COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as " + COLUMN_NAME_PARTICIPANT_NAMES + ","
-				+ "group_concat(" + "b." + COLUMN_NAME_AVATAR + "," + "',')" + " as " + COLUMN_NAME_AVATAR;
+				+ "group_concat(" + "b." + COLUMN_NAME_AVATAR_URI + "," + "',')" + " as " + COLUMN_NAME_AVATAR_URI;
 	}
 
 	/**
@@ -293,7 +281,6 @@ public class DatabaseContracts {
 
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		// HashCode of identityUri.
-		public static final String COLUMN_NAME_CONTACT_ID = "contact_id";
 		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
 		// public static final String COLUMN_NAME_IDENTITY_CONTACT_ID =
 		// "identity_contact_id";
@@ -303,7 +290,6 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_CONTACT_NAME = "name";
 		public static final String COLUMN_NAME_URL = "profile_url";
 		public static final String COLUMN_NAME_VPROFILE_URL = "vprofile_url";
-		public static final String COLUMN_NAME_AVATAR_URL = "avatar_url";
 
 		// colums for identity contact
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
@@ -315,14 +301,13 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_EXPIRE = "expire";
 
 		public static final String COLUMNS = ContactEntry.TABLE_NAME + "." + BaseColumns._ID + " as " + BaseColumns._ID + ","
-				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_CONTACT_ID + " as " + COLUMN_NAME_CONTACT_ID + "," + ContactEntry.TABLE_NAME
-				+ "." + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + " as " + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "," + ContactEntry.TABLE_NAME
-				+ "." + COLUMN_NAME_CONTACT_NAME + " as " + COLUMN_NAME_CONTACT_NAME + "," + ContactEntry.TABLE_NAME + "."
-				+ COLUMN_NAME_IDENTITY_URI + " as " + COLUMN_NAME_IDENTITY_URI + "," + ContactEntry.TABLE_NAME + "."
-				+ COLUMN_NAME_IDENTITY_PROVIDER + " as " + COLUMN_NAME_IDENTITY_PROVIDER + ","
+				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + " as " + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + ","
+				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_CONTACT_NAME + " as " + COLUMN_NAME_CONTACT_NAME + ","
+				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_IDENTITY_URI + " as " + COLUMN_NAME_IDENTITY_URI + ","
+				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_IDENTITY_PROVIDER + " as " + COLUMN_NAME_IDENTITY_PROVIDER + ","
 				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_URL + " as " + COLUMN_NAME_URL + ","
 				+ ContactEntry.TABLE_NAME + "." + COLUMN_NAME_VPROFILE_URL + " as " + COLUMN_NAME_VPROFILE_URL + ","
-				+ AvatarEntry.TABLE_NAME + "." + AvatarEntry.COLUMN_NAME_AVATAR_URL + " as " + COLUMN_NAME_AVATAR_URL + ","
+				+ AvatarEntry.TABLE_NAME + "." + COLUMN_NAME_AVATAR_URI + " as " + COLUMN_NAME_AVATAR_URI + ","
 
 				// IdentityContact table
 				+ IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_USER_ID + " as " + COLUMN_NAME_USER_ID + ","
@@ -341,8 +326,7 @@ public class DatabaseContracts {
 			+ ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_USER_ID + " as "
 			+ WindowViewEntry.COLUMN_NAME_USER_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + " as "
 			+ WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + ","
-			+ WindowViewEntry.COLUMN_NAME_USER_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_AVATAR + " as "
-			+ WindowViewEntry.COLUMN_NAME_AVATAR + ","
+			+ WindowViewEntry.COLUMN_NAME_USER_ID + "," + "d." + COLUMN_NAME_AVATAR_URI + " as " + COLUMN_NAME_AVATAR_URI + ","
 			+ "c." + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + " as "
 			+ WindowViewEntry.COLUMN_NAME_LAST_MESSAGE + "," + "c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as "
 			+ WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME + "," + " e.count as " + WindowViewEntry.COLUMN_NAME_UNREAD_COUNT
@@ -353,43 +337,51 @@ public class DatabaseContracts {
 			+ WindowViewEntry.COLUMN_NAME_WINDOW_ID + ")" + " group by " + WindowViewEntry.COLUMN_NAME_WINDOW_ID;
 	public static final String SQL_CREATE_VIEW_CONTACT = CREATE_VIEW + ContactsViewEntry.TABLE_NAME + " AS SELECT "
 			+ ContactsViewEntry.COLUMNS + " from " + ContactEntry.TABLE_NAME + " left join " + IdentityContactEntry.TABLE_NAME + " using("
-			+ ContactsViewEntry.COLUMN_NAME_CONTACT_ID + ")" + " left join " + AvatarEntry.TABLE_NAME + " on " + AvatarEntry.TABLE_NAME
-			+ "." + AvatarEntry.COLUMN_NAME_CONTACT_ID + "=" + ContactEntry.TABLE_NAME + "." + ContactEntry.COLUMN_NAME_CONTACT_ID
-			+ " group by " + ContactsViewEntry.COLUMN_NAME_CONTACT_ID;
+			+ COLUMN_NAME_IDENTITY_URI + ")" + " left join " + AvatarEntry.TABLE_NAME + " on " + AvatarEntry.TABLE_NAME
+			+ "." + COLUMN_NAME_IDENTITY_URI + "=" + ContactEntry.TABLE_NAME + "." + COLUMN_NAME_IDENTITY_URI
+			+ " group by " + COLUMN_NAME_IDENTITY_URI;
 
 	public static final String SQL_CREATE_CONTACT = CREATE_TABLE + ContactEntry.TABLE_NAME + " (" + ContactEntry._ID
-			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_ID + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP
-			+ ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + " default -1 " + COMMA_SEP +
+			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
+			+ ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + " default -1 " + COMMA_SEP
 			// ContactEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP +
-			ContactsViewEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_NAME
-			+ TEXT_TYPE + " COLLATE NOCASE" + COMMA_SEP + ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE + COMMA_SEP
-			+ ContactEntry.COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + COMMA_SEP + ContactEntry.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP
+			+ ContactsViewEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ ContactEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE + " COLLATE NOCASE" + COMMA_SEP
+			+ ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE + COMMA_SEP
+			+ COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ ContactEntry.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP
 			+ ContactEntry.COLUMN_NAME_VPROFILE_URL + TEXT_TYPE + " )";
 	public static final String SQL_CREATE_IDENTITY = CREATE_TABLE + IdentityEntry.TABLE_NAME + " (" + IdentityEntry._ID + INTEGER_TYPE
 			+ COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-			+ IdentityEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE + COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_URI + TEXT_TYPE
+			+ IdentityEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE + COMMA_SEP + COLUMN_NAME_IDENTITY_URI + TEXT_TYPE
 			+ COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_CONTACT_ID + INTEGER_TYPE + COMMA_SEP
 			+ IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION + TEXT_TYPE +
 			// ... Any other options for the CREATE command
 			" )";
-	public static final String SQL_CREATE_AVATAR = CREATE_TABLE + AvatarEntry.TABLE_NAME + " (" + AvatarEntry._ID + INTEGER_TYPE
-			+ COMMA_SEP + AvatarEntry.COLUMN_NAME_CONTACT_ID + INTEGER_TYPE + COMMA_SEP + AvatarEntry.COLUMN_NAME_AVATAR_NAME + TEXT_TYPE
-			+ COMMA_SEP + AvatarEntry.COLUMN_NAME_AVATAR_URL + TEXT_TYPE + COMMA_SEP
-			+ getCompositePrimaryKey(new String[] { AvatarEntry.COLUMN_NAME_CONTACT_ID, AvatarEntry.COLUMN_NAME_AVATAR_URL }) + " )";
+	public static final String SQL_CREATE_AVATAR = CREATE_TABLE + AvatarEntry.TABLE_NAME + " ("
+			+ AvatarEntry._ID + INTEGER_TYPE + COMMA_SEP
+			+ COLUMN_NAME_IDENTITY_URI + INTEGER_TYPE + COMMA_SEP
+			+ AvatarEntry.COLUMN_NAME_AVATAR_NAME + TEXT_TYPE + COMMA_SEP
+			+ COLUMN_NAME_AVATAR_URI + TEXT_TYPE + COMMA_SEP
+			+ AvatarEntry.COLUMN_NAME_WIDTH + INTEGER_TYPE + COMMA_SEP
+			+ AvatarEntry.COLUMN_NAME_HEIGHT + INTEGER_TYPE + COMMA_SEP
+			+ getCompositePrimaryKey(new String[] { COLUMN_NAME_IDENTITY_URI, COLUMN_NAME_AVATAR_URI }) + " )";
 	public static final String SQL_CREATE_IDENTITY_CONTACT = CREATE_TABLE + IdentityContactEntry.TABLE_NAME + " ("
 			+ IdentityContactEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE
 			+ COMMA_SEP + IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + INTEGER_TYPE + " default -1 " + COMMA_SEP
-			+ ContactsViewEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_CONTACT_ID + INTEGER_TYPE
-			+ UNIQUE_TYPE + COMMA_SEP +
-
-			IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC + TEXT_TYPE + COMMA_SEP
+			+ ContactsViewEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP
+			+ COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC + TEXT_TYPE + COMMA_SEP
 			+ IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE + TEXT_TYPE + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_PRORITY
 			+ INTEGER_TYPE + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_WEIGHT + INTEGER_TYPE + COMMA_SEP
 			+ IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME + INTEGER_TYPE + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_EXPIRE + " )";
-	public static final String SQL_CREATE_USER = CREATE_TABLE + UserEntry.TABLE_NAME + " (" + UserEntry._ID + INTEGER_PRIMARY_KEY_TYPE
-			+ COMMA_SEP + UserEntry.COLUMN_NAME_STABLE_ID + INTEGER_TYPE + COMMA_SEP + UserEntry.COLUMN_NAME_PEER_URI + TEXT_TYPE
-			+ UNIQUE_TYPE + COMMA_SEP + UserEntry.COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
-			+ UserEntry.COLUMN_NAME_USER_NAME + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP + UserEntry.COLUMN_NAME_AVTAR_URI + TEXT_TYPE + " )";
+	public static final String SQL_CREATE_USER = CREATE_TABLE + UserEntry.TABLE_NAME + " ("
+			+ UserEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
+			+ UserEntry.COLUMN_NAME_STABLE_ID + INTEGER_TYPE + COMMA_SEP
+			+ UserEntry.COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ UserEntry.COLUMN_NAME_USER_NAME + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ COLUMN_NAME_AVATAR_URI + TEXT_TYPE + " )";
 
 	public static final String SQL_CREATE_WINDOW = CREATE_TABLE + ConversationWindowEntry.TABLE_NAME + " (" + BaseColumns._ID
 			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP
@@ -398,39 +390,34 @@ public class DatabaseContracts {
 	public static final String SQL_CREATE_GROUP = CREATE_TABLE + BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
 			+ GroupEntry.TABLE_NAME + " (" + BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + GroupEntry.COLUMN_NAME_GROUP_ID
 			+ TEXT_TYPE + COMMA_SEP + GroupEntry.COLUMN_NAME_GROUP_NAME + TEXT_TYPE + " )";
-	public static final String SQL_CREATE_CALL = CREATE_TABLE + CallEntry.TABLE_NAME + " (" + BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE
-			+ COMMA_SEP + CallEntry.COLUMN_NAME_CALL_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP + CallEntry.COLUMN_NAME_CALLER + INTEGER_TYPE
-			+ COMMA_SEP + CallEntry.COLUMN_NAME_CALLEE + INTEGER_TYPE + COMMA_SEP + CallEntry.COLUMN_NAME_ANSWER_TIME + INTEGER_TYPE
-			+ COMMA_SEP + CallEntry.COLUMN_NAME_CLOSE_TIME + INTEGER_TYPE + " )";
+	public static final String SQL_CREATE_CALL = CREATE_TABLE + CallEntry.TABLE_NAME + " ("
+			+ BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
+			+ CallEntry.COLUMN_NAME_CALL_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ CallEntry.COLUMN_NAME_CALLER + INTEGER_TYPE + COMMA_SEP
+			+ CallEntry.COLUMN_NAME_CALLEE + INTEGER_TYPE + COMMA_SEP
+			+ CallEntry.COLUMN_NAME_ANSWER_TIME + INTEGER_TYPE + COMMA_SEP
+			+ CallEntry.COLUMN_NAME_CLOSE_TIME + INTEGER_TYPE + " )";
 
-	public static final String SQL_CREATE_CONVERSATION_PARTICIPANT = CREATE_TABLE
-			+ WindowParticipantEntry.TABLE_NAME
-			+ " (" + WindowParticipantEntry._ID
-			+ INTEGER_TYPE
-			+ COMMA_SEP
-			+ WindowParticipantEntry.COLUMN_NAME_WINDOW_ID
-			+ INTEGER_TYPE
-			+ COMMA_SEP
-			+ WindowParticipantEntry.COLUMN_NAME_USER_ID
-			+ INTEGER_TYPE
-			+ COMMA_SEP
-			+ WindowParticipantEntry.COLUMN_NAME_USER_NAME
-			+ TEXT_TYPE
-			+ COMMA_SEP
+	public static final String SQL_CREATE_CONVERSATION_PARTICIPANT = CREATE_TABLE + WindowParticipantEntry.TABLE_NAME
+			+ " (" + WindowParticipantEntry._ID + INTEGER_TYPE + COMMA_SEP
+			+ WindowParticipantEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
+			+ WindowParticipantEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP
+			+ WindowParticipantEntry.COLUMN_NAME_USER_NAME + TEXT_TYPE + COMMA_SEP
 			+ ConversationWindowEntry.COLUMN_NAME_GROUP_ID + TEXT_TYPE + COMMA_SEP
-			+ WindowViewEntry.COLUMN_NAME_AVATAR
-			+ TEXT_TYPE
-			+ COMMA_SEP
-
+			+ COLUMN_NAME_AVATAR_URI + TEXT_TYPE + COMMA_SEP
 			+ getCompositePrimaryKey(new String[] { WindowParticipantEntry.COLUMN_NAME_WINDOW_ID,
 					WindowParticipantEntry.COLUMN_NAME_USER_ID }) + " )";
 
-	public static final String SQL_CREATE_MESSAGES = CREATE_TABLE + MessageEntry.TABLE_NAME + " (" + MessageEntry._ID
-			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + MessageEntry.COLUMN_NAME_MESSAGE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
-			+ MessageEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP + MessageEntry.COLUMN_NAME_MESSAGE_TYPE + TEXT_TYPE + COMMA_SEP
-			+ MessageEntry.COLUMN_NAME_SENDER_ID + INTEGER_TYPE + COMMA_SEP + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + TEXT_TYPE + COMMA_SEP
-			+ MessageEntry.COLUMN_NAME_MESSAGE_TIME + TEXT_TYPE + COMMA_SEP + MessageEntry.COLUMN_NAME_MESSAGE_READ + INTEGER_TYPE
-			+ " default 0" + COMMA_SEP + MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE + " )";
+	public static final String SQL_CREATE_MESSAGES = CREATE_TABLE + MessageEntry.TABLE_NAME + " ("
+			+ MessageEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_MESSAGE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_MESSAGE_TYPE + TEXT_TYPE + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_SENDER_ID + INTEGER_TYPE + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_MESSAGE_TEXT + TEXT_TYPE + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_MESSAGE_TIME + TEXT_TYPE + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_MESSAGE_READ + INTEGER_TYPE + " default 0" + COMMA_SEP
+			+ MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE + " )";
 
 	public static final String CREATE_STATEMENTS[] = { DatabaseContracts.SQL_CREATE_IDENTITY,
 			DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT, DatabaseContracts.SQL_CREATE_CONTACT, DatabaseContracts.SQL_CREATE_AVATAR,

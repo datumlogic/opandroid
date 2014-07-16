@@ -33,6 +33,7 @@ import com.openpeer.sdk.datastore.DatabaseContracts.UserEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.sdk.model.OPHomeUser;
+import static com.openpeer.sdk.datastore.DatabaseContracts.*;
 
 /**
  * The data being stored in preference: -- Relogin information for account -- stableId
@@ -47,8 +48,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	private static final String TAG = OPDatastoreDelegateImplementation.class.getSimpleName();
 
 	private static OPDatastoreDelegateImplementation instance;
-	OPDatabaseHelper mOpenHelper;
-	private SQLiteDatabase mDatabase;
 
 	private SharedPreferences mPreferenceStore;
 	Context mContext;
@@ -59,11 +58,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	private OPDatastoreDelegateImplementation(Context context) {
 		mContext = context;
-		mOpenHelper = new OPDatabaseHelper(context,
-				OPDatabaseHelper.DATABASE_NAME, // the name of the database)
-				null, // uses the default SQLite cursor
-				OPDatabaseHelper.DATABASE_VERSION);
-		mDatabase = mOpenHelper.getWritableDatabase();
 
 		mPreferenceStore = context.getSharedPreferences(PREF_DATASTORE,
 				Context.MODE_PRIVATE);
@@ -79,12 +73,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public OPDatastoreDelegateImplementation init(Context context) {
 		mContext = context;
 
-		mOpenHelper = new OPDatabaseHelper(context,
-				OPDatabaseHelper.DATABASE_NAME, // the name of the database)
-				null, // uses the default SQLite cursor
-				OPDatabaseHelper.DATABASE_VERSION);
-		mDatabase = mOpenHelper.getWritableDatabase();
-
 		mPreferenceStore = context.getSharedPreferences(PREF_DATASTORE,
 				Context.MODE_PRIVATE);
 		return this;// fluent API
@@ -94,65 +82,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	@Override
 	public String getReloginInfo() {
 		return mPreferenceStore.getString(PREF_KEY_RELOGIN_INFO, null);
-	}
-
-	@Override
-	public List<OPIdentityContact> getSelfIdentityContacts() {
-		String columns[] = new String[] {
-				IdentityEntry.COLUMN_NAME_IDENTITY_ID,
-				IdentityEntry.COLUMN_NAME_IDENTITY_CONTACT_ID };
-		Cursor cursor = mOpenHelper.getWritableDatabase()
-				.query(IdentityEntry.TABLE_NAME, columns, null, null, null,
-						null, null);
-		if (cursor != null) {
-			List<OPIdentityContact> contacts = new ArrayList<OPIdentityContact>();
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				contacts.add(
-						getIdentityContact(cursor.getString(1)));
-				cursor.moveToNext();
-			}
-			cursor.close();
-
-			return contacts;
-		}
-		return null;
-	}
-
-	@Override
-	public List<OPIdentity> getIdentities() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public OPIdentity getIdentity() {
-		return null;
-	}
-
-	@Override
-	public List<OPRolodexContact> getContacts(long identityId) {
-		List<OPRolodexContact> contacts = new ArrayList<OPRolodexContact>();
-		String selection = null;
-		if (identityId != 0) {
-			selection = ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
-					+ identityId;
-		}
-		Cursor cursor = mOpenHelper.getWritableDatabase().query(
-				ContactEntry.TABLE_NAME, null, selection, null, null, null,
-				null);
-		if (cursor != null) {
-
-			cursor.moveToFirst();
-
-			while (!cursor.isAfterLast()) {
-				contacts.add(contactFromCursor(cursor));
-				cursor.moveToNext();
-			}
-			cursor.close();
-		}
-
-		return contacts;
 	}
 
 	@Override
@@ -198,58 +127,53 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				identity.getStableID());
 		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_PROVIDER,
 				identity.getIdentityProviderDomain());
-		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_URI,
+		values.put(DatabaseContracts.COLUMN_NAME_IDENTITY_URI,
 				identity.getIdentityURI());
 		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_CONTACT_ID,
 				selfContact.getStableID());
-		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
-				IdentityEntry.TABLE_NAME, null, values,
-				SQLiteDatabase.CONFLICT_REPLACE);
-		saveOrUpdateContact(identity.getSelfIdentityContact(),
-				identity.getStableID());
-
-		return rowId != 0;
+		String whereClause = IdentityEntry.COLUMN_NAME_IDENTITY_ID + "=?";
+		String args[] = new String[] { identity.getIdentityURI() };
+		if (upsert(IdentityEntry.TABLE_NAME, values, whereClause, args)) {
+			return saveOrUpdateContact(identity.getSelfIdentityContact(),
+					identity.getStableID());
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean saveOrUpdateContact(OPRolodexContact contact, long identityId) {
 		ContentValues values = new ContentValues();
-		values.put(ContactEntry.COLUMN_NAME_CONTACT_ID, contact.getId());
 		if (contact instanceof OPIdentityContact) {
-			values.put(ContactsViewEntry.COLUMN_NAME_STABLE_ID,
-					((OPIdentityContact) contact).getStableID());
+			values.put(ContactsViewEntry.COLUMN_NAME_STABLE_ID, ((OPIdentityContact) contact).getStableID());
 		}
 		values.put(ContactEntry.COLUMN_NAME_CONTACT_NAME, contact.getName());
 		values.put(ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID, identityId);
-		values.put(ContactEntry.COLUMN_NAME_IDENTITY_URI,
-				contact.getIdentityURI());
-		values.put(ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER,
-				contact.getIdentityProvider());
+		values.put(DatabaseContracts.COLUMN_NAME_IDENTITY_URI, contact.getIdentityURI());
+		values.put(ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER, contact.getIdentityProvider());
 		values.put(ContactEntry.COLUMN_NAME_URL, contact.getProfileURL());
-		values.put(ContactEntry.COLUMN_NAME_VPROFILE_URL,
-				contact.getVProfileURL());
+		values.put(ContactEntry.COLUMN_NAME_VPROFILE_URL, contact.getVProfileURL());
 
+		String args[] = new String[] { contact.getIdentityURI() };
 		boolean result = upsert(
 				DatabaseContracts.ContactEntry.TABLE_NAME,
 				values,
 				ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
 						+ identityId + " and "
-						+ ContactEntry.COLUMN_NAME_CONTACT_ID + "="
-						+ contact.getId(), null);
+						+ DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", args);
 
 		if (result && contact.getAvatars() != null) {
 			// insert or update avatar
 			for (OPAvatar avatar : contact.getAvatars()) {
+				delete(AvatarEntry.TABLE_NAME, DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", args);
 				ContentValues avatarValues = new ContentValues();
-				avatarValues.put(AvatarEntry.COLUMN_NAME_CONTACT_ID,
-						contact.getId());
-				avatarValues.put(AvatarEntry.COLUMN_NAME_AVATAR_NAME,
-						avatar.getName());
-				avatarValues.put(AvatarEntry.COLUMN_NAME_AVATAR_URL,
-						avatar.getURL());
-				long avatarRowId = mOpenHelper.getWritableDatabase()
-						.insertWithOnConflict(AvatarEntry.TABLE_NAME, null,
-								avatarValues, SQLiteDatabase.CONFLICT_REPLACE);
+				avatarValues.put(DatabaseContracts.COLUMN_NAME_IDENTITY_URI, contact.getIdentityURI());
+				avatarValues.put(AvatarEntry.COLUMN_NAME_AVATAR_NAME, avatar.getName());
+				avatarValues.put(DatabaseContracts.COLUMN_NAME_AVATAR_URI, avatar.getURL());
+				avatarValues.put(AvatarEntry.COLUMN_NAME_WIDTH, avatar.getWidth());
+				avatarValues.put(AvatarEntry.COLUMN_NAME_HEIGHT, avatar.getHeight());
+
+				insert(AvatarEntry.TABLE_NAME, avatarValues);
 			}
 		}
 		if (contact instanceof OPIdentityContact) {
@@ -257,52 +181,29 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			ContentValues icValues = new ContentValues();
 
 			icValues.put(IdentityContactEntry.COLUMN_NAME_USER_ID, ic.getUserId());
-			icValues.put(IdentityContactEntry.COLUMN_NAME_CONTACT_ID, ic.getId());
+			icValues.put(DatabaseContracts.COLUMN_NAME_IDENTITY_URI, ic.getIdentityURI());
 
-			icValues.put(IdentityContactEntry.COLUMN_NAME_STABLE_ID,
-					ic.getStableID());
-			icValues.put(
-					IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID,
-					identityId);
-			icValues.put(IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC, ic
-					.getPeerFilePublic().getPeerFileString());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_STABLE_ID, ic.getStableID());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID, identityId);
+			icValues.put(IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC, ic.getPeerFilePublic().getPeerFileString());
 
-			icValues.put(
-					IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE,
-					ic.getIdentityProofBundle());
-			icValues.put(IdentityContactEntry.COLUMN_NAME_PRORITY,
-					ic.getPriority());
-			icValues.put(IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME, ic
-					.getLastUpdated().toMillis(false));
-			icValues.put(IdentityContactEntry.COLUMN_NAME_EXPIRE, ic
-					.getExpires().toMillis(false));
+			icValues.put(IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE, ic.getIdentityProofBundle());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_PRORITY, ic.getPriority());
+			icValues.put(IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME, ic.getLastUpdated().toMillis(false));
+			icValues.put(IdentityContactEntry.COLUMN_NAME_EXPIRE, ic.getExpires().toMillis(false));
+			args = new String[] { ic.getIdentityURI() };
 			return upsert(
 					IdentityContactEntry.TABLE_NAME,
 					icValues,
 					IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
 							+ "=" + identityId + " and "
-							+ IdentityContactEntry.COLUMN_NAME_CONTACT_ID + "=" + ic.getId(),
-					null);
+							+ DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?",
+					args);
 
 		} else {
 			return true;
 		}
 
-	}
-
-	@Override
-	public boolean deleteIdentity(long id) {
-
-		mOpenHelper.getWritableDatabase().delete(IdentityEntry.TABLE_NAME,
-				IdentityEntry.COLUMN_NAME_IDENTITY_ID + "=" + id, null);
-		mOpenHelper.getWritableDatabase().delete(
-				IdentityContactEntry.TABLE_NAME,
-				IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
-						+ id, null);
-		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
-				ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "=" + id,
-				null);
-		return false;
 	}
 
 	@Override
@@ -312,31 +213,21 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		String cSelection = ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
 				+ "=" + id;
 		// mOpenHelper.getWritableDatabase().
-		mOpenHelper.getWritableDatabase().delete(
+		delete(
 				IdentityContactEntry.TABLE_NAME, selection, null);
-		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
+		delete(ContactEntry.TABLE_NAME,
 				cSelection, null);
 		return true;
 	}
 
 	@Override
-	public boolean deleteContact(long id) {
-		String rawSql = "delete from " + IdentityContactEntry.TABLE_NAME
-				+ " where " + IdentityContactEntry.COLUMN_NAME_STABLE_ID
-				+ " in (select " + ContactsViewEntry.COLUMN_NAME_STABLE_ID
-				+ " from " + ContactEntry.TABLE_NAME + " where "
-				+ ContactEntry.COLUMN_NAME_CONTACT_ID + "=" + id + ")";
-		mOpenHelper.getWritableDatabase().execSQL(rawSql);
-		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
-				ContactEntry.COLUMN_NAME_CONTACT_ID + "=" + id, null);
-		// if (contact instanceof OPIdentityContact) {
-		// mOpenHelper.getWritableDatabase()
-		// .delete(IdentityContactEntry.TABLE_NAME,
-		// IdentityContactEntry.COLUMN_NAME_STABLE_ID
-		// + "="
-		// + ((OPIdentityContact) contact)
-		// .getStableID(), null);
-		// }
+	public boolean deleteContact(String identityUri) {
+		String whereArgs[] = new String[] { identityUri };
+		delete(UserEntry.TABLE_NAME, DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", whereArgs);
+		delete(ContactEntry.TABLE_NAME,
+				DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", whereArgs);
+		delete(IdentityContactEntry.TABLE_NAME, DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", whereArgs);
+		delete(AvatarEntry.TABLE_NAME, DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", whereArgs);
 		return true;
 	}
 
@@ -361,12 +252,10 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	public String getDownloadedContactsVersion(long identityId) {
 		String version = null;
-		Cursor cursor = mOpenHelper
-				.getWritableDatabase()
-				.query(IdentityEntry.TABLE_NAME,
-						new String[] { IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION },
-						IdentityEntry.COLUMN_NAME_IDENTITY_ID + "="
-								+ identityId, null, null, null, null);
+		Cursor cursor = query(IdentityEntry.TABLE_NAME,
+				new String[] { IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION },
+				IdentityEntry.COLUMN_NAME_IDENTITY_ID + "="
+						+ identityId, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 			version = cursor
@@ -389,7 +278,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION, version);
 		String whereClause = IdentityEntry.COLUMN_NAME_IDENTITY_ID + "="
 				+ identityId;
-		long rowId = mOpenHelper.getWritableDatabase().update(
+		long rowId = update(
 				IdentityEntry.TABLE_NAME, values, whereClause, null);
 		Log.d("test", "setDownloadedContactsVersion " + rowId + " version "
 				+ version + " id " + identityId);
@@ -401,12 +290,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		String cSelection = ContactsViewEntry.COLUMN_NAME_STABLE_ID + "=?";
 		String[] selectionParams = new String[] { identityContactId };
 
-		Cursor iCursor = mOpenHelper.getWritableDatabase().query(
-				IdentityContactEntry.TABLE_NAME, null, iSelection,
-				selectionParams, null, null, null);
-		Cursor cCursor = mOpenHelper.getWritableDatabase().query(
-				ContactEntry.TABLE_NAME, null, cSelection, selectionParams,
-				null, null, null);
+		Cursor iCursor = query(IdentityContactEntry.TABLE_NAME, null, iSelection, selectionParams);
+		Cursor cCursor = query(ContactEntry.TABLE_NAME, null, cSelection, selectionParams);
 		if (cCursor != null && iCursor != null) {
 			cCursor.moveToFirst();
 			iCursor.moveToFirst();
@@ -419,7 +304,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	private OPRolodexContact contactFromCursor(Cursor cursor) {
 		int identityUrlIndex = cursor
-				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_URI);
+				.getColumnIndex(COLUMN_NAME_IDENTITY_URI);
 		int identityProviderIndex = cursor
 				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER);
 		int nameIndex = cursor
@@ -438,16 +323,16 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				cursor.getString(vprofileURLIndex), null,
 				cursor.getLong(assoiatedIdentityIdIndex));
 
-		contact.setAvatars(this.getAvatars(contact.getId()));
+		contact.setAvatars(this.getAvatars(contact.getIdentityURI()));
 		String stableIdentityId = cursor.getString(cursor
 				.getColumnIndex(ContactsViewEntry.COLUMN_NAME_STABLE_ID));
 		if (stableIdentityId != null) {
 			Log.d("test", "retrieving identity contact of id "
 					+ stableIdentityId);
-			Cursor iCursor = mOpenHelper.getWritableDatabase().query(
+			Cursor iCursor = query(
 					IdentityContactEntry.TABLE_NAME, null,
 					IdentityContactEntry.COLUMN_NAME_STABLE_ID + "=?",
-					new String[] { stableIdentityId }, null, null, null);
+					new String[] { stableIdentityId });
 			if (iCursor != null) {
 				iCursor.moveToFirst();
 				contact = identityContactFromCursor(contact, iCursor);
@@ -480,11 +365,9 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
-	public List<OPAvatar> getAvatars(long contactId) {
-		Cursor cursor = mOpenHelper.getWritableDatabase().query(
-				AvatarEntry.TABLE_NAME, null,
-				AvatarEntry.COLUMN_NAME_CONTACT_ID + "=" + contactId, null,
-				null, null, null);
+	public List<OPAvatar> getAvatars(String contactId) {
+		String args[] = new String[] { contactId };
+		Cursor cursor = query(AvatarEntry.TABLE_NAME, null, DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", args);
 		if (cursor != null) {
 			List<OPAvatar> avatars = new ArrayList<OPAvatar>();
 			cursor.moveToFirst();
@@ -493,58 +376,13 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 						cursor.getString(cursor
 								.getColumnIndex(AvatarEntry.COLUMN_NAME_AVATAR_NAME)),
 						cursor.getString(cursor
-								.getColumnIndex(AvatarEntry.COLUMN_NAME_AVATAR_URL)),
+								.getColumnIndex(DatabaseContracts.COLUMN_NAME_AVATAR_URI)),
 						0, 0);
 				avatars.add(avatar);
 				cursor.moveToNext();
 			}
 			cursor.close();
 			return avatars;
-		}
-		return null;
-	}
-
-	@Override
-	public boolean saveSession(OPSession session) {
-		Log.d("TODO", "OPDatastoreDelegate saveSession " + session);
-		ContentValues values = new ContentValues();
-		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID,
-				session.getCurrentWindowId());
-		// values.put(ConversationWindowEntry.COLUMN_NAME_LAST_READ_MSG_ID,
-		// session.getReadMessageId());
-		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
-				ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, null, values,
-				SQLiteDatabase.CONFLICT_ABORT);
-		return rowId != 0;
-	}
-
-	@Override
-	public List<OPSession> getRecentSessions() {
-		return null;
-	}
-
-	public OPMessage getLastMessageForSession(long sessionId) {
-		Cursor cursor = mOpenHelper.getWritableDatabase().query(
-				MessageEntry.TABLE_NAME, null,
-				MessageEntry.COLUMN_NAME_WINDOW_ID + "=" + sessionId, null,
-				null, null, MessageEntry._ID, "1");
-
-		if (cursor != null) {
-			cursor.moveToFirst();
-			int senderIdIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID);
-			int messageTypeIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE);
-			int timeIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME);
-			int textIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT);
-			int messageIdIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID);
-			OPMessage message = OPMessage.fromCursor(cursor);
-			message.setMessageId(cursor.getString(messageIdIndex));
-			cursor.close();
-			return message;
 		}
 		return null;
 	}
@@ -575,77 +413,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		return false;
 	}
 
-	/**
-	 * Get all private messages with the contact. This function retrieves all private sessions with the contact and messages associated
-	 * 
-	 * @param contactId
-	 *            stableId of the OPContact(or OPIdentityContact?)
-	 * @return
-	 */
-	@Override
-	public List<OPMessage> getMessagesWithSession(long sessionId, int max,
-			String lastMessageId) {
-		Log.d("TODO", "OPDatastoreDelegate getMessagesForContact " + sessionId);
-		Cursor cursor = mOpenHelper.getWritableDatabase().query(
-				MessageEntry.TABLE_NAME, null,
-				MessageEntry.COLUMN_NAME_WINDOW_ID + "=" + sessionId, null,
-				null, null, null);
-		if (cursor != null) {
-			List<OPMessage> messages = new ArrayList<OPMessage>();
-
-			cursor.moveToFirst();
-			int senderIdIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID);
-			int messageTypeIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE);
-			int timeIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME);
-			int textIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT);
-			int messageIdIndex = cursor
-					.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID);
-			while (!cursor.isAfterLast()) {
-				OPMessage message = OPMessage.fromCursor(cursor);
-				messages.add(message);
-			}
-			return messages;
-		}
-		return null;
-	}
-
-	/**
-	 * Get all private messages with the contact. This function retrieves all private sessions with the contact and messages associated
-	 * 
-	 * @param contactId
-	 *            stableId of the OPContact(or OPIdentityContact?)
-	 * @return
-	 */
-	@Override
-	public List<OPMessage> getMessagesWithContact(long contactId, int max,
-			String lastMessageId) {
-		Log.d("TODO", "OPDatastoreDelegate getMessagesForContact " + contactId);
-		return null;
-	}
-
-	@Override
-	public int getNumberofUnreadMessages(String contactId) {
-		Log.d("TODO", "OPDatastoreDelegate getMessagesForContact " + contactId);
-		return 5;
-	}
-
-	boolean upsert(String tableName, ContentValues values, String whereClause,
-			String[] whereArgs) {
-		int updated = mOpenHelper.getWritableDatabase().update(tableName,
-				values, whereClause, whereArgs);
-		if (updated == 0) {
-			long rowId = mOpenHelper.getWritableDatabase().insert(tableName,
-					null, values);
-			return rowId != -1;
-		} else {
-			return true;
-		}
-	}
-
 	@Override
 	public void saveWindow(long windowId, List<OPUser> userList) {
 		ContentValues values = new ContentValues();
@@ -669,7 +436,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_ID, user.getUserId());
 				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_NAME, user.getName());
-				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_AVATAR, user.getAvatarUri());
+				contentValues[i].put(DatabaseContracts.COLUMN_NAME_AVATAR_URI, user.getAvatarUri());
 				// contentValues[i].put(ConversationWindowEntry., windowId);
 
 			}
@@ -685,8 +452,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long associatedIdentityId) {
 		for (OPIdentityContact contact : iContacts) {
 			ContentValues values = new ContentValues();
-			values.put(UserEntry.COLUMN_NAME_AVTAR_URI, contact.getDefaultAvatarUrl());
-			values.put(UserEntry.COLUMN_NAME_IDENTITY_URI, contact.getIdentityURI());
+			values.put(DatabaseContracts.COLUMN_NAME_AVATAR_URI, contact.getDefaultAvatarUrl());
+			values.put(COLUMN_NAME_IDENTITY_URI, contact.getIdentityURI());
 			values.put(UserEntry.COLUMN_NAME_STABLE_ID, contact.getStableID());
 			values.put(UserEntry.COLUMN_NAME_USER_NAME, contact.getName());
 			OPContact oContact = OPContact.createFromPeerFilePublic(OPDataManager.getInstance().getSharedAccount(), contact
@@ -703,7 +470,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			} else {
 				String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
 						UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
-						UserEntry.COLUMN_NAME_IDENTITY_URI + "=?";
+						COLUMN_NAME_IDENTITY_URI + "=?";
 				String args[] = { contact.getStableID(), oContact.getPeerURI(), contact.getIdentityURI() };
 				mContext.getContentResolver().update(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values, selection, args);
 				// TODO:update contacts with userId
@@ -727,10 +494,10 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			return getUserByPeerUri(user.getPeerUri());
 		}
 		if (user.getAvatarUri() != null) {
-			values.put(UserEntry.COLUMN_NAME_AVTAR_URI, user.getAvatarUri());
+			values.put(DatabaseContracts.COLUMN_NAME_AVATAR_URI, user.getAvatarUri());
 		}
 
-		values.put(UserEntry.COLUMN_NAME_IDENTITY_URI, user.getIdentityUri());
+		values.put(COLUMN_NAME_IDENTITY_URI, user.getIdentityUri());
 		values.put(UserEntry.COLUMN_NAME_STABLE_ID, user.getLockboxStableId());
 		if (user.getName() != null) {
 			values.put(UserEntry.COLUMN_NAME_USER_NAME, user.getName());
@@ -740,7 +507,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 		String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
 				UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
-				UserEntry.COLUMN_NAME_IDENTITY_URI + "=?";
+				COLUMN_NAME_IDENTITY_URI + "=?";
 		String aueryArgs[] = { user.getLockboxStableId(), user.getPeerUri(), user.getIdentityUri() };
 		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), null, selection,
 				aueryArgs, null);
@@ -804,4 +571,50 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		int count = mContext.getContentResolver().update(Uri.parse(url), values, where, null);
 		Log.d("test", "markMessagesRead update count " + count);
 	}
+
+	int delete(String tableName, String whereClause,
+			String[] whereArgs) {
+		return mContext.getContentResolver().delete(OPContentProvider.getContentUri("/" + tableName), whereClause, whereArgs);
+
+	}
+
+	Uri insert(String tableName, ContentValues values) {
+		return mContext.getContentResolver().insert(OPContentProvider.getContentUri("/" + tableName), values);
+
+	}
+
+	int update(String tableName, ContentValues values, String whereClause,
+			String[] whereArgs) {
+		Uri uri = OPContentProvider.getContentUri("/" + tableName);
+		return mContext.getContentResolver().update(uri, values, whereClause, whereArgs);
+
+	}
+
+	Cursor query(String tableName, String columns[], String whereClause,
+			String[] whereArgs) {
+		Uri uri = OPContentProvider.getContentUri("/" + tableName);
+
+		return mContext.getContentResolver().query(uri, columns, whereClause, whereArgs, null);
+	}
+
+	boolean upsert(String tableName, ContentValues values, String whereClause,
+			String[] whereArgs) {
+		Uri uri = OPContentProvider.getContentUri("/" + tableName);
+		Cursor cursor = mContext.getContentResolver().query(uri, null, whereClause, whereArgs, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			int updatedCount = mContext.getContentResolver().update(uri, values, whereClause, whereArgs);
+			return updatedCount > 0;
+		} else {
+			Uri _uri = mContext.getContentResolver().insert(uri, values);
+			return _uri != null;
+		}
+
+	}
+
+	@Override
+	public boolean deleteIdentity(long id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

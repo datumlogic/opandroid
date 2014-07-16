@@ -61,11 +61,17 @@ public class LoginManager {
 		// if (OPDatastoreDelegateImplementation.getInstance().getReloginInfo()
 		// == null) {
 		OPAccount account = new OPAccount();
-		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
+		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
 				account);
-		mAccountLoginWebView.setWebViewClient(client);
+		mAccountLoginWebView.post(new Runnable() {
+			public void run() {
+				mAccountLoginWebView.setWebViewClient(client);
+			}
+		});
+
 		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
 				mAccountLoginWebView, account);
+
 		CallbackHandler.getInstance().registerAccountDelegate(account,
 				accountDelegate);
 
@@ -85,9 +91,13 @@ public class LoginManager {
 		} else {
 			account = new OPAccount();
 		}
-		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
+		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
 				account);
-		mAccountLoginWebView.setWebViewClient(client);
+		mAccountLoginWebView.post(new Runnable() {
+			public void run() {
+				mAccountLoginWebView.setWebViewClient(client);
+			}
+		});
 
 		account = OPAccount.relogin(null, null, null,
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html"

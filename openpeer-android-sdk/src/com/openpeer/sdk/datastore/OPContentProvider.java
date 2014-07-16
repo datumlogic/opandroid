@@ -163,9 +163,23 @@ public class OPContentProvider extends ContentProvider {
 		case USERS:
 			return queryUsers(uri, projection, selection, selectionArgs, sortOrder);
 		case USER:
-
 		}
-		return null;
+		
+		String tableName = uri.getLastPathSegment();
+		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+		Cursor cursor = db.query(
+				tableName,
+				projection, // The columns to return from the query
+				selection, // The columns for the where clause
+				selectionArgs, // The values for the where clause
+				null, // don't group the rows
+				null, // don't filter by row groups
+				sortOrder // The sort order
+				);
+		Log.d("test", "query uri for messages " + uri + " result " + cursor.getCount());
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		return cursor;
 	}
 
 	/**

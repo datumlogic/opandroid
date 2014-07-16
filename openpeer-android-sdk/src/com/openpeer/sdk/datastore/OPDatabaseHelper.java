@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * Created by brucexia on 2014-06-03.
+ * 
  */
 public class OPDatabaseHelper extends SQLiteOpenHelper {
 	public static final int DATABASE_VERSION = 1;

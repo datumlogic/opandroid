@@ -65,15 +65,12 @@ public class OPDataManager {
 		Log.d("test", "LoginManager.init relogin info " + mReloginInfo);
 		downloadedIdentityContactVersions = new Hashtable<Long, String>();
 		// mContacts = new Hashtable<Long, List<OPRolodexContact>>();
-		if (mReloginInfo != null) {
-			// Read idenities contacts and contacts
-			mSelfContacts = mDatastoreDelegate.getSelfIdentityContacts();
-		}
+		// if (mReloginInfo != null) {
+		// // Read idenities contacts and contacts
+		// mSelfContacts = mDatastoreDelegate.getSelfIdentityContacts();
+		// }
 	}
 
-	public List<OPRolodexContact> getRolodexContactsForIdentity(long identityId) {
-		return mDatastoreDelegate.getContacts(identityId);
-	}
 
 	/**
 	 * This function should only be called in AccountState_Ready from OPAccountDelegate. This function update the database
@@ -105,10 +102,6 @@ public class OPDataManager {
 		return mSelfContacts;
 	}
 
-	public void registerDatastoreDelegate(OPDatastoreDelegate delegate) {
-		mDatastoreDelegate = delegate;
-	}
-
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
 		OPDownloadedRolodexContacts downloaded = identity
 				.getDownloadedRolodexContacts();
@@ -118,23 +111,22 @@ public class OPDataManager {
 		mDatastoreDelegate.setDownloadedContactsVersion(identityId,
 				contactsVersion);
 		List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
-//		if (downloaded.isFlushAllRolodexContacts()) {
-//			mDatastoreDelegate.flushContactsForIdentity(identityId);
-//			mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
-//			// mContacts.put(identityId, contacts);
-//		} else {
-			for (OPRolodexContact contact : contacts) {
-				switch (contact.getDisposition()) {
-				case Disposition_Remove:
-					mDatastoreDelegate.deleteContact(contact.getId());
-					break;
-				case Disposition_Update:
-					// break;
-				default:
-					mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
-				}
+		// if (downloaded.isFlushAllRolodexContacts()) {
+		// mDatastoreDelegate.flushContactsForIdentity(identityId);
+		// mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
+		// // mContacts.put(identityId, contacts);
+		// } else {
+		for (OPRolodexContact contact : contacts) {
+			switch (contact.getDisposition()) {
+			case Disposition_Remove:
+				mDatastoreDelegate.deleteContact(contact.getIdentityURI());
+				break;
+			case Disposition_Update:
+				// break;
+			default:
+				mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
 			}
-//		}
+		}
 		identityLookup(identity, contacts);
 		notifyContactsChanged();
 	}

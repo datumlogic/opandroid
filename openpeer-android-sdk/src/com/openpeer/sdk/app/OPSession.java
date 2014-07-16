@@ -216,8 +216,8 @@ public class OPSession extends Observable {
 		OPCall call = OPCall.placeCall(mConvThread, newContact, includeAudio,
 				includeVideo);
 		call.setPeerUser(user);
-		//		CallbackHandler.getInstance().registerCallDelegate(call,
-		//				delegate);
+		// CallbackHandler.getInstance().registerCallDelegate(call,
+		// delegate);
 		return call;
 
 	}
@@ -340,6 +340,7 @@ public class OPSession extends Observable {
 		if (isWindowAttached()) {
 			message.setRead(true);
 		}
+
 		if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
 			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
 		} else {
@@ -365,12 +366,21 @@ public class OPSession extends Observable {
 		return null;
 	}
 
-	//	public OPCall placeCall(List<OPUser> users, boolean audio, boolean video) {
-	//		currentCall = OPCall.placeCall(mConvThread, users.get(0).getOPContact(), audio,
-	//				video);
-	//		currentCall.setPeerUser(users.get(0));
+	public long[] getParticipantIDs() {
+		long IDs[] = new long[mParticipants.size()];
+		for (int i = 0; i < IDs.length; i++) {
+			OPUser user = mParticipants.get(i);
+			IDs[i] = user.getUserId();
+		}
+		return IDs;
+	}
+
+	// public OPCall placeCall(List<OPUser> users, boolean audio, boolean video) {
+	// currentCall = OPCall.placeCall(mConvThread, users.get(0).getOPContact(), audio,
+	// video);
+	// currentCall.setPeerUser(users.get(0));
 	//
-	//		return currentCall;
+	// return currentCall;
 	//
-	//	}
+	// }
 }
