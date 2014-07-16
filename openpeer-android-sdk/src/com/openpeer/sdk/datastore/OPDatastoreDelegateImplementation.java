@@ -414,6 +414,23 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	}
 
 	@Override
+	public boolean updateMessageDeliveryStatus(long windowId, String messageId, int deliveryStatus, long updateTime) {
+		ContentValues values = new ContentValues();
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, messageId);
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TIME, updateTime);
+		values.put(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS, deliveryStatus);
+		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + windowId;
+		// mContext.getContentResolver().notifyChange(Uri.parse(url), null);
+		Uri uri = mContext.getContentResolver().insert(Uri.parse(url), values);
+		if (uri != null) {
+			Log.d("test", "now notify change for " + url);
+			mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public void saveWindow(long windowId, List<OPUser> userList) {
 		ContentValues values = new ContentValues();
 		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, windowId);

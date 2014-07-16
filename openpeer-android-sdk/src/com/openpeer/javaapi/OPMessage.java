@@ -8,12 +8,16 @@ import android.text.format.Time;
 //Important: Don't remove the empty constructor since it's being used in jni
 // Don't change any existing functions signature without making sure it doesn't break jni!
 public class OPMessage {
+	public static final int DS_DISCOVERING = 0;
+	public static final int DS_USER_NOT_AVAILABLE = 1;
+	public static final int DS_DELIVERED = 2;
+
 	public static class OPMessageType {
 		public static final String TYPE_TEXT = "text/x-application-hookflash-message-text";
 		public static final String TYPE_CONTROL = "text/x-application-hookflash-message-system";
-		//Used to record/show call record
-		//		public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
-		//		public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
+		// Used to record/show call record
+		// public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
+		// public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
 
 	}
 
@@ -36,6 +40,7 @@ public class OPMessage {
 	private long mSenderId;
 	private String mMessageId;
 	private boolean mRead;// read time in millis
+	private int mDeliveryStatus;
 
 	public boolean isRead() {
 		return mRead;
@@ -65,7 +70,7 @@ public class OPMessage {
 	}
 
 	public OPMessage(long senderId, String mMessageType, String message,
-			long sendTime, String messageId) {
+			long sendTime, String messageId, boolean isRead, int deliveryStatus) {
 		super();
 		this.mSenderId = senderId;
 		this.mMessageType = mMessageType;
@@ -73,6 +78,13 @@ public class OPMessage {
 		this.mTime = new Time();
 		mTime.set(sendTime);
 		this.mMessageId = messageId;
+		this.mRead = isRead;
+		this.mDeliveryStatus = deliveryStatus;
+	}
+
+	public OPMessage(long senderId, String mMessageType, String message,
+			long sendTime, String messageId) {
+		this(senderId, mMessageType, message, sendTime, messageId, true, 0);
 	}
 
 	public OPContact getFrom() {
@@ -107,12 +119,22 @@ public class OPMessage {
 		this.mTime = mTime;
 	}
 
+	public int getDeliveryStatus() {
+		return mDeliveryStatus;
+	}
+
+	public void setDeliveryStatus(int status) {
+		mDeliveryStatus = status;
+	}
+
 	public static OPMessage fromCursor(Cursor cursor) {
 		return new OPMessage(cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
 				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
 				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
 				cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
-				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)));
+				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
+				cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ)) == 1,
+				cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
 	}
 
 	public String toString() {

@@ -67,6 +67,8 @@ public interface OPDatastoreDelegate {
 
 	OPIdentityContact getIdentityContact(String identityContactId);
 
+	boolean updateMessageDeliveryStatus(long windowId, String messageId, int deliveryStatus, long updateTime);
+
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record); public boolean saveCallRecord(OPConversationRecord record);
 	 * public List<OPConversationRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords); public
