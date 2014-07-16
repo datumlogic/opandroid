@@ -15,17 +15,15 @@ import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
+import com.openpeer.sdk.model.OPUser;
 
 /**
- * A session represents extact state of a conversation thread.Any state change of a conversation thread will cause an existing session to
- * terminate and a new session to be crated. The state change includes: -- Adding/Removing a contact from the conversation thread.
+ * A session represents extact state of a conversation thread.
  * 
- * @author brucexia
  * 
  */
 public class OPSession extends Observable {
-	// When a new contact is added to the session, a new session is created and
-	// its parent is set to the current session.
+	
 	// So if Alice and Bob, Eric in group chat, Alice then added Mike, a new
 	// session is created but from Alice point of view,
 	// there's only one group chat and when we construct the chat history after
@@ -240,7 +238,7 @@ public class OPSession extends Observable {
 
 	}
 
-	public void onMessageDeliverd(String MessageId, OPContact contact) {
+	public void onMessageDeliveryStateChanged(String MessageId, OPContact contact) {
 
 	}
 
@@ -334,7 +332,6 @@ public class OPSession extends Observable {
 	}
 
 	public void onMessageReceived(OPMessage message) {
-		Log.d("test", "thread " + mConvThread.getNativeClassPtr() + " received message " + message);
 		OPUser user = getUserByContact(message.getFrom());
 		message.setSenderId(user.getUserId());
 		if (isWindowAttached()) {

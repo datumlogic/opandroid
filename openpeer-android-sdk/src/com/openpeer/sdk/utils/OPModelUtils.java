@@ -1,8 +1,8 @@
 package com.openpeer.sdk.utils;
 
-import com.openpeer.sdk.app.OPUser;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.sdk.model.OPUser;
 
 public class OPModelUtils {
 	public static OPContact getPeer(OPCall call) {

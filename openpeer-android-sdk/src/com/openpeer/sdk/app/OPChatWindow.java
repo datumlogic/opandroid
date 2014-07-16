@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
+import com.openpeer.sdk.model.OPUser;
 
 public class OPChatWindow {
 	OPConversationThread thread;

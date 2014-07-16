@@ -9,8 +9,8 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.sdk.app.OPSession;
-import com.openpeer.sdk.app.OPUser;
 import com.openpeer.sdk.model.OPHomeUser;
+import com.openpeer.sdk.model.OPUser;
 
 public interface OPDatastoreDelegate {
 	public String getReloginInfo();
