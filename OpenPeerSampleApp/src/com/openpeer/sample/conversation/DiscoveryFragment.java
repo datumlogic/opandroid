@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.openpeer.sample.BaseFragment;
+import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ContactItemView;
 import com.openpeer.sample.contacts.ContactsFragment;
@@ -181,8 +182,8 @@ public class DiscoveryFragment extends BaseFragment implements SwipeRefreshLayou
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
-																		// query
+					ProviderContracts.CONTENT_URI_CONTACTS_VIEW,
+
 					LIST_PROJECTION, // Projection to return
 					builder.toString(), // No selection clause
 					slectionArgs, // No selection arguments

@@ -26,6 +26,7 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.BaseFragment;
+import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPSession;
 import com.openpeer.sdk.datastore.DatabaseContracts;
@@ -224,7 +225,8 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 			// Returns a new CursorLoader
 			return new CursorLoader(
 					getActivity(), // Parent activity context
-					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
+					ProviderContracts.CONTENT_URI_WINDOW_VIEW,
+//					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
 																	// query
 					null,// LIST_PROJECTION, // Projection to return
 					null, // No selection clause
