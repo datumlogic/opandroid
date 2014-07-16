@@ -1,26 +1,24 @@
 package com.openpeer.sdk.datastore;
 
-import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * 
+ * Database definitions and create statements.
  */
 public class DatabaseContracts {
-	private static final String TEXT_TYPE = " TEXT";
-	private static final String INTEGER_TYPE = " INTEGER";
-	private static final String INTEGER_PRIMARY_KEY_TYPE = " INTEGER PRIMARY KEY";
-	private static final String UNIQUE_TYPE = " UNIQUE";
-	private static final String PRIMARY_KEY_TYPE = " PRIMARY KEY";
-	private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS ";
-	private static final String CREATE_VIEW = "CREATE VIEW IF NOT EXISTS ";
+	public static final String TEXT_TYPE = " TEXT";
+	public static final String INTEGER_TYPE = " INTEGER";
+	public static final String INTEGER_PRIMARY_KEY_TYPE = " INTEGER PRIMARY KEY";
+	public static final String UNIQUE_TYPE = " UNIQUE";
+	public static final String PRIMARY_KEY_TYPE = " PRIMARY KEY";
+	public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS ";
+	public static final String CREATE_VIEW = "CREATE VIEW IF NOT EXISTS ";
 
-	private static final String COMMA_SEP = ",";
+	public static final String COMMA_SEP = ",";
 
 	public static final String AUTHORITY = "com.openpeer.sample.provider";
 	static final String SCHEME = "content://";
 	public static final String URI_PREFIX = SCHEME + AUTHORITY;
-	public static final String CONTENT_URI_CONTACTS = ContactEntry.TABLE_NAME;
 
 	static String getCompositePrimaryKey(String[] columnNames) {
 		StringBuilder stringBuilder = new StringBuilder("PRIMARY KEY (");
@@ -42,7 +40,7 @@ public class DatabaseContracts {
 	// We shouldn't really need a table for account since we support one account
 	// only,
 	// probably better off storing it in a preference file
-	// The private key and secret should be stored in system keychain for
+	// The public key and secret should be stored in system keychain for
 	// security.
 	public static abstract class AccountEntry implements BaseColumns {
 		public static final String TABLE_NAME = "account";
@@ -106,16 +104,14 @@ public class DatabaseContracts {
 	public static abstract class UserEntry implements BaseColumns {
 		public static final String TABLE_NAME = "users";
 
-		private static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 
 		// Note the slash on the end of this one, as opposed to the
 		// URI_PATH_INFO, which has no slash.
-		private static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 1;
 
-		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
 		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
-		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
 		public static final String COLUMN_NAME_PEER_URI = "peer_uri";
@@ -135,14 +131,12 @@ public class DatabaseContracts {
 
 	public static abstract class ConversationWindowEntry implements BaseColumns {
 		static final String TABLE_NAME = "conversation_window";
-		private static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 
-		private static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 1;
 
-		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
 		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
-		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 		// Group id -- not used now
 		public static final String COLUMN_NAME_GROUP_ID = "group_id";
 		// This is window id based on participants
@@ -181,18 +175,15 @@ public class DatabaseContracts {
 
 	public static abstract class MessageEntry implements BaseColumns {
 		public static final String TABLE_NAME = "message";
-		private static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 
-		private static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 2;
 
-		// content://com.afzaln.restclient.provider/messages
-		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
 
 		// for content provider insert() call
 		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
 
-		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 
 		public static final String COLUMN_NAME_MESSAGE_ID = "message_id";
 		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
@@ -225,21 +216,18 @@ public class DatabaseContracts {
 
 	public static abstract class WindowParticipantEntry implements BaseColumns {
 		public static final String TABLE_NAME = "window_participants";
-		private static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 
 		// Note the slash on the end of this one, as opposed to the
 		// URI_PATH_INFO, which has no slash.
-		private static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 1;
 
-		// content://com.afzaln.restclient.provider/messages
-		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
 
 		// content://com.afzaln.restclient.provider/message/
 		// for content provider insert() call
 		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
 
-		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 		// The session id this pariticipant is associated with
 		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
 		public static final String COLUMN_NAME_USER_ID = "user_id";
@@ -251,16 +239,10 @@ public class DatabaseContracts {
 
 	public static abstract class WindowViewEntry implements BaseColumns {
 		public static final String TABLE_NAME = "windows";
-		private static final String URI_PATH_INFO = "/" + TABLE_NAME;
-		private static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 1;
 
-		// content://com.openpeer.sdk.provider/messages
-		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
-
-		public static final Uri CONTENT_ID_URI_BASE = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/");
-
-		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 		public static final String COLUMN_NAME_GROUP_ID = "group_id";
 		// This is window id based on participants
 		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
@@ -272,7 +254,7 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_AVATAR = "avatar";
 		public static final String COLUMN_NAME_UNREAD_COUNT = "unread_count";
 
-		private static final String COLUMNS = "a." + BaseColumns._ID + " as " + BaseColumns._ID + "," + "a."
+		public static final String COLUMNS = "a." + BaseColumns._ID + " as " + BaseColumns._ID + "," + "a."
 				+ ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + COLUMN_NAME_WINDOW_ID + "," + "group_concat(" + "b."
 				+ COLUMN_NAME_USER_ID + "," + "',')" + " as " + COLUMN_NAME_USER_ID + ","
 				+ "group_concat(" + "b." + COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as " + COLUMN_NAME_PARTICIPANT_NAMES + ","
@@ -302,21 +284,12 @@ public class DatabaseContracts {
 	 */
 	public static abstract class ContactsViewEntry implements BaseColumns {
 		public static final String TABLE_NAME = "contacts";
-		private static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 
 		// Note the slash on the end of this one, as opposed to the
 		// URI_PATH_INFO, which has no slash.
-		private static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 		public static final int INFO_ID_PATH_POSITION = 1;
-
-		// content://com.openpeer.sdk.provider/messages
-		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_INFO);
-
-		// content://com.openpeer.sdk.provider/messages/
-		// for content provider insert() call
-		public static final Uri CONTENT_ID_URI_BASE = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/");
-
-		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + URI_PATH_INFO + "/#");
 
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		// HashCode of identityUri.

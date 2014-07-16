@@ -113,8 +113,7 @@ public class OPContentProvider extends ContentProvider {
 		long result = db.insert(DatabaseContracts.MessageEntry.TABLE_NAME, null, values);
 		Log.d("test", "result " + result + " inserting uri " + uri);
 		getContext().getContentResolver().notifyChange(ContentUris.withAppendedId(uri, result), null);
-		getContext().getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
-		// test();
+		notifyChatGroupChange();
 		return uri;
 	}
 
@@ -346,7 +345,7 @@ public class OPContentProvider extends ContentProvider {
 	}
 
 	void notifyChatGroupChange() {
-		getContext().getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
+		getContext().getContentResolver().notifyChange(getContentUri(WindowViewEntry.URI_PATH_INFO), null);
 	}
 
 	void test() {
