@@ -185,7 +185,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 					+ contact + " identityId " + identityId);
 			saveOrUpdateContact(contact, identityId);
 		}
-		mContext.getContentResolver().notifyChange(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null);
+		mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null);
 		return true;
 	}
 
@@ -311,7 +311,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				+ "=" + id;
 		String cSelection = ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
 				+ "=" + id;
-//		mOpenHelper.getWritableDatabase().
+		// mOpenHelper.getWritableDatabase().
 		mOpenHelper.getWritableDatabase().delete(
 				IdentityContactEntry.TABLE_NAME, selection, null);
 		mOpenHelper.getWritableDatabase().delete(ContactEntry.TABLE_NAME,
@@ -510,8 +510,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		ContentValues values = new ContentValues();
 		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID,
 				session.getCurrentWindowId());
-//		values.put(ConversationWindowEntry.COLUMN_NAME_LAST_READ_MSG_ID,
-//				session.getReadMessageId());
+		// values.put(ConversationWindowEntry.COLUMN_NAME_LAST_READ_MSG_ID,
+		// session.getReadMessageId());
 		long rowId = mOpenHelper.getWritableDatabase().insertWithOnConflict(
 				ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, null, values,
 				SQLiteDatabase.CONFLICT_ABORT);
@@ -611,7 +611,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		Uri uri = mContext.getContentResolver().insert(Uri.parse(url), values);
 		if (uri != null) {
 			Log.d("test", "now notify change for " + url);
-			mContext.getContentResolver().notifyChange(WindowViewEntry.CONTENT_URI, null);
+			mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null);
 			return true;
 		}
 		return false;
@@ -692,13 +692,13 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public void saveWindow(long windowId, List<OPUser> userList) {
 		ContentValues values = new ContentValues();
 		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, windowId);
-		Cursor cursor = mContext.getContentResolver().query(WindowViewEntry.CONTENT_URI, null,
+		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null,
 				WindowViewEntry.COLUMN_NAME_WINDOW_ID + "=" + windowId, null, null);
 		if (cursor != null && cursor.getCount() > 0) {
 			Log.d("test", "saveWindow window exists " + windowId);
 			return;
 		}
-		Uri uri = mContext.getContentResolver().insert(ConversationWindowEntry.CONTENT_URI, values);
+		Uri uri = mContext.getContentResolver().insert(OPContentProvider.getContentUri(ConversationWindowEntry.URI_PATH_INFO), values);
 		if (uri != null) {
 			Log.d("test", "Inserted window " + Arrays.deepToString(values.valueSet().toArray()));
 
@@ -715,10 +715,11 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				// contentValues[i].put(ConversationWindowEntry., windowId);
 
 			}
-			int count = mContext.getContentResolver().bulkInsert(WindowParticipantEntry.CONTENT_URI, contentValues);
+			int count = mContext.getContentResolver().bulkInsert(OPContentProvider.getContentUri(WindowParticipantEntry.URI_PATH_INFO),
+					contentValues);
 			Log.d("test", "Inserted window participants " + count + " values " + Arrays.deepToString(contentValues));
 
-			mContext.getContentResolver().notifyChange(DatabaseContracts.WindowViewEntry.CONTENT_URI, null);
+			mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null);
 		}
 	}
 
@@ -734,7 +735,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 					.getPeerFilePublic().getPeerFileString());
 			values.put(UserEntry.COLUMN_NAME_PEER_URI, oContact.getPeerURI());
 
-			Uri uri = mContext.getContentResolver().insert(DatabaseContracts.UserEntry.CONTENT_URI, values);
+			Uri uri = mContext.getContentResolver().insert(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values);
 			if (uri != null) {
 				// this is a new user
 				long userId = Long.parseLong(uri.getLastPathSegment());
@@ -746,10 +747,10 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 						UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
 						UserEntry.COLUMN_NAME_IDENTITY_URI + "=?";
 				String args[] = { contact.getStableID(), oContact.getPeerURI(), contact.getIdentityURI() };
-				mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, selection, args);
+				mContext.getContentResolver().update(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values, selection, args);
 				// TODO:update contacts with userId
 			}
-			mContext.getContentResolver().notifyChange(DatabaseContracts.ContactsViewEntry.CONTENT_URI, null);
+			mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null);
 
 		}
 	}
@@ -783,19 +784,20 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
 				UserEntry.COLUMN_NAME_IDENTITY_URI + "=?";
 		String aueryArgs[] = { user.getLockboxStableId(), user.getPeerUri(), user.getIdentityUri() };
-		Cursor cursor = mContext.getContentResolver().query(UserEntry.CONTENT_URI, null, selection, aueryArgs, null);
+		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), null, selection,
+				aueryArgs, null);
 		if (cursor != null && cursor.getCount() > 0) {
 			// TODO: Compare and Update
 			cursor.moveToFirst();
 			userID = cursor.getLong(0);
 			selection = UserEntry.COLUMN_NAME_STABLE_ID + "=" + userID;
 			cursor.close();
-			int count = mContext.getContentResolver().update(DatabaseContracts.UserEntry.CONTENT_URI, values, "_id=" + userID, null);
-
+			int count = mContext.getContentResolver().update(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values,
+					"_id=" + userID, null);
 
 		} else {
 			// Insert
-			Uri uri = mContext.getContentResolver().insert(DatabaseContracts.UserEntry.CONTENT_URI, values);
+			Uri uri = mContext.getContentResolver().insert(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values);
 			if (uri != null) {
 				// this is a new user
 				userID = Long.parseLong(uri.getLastPathSegment());
@@ -812,7 +814,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	OPUser getUserByPeerUri(String peerUri) {
 		String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + " in (select _id from " + UserEntry.TABLE_NAME + " where "
 				+ UserEntry.COLUMN_NAME_PEER_URI + "=?)";
-		Cursor cursor = mContext.getContentResolver().query(ContactsViewEntry.CONTENT_URI, null,
+		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null,
 				selection, new String[] { peerUri }, null);
 		Log.d("test", "getUserByPeerUri " + cursor.getCount());
 		if (cursor != null && cursor.getCount() > 0) {
@@ -827,7 +829,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public List<OPUser> getUsers(long[] userIDs) {
 		List<OPUser> users = new ArrayList<OPUser>();
 		for (long userId : userIDs) {
-			Cursor cursor = mContext.getContentResolver().query(ContactsViewEntry.CONTENT_URI, null,
+			Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null,
 					ContactsViewEntry.COLUMN_NAME_USER_ID + "=" + userId, null, null);
 			OPUser user = OPUser.fromDetailCursor(cursor);
 			users.add(user);
