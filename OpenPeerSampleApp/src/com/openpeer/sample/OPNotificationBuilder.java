@@ -12,7 +12,7 @@ import android.util.Log;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.ConversationActivity;
-import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.model.OPSession;
 
 public class OPNotificationBuilder {
 	private static String TAG = OPNotificationBuilder.class.getSimpleName();

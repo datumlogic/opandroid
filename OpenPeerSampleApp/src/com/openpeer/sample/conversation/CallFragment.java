@@ -31,7 +31,7 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 import com.squareup.picasso.Picasso;
 

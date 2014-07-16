@@ -41,9 +41,9 @@ import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.app.OPChatWindow;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPSession;
 import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 import com.squareup.picasso.Picasso;
 

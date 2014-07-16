@@ -20,7 +20,7 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.ConversationActivity;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
-import com.openpeer.sdk.app.OPSession;
+import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 
 public class OPSessionManager {

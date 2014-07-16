@@ -28,8 +28,8 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
-import com.openpeer.sdk.app.OPSession;
 import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.model.OPSession;
 
 public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
