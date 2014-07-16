@@ -520,48 +520,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	@Override
 	public List<OPSession> getRecentSessions() {
-		// Cursor sessionCursor = mOpenHelper.getWritableDatabase().query(
-		// ConversationWindowEntry.TABLE_NAME,
-		// new String[] { ConversationWindowEntry.COLUMN_NAME_WINDOW_ID,
-		// ConversationWindowEntry.COLUMN_NAME_LAST_READ_MSG_ID }, null,
-		// null, null, null, null);
-		// if (sessionCursor != null) {
-		// List<OPSession> sessions = new ArrayList<OPSession>();
-		// sessionCursor.moveToFirst();
-		// int sessionIdIndex = sessionCursor
-		// .getColumnIndex(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID);
-		// int lastReadMsgIndex = sessionCursor
-		// .getColumnIndex(ConversationWindowEntry.COLUMN_NAME_LAST_READ_MSG_ID);
-		//
-		// while (!sessionCursor.isAfterLast()) {
-		// OPSession session = new OPSession();
-		// long sessionId = sessionCursor.getLong(sessionIdIndex);
-		// Cursor participantCursor = mOpenHelper
-		// .getWritableDatabase()
-		// .query(WindowParticipantEntry.TABLE_NAME,
-		// new String[] { WindowParticipantEntry.COLUMN_NAME_IDENTITY_ID },
-		// WindowParticipantEntry.COLUMN_NAME_WINDOW_ID
-		// + "=" + sessionId, null, null, null,
-		// null);
-		// if (participantCursor != null) {
-		// List<OPIdentityContact> contacts = new
-		// ArrayList<OPIdentityContact>();
-		// participantCursor.moveToFirst();
-		// while (!participantCursor.isAfterLast()) {
-		// String id = participantCursor
-		// .getString(participantCursor
-		// .getColumnIndex(WindowParticipantEntry.COLUMN_NAME_IDENTITY_ID));
-		// OPIdentityContact contact = this.getIdentityContact(id);
-		// contacts.add(contact);
-		// }
-		// participantCursor.close();
-		// }
-		// session.setLastMessage(getLastMessageForSession(sessionId));
-		// sessions.add(session);
-		// }
-		// sessionCursor.close();
-		// return sessions;
-		// }
 		return null;
 	}
 
