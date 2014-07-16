@@ -24,10 +24,22 @@ public class OPContentProvider extends ContentProvider {
 	static final int MESSAGE = 5;
 
 	static final int USER = 100;
-	private static final int CONTACT = 4;
+	private static final int CONTACT = 6;
 	private static final String TAG = OPContentProvider.class.getSimpleName();
 
 	UriMatcher mUriMatcher;
+	static String sAuthority = "";
+	static final String SCHEME = "content://";
+
+	/**
+	 * Helper class to get the content URI with the authority provided by application and path string defined in DatabaseContracts
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static Uri getContentUri(String path) {
+		return Uri.parse(SCHEME + sAuthority + path);
+	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] arg2) {
@@ -230,7 +242,6 @@ public class OPContentProvider extends ContentProvider {
 	}
 
 	void initMatcher() {
-		String authority = "";
 		try {
 			ProviderInfo providers[] = this.getContext().getPackageManager()
 					.getPackageInfo(getContext().getPackageName(), PackageManager.GET_PROVIDERS).providers;
@@ -238,7 +249,7 @@ public class OPContentProvider extends ContentProvider {
 				String myName = OPContentProvider.class.getCanonicalName();
 				for (ProviderInfo provider : providers) {
 					if (myName.equals(provider.name)) {
-						authority = provider.authority;
+						sAuthority = provider.authority;
 					}
 				}
 			}
@@ -247,15 +258,15 @@ public class OPContentProvider extends ContentProvider {
 			e.printStackTrace();
 		}
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		mUriMatcher.addURI(authority,
+		mUriMatcher.addURI(sAuthority,
 				MessageEntry.TABLE_NAME + "/window/#", MESSAGES);
-		mUriMatcher.addURI(authority,
+		mUriMatcher.addURI(sAuthority,
 				ContactsViewEntry.TABLE_NAME, CONTACTS);
-		mUriMatcher.addURI(authority,
+		mUriMatcher.addURI(sAuthority,
 				WindowViewEntry.TABLE_NAME, WINDOWS);
-		mUriMatcher.addURI(authority,
+		mUriMatcher.addURI(sAuthority,
 				UserEntry.TABLE_NAME, USERS);
-		mUriMatcher.addURI(authority,
+		mUriMatcher.addURI(sAuthority,
 				MessageEntry.TABLE_NAME + "/window/#/#", USERS);
 	}
 
