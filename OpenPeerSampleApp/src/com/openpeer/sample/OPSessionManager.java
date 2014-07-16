@@ -21,7 +21,7 @@ import com.openpeer.sample.conversation.ConversationActivity;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.app.OPSession;
-import com.openpeer.sdk.app.OPUser;
+import com.openpeer.sdk.model.OPUser;
 
 public class OPSessionManager {
 	List<OPSession> mSessions;
@@ -42,9 +42,6 @@ public class OPSessionManager {
 		return session;
 	}
 
-	public OPSession getSessionById(String id) {
-		return null;
-	}
 
 	/**
 	 * Look up existing session for thread. Uses thread id to look up
@@ -53,15 +50,13 @@ public class OPSessionManager {
 	 * @return
 	 */
 	public OPSession getSessionOfThread(OPConversationThread thread) {
-		Log.d("test", "search session for thread " + thread.getThreadID() + " sessions " + mSessions.size());
-
 		for (OPSession session : mSessions) {
 			if (session.getThread() != null && thread.getThreadID().equals(session.getThread().getThreadID())) {
 				Log.d("test", "found session for thread " + thread.getThreadID() + " sessions " + mSessions.size());
 				return session;
 			}
 		}
-		// No existing session with the thread, now lets try to find
+		// No existing session for the thread
 		return new OPSession(thread);
 	}
 
@@ -80,35 +75,6 @@ public class OPSessionManager {
 		}
 		return null;
 	}
-
-	/**
-	 * Find the session "including" the users, if not create one. Return ongoing call in the session or make a new call
-	 * 
-	 * @param ids
-	 * @param audio
-	 * @param video
-	 * @return
-	 */
-	// public OPCall findOrMakeCall(long[] ids, boolean audio, boolean video) {
-	// OPSession session = getSessionWithUsers(ids);
-	// List<OPUser> users = null;
-	// if (session != null) {
-	// if (session.getCurrentCall() != null) {
-	// return session.getCurrentCall();
-	// } else {
-	// users = session.getParticipants();
-	// }
-	// } else {
-	// users = OPDataManager.getDatastoreDelegate().getUsers(ids);
-	// session = new OPSession(users);
-	// addSession(session);
-	// }
-	//
-	// OPCall call = session.placeCall(users, audio, video);
-	// mCalls.put(call.getPeerUser().getPeerUri(), call);
-	// return call;
-	//
-	// }
 
 	public OPCall findAndReplaceCall(long[] ids, boolean audio, boolean video) {
 		return null;
@@ -207,13 +173,11 @@ public class OPSessionManager {
 			@Override
 			public void onConversationThreadMessageDeliveryStateChanged(OPConversationThread conversationThread, String messageID,
 					MessageDeliveryStates state) {
-				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override
 			public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
-				// TODO Auto-generated method stub
 
 			}
 		};
@@ -247,15 +211,6 @@ public class OPSessionManager {
 		if (AppConfig.DEBUG) {
 			CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
 		}
-	}
-
-	public OPCall getCallById(String id) {
-		for (OPCall call : mCalls.values()) {
-			if (call.getCallID().equals(id)) {
-				return call;
-			}
-		}
-		return null;
 	}
 
 	public OPCall getOngoingCallForPeer(String peerUri) {
