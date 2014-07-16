@@ -1,11 +1,11 @@
 package com.openpeer.sample.conversation;
 
-import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_AVATAR_URL;
-import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
+import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
+import static com.openpeer.sdk.datastore.DatabaseContracts.*;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -30,10 +30,7 @@ import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ContactItemView;
-import com.openpeer.sample.contacts.ContactsFragment;
-
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
 
 public class DiscoveryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
@@ -160,7 +157,7 @@ public class DiscoveryFragment extends BaseFragment implements SwipeRefreshLayou
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
+	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URI,
 			ContactsViewEntry.COLUMN_NAME_STABLE_ID, ContactsViewEntry.COLUMN_NAME_USER_ID };
 
 	@Override

@@ -28,9 +28,10 @@ import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
 import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
+import static com.openpeer.sdk.datastore.DatabaseContracts.*;
+
 
 public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
 		SearchView.OnQueryTextListener, SearchView.OnCloseListener {
@@ -168,7 +169,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
+	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URI,
 			ContactsViewEntry.COLUMN_NAME_STABLE_ID, ContactsViewEntry.COLUMN_NAME_USER_ID };
 
 	@Override

@@ -65,10 +65,7 @@ public class OPSessionManager {
 		return new OPSession(thread);
 	}
 
-	public List<OPSession> getRecentSessions() {
-		return OPDataManager.getDatastoreDelegate().getRecentSessions();
-	}
-
+	
 	/**
 	 * Look up the session "for" users. This call use calculated window id to find the session.
 	 * 

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.IdentityContactEntry;
@@ -220,7 +221,7 @@ public class OPRolodexContact {
 
 	public static OPRolodexContact contactFromCursor(Cursor cursor) {
 		int identityUrlIndex = cursor
-				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_URI);
+				.getColumnIndex(DatabaseContracts.COLUMN_NAME_IDENTITY_URI);
 		int identityProviderIndex = cursor
 				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER);
 		int nameIndex = cursor
@@ -238,8 +239,8 @@ public class OPRolodexContact {
 				cursor.getString(nameIndex), cursor.getString(profileURLIndex),
 				cursor.getString(vprofileURLIndex), null,
 				cursor.getLong(assoiatedIdentityIdIndex));
-		List<OPAvatar> avatars = OPDataManager.getDatastoreDelegate().getAvatars(contact.getId());
-		Log.d("test", "OPRolodexContact contactFromCursor avatars " + avatars.size());
+		List<OPAvatar> avatars = OPDataManager.getDatastoreDelegate().getAvatars(contact.getIdentityURI());
+
 		contact.setAvatars(avatars);
 
 		return contact;

@@ -38,6 +38,8 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
 import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
+import static com.openpeer.sdk.datastore.DatabaseContracts.*;
+
 
 import com.squareup.picasso.Picasso;
 
@@ -145,7 +147,7 @@ public class ProfilePickerFragment extends BaseFragment implements SwipeRefreshL
 
 			public void update(Cursor cursor) {
 				final long userId = cursor.getLong(cursor.getColumnIndex(ContactsViewEntry.COLUMN_NAME_USER_ID));
-				String avatar = cursor.getString(cursor.getColumnIndex(ContactsViewEntry.COLUMN_NAME_AVATAR_URL));
+				String avatar = cursor.getString(cursor.getColumnIndex(DatabaseContracts.COLUMN_NAME_AVATAR_URI));
 				String name = cursor.getString(cursor.getColumnIndex(ContactsViewEntry.COLUMN_NAME_CONTACT_NAME));
 				Picasso.with(getActivity()).load(avatar).into(imageView);
 				nameView.setText(name);
@@ -175,7 +177,7 @@ public class ProfilePickerFragment extends BaseFragment implements SwipeRefreshL
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
+	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URI,
 			ContactsViewEntry.COLUMN_NAME_STABLE_ID, ContactsViewEntry.COLUMN_NAME_USER_ID };
 
 	@Override

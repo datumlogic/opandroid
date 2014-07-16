@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 
@@ -52,7 +53,7 @@ public class ChatInfo {
 		long mLastMessageTime = cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME));
 		// TODO: join avatars properly
 		// String avatarUri = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_AVATARS));
-		String avatarUri = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_AVATAR));
+		String avatarUri = cursor.getString(cursor.getColumnIndex(DatabaseContracts.COLUMN_NAME_AVATAR_URI));
 		String avatarUris[] = null;
 		if (!TextUtils.isEmpty(avatarUri)) {
 			avatarUris = avatarUri.split(",");
@@ -70,7 +71,7 @@ public class ChatInfo {
 
 	public String getAvatarUri() {
 		// todo: Support proper selection of avatar url
-		if (mAvatarUri != null & mAvatarUri.length > 0) {
+		if (mAvatarUri != null && mAvatarUri.length > 0) {
 			return mAvatarUri[0];
 		}
 		return null;
