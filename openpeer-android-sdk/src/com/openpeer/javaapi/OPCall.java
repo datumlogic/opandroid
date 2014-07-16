@@ -1,8 +1,8 @@
 package com.openpeer.javaapi;
 
+import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
 
-import com.openpeer.sdk.app.OPUser;
 import android.text.format.Time;
 
 public class OPCall {

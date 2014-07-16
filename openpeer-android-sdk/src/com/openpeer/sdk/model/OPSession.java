@@ -1,4 +1,4 @@
-package com.openpeer.sdk.app;
+package com.openpeer.sdk.model;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -15,7 +15,8 @@ import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.app.OPChatWindow;
+import com.openpeer.sdk.app.OPDataManager;
 
 /**
  * A session represents extact state of a conversation thread.

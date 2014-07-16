@@ -20,7 +20,6 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPSession;
 import com.openpeer.sdk.datastore.DatabaseContracts.AvatarEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
@@ -32,6 +31,7 @@ import com.openpeer.sdk.datastore.DatabaseContracts.UserEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.sdk.model.OPHomeUser;
+import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 
 import static com.openpeer.sdk.datastore.DatabaseContracts.*;
