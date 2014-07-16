@@ -35,6 +35,9 @@ public class OPSdkConfig {
 	private static final String KEY_IDENTITY_PROVIDE_DOMAIN = "identityProviderDomain";
 	private static final String KEY_IDENTITY_BASE_URI = "identityFederateBaseURI";
 	private static final String KEY_NAMESPACE_GRANT_SERVICE_URL = "namespaceGrantServiceURL";
+	private static final String KEY_LOCKBOX_SERVICE_DOMAIN = "lockBoxServiceDomain";
+	private static final String KEY_APP_ID = "appId";
+	private static final String KEY_APP_APPKEY = "appKey";
 
 	private static final long DURATION_ONE_MONTH_IN_MILLIS = 30 * 24 * 60 * 60
 			* 1000;
@@ -45,6 +48,7 @@ public class OPSdkConfig {
 	private static OPSdkConfig instance;
 	private static final String instanceId = java.util.UUID
 			.randomUUID().toString();
+	private static final String KEY_GRANT_ID = "grantId";
 
 	public static String getInstanceid() {
 		return instanceId;
@@ -77,6 +81,14 @@ public class OPSdkConfig {
 		return mProperties.getProperty(KEY_NAMESPACE_GRANT_SERVICE_URL);
 	}
 
+	public String getLockboxServiceDomain() {
+		return mProperties.getProperty(KEY_LOCKBOX_SERVICE_DOMAIN);
+	}
+	
+	public String getGrantId(){
+		return mProperties.getProperty(KEY_GRANT_ID);
+	}
+
 	public String getAPPSettingsString() {
 		try {
 			JSONObject parent = new JSONObject();
@@ -105,8 +117,8 @@ public class OPSdkConfig {
 			jsonObject
 					.put("openpeer/calculated/authorizated-application-id",
 							OPStack.createAuthorizedApplicationID(
-									"com.openpeer.nativeApp",
-									"14b2c9df6713df465d97d0736863c42964faa678",
+									mProperties.getProperty(KEY_APP_ID),
+									mProperties.getProperty(KEY_APP_APPKEY),
 									expires));
 
 			jsonObject.put("openpeer/calculated/user-agent",

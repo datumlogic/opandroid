@@ -76,8 +76,10 @@ public class LoginManager {
 				accountDelegate);
 
 		account = OPAccount.login(null, null, null,
-				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
-				"bojanGrantID", "identity-v1-rel-lespaul-i.hcs.io", false);
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+				OPSdkConfig.getInstance().getGrantId(),
+				OPSdkConfig.getInstance().getLockboxServiceDomain(),
+				false);
 		OPDataManager.getInstance().setSharedAccount(account);
 		client.mAccount = account;
 		accountDelegate.mAccount = account;
@@ -100,8 +102,7 @@ public class LoginManager {
 		});
 
 		account = OPAccount.relogin(null, null, null,
-				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html"
-																	// namespaceGrantOuterFrameURLUponReload
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
 				reloginInfo);
 		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
 				mAccountLoginWebView, account);
@@ -276,7 +277,7 @@ public class LoginManager {
 				mLoginView.post(new Runnable() {
 					public void run() {
 						mLoginView.loadUrl(OPSdkConfig.getInstance()
-								.getNamespaceGrantServiceUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose");
+								.getNamespaceGrantServiceUrl());
 					}
 				});
 				break;
@@ -330,7 +331,7 @@ public class LoginManager {
 					CallbackHandler.getInstance().registerIdentityDelegate(
 							identity, identityDelegate);
 					identity.attachDelegate(identityDelegate,
-							"http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
+							OPSdkConfig.getInstance().getOuterFrameUrl());
 
 				} else {
 					OPDataManager.getInstance().setIdentities(identities);
