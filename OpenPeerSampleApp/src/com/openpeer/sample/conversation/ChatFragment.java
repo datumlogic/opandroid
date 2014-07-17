@@ -39,12 +39,12 @@ import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sample.util.DateFormatUtils;
-import com.openpeer.sdk.app.OPChatWindow;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.utils.OPModelUtils;
 import com.squareup.picasso.Picasso;
 
 public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -97,7 +97,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		} else {
 			mUserIDs = savedInstanceState.getLongArray(IntentData.ARG_PEER_USER_IDS);
 		}
-		mWindowId = OPChatWindow.getWindowId(mUserIDs);
+		mWindowId = OPModelUtils.getWindowId(mUserIDs);
 		OPNotificationBuilder.cancelNotificationForChat((int) mWindowId);
 		mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
 		if (mSession == null) {

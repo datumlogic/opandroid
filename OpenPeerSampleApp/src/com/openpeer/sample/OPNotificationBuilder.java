@@ -33,7 +33,7 @@ public class OPNotificationBuilder {
 				.setSmallIcon(R.drawable.ic_action_call_light);
 		// Create the notification
 		launchIntent = new Intent(context, ConversationActivity.class);
-		String peerUri = call.getPeerUser().getPeerUri();
+		String peerUri = call.getPeer().getPeerURI();
 		launchIntent.putExtra(IntentData.ARG_CONVERSATION_ACTION, IntentData.ACTION_CALL);
 		launchIntent.putExtra(IntentData.ARG_PEER_URI, peerUri);
 		// Set the intent to perform when tapped
