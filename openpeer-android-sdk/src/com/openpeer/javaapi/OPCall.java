@@ -58,10 +58,21 @@ public class OPCall {
 	public native void hold(boolean hold); // place the call on hold (or remove from hold)
 
 	public native void hangup(CallClosedReasons reason); // end the call
+	// End of JNI
+
+	public OPContact getPeer() {
+		OPContact peer = getCaller();
+		if (peer.isSelf()) {
+			return getCallee();
+		} else {
+			return peer;
+		}
+	}
 
 	public OPUser getPeerUser() {
 		if (mUser == null) {
-			mUser = OPModelUtils.getPeerUser(this);
+			OPContact contact = getPeer();
+			return new OPUser(contact, getConversationThread().getIdentityContactList(contact));
 		}
 		return mUser;
 	}

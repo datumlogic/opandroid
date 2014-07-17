@@ -15,8 +15,8 @@ import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.sdk.app.OPChatWindow;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.utils.OPModelUtils;
 
 /**
  * A session represents extact state of a conversation thread.
@@ -60,7 +60,7 @@ public class OPSession extends Observable {
 		return mConvThread.getThreadID();
 	}
 
-	Hashtable<String, OPMessage> getMessageDeliveryQueue() {
+	private Hashtable<String, OPMessage> getMessageDeliveryQueue() {
 		if (mMessageDeliveryQueue == null) {
 			mMessageDeliveryQueue = new Hashtable<String, OPMessage>();
 		}
@@ -161,7 +161,7 @@ public class OPSession extends Observable {
 			// This function will also set the userId so don't worry
 			mParticipants.add(user);
 		}
-		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
+		mCurrentWindowId = OPModelUtils.getWindowId(mParticipants);
 		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
 	}
 
@@ -182,7 +182,7 @@ public class OPSession extends Observable {
 
 		mParticipants = users;
 		addContactToThread(users);
-		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
+		mCurrentWindowId = OPModelUtils.getWindowId(mParticipants);
 		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
 	}
 
@@ -322,13 +322,13 @@ public class OPSession extends Observable {
 	}
 
 	public boolean isForUsers(long[] userIDs) {
-		return getCurrentWindowId() == OPChatWindow.getWindowId(userIDs);
+		return getCurrentWindowId() == OPModelUtils.getWindowId(userIDs);
 	}
 
 	public void addParticipant(List<OPUser> users) {
 		mParticipants.addAll(users);
 		addContactToThread(users);
-		mCurrentWindowId = OPChatWindow.getWindowId(mParticipants);
+		mCurrentWindowId = OPModelUtils.getWindowId(mParticipants);
 		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
 	}
 
