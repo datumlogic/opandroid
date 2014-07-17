@@ -58,19 +58,36 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 	JNIEnv *jni_env = 0;
 	ICallPtr callPtr;
 
-	IConversationThreadPtr convThread = OpenPeerCoreManager::getConversationThreadFromList(conversationThread);
-	IContactPtr contact = OpenPeerCoreManager::getContactFromList(toContact);
-	if(convThread && contact)
+	if (conversationThread == NULL || toContact == NULL)
+	{
+		return object;
+	}
+
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(conversationThread, fid);
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(toContact, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+
+//	IConversationThreadPtr convThread = OpenPeerCoreManager::getConversationThreadFromList(conversationThread);
+//	IContactPtr contact = OpenPeerCoreManager::getContactFromList(toContact);
+	if(coreConversationThreadPtr && contactPtr)
 	{
 
 		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Placing call...");
-		callPtr = ICall::placeCall(convThread, contact ,includeAudio, includeVideo);
+		callPtr = ICall::placeCall(*coreConversationThreadPtr, *contactPtr ,includeAudio, includeVideo);
 
 	}
 
 	if(callPtr)
 	{
-		jni_env = getEnv();
 		if(jni_env)
 		{
 			ICallPtr* ptrToCall = new boost::shared_ptr<ICall>(callPtr);

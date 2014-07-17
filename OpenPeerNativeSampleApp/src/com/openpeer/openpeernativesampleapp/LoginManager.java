@@ -17,6 +17,7 @@ import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPAccountDelegateImplementation;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
 import com.openpeer.delegates.OPCallDelegateImplementation;
+import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
 import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
@@ -112,7 +113,7 @@ public class LoginManager {
 	static LoginHandlerInterface mLoginHandler;
 	public static OPIdentityLookup mIdentityLookup;
 	public static OPConversationThread mConvThread;
-	public static OPConversationThreadDelegate mConvThreadDelegate;
+	public static OPConversationThreadDelegate mConversationThreadDelegate;
 	public static OPCacheDelegate mCacheDelegate;
 	public static OPCall mCall;
 	public static OPCallDelegate mCallDelegate;
@@ -280,12 +281,13 @@ public class LoginManager {
 
 			String reloginInfo = sharedPref.getString("/openpeer/reloginInformation", "");
 
+			mConversationThreadDelegate = new OPConversationThreadDelegateImplementation();
 			mCallDelegate = new OPCallDelegateImplementation();
 			if(reloginInfo.length() == 0)
 			{
 
 				
-				mAccount = OPAccount.login(null, null, mCallDelegate, 
+				mAccount = OPAccount.login(null, mConversationThreadDelegate, mCallDelegate, 
 						"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
 						"bojanGrantID", 
 						"identity-v1-rel-lespaul-i.hcs.io", false);
@@ -294,7 +296,7 @@ public class LoginManager {
 			else
 			{
 				//stableId = mAccount.getStableID();
-				mAccount = OPAccount.relogin(null, null, mCallDelegate, 
+				mAccount = OPAccount.relogin(null, mConversationThreadDelegate, mCallDelegate, 
 						"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
 						reloginInfo);
 

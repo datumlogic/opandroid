@@ -4,8 +4,6 @@
 #include "globals.h"
 
 
-
-
 //ICallDelegate implementation
 CallDelegateWrapper::CallDelegateWrapper(jobject delegate)
 {
@@ -28,7 +26,6 @@ void CallDelegateWrapper::onCallStateChanged(ICallPtr call, ICall::CallStates st
 	}
 
 	if (javaDelegate != NULL){
-		//String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
 
 		//create new OPCall java object
 		cls = findClass("com/openpeer/javaapi/OPCall");
@@ -40,28 +37,10 @@ void CallDelegateWrapper::onCallStateChanged(ICallPtr call, ICall::CallStates st
 		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 		jni_env->SetLongField(callObject, fid, (jlong)ptrToCall);
 
-		jclass clas = jni_env->GetObjectClass(javaDelegate);
+		//get delegate implementation class name in order to get method
+		String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
 
-		// First get the class object
-		jmethodID mid = jni_env->GetMethodID(clas, "getClass", "()Ljava/lang/Class;");
-		jobject clsObj = jni_env->CallObjectMethod(javaDelegate, mid);
-
-		// Now get the class object's class descriptor
-		clas = jni_env->GetObjectClass(clsObj);
-
-		// Find the getName() method on the class object
-		mid = jni_env->GetMethodID(clas, "getName", "()Ljava/lang/String;");
-
-		// Call the getName() to get a jstring object back
-		jstring strObj = (jstring)jni_env->CallObjectMethod(clsObj, mid);
-
-		// Now get the c string from the java jstring object
-		const char* str = jni_env->GetStringUTFChars(strObj, NULL);
-
-		// Print the class name
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Calling class is: %s", str);
-
-		jclass callbackClass = findClass(str);
+		jclass callbackClass = findClass(className.c_str());
 		method = jni_env->GetMethodID(callbackClass, "onCallStateChanged", "(Lcom/openpeer/javaapi/OPCall;Lcom/openpeer/javaapi/CallStates;)V");
 		jni_env->CallVoidMethod(javaDelegate, method,callObject, OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallStates", (jint) state));
 	}

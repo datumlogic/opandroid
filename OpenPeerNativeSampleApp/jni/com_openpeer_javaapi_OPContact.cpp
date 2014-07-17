@@ -58,16 +58,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFile
 			cls = findClass("com/openpeer/javaapi/OPContact");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
-			contactMap.insert(std::pair<jobject, IContactPtr>(object, contactPtr));
+			//contactMap.insert(std::pair<jobject, IContactPtr>(object, contactPtr));
 
+			IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(contactPtr);
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong contact = (jlong) contactPtr.get();
+			jlong contact = (jlong) ptrToContact;
 			jni_env->SetLongField(object, fid, contact);
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",contactPtr.get(), contact);
 
-			OpenPeerCoreManager::coreContactList.push_back(contactPtr);
+			//OpenPeerCoreManager::coreContactList.push_back(contactPtr);
 
 		}
 	}
@@ -102,14 +103,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
 
+			IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(contactPtr);
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong contact = (jlong) contactPtr.get();
+			jlong contact = (jlong) ptrToContact;
 			jni_env->SetLongField(object, fid, contact);
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",contactPtr.get(), contact);
 
-			OpenPeerCoreManager::coreContactList.push_back(contactPtr);
+			//OpenPeerCoreManager::coreContactList.push_back(contactPtr);
 
 		}
 	}
@@ -125,10 +127,16 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPContact_getStableID
 (JNIEnv *, jobject owner)
 {
 	jlong ret = 0;
-	IContactPtr coreContact = OpenPeerCoreManager::getContactFromList(owner);
-	if (coreContact)
+	JNIEnv * jni_env = 0;
+	jni_env = getEnv();
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(owner, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+	if (contactPtr)
 	{
-		ret = coreContact->getID();
+		ret = contactPtr->get()->getID();
 	}
 	return ret;
 }
@@ -142,10 +150,16 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPContact_isSelf
 (JNIEnv *, jobject owner)
 {
 	jboolean ret;
-	IContactPtr coreContact = OpenPeerCoreManager::getContactFromList(owner);
-	if (coreContact)
+	JNIEnv * jni_env = 0;
+	jni_env = getEnv();
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(owner, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+	if (contactPtr)
 	{
-		ret = coreContact->isSelf();
+		ret = contactPtr->get()->isSelf();
 	}
 	return ret;
 }
@@ -156,13 +170,19 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPContact_isSelf
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerURI
-(JNIEnv *env, jobject owner)
+(JNIEnv *, jobject owner)
 {
 	jstring ret;
-	IContactPtr coreContact = OpenPeerCoreManager::getContactFromList(owner);
-	if (coreContact)
+	JNIEnv * jni_env = 0;
+	jni_env = getEnv();
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(owner, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+	if (contactPtr)
 	{
-		ret = env->NewStringUTF(coreContact->getPeerURI().c_str());
+		ret = jni_env->NewStringUTF(contactPtr->get()->getPeerURI().c_str());
 	}
 	return ret;
 }
@@ -178,15 +198,21 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerFilePublic
 	jclass cls;
 	jmethodID method;
 	jobject object;
-	JNIEnv *jni_env = 0;
 	jstring ret;
-	IContactPtr coreContact = OpenPeerCoreManager::getContactFromList(owner);
-	if (coreContact)
+	JNIEnv * jni_env = 0;
+
+	jni_env = getEnv();
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(owner, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+	if (contactPtr)
 	{
 		jni_env = getEnv();
 		if(jni_env)
 		{
-			ElementPtr peerFilePublic = IHelper::convertToElement(coreContact->getPeerFilePublic());
+			ElementPtr peerFilePublic = IHelper::convertToElement(contactPtr->get()->getPeerFilePublic());
 			ret = env->NewStringUTF(IHelper::convertToString(peerFilePublic).c_str());
 
 			//TODO export peer file public to ElementPtr and then convert to String
@@ -216,18 +242,25 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getAssociatedAccou
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPContact_hintAboutLocation
-(JNIEnv *env, jobject owner, jstring locationId)
+(JNIEnv *, jobject owner, jstring locationId)
 {
+	JNIEnv * jni_env = 0;
+
+	jni_env = getEnv();
 	const char *locationIdStr;
-	locationIdStr = env->GetStringUTFChars(locationId, NULL);
+	locationIdStr = jni_env->GetStringUTFChars(locationId, NULL);
 	if (locationIdStr == NULL) {
 		return;
 	}
 
-	IContactPtr coreContact = OpenPeerCoreManager::getContactFromList(owner);
-	if (coreContact)
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(owner, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+	if (contactPtr)
 	{
-		coreContact->hintAboutLocation(locationIdStr);
+		contactPtr->get()->hintAboutLocation(locationIdStr);
 	}
 }
 

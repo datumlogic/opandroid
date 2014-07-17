@@ -3,6 +3,7 @@
 #include "CacheDelegateWrapper.h"
 #include "SettingsDelegateWrapper.h"
 #include "CallDelegateWrapper.h"
+#include "ConversationThreadDelegateWrapper.h"
 
 #ifndef _ANDROID_OPENPEER_GLOBALS_H_
 #define _ANDROID_OPENPEER_GLOBALS_H_
@@ -34,5 +35,6 @@ extern IMediaEnginePtr mediaEnginePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
 extern CallDelegateWrapperPtr callDelegatePtr;
+extern ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;
 
 #endif

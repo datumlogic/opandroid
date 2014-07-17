@@ -140,6 +140,7 @@ jint OpenPeerCoreManager::getIntValueFromEnumObject(jobject enumObject, String e
 
 String OpenPeerCoreManager::getObjectClassName (jobject delegate)
 {
+	String ret;
 	JNIEnv *env = getEnv();
 
 	jclass cls = env->GetObjectClass(delegate);
@@ -158,15 +159,15 @@ String OpenPeerCoreManager::getObjectClassName (jobject delegate)
 	jstring strObj = (jstring)env->CallObjectMethod(clsObj, mid);
 
 	// Now get the c string from the java jstring object
-	const char* str = env->GetStringUTFChars(strObj, NULL);
+	ret = env->GetStringUTFChars(strObj, NULL);
 
 	// Print the class name
-	printf("\nCalling class is: %s\n", str);
+	printf("\nCalling class is: %s\n", ret.c_str());
 
 
 	// Release the memory pinned char array
-	env->ReleaseStringUTFChars(strObj, str);
-	return str;
+	env->ReleaseStringUTFChars(strObj, ret);
+	return ret;
 }
 
 void OpenPeerCoreManager::shutdown()

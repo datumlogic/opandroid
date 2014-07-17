@@ -19,7 +19,7 @@ public IStackDelegate,
 public IMediaEngineDelegate,
 public IAccountDelegate,
 public IIdentityDelegate,
-public IConversationThreadDelegate,
+//public IConversationThreadDelegate,
 //public ICallDelegate,
 public IIdentityLookupDelegate,
 public ILoggerDelegate
@@ -43,28 +43,28 @@ public:
 	virtual void onAccountAssociatedIdentitiesChanged(IAccountPtr account);
 	virtual void onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account);
 
-	//IConversationThreadDelegate implementation
-	virtual void onConversationThreadNew(IConversationThreadPtr conversationThread);
-	virtual void onConversationThreadContactsChanged(IConversationThreadPtr conversationThread);
-	virtual void onConversationThreadContactStateChanged(
-			IConversationThreadPtr conversationThread,
-			IContactPtr contact,
-			IConversationThread::ContactStates state
-	);
-	virtual void onConversationThreadMessage(
-			IConversationThreadPtr conversationThread,
-			const char *messageID
-	);
-	virtual void onConversationThreadMessageDeliveryStateChanged(
-			IConversationThreadPtr conversationThread,
-			const char *messageID,
-			IConversationThread::MessageDeliveryStates state
-	);
-	virtual void onConversationThreadPushMessage(
-			IConversationThreadPtr conversationThread,
-			const char *messageID,
-			IContactPtr contact
-	);
+//	//IConversationThreadDelegate implementation
+//	virtual void onConversationThreadNew(IConversationThreadPtr conversationThread);
+//	virtual void onConversationThreadContactsChanged(IConversationThreadPtr conversationThread);
+//	virtual void onConversationThreadContactStateChanged(
+//			IConversationThreadPtr conversationThread,
+//			IContactPtr contact,
+//			IConversationThread::ContactStates state
+//	);
+//	virtual void onConversationThreadMessage(
+//			IConversationThreadPtr conversationThread,
+//			const char *messageID
+//	);
+//	virtual void onConversationThreadMessageDeliveryStateChanged(
+//			IConversationThreadPtr conversationThread,
+//			const char *messageID,
+//			IConversationThread::MessageDeliveryStates state
+//	);
+//	virtual void onConversationThreadPushMessage(
+//			IConversationThreadPtr conversationThread,
+//			const char *messageID,
+//			IContactPtr contact
+//	);
 
 //	//ICallDelegate implementation
 //	virtual void onCallStateChanged(ICallPtr call, ICall::CallStates state);

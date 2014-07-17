@@ -49,7 +49,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/openpeer/javaapi/OPAccount
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
-(JNIEnv *env, jclass, jobject, jobject,
+(JNIEnv *env, jclass, jobject,
+		jobject javaConversationThreadDelegate,
 		jobject javaCallDelegate,
 		jstring namespaceGrantOuterFrameURLUponReload,
 		jstring grantID,
@@ -79,14 +80,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 		return object;
 	}
 
+	if (javaConversationThreadDelegate == NULL)
+	{
+		return object;
+	}
 	if (javaCallDelegate == NULL)
 	{
 		return object;
 	}
+
+	//set java delegate to conversation thread delegate wrapper and init shared pointer for wrappers
+	conversationThreadDelegatePtr = ConversationThreadDelegateWrapperPtr(new ConversationThreadDelegateWrapper(javaConversationThreadDelegate));
+
 	//set java delegate to call delegate wrapper and init shared pointer for wrappers
 	callDelegatePtr = CallDelegateWrapperPtr(new CallDelegateWrapper(javaCallDelegate));
 
-	OpenPeerCoreManager::accountPtr = IAccount::login(globalEventManager, globalEventManager, callDelegatePtr,
+	OpenPeerCoreManager::accountPtr = IAccount::login(globalEventManager, conversationThreadDelegatePtr, callDelegatePtr,
 			namespaceGrantOuterFrameURLUponReloadStr, grantIDStr, lockboxServiceDomainStr, forceCreateNewLockboxAccount);
 
 	if (OpenPeerCoreManager::accountPtr)
@@ -119,7 +128,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
  * Signature: (Lcom/openpeer/javaapi/OPAccountDelegate;Lcom/openpeer/javaapi/OPConversationThreadDelegate;Lcom/openpeer/javaapi/OPCallDelegate;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPAccount;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
-(JNIEnv *env, jclass, jobject, jobject,
+(JNIEnv *env, jclass, jobject,
+		jobject javaConversationThreadDelegate,
 		jobject javaCallDelegate,
 		jstring namespaceGrantOuterFrameURLUponReload,
 		jstring reloginInformation)
@@ -141,16 +151,24 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 		return object;
 	}
 
+	if (javaConversationThreadDelegate == NULL)
+	{
+		return object;
+	}
+
 	if (javaCallDelegate == NULL)
 	{
 		return object;
 	}
+
+	//set java delegate to conversation thread delegate wrapper and init shared pointer for wrappers
+	conversationThreadDelegatePtr = ConversationThreadDelegateWrapperPtr(new ConversationThreadDelegateWrapper(javaConversationThreadDelegate));
 	//set java delegate to call delegate wrapper and init shared pointer for wrappers
 	callDelegatePtr = CallDelegateWrapperPtr(new CallDelegateWrapper(javaCallDelegate));
 
 
 	ElementPtr reloginElement = IHelper::createElement(reloginInformationStr);
-	OpenPeerCoreManager::accountPtr = IAccount::relogin(globalEventManager, globalEventManager, callDelegatePtr,
+	OpenPeerCoreManager::accountPtr = IAccount::relogin(globalEventManager, conversationThreadDelegatePtr, callDelegatePtr,
 			namespaceGrantOuterFrameURLUponReloadStr, reloginElement);
 
 	if (OpenPeerCoreManager::accountPtr)
