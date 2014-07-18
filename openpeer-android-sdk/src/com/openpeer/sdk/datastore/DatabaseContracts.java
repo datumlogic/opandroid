@@ -51,7 +51,7 @@ public class DatabaseContracts {
 		public static final String TABLE_NAME = "account";
 		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
-		
+
 		public static final String COLUMN_NAME_RELOGIN_INFO = "relogin_info";
 
 	}
@@ -292,6 +292,10 @@ public class DatabaseContracts {
 				+ IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_EXPIRE + " as " + COLUMN_NAME_EXPIRE;
 	}
 
+	public static final String SQL_CREATE_ACCOUNT = CREATE_TABLE + AccountEntry.TABLE_NAME + " ("
+			+ BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
+			+ AccountEntry.COLUMN_NAME_RELOGIN_INFO + TEXT_TYPE + UNIQUE_TYPE
+			+ ")";
 	// Beginning of create table statements. new statements should be added at the end and marked with the DB version created
 	public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW + WindowViewEntry.TABLE_NAME + " AS SELECT d." + BaseColumns._ID
 			+ " as " + BaseColumns._ID + "," + "d." + COLUMN_NAME_WINDOW_ID + " as "
@@ -400,12 +404,17 @@ public class DatabaseContracts {
 	public static final String SQL_CREATE_INDEX_MESSAGES_GROUP = "create index if not exists " + COLUMN_NAME_GROUP_ID + " on "
 			+ MessageEntry.TABLE_NAME + "(" + COLUMN_NAME_GROUP_ID + ")";
 
-	public static final String CREATE_STATEMENTS[] = { DatabaseContracts.SQL_CREATE_IDENTITY,
+	public static final String CREATE_STATEMENTS[] = {
+			DatabaseContracts.SQL_CREATE_ACCOUNT,
+
+			DatabaseContracts.SQL_CREATE_IDENTITY,
 			DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT, DatabaseContracts.SQL_CREATE_CONTACT, DatabaseContracts.SQL_CREATE_AVATAR,
 			DatabaseContracts.SQL_CREATE_USER,
 
 			DatabaseContracts.SQL_CREATE_CONVERSATION_PARTICIPANT, DatabaseContracts.SQL_CREATE_WINDOW,
 			DatabaseContracts.SQL_CREATE_MESSAGES,
+			DatabaseContracts.SQL_CREATE_CALL,
+
 			SQL_CREATE_INDEX_MESSAGES_WINDOW,
 			SQL_CREATE_INDEX_MESSAGES_THREAD,
 			SQL_CREATE_INDEX_MESSAGES_GROUP,

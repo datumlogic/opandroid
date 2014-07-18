@@ -50,14 +50,22 @@ public class OPContentProvider extends ContentProvider {
 
 		CONTACTS(DatabaseContracts.ContactsViewEntry.TABLE_NAME),
 		CONTACT(DatabaseContracts.ContactsViewEntry.TABLE_NAME + "/#"),
+		
+		CONVERSATION_WINDOWS(ConversationWindowEntry.URI_PATH_INFO),
+		CONVERSATION_WINDOW(ConversationWindowEntry.URI_PATH_INFO_ID),
+		
+		WINDOW_PARTICIPANTS(WindowParticipantEntry.URI_PATH_INFO),
+		WINDOW_PARTICIPANT(WindowParticipantEntry.URI_PATH_INFO_ID),
 
 		HISTORY_WINDOW(WindowViewEntry.TABLE_NAME),
 		HISTORY_THREAD(""),
 		HISTORY_GROUP(""),
 		USERS(UserEntry.TABLE_NAME),
 		USER(UserEntry.TABLE_NAME + "/#"),
+		
 		IDENTITY_CONTACTS(IdentityContactEntry.TABLE_NAME),
 		IDENTITY_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
+		
 		ROLODEX_CONTACTS(ContactEntry.TABLE_NAME),
 		ROLODEX_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
 
