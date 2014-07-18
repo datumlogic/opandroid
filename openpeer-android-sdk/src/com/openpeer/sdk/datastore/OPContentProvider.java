@@ -1,5 +1,7 @@
 package com.openpeer.sdk.datastore;
 
+import java.util.List;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -10,6 +12,7 @@ import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import static com.openpeer.sdk.datastore.DatabaseContracts.*;
 
@@ -31,6 +34,50 @@ public class OPContentProvider extends ContentProvider {
 	static String sAuthority = "";
 	static final String SCHEME = "content://";
 
+	static enum MatcherInfo {
+		ACCOUNTS(AccountEntry.TABLE_NAME),
+		ACCOUNT(AccountEntry.TABLE_NAME + "/#"),
+		IDENTTIIES(IdentityEntry.TABLE_NAME),
+		IDENTITY(IdentityEntry.TABLE_NAME + "/#"),
+
+		MESSAGES_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW),
+		MESSAGES_THREAD(MessageEntry.URI_PATH_INFO_THREAD),
+		MESSAGES_GROUP(MessageEntry.URI_PATH_INFO_GROUP),
+
+		MESSAGE_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW_ID),
+		MESSAGE_THREAD(MessageEntry.URI_PATH_INFO_THREAD_ID),
+		MESSAGE_GROUP(MessageEntry.URI_PATH_INFO_GROUP_ID),
+
+		CONTACTS(DatabaseContracts.ContactsViewEntry.TABLE_NAME),
+		CONTACT(DatabaseContracts.ContactsViewEntry.TABLE_NAME + "/#"),
+
+		HISTORY_WINDOW(WindowViewEntry.TABLE_NAME),
+		HISTORY_THREAD(""),
+		HISTORY_GROUP(""),
+		USERS(UserEntry.TABLE_NAME),
+		USER(UserEntry.TABLE_NAME + "/#"),
+		IDENTITY_CONTACTS(IdentityContactEntry.TABLE_NAME),
+		IDENTITY_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
+		ROLODEX_CONTACTS(ContactEntry.TABLE_NAME),
+		ROLODEX_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
+
+		AVATARS(AvatarEntry.TABLE_NAME),
+		AVATAR(AvatarEntry.TABLE_NAME + "/#"),
+
+		CALLS(CallEntry.TABLE_NAME),
+		CALL(CallEntry.TABLE_NAME + "/#");
+
+		private final String mPath;
+
+		private MatcherInfo(final String path) {
+			mPath = path;
+		}
+
+		public String getPath() {
+			return mPath;
+		}
+	}
+
 	/**
 	 * Helper class to get the content URI with the authority provided by application and path string defined in DatabaseContracts
 	 * 
@@ -42,19 +89,20 @@ public class OPContentProvider extends ContentProvider {
 	}
 
 	@Override
-	public int delete(Uri uri, String selection, String[] arg2) {
-		switch (mUriMatcher.match(uri)) {
-		// If the incoming URI is for notes, chooses the Notes projection
-		case CONTACTS:
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+		StringBuilder stringBuilder = new StringBuilder();
+		switch (value) {
+
+		case MESSAGES_WINDOW:
 			return 0;
-		case MESSAGES:
-			return 0;
-		case WINDOWS:
-			return 0;
-		case USERS:
-			return 0;
+
 		}
-		return 0;
+		String table = uri.getLastPathSegment();
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		int result = db.delete(table, selection, selectionArgs);
+		Log.d("test", "update uri for messages " + uri + " result " + result);
+		return result;
 	}
 
 	@Override
@@ -74,28 +122,31 @@ public class OPContentProvider extends ContentProvider {
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		Uri result = null;
-		switch (mUriMatcher.match(uri)) {
-		// If the incoming URI is for notes, chooses the Notes projection
-		// case CONTACTS:
-		// result = insertContacts(uri, values);
-		case MESSAGES:
+		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+		StringBuilder stringBuilder = new StringBuilder();
+		switch (value) {
+		case MESSAGES_WINDOW:
 			return insertMessage(uri, values);
 
-			// case WINDOWS:
-			// result = insertWindow(uri, values);
-			// case USERS:
-			// result = insertWindow(uri, values);
 		default:
-			// TODO: this is a blatant lazy implementation. values and uri needs
-			// to
-			// be validated for sure.
-			String table = uri.getLastPathSegment();
-			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-			long rowId = db.insert(table, null, values);
+			String tableName = null;
+			List<String> pathSegments = uri.getPathSegments();
+			switch (pathSegments.size()) {
+			case 1:
+				tableName = pathSegments.get(0);
+				break;
+			case 2:
+				tableName = pathSegments.get(1);
+				break;
+			}
+			if (tableName != null) {
+				SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+				long rowId = db.insert(tableName, null, values);
 
-			if (rowId != -1) {
-				getContext().getContentResolver().notifyChange(uri, null);
-				return ContentUris.withAppendedId(uri, rowId);
+				if (rowId != -1) {
+					getContext().getContentResolver().notifyChange(uri, null);
+					return ContentUris.withAppendedId(uri, rowId);
+				}
 			}
 		}
 		return result;
@@ -150,36 +201,64 @@ public class OPContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		switch (mUriMatcher.match(uri)) {
-		// If the incoming URI is for notes, chooses the Notes projection
-		case CONTACTS:
-			return queryContacts(uri, projection, selection, selectionArgs, sortOrder);
-		case MESSAGES:
-			return queryMessages(uri, projection, selection, selectionArgs, sortOrder);
-		case MESSAGE:
-			return queryMessage(uri, projection, selection, selectionArgs, sortOrder);
-		case WINDOWS:
-			return queryWindows(uri, projection, selection, selectionArgs, sortOrder);
-		case USERS:
-			return queryUsers(uri, projection, selection, selectionArgs, sortOrder);
-		case USER:
-		}
-		
-		String tableName = uri.getLastPathSegment();
-		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+		StringBuilder stringBuilder = new StringBuilder();
 
-		Cursor cursor = db.query(
-				tableName,
-				projection, // The columns to return from the query
-				selection, // The columns for the where clause
-				selectionArgs, // The values for the where clause
-				null, // don't group the rows
-				null, // don't filter by row groups
-				sortOrder // The sort order
-				);
-		Log.d("test", "query uri for messages " + uri + " result " + cursor.getCount());
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
+		switch (value) {
+		case MESSAGES_WINDOW:
+			int windowId = Integer.parseInt(uri.getLastPathSegment());
+			stringBuilder.append(DatabaseContracts.COLUMN_NAME_WINDOW_ID + "=" + windowId);
+			if (!TextUtils.isEmpty(selection)) {
+				stringBuilder.append(" and ").append(selection);
+			}
+			return queryMessages(uri, projection, stringBuilder.toString(), selectionArgs, sortOrder);
+		case MESSAGE_WINDOW:
+			return queryMessage(uri, projection, selection, selectionArgs, sortOrder);
+		case MESSAGES_THREAD:
+			int threadId = Integer.parseInt(uri.getLastPathSegment());
+			stringBuilder.append(DatabaseContracts.COLUMN_NAME_THREAD_ID + "=" + threadId);
+			if (!TextUtils.isEmpty(selection)) {
+				stringBuilder.append(" and ").append(selection);
+			}
+			return queryMessages(uri, projection, stringBuilder.toString(), selectionArgs, sortOrder);
+		case MESSAGE_THREAD:
+			return queryMessage(uri, projection, selection, selectionArgs, sortOrder);
+		case MESSAGES_GROUP:
+		case MESSAGE_GROUP:
+			return null;
+		default:
+			break;
+
+		}
+
+		String tableName = null;
+		List<String> pathSegments = uri.getPathSegments();
+		switch (pathSegments.size()) {
+		case 1:
+			tableName = pathSegments.get(0);
+			break;
+		case 2:
+			tableName = pathSegments.get(1);
+			break;
+		}
+		if (tableName != null) {
+			SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+			Cursor cursor = db.query(
+					tableName,
+					projection, // The columns to return from the query
+					selection, // The columns for the where clause
+					selectionArgs, // The values for the where clause
+					null, // don't group the rows
+					null, // don't filter by row groups
+					sortOrder // The sort order
+					);
+			Log.d("test", "query uri " + uri + " result " + cursor.getCount());
+			cursor.setNotificationUri(getContext().getContentResolver(), uri);
+			return cursor;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -220,13 +299,21 @@ public class OPContentProvider extends ContentProvider {
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
 		int result;
-		switch (mUriMatcher.match(uri)) {
+		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+		StringBuilder stringBuilder = new StringBuilder();
+
+		switch (value) {
 		// If the incoming URI is for notes, chooses the Notes projection
 		// case CONTACT:
 		// result = updateContacts(uri, values, selection, selectionArgs);
 		// break;
-		case MESSAGES:
-			return updateMessages(uri, values, selection, selectionArgs);
+		case MESSAGES_WINDOW:
+			int windowId = Integer.parseInt(uri.getLastPathSegment());
+			stringBuilder.append(DatabaseContracts.COLUMN_NAME_WINDOW_ID + "=" + windowId);
+			if (!TextUtils.isEmpty(selection)) {
+				stringBuilder.append(" and ").append(selection);
+			}
+			return updateMessages(uri, values, stringBuilder.toString(), selectionArgs);
 			// case WINDOWS:
 			// return 0;
 		default:
@@ -271,16 +358,12 @@ public class OPContentProvider extends ContentProvider {
 			e.printStackTrace();
 		}
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		mUriMatcher.addURI(sAuthority,
-				MessageEntry.TABLE_NAME + "/window/#", MESSAGES);
-		mUriMatcher.addURI(sAuthority,
-				ContactsViewEntry.TABLE_NAME, CONTACTS);
-		mUriMatcher.addURI(sAuthority,
-				WindowViewEntry.TABLE_NAME, WINDOWS);
-		mUriMatcher.addURI(sAuthority,
-				UserEntry.TABLE_NAME, USERS);
-		mUriMatcher.addURI(sAuthority,
-				MessageEntry.TABLE_NAME + "/window/#/#", USERS);
+
+		for (MatcherInfo mi : MatcherInfo.values()) {
+			if (!TextUtils.isEmpty(mi.getPath())) {
+				mUriMatcher.addURI(sAuthority, mi.getPath(), mi.ordinal());
+			}
+		}
 	}
 
 	Cursor queryContacts(Uri uri, String[] projection, String selection,
@@ -302,7 +385,7 @@ public class OPContentProvider extends ContentProvider {
 	Cursor queryMessages(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-		String finalWhere = MessageEntry.COLUMN_NAME_WINDOW_ID + "=" + uri.getLastPathSegment();
+		String finalWhere = COLUMN_NAME_WINDOW_ID + "=" + uri.getLastPathSegment();
 		if (selection != null) {
 			finalWhere = finalWhere + " AND " + selection;
 		}
@@ -361,37 +444,4 @@ public class OPContentProvider extends ContentProvider {
 	void notifyChatGroupChange() {
 		getContext().getContentResolver().notifyChange(getContentUri(WindowViewEntry.URI_PATH_INFO), null);
 	}
-
-	void test() {
-		Cursor cursor = mOpenHelper.getReadableDatabase().query(false, MessageEntry.TABLE_NAME, null, null, null, null, null, null, null,
-				null);
-		Log.d("test", "found messages " + cursor.getCount());
-		if (cursor.getCount() > 0) {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				Log.d("test", "message " + cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_WINDOW_ID)) + " message id " +
-						cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)) + " text " +
-						cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)));
-				cursor.moveToNext();
-			}
-			cursor.close();
-		}
-		cursor = mOpenHelper.getReadableDatabase().query(false, WindowViewEntry.TABLE_NAME, null, null, null, null, null, null, null,
-				null);
-		Log.d("test", "found windows " + cursor.getCount());
-		if (cursor.getCount() > 0) {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				Log.d("test", "window " + cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_WINDOW_ID)) + " message id " +
-						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE)) + " text " +
-						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES)) +
-						cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_USER_ID)) + " text "
-						);
-				cursor.moveToNext();
-			}
-			cursor.close();
-		}
-
-	}
-
 }

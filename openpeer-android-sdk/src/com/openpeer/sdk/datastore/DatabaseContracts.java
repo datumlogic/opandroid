@@ -21,6 +21,9 @@ public class DatabaseContracts {
 	public static final String URI_PREFIX = SCHEME + AUTHORITY;
 	public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
 	public static final String COLUMN_NAME_AVATAR_URI = "avatar_uri";
+	public static final String COLUMN_NAME_WINDOW_ID = "window_id";
+	public static final String COLUMN_NAME_THREAD_ID = "thread_id";
+	public static final String COLUMN_NAME_GROUP_ID = "group_id";
 
 	static String getCompositePrimaryKey(String[] columnNames) {
 		StringBuilder stringBuilder = new StringBuilder("PRIMARY KEY (");
@@ -46,6 +49,9 @@ public class DatabaseContracts {
 	// security.
 	public static abstract class AccountEntry implements BaseColumns {
 		public static final String TABLE_NAME = "account";
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+		
 		public static final String COLUMN_NAME_RELOGIN_INFO = "relogin_info";
 
 	}
@@ -55,8 +61,9 @@ public class DatabaseContracts {
 	 * 
 	 */
 	public static abstract class ContactEntry implements BaseColumns {
-
 		public static final String TABLE_NAME = "contact";
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
 		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
 		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "identity_provider";
@@ -67,6 +74,9 @@ public class DatabaseContracts {
 
 	public static abstract class IdentityContactEntry implements BaseColumns {
 		public static final String TABLE_NAME = "identity_contacts";
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+
 		public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
@@ -81,6 +91,9 @@ public class DatabaseContracts {
 
 	public static abstract class IdentityEntry implements BaseColumns {
 		public static final String TABLE_NAME = "identities";
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+
 		public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
 		public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
 		// The "selfContact" of the identity
@@ -90,6 +103,9 @@ public class DatabaseContracts {
 
 	public static abstract class AvatarEntry implements BaseColumns {
 		public static final String TABLE_NAME = "avatars";
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+
 		public static final String COLUMN_NAME_AVATAR_NAME = "name";
 		public static final String COLUMN_NAME_WIDTH = "width";
 		public static final String COLUMN_NAME_HEIGHT = "height";
@@ -100,13 +116,7 @@ public class DatabaseContracts {
 		public static final String TABLE_NAME = "users";
 
 		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
-
-		// Note the slash on the end of this one, as opposed to the
-		// URI_PATH_INFO, which has no slash.
-		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
-		public static final int INFO_ID_PATH_POSITION = 1;
-
-		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
 		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
 		public static final String COLUMN_NAME_PEER_URI = "peer_uri";
@@ -125,15 +135,10 @@ public class DatabaseContracts {
 	public static abstract class ConversationWindowEntry implements BaseColumns {
 		static final String TABLE_NAME = "conversation_window";
 		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
-
-		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
-		public static final int INFO_ID_PATH_POSITION = 1;
-
-		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 		// Group id -- not used now
 		public static final String COLUMN_NAME_GROUP_ID = "group_id";
 		// This is window id based on participants
-		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
 		// public static final String COLUMN_NAME_LAST_READ_MSG_ID = "lrm_id";
 		// Am I host of group chat, not used now
 		public static final String COLUMN_NAME_THREAD_HOST = "is_host";
@@ -142,42 +147,21 @@ public class DatabaseContracts {
 
 	}
 
-	/**
-	 * Record the state snapshot: when and what contact is added/deleted TODO: refine when requirements are ready
-	 * 
-	 * Not used for now
-	 * 
-	 */
-	public static abstract class ConversationStateChangeEntry implements BaseColumns {
-		public static final String TABLE_NAME = "conversation_state_change";
-		public static final String COLUMN_NAME_THREAD_ID = "thread_id";
-		public static final String COLUMN_NAME_STATE_TIME = "time";
-	}
-
-	/**
-	 * state_type: ADD_CONTACT, REMOVE_CONTACT, CALL_ENDED, etc
-	 * 
-	 * Not used for now
-	 * 
-	 */
-	public static abstract class ConversationStateEntry implements BaseColumns {
-		public static final String TABLE_NAME = "conversation_state";
-		public static final String COLUMN_NAME_state_change_ID = "change_id";
-		public static final String COLUMN_NAME_STATE_TYPE = "state_type";
-	}
-
 	public static abstract class MessageEntry implements BaseColumns {
 		public static final String TABLE_NAME = "message";
-		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_WINDOW = "/" + TABLE_NAME + "/window/#";
+		public static final String URI_PATH_INFO_THREAD = "/" + TABLE_NAME + "/thread/#";
+		public static final String URI_PATH_INFO_GROUP = "/" + TABLE_NAME + "/group/#";
 
+		public static final String URI_PATH_INFO_WINDOW_ID = "/" + TABLE_NAME + "/window/#/#";
+		public static final String URI_PATH_INFO_THREAD_ID = "/" + TABLE_NAME + "/thread/*/#";
+		public static final String URI_PATH_INFO_GROUP_ID = "/" + TABLE_NAME + "/group/#/#";
 		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
-		public static final int INFO_ID_PATH_POSITION = 2;
+
+		public static final String URI_PATH_WINDOW_ID_URI_BASE = "/" + TABLE_NAME + "/window/";
 
 		// for content provider insert() call
-		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
-
 		public static final String COLUMN_NAME_MESSAGE_ID = "message_id";
-		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
 		// for now only text is supported
 		public static final String COLUMN_NAME_MESSAGE_TYPE = "type";
 		// id of peer contact. use your own id or "self" for outgoing message
@@ -196,8 +180,10 @@ public class DatabaseContracts {
 
 	public static abstract class CallEntry implements BaseColumns {
 		public static final String TABLE_NAME = "calls";
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+
 		public static final String COLUMN_NAME_CALL_ID = "call_id";
-		public static final String COLUMN_NAME_THREAD_ID = "thread_id";
 		public static final String COLUMN_NAME_CALLER = "caller";
 		public static final String COLUMN_NAME_CALLEE = "callee";
 		// The "selfContact" of the CALL
@@ -207,19 +193,9 @@ public class DatabaseContracts {
 
 	public static abstract class WindowParticipantEntry implements BaseColumns {
 		public static final String TABLE_NAME = "window_participants";
+
 		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
-
-		// Note the slash on the end of this one, as opposed to the
-		// URI_PATH_INFO, which has no slash.
-		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
-		public static final int INFO_ID_PATH_POSITION = 1;
-
-		// content://com.afzaln.restclient.provider/message/
-		// for content provider insert() call
-		public static final String CONTENT_ID_URI_BASE = SCHEME + AUTHORITY + URI_PATH_INFO + "/";
-
-		// The session id this pariticipant is associated with
-		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		// this is neccessary in case group chat with unknown participants
 		public static final String COLUMN_NAME_USER_NAME = "name";
@@ -234,7 +210,6 @@ public class DatabaseContracts {
 
 		public static final String COLUMN_NAME_GROUP_ID = "group_id";
 		// This is window id based on participants
-		public static final String COLUMN_NAME_WINDOW_ID = "window_id";
 		public static final String COLUMN_NAME_LAST_READ_MSG_ID = "lrm_id";
 		public static final String COLUMN_NAME_LAST_MESSAGE = "last_message";
 		public static final String COLUMN_NAME_LAST_MESSAGE_TIME = "last_message_time";
@@ -243,7 +218,7 @@ public class DatabaseContracts {
 		public static final String COLUMN_NAME_UNREAD_COUNT = "unread_count";
 
 		public static final String COLUMNS = "a." + BaseColumns._ID + " as " + BaseColumns._ID + "," + "a."
-				+ ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as " + COLUMN_NAME_WINDOW_ID + "," + "group_concat(" + "b."
+				+ COLUMN_NAME_WINDOW_ID + " as " + COLUMN_NAME_WINDOW_ID + "," + "group_concat(" + "b."
 				+ COLUMN_NAME_USER_ID + "," + "',')" + " as " + COLUMN_NAME_USER_ID + ","
 				+ "group_concat(" + "b." + COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as " + COLUMN_NAME_PARTICIPANT_NAMES + ","
 				+ "group_concat(" + "b." + COLUMN_NAME_AVATAR_URI + "," + "',')" + " as " + COLUMN_NAME_AVATAR_URI;
@@ -272,12 +247,9 @@ public class DatabaseContracts {
 	 */
 	public static abstract class ContactsViewEntry implements BaseColumns {
 		public static final String TABLE_NAME = "contacts";
-		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 
-		// Note the slash on the end of this one, as opposed to the
-		// URI_PATH_INFO, which has no slash.
-		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
-		public static final int INFO_ID_PATH_POSITION = 1;
+		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
 		public static final String COLUMN_NAME_USER_ID = "user_id";
 		// HashCode of identityUri.
@@ -322,8 +294,8 @@ public class DatabaseContracts {
 
 	// Beginning of create table statements. new statements should be added at the end and marked with the DB version created
 	public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW + WindowViewEntry.TABLE_NAME + " AS SELECT d." + BaseColumns._ID
-			+ " as " + BaseColumns._ID + "," + "d." + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + " as "
-			+ ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_USER_ID + " as "
+			+ " as " + BaseColumns._ID + "," + "d." + COLUMN_NAME_WINDOW_ID + " as "
+			+ COLUMN_NAME_WINDOW_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_USER_ID + " as "
 			+ WindowViewEntry.COLUMN_NAME_USER_ID + "," + "d." + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + " as "
 			+ WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES + ","
 			+ WindowViewEntry.COLUMN_NAME_USER_ID + "," + "d." + COLUMN_NAME_AVATAR_URI + " as " + COLUMN_NAME_AVATAR_URI + ","
@@ -331,10 +303,10 @@ public class DatabaseContracts {
 			+ WindowViewEntry.COLUMN_NAME_LAST_MESSAGE + "," + "c." + MessageEntry.COLUMN_NAME_MESSAGE_TIME + " as "
 			+ WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME + "," + " e.count as " + WindowViewEntry.COLUMN_NAME_UNREAD_COUNT
 			+ " from (SELECT " + WindowViewEntry.COLUMNS + " from " + ConversationWindowEntry.TABLE_NAME + " a " + " left join "
-			+ WindowParticipantEntry.TABLE_NAME + " b " + " using(" + WindowViewEntry.COLUMN_NAME_WINDOW_ID + ") group by window_id)  d"
+			+ WindowParticipantEntry.TABLE_NAME + " b " + " using(" + COLUMN_NAME_WINDOW_ID + ") group by window_id)  d"
 			+ " inner join (select window_id,text,time from " + MessageEntry.TABLE_NAME + " group by window_id) c using(window_id) "
 			+ " left join (select count(*) as count,window_id from message where read=0 group by window_id) e " + " using("
-			+ WindowViewEntry.COLUMN_NAME_WINDOW_ID + ")" + " group by " + WindowViewEntry.COLUMN_NAME_WINDOW_ID;
+			+ COLUMN_NAME_WINDOW_ID + ")" + " group by " + COLUMN_NAME_WINDOW_ID;
 	public static final String SQL_CREATE_VIEW_CONTACT = CREATE_VIEW + ContactsViewEntry.TABLE_NAME + " AS SELECT "
 			+ ContactsViewEntry.COLUMNS + " from " + ContactEntry.TABLE_NAME + " left join " + IdentityContactEntry.TABLE_NAME + " using("
 			+ COLUMN_NAME_IDENTITY_URI + ")" + " left join " + AvatarEntry.TABLE_NAME + " on " + AvatarEntry.TABLE_NAME
@@ -384,7 +356,7 @@ public class DatabaseContracts {
 			+ COLUMN_NAME_AVATAR_URI + TEXT_TYPE + " )";
 
 	public static final String SQL_CREATE_WINDOW = CREATE_TABLE + ConversationWindowEntry.TABLE_NAME + " (" + BaseColumns._ID
-			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + ConversationWindowEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP
 			+ ConversationWindowEntry.COLUMN_NAME_GROUP_ID + TEXT_TYPE + " )";
 
 	public static final String SQL_CREATE_GROUP = CREATE_TABLE + BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
@@ -400,24 +372,33 @@ public class DatabaseContracts {
 
 	public static final String SQL_CREATE_CONVERSATION_PARTICIPANT = CREATE_TABLE + WindowParticipantEntry.TABLE_NAME
 			+ " (" + WindowParticipantEntry._ID + INTEGER_TYPE + COMMA_SEP
-			+ WindowParticipantEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
+			+ COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
 			+ WindowParticipantEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP
 			+ WindowParticipantEntry.COLUMN_NAME_USER_NAME + TEXT_TYPE + COMMA_SEP
 			+ ConversationWindowEntry.COLUMN_NAME_GROUP_ID + TEXT_TYPE + COMMA_SEP
 			+ COLUMN_NAME_AVATAR_URI + TEXT_TYPE + COMMA_SEP
-			+ getCompositePrimaryKey(new String[] { WindowParticipantEntry.COLUMN_NAME_WINDOW_ID,
+			+ getCompositePrimaryKey(new String[] { COLUMN_NAME_WINDOW_ID,
 					WindowParticipantEntry.COLUMN_NAME_USER_ID }) + " )";
 
 	public static final String SQL_CREATE_MESSAGES = CREATE_TABLE + MessageEntry.TABLE_NAME + " ("
 			+ MessageEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
 			+ MessageEntry.COLUMN_NAME_MESSAGE_ID + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
-			+ MessageEntry.COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
+			+ COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
+			+ COLUMN_NAME_THREAD_ID + TEXT_TYPE + COMMA_SEP
+			+ COLUMN_NAME_GROUP_ID + INTEGER_TYPE + COMMA_SEP
+
 			+ MessageEntry.COLUMN_NAME_MESSAGE_TYPE + TEXT_TYPE + COMMA_SEP
 			+ MessageEntry.COLUMN_NAME_SENDER_ID + INTEGER_TYPE + COMMA_SEP
 			+ MessageEntry.COLUMN_NAME_MESSAGE_TEXT + TEXT_TYPE + COMMA_SEP
 			+ MessageEntry.COLUMN_NAME_MESSAGE_TIME + TEXT_TYPE + COMMA_SEP
 			+ MessageEntry.COLUMN_NAME_MESSAGE_READ + INTEGER_TYPE + " default 0" + COMMA_SEP
 			+ MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE + " )";
+	public static final String SQL_CREATE_INDEX_MESSAGES_WINDOW = "create index if not exists " + COLUMN_NAME_WINDOW_ID + " on "
+			+ MessageEntry.TABLE_NAME + "(" + COLUMN_NAME_WINDOW_ID + ")";
+	public static final String SQL_CREATE_INDEX_MESSAGES_THREAD = "create index if not exists " + COLUMN_NAME_THREAD_ID + " on "
+			+ MessageEntry.TABLE_NAME + "(" + COLUMN_NAME_WINDOW_ID + ")";
+	public static final String SQL_CREATE_INDEX_MESSAGES_GROUP = "create index if not exists " + COLUMN_NAME_GROUP_ID + " on "
+			+ MessageEntry.TABLE_NAME + "(" + COLUMN_NAME_GROUP_ID + ")";
 
 	public static final String CREATE_STATEMENTS[] = { DatabaseContracts.SQL_CREATE_IDENTITY,
 			DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT, DatabaseContracts.SQL_CREATE_CONTACT, DatabaseContracts.SQL_CREATE_AVATAR,
@@ -425,8 +406,11 @@ public class DatabaseContracts {
 
 			DatabaseContracts.SQL_CREATE_CONVERSATION_PARTICIPANT, DatabaseContracts.SQL_CREATE_WINDOW,
 			DatabaseContracts.SQL_CREATE_MESSAGES,
+			SQL_CREATE_INDEX_MESSAGES_WINDOW,
+			SQL_CREATE_INDEX_MESSAGES_THREAD,
+			SQL_CREATE_INDEX_MESSAGES_GROUP,
 			// Note: always keep view creation at end
-			DatabaseContracts.SQL_CREATE_VIEW_CONTACT, DatabaseContracts.SQL_CREATE_VIEW_WINDOW, };
+			DatabaseContracts.SQL_CREATE_VIEW_CONTACT, DatabaseContracts.SQL_CREATE_VIEW_WINDOW };
 	// END of create statement
 
 }

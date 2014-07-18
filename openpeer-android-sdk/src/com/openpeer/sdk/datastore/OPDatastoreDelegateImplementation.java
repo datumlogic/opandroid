@@ -400,12 +400,11 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TYPE,
 				message.getMessageType());
 		values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
-		values.put(MessageEntry.COLUMN_NAME_WINDOW_ID, windowId);
+		values.put(COLUMN_NAME_WINDOW_ID, windowId);
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.isRead() ? 1 : 0);
 
-		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + windowId;
-		// mContext.getContentResolver().notifyChange(Uri.parse(url), null);
-		Uri uri = mContext.getContentResolver().insert(Uri.parse(url), values);
+		String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + windowId;
+		Uri uri = mContext.getContentResolver().insert(OPContentProvider.getContentUri(url), values);
 		if (uri != null) {
 			Log.d("test", "now notify change for " + url);
 			mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null);
@@ -420,10 +419,11 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, messageId);
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TIME, updateTime);
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS, deliveryStatus);
-		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + windowId;
-		// mContext.getContentResolver().notifyChange(Uri.parse(url), null);
-		Uri uri = mContext.getContentResolver().insert(Uri.parse(url), values);
-		if (uri != null) {
+		String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + windowId;
+		String selection = MessageEntry.COLUMN_NAME_MESSAGE_ID + "=?";
+		String args[] = new String[] { messageId };
+		int count = mContext.getContentResolver().update(OPContentProvider.getContentUri(url), values, selection, args);
+		if (count > 0) {
 			Log.d("test", "now notify change for " + url);
 			mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null);
 			return true;
@@ -434,9 +434,9 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	@Override
 	public void saveWindow(long windowId, List<OPUser> userList) {
 		ContentValues values = new ContentValues();
-		values.put(ConversationWindowEntry.COLUMN_NAME_WINDOW_ID, windowId);
+		values.put(COLUMN_NAME_WINDOW_ID, windowId);
 		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null,
-				WindowViewEntry.COLUMN_NAME_WINDOW_ID + "=" + windowId, null, null);
+				COLUMN_NAME_WINDOW_ID + "=" + windowId, null, null);
 		if (cursor != null && cursor.getCount() > 0) {
 			Log.d("test", "saveWindow window exists " + windowId);
 			return;
@@ -450,7 +450,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			for (int i = 0; i < userList.size(); i++) {
 				OPUser user = userList.get(i);
 				contentValues[i] = new ContentValues();
-				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_WINDOW_ID, windowId);
+				contentValues[i].put(COLUMN_NAME_WINDOW_ID, windowId);
 
 				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_ID, user.getUserId());
 				contentValues[i].put(WindowParticipantEntry.COLUMN_NAME_USER_NAME, user.getName());
@@ -584,9 +584,9 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public void markMessagesRead(long windowId) {
 		ContentValues values = new ContentValues();
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, 1);
-		String where = MessageEntry.COLUMN_NAME_WINDOW_ID + "=" + windowId + " and " + MessageEntry.COLUMN_NAME_MESSAGE_READ + "=0";
-		String url = DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + windowId;
-		int count = mContext.getContentResolver().update(Uri.parse(url), values, where, null);
+		String where = MessageEntry.COLUMN_NAME_MESSAGE_READ + "=0";
+		String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + windowId;
+		int count = mContext.getContentResolver().update(OPContentProvider.getContentUri(url), values, where, null);
 		Log.d("test", "markMessagesRead update count " + count);
 	}
 

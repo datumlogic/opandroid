@@ -24,7 +24,7 @@ import com.openpeer.sdk.utils.OPModelUtils;
  * 
  */
 public class OPSession extends Observable {
-	
+
 	// So if Alice and Bob, Eric in group chat, Alice then added Mike, a new
 	// session is created but from Alice point of view,
 	// there's only one group chat and when we construct the chat history after
@@ -371,6 +371,14 @@ public class OPSession extends Observable {
 			IDs[i] = user.getUserId();
 		}
 		return IDs;
+	}
+
+	public boolean isForThread(OPConversationThread thread) {
+		//TODO: create appropriate logic,e.g. based on windowId
+		if (thread.getThreadID().equals(mConvThread.getThreadID())) {
+			return true;
+		}
+		return false;
 	}
 
 	// public OPCall placeCall(List<OPUser> users, boolean audio, boolean video) {
