@@ -75,7 +75,6 @@ public class OPSessionManager {
 		return null;
 	}
 
-
 	/**
 	 * Find existing session "including" the users
 	 * 
@@ -159,6 +158,11 @@ public class OPSessionManager {
 			@Override
 			public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
 				OPMessage message = conversationThread.getMessage(messageID);
+				if (message.getFrom().isSelf()) {
+					Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
+							+ message.getMessageType());
+					return;
+				}
 				OPSession session = getSessionOfThread(conversationThread);
 				session.onMessageReceived(message);
 				if (OPApplication.getInstance().isInBackground()) {
