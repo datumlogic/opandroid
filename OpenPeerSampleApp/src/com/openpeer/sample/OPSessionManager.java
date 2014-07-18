@@ -51,7 +51,7 @@ public class OPSessionManager {
 	public OPSession getSessionOfThread(OPConversationThread thread) {
 		for (OPSession session : mSessions) {
 			// TODO: use windowId to search when specified
-			if (session.getThread() != null && thread.getThreadID().equals(session.getThread().getThreadID())) {
+			if (session.isForThread(thread)) {
 				Log.d("test", "found session for thread " + thread.getThreadID() + " sessions " + mSessions.size());
 				return session;
 			}

@@ -28,8 +28,9 @@ public abstract class ProviderContracts {
 	// Beginning MessageEntry
 
 	// content://com.afzaln.restclient.provider/messages
-	public static final Uri CONTENT_URI_MESSAGE = Uri.parse(URI_PREFIX + MessageEntry.URI_PATH_INFO);
-	public static final Uri CONTENT_ID_URI_PATTERN_MESSAGE = Uri.parse(SCHEME + AUTHORITY + MessageEntry.URI_PATH_INFO + "/#");
+	public static final Uri CONTENT_URI_MESSAGE = Uri.parse(URI_PREFIX + MessageEntry.URI_PATH_INFO_WINDOW);
+	public static final Uri CONTENT_ID_URI_PATTERN_MESSAGE = Uri.parse(SCHEME + AUTHORITY + MessageEntry.URI_PATH_INFO_WINDOW + "/#");
+	
 
 	// End of MessageEntry
 
@@ -51,4 +52,8 @@ public abstract class ProviderContracts {
 	public static final Uri CONTENT_URI_CONTACTS_VIEW = Uri.parse(URI_PREFIX + ContactsViewEntry.URI_PATH_INFO);
 	public static final Uri CONTENT_ID_URI_PATTERN_CONTACTS_VIEW = Uri.parse(SCHEME + AUTHORITY + ContactsViewEntry.URI_PATH_INFO + "/#");
 	// End of ContactsViewEntry
+	
+	public static Uri getContentUri(String path) {
+		return Uri.parse(SCHEME + AUTHORITY + path);
+	}
 }

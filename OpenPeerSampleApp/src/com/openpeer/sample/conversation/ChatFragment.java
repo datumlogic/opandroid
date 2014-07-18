@@ -36,6 +36,7 @@ import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
+import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sample.util.DateFormatUtils;
@@ -399,8 +400,8 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + mWindowId), null, // Projection to
-																													// return
+					ProviderContracts.getContentUri(DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + mWindowId),
+					null,
 					null, // No selection clause
 					null, // No selection arguments
 					"time asc" // Default sort order
