@@ -1,4 +1,4 @@
-package com.openpeer.sdk.app;
+package com.openpeer.sdk.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import android.database.Cursor;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentityContact;
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
 
 public class OPUser {

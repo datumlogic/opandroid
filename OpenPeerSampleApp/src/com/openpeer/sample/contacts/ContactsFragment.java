@@ -25,11 +25,13 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.openpeer.sample.BaseFragment;
+import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
 import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
+import static com.openpeer.sdk.datastore.DatabaseContracts.*;
+
 
 public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
 		SearchView.OnQueryTextListener, SearchView.OnCloseListener {
@@ -167,19 +169,19 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URL,
+	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URI,
 			ContactsViewEntry.COLUMN_NAME_STABLE_ID, ContactsViewEntry.COLUMN_NAME_USER_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
-		String selection = null;
+		StringBuilder builder = new StringBuilder(ContactsViewEntry.COLUMN_NAME_USER_ID + "!=0");
 		String slectionArgs[] = null;
 		if (arg1 != null) {
 			String query = arg1.getString("query");
 			Log.d("test", "ContactsFragment onCreateLoader query " + query);
 			if (!TextUtils.isEmpty(query)) {
 				// Note: instr is available from sqlite 3.7.15
-				selection = "name like ?";
+				builder.append(" and name like ?");
 				slectionArgs = new String[] { "%" + query + "%" };
 			}
 
@@ -188,10 +190,11 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
+					ProviderContracts.CONTENT_URI_CONTACTS_VIEW,
+//					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
 																		// query
 					LIST_PROJECTION, // Projection to return
-					selection, // No selection clause
+					builder.toString(), // No selection clause
 					slectionArgs, // No selection arguments
 					null // Default sort order
 			);

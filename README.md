@@ -12,9 +12,7 @@ Directory structure:
 opandroid/                            - contains the project files for building the Open Peer Android SDK
 opandroid/openpeer-android-sdk/       - contains the Open Peer Android Java project files and source folders
 opandroid/openpeer-android-sdk/jni/   - contains the Java SDK JNI wires
-opandroid/openpeer-ios-sdk/src/       - contains the implementation of the Android SDK files
-opandroid/OpenPeerNativeSampleApp/    - contains the sample application which implements some Android SDK functionality
-opandroid/OpenPeerSdkCSharp/          - contains the CSharp wrapper of Java SDK (Xamarin ready)
+opandroid/OpenPeerSampleApp/    	  - contains the sample application 
 
 How to build:
 
@@ -27,33 +25,38 @@ popd
 NOTE: It is required to have Android NDK r8e installed on the target machine. Path to the NDK is mandatory input for building 3rd party libraries. ninja build sysytem is required for WebRTC library build. You can install ninja using MacPorts or Homebrew (http://martine.github.io/ninja/).
 
 
-2) From Eclipse ADT, load sdk project:
+2) From Eclipse ADT, import sdk project:
 
-opandroid/openpeer—android-sdk/.project (Android Java SDK project)
+opandroid/openpeer—android-sdk (Android Java SDK project)
 
-or sample project with included SDK project
+Then import sample project:
 
-opandroid/OpenPeerNativeSampleApp/.project (Native sample app project)
+opandroid/OpenPeerSampleApp (Native sample app project)
 
 3) Build imported project using Eclipse with ADT plugin
-
-
 
 Exploring the dependency libraries:
 libs/op/libs/ortc-lib/libs/zsLib     	    - asynchronous communication library for C++
 libs/op/libs/ortc-lib/libs/udns      	    - C language DNS resolution library
 libs/op/libs/ortc-lib/libs/cryptopp   	    – C++ cryptography language
-libs/op/libs/ortc-lib/libs/openssl	    - C++ Hookflash Open Peer communication services layer
+libs/op/libs/ortc-lib/libs/openssl	    	- C++ Hookflash Open Peer communication services layer
 libs/op/libs/ortc-lib/libs/op-services-cpp  - C++ Hookflash Open Peer communication services layer
-libs/op/libs/op-stack-cpp    		    – C++ Hookflash Open Peer stack
-libs/op/libs/op-core-cpp    		    – C++ Hookflash Open Peer core API (works on the Open Peer stack)
+libs/op/libs/op-stack-cpp    		    	– C++ Hookflash Open Peer stack
+libs/op/libs/op-core-cpp    		    	– C++ Hookflash Open Peer core API (works on the Open Peer stack)
 libs/op/libs/ortc-lib/libs/WebRTC           – android port of the webRTC media stack
 
+Use buildall_android.sh to build the C++ libraries first. The libraries binary files are placed in libs/op/libs/build and libs/op/libs/ortc-lib/libs/build/ and are linked into library project.
+
+During development we use symbolic links to link the sdk source folder from sample app so we can invoke native application debugging in eclipse. Executing setup-native-debug-proj.sh will setup all symbolic links so you can do native debugging, executing setup-library-proj.sh will clean all the links and use the sdk as library.
+
+Building all the C++ libraries will take long time, currently between 40mins and one hour, depending on the hardware. We're aware of that pain and am working on improvement.
+
+We're also aware many developers use Android Studio vs Eclipse. Due to constraint that Android studio doesn't have nice support for native debugging so we're doing our own development with eclipse. But we will explore the way to set up native debugging in Android studio and add project configuration for Android studio as well.
 
 Branches:
 
-Our current activity is being performed on "20140204-federated-android" but this branch is unstable. Individual activity is on other sub-branches from this branch.
-https://github.com/openpeer/opandroid/tree/20140204-federated-android
+Our current activity is being performed on "20140401-dev-stable". Individual activity is on other sub-branches from this branch.
+https://github.com/openpeer/opandroid/tree/20140401-dev-stable
 
 To see all branches go to:
 https://github.com/openpeer/opandroid/branches

@@ -34,16 +34,18 @@ import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
+import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
+import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sample.util.DateFormatUtils;
-import com.openpeer.sdk.app.OPChatWindow;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPSession;
-import com.openpeer.sdk.app.OPUser;
 import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.model.OPSession;
+import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.utils.OPModelUtils;
 import com.squareup.picasso.Picasso;
 
 public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -96,7 +98,8 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		} else {
 			mUserIDs = savedInstanceState.getLongArray(IntentData.ARG_PEER_USER_IDS);
 		}
-		mWindowId = OPChatWindow.getWindowId(mUserIDs);
+		mWindowId = OPModelUtils.getWindowId(mUserIDs);
+		OPNotificationBuilder.cancelNotificationForChat((int) mWindowId);
 		mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
 		if (mSession == null) {
 			// this is user intiiated session
@@ -397,11 +400,11 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					Uri.parse(DatabaseContracts.MessageEntry.CONTENT_ID_URI_BASE + "window/" + mWindowId), null, // Projection to
-																													// return
+					ProviderContracts.getContentUri(DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + mWindowId),
+					null,
 					null, // No selection clause
 					null, // No selection arguments
-					null // Default sort order
+					"time asc" // Default sort order
 			);
 		default:
 			// An invalid id was passed in

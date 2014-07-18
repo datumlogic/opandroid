@@ -61,17 +61,25 @@ public class LoginManager {
 		// if (OPDatastoreDelegateImplementation.getInstance().getReloginInfo()
 		// == null) {
 		OPAccount account = new OPAccount();
-		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
+		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
 				account);
-		mAccountLoginWebView.setWebViewClient(client);
+		mAccountLoginWebView.post(new Runnable() {
+			public void run() {
+				mAccountLoginWebView.setWebViewClient(client);
+			}
+		});
+
 		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
 				mAccountLoginWebView, account);
+
 		CallbackHandler.getInstance().registerAccountDelegate(account,
 				accountDelegate);
 
 		account = OPAccount.login(null, null, null,
-				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
-				"bojanGrantID", "identity-v1-rel-lespaul-i.hcs.io", false);
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+				OPSdkConfig.getInstance().getGrantId(),
+				OPSdkConfig.getInstance().getLockboxServiceDomain(),
+				false);
 		OPDataManager.getInstance().setSharedAccount(account);
 		client.mAccount = account;
 		accountDelegate.mAccount = account;
@@ -85,13 +93,16 @@ public class LoginManager {
 		} else {
 			account = new OPAccount();
 		}
-		OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
+		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
 				account);
-		mAccountLoginWebView.setWebViewClient(client);
+		mAccountLoginWebView.post(new Runnable() {
+			public void run() {
+				mAccountLoginWebView.setWebViewClient(client);
+			}
+		});
 
 		account = OPAccount.relogin(null, null, null,
-				"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",// "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html"
-																	// namespaceGrantOuterFrameURLUponReload
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
 				reloginInfo);
 		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
 				mAccountLoginWebView, account);
@@ -192,7 +203,7 @@ public class LoginManager {
 							OPDataManager.getInstance().getSharedAccount()
 									.getAssociatedIdentities());
 
-					mListener.onLoginComplete();
+//					mListener.onLoginComplete();
 
 					String version = OPDataManager.getDatastoreDelegate()
 							.getDownloadedContactsVersion(
@@ -228,6 +239,7 @@ public class LoginManager {
 		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
 			CallbackHandler.getInstance().unregisterIdentityDelegate(this);
+			mListener.onLoginComplete();
 			// destroy();
 		}
 
@@ -266,7 +278,7 @@ public class LoginManager {
 				mLoginView.post(new Runnable() {
 					public void run() {
 						mLoginView.loadUrl(OPSdkConfig.getInstance()
-								.getNamespaceGrantServiceUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose");
+								.getNamespaceGrantServiceUrl());
 					}
 				});
 				break;
@@ -297,6 +309,7 @@ public class LoginManager {
 		public void onAccountStateReady(OPAccount account) {
 
 			OPDataManager.getInstance().setSharedAccount(mAccount);
+			OPDataManager.getInstance().saveAccount();
 
 			List<OPIdentity> identities = mAccount.getAssociatedIdentities();
 			if (identities.size() == 0) {
@@ -320,12 +333,12 @@ public class LoginManager {
 					CallbackHandler.getInstance().registerIdentityDelegate(
 							identity, identityDelegate);
 					identity.attachDelegate(identityDelegate,
-							"http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
+							OPSdkConfig.getInstance().getOuterFrameUrl());
 
 				} else {
 					OPDataManager.getInstance().setIdentities(identities);
 
-					mListener.onLoginComplete();
+//					mListener.onLoginComplete();
 
 					String version = OPDataManager.getDatastoreDelegate()
 							.getDownloadedContactsVersion(

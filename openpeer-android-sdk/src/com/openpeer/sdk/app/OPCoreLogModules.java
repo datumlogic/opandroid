@@ -1,4 +1,4 @@
-package com.openpeer.app;
+package com.openpeer.sdk.app;
 
 public enum OPCoreLogModules {
 	MODULE_APPLICATION,

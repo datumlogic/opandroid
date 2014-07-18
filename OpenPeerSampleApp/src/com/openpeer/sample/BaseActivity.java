@@ -4,15 +4,16 @@ import com.openpeer.sdk.app.OPHelper;
 
 public class BaseActivity extends BaseFragmentActivity {
 
-	private static int mStack;
+	private static int mStack = 0;
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mStack++;
 		if (mStack == 0) {
 			OPHelper.getInstance().onEnteringForeground();
+			OPApplication.getInstance().onEnteringForeground();
 		}
+		mStack++;
 	}
 
 	@Override
@@ -21,6 +22,7 @@ public class BaseActivity extends BaseFragmentActivity {
 		mStack--;
 		if (mStack == 0) {
 			OPHelper.getInstance().onEnteringBackground();
+			OPApplication.getInstance().onEnteringBackground();
 		}
 	}
 

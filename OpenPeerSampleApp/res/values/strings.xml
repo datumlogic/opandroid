@@ -37,6 +37,22 @@
     <string name="out_telnet_logger">Outgoing telnet logger</string>
     <string name="local_telnet_logger">Local telnet logger</string>
     <string name="file_logger">File logger</string>
-    <string name="no_recent_chats">No recent chats</string>
-	<string name="menu_done">Done(%s)</string>
+    <string name="no_recent_chats">You do not have any active chats! Why not go ahead and start one?</string>
+    <string name="label_start_chat">Start Chat</string>
+    <string name="menu_done">Done(%s)</string>
+    <string name="label_chat">Chat</string>
+    <string name="label_select_contact">Select friends</string>
+    <string name="label_new_message_received">New message received</string>
+    <string name="label_chats">Chats</string>
+    <string name="label_contacts">Contacts</string>
+    <string name="label_favorites">Favorites</string>
+
+    <!-- beginning of settings strings -->
+    <string name="label_about">About</string>
+    <string name="label_version">Version</string>
+    <string name="label_build">Build</string>
+    <string name="legal_info">Legal Information</string>
+
+    <!-- End of setting strings -->
+
 </resources>

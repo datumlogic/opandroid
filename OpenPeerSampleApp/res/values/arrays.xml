@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="logLevel">
+        <item name="0">No log</item>
+        <item name="1">Basic</item>
+        <item name="2">Detail</item>
+        <item name="3">Debug</item>
+        <item name="4">Trace</item>
+        <item name="5">Insane</item>
+    </string-array>
+    <string-array name="logLevelValues">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+        <item name="5">5</item>
+    </string-array>
+    <string-array name="tabs">
+        <item>@string/label_chats</item>
+        <item>@string/label_contacts</item>
+        <item>@string/label_favorites</item>
+    </string-array>
+
+</resources>

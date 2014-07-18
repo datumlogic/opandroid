@@ -26,19 +26,22 @@ import com.openpeer.sample.conversation.DiscoveryFragment;
 import com.openpeer.sample.util.NetworkUtil;
 import com.openpeer.sdk.app.OPHelper;
 
-public class MainActivity extends BaseActivity implements OPHelper.InitListener {
+public class MainActivity extends BaseActivity implements OPHelper.InitListener, ChatsFragment.ChatsViewListener {
 	TabsAdapter mTabsAdapter;
 	ViewPager mViewPager;
 	private static final int TAB_CHATS = 0;
-	private static final int TAB_DISCOVERY = 2;
 	private static final int TAB_CONTACTS = 1;
-	static final String tabNames[] = { "Chats", "Contacts", "Discovery" };
+	private static final int TAB_FAVORITES = 2;
+	// static final String tabNames[] = { "Chats", "Contacts", "Discovery" };
+
+	private String tabNames[];
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		tabNames = this.getResources().getStringArray(R.array.tabs);
 		if (OPHelper.getInstance().initialized) {
 			go();
 		} else {
@@ -142,7 +145,7 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener 
 			case TAB_CONTACTS:
 				fragment = ContactsFragment.newInstance();
 				break;
-			case TAB_DISCOVERY:
+			case TAB_FAVORITES:
 				fragment = DiscoveryFragment.newInstance();
 				break;
 			}
@@ -191,5 +194,10 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener 
 	@Override
 	public void onInitialized() {
 		go();
+	}
+
+	@Override
+	public void onChatsEmptyViewClick() {
+		mViewPager.setCurrentItem(TAB_CONTACTS);
 	}
 }

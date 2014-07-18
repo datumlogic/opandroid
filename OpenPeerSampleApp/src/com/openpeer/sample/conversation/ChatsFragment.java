@@ -26,9 +26,10 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.BaseFragment;
+import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
-import com.openpeer.sdk.app.OPSession;
 import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.model.OPSession;
 
 public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -82,7 +83,19 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	}
 
 	View setupView(View view) {
+		View emptyView = view.findViewById(R.id.empty_view);
+		emptyView.findViewById(R.id.start_chat)
+				.setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						if (getActivity() instanceof ChatsViewListener) {
+							((ChatsViewListener) getActivity()).onChatsEmptyViewClick();
+						}
+					}
+				});
 		mMessagesList = (ListView) view.findViewById(R.id.listview);
+		mMessagesList.setEmptyView(emptyView);
 		mAdapter = new ChatInfoAdaptor(getActivity(), null);
 		mMessagesList.setAdapter(mAdapter);
 		getLoaderManager().initLoader(URL_LOADER, null, this);
@@ -107,7 +120,8 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
-			((ChatInfoItemView) view).updateData(cursor);
+			ChatInfo info = ChatInfo.fromCursor(cursor);
+			((ChatInfoItemView) view).updateData(info);
 		}
 
 		@Override
@@ -195,13 +209,14 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-//	static final String LIST_PROJECTION[] = { BaseColumns._ID,
-//			WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
-//			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
-//			WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
-//
-//			WindowViewEntry.COLUMN_NAME_USER_ID,
-//			WindowViewEntry.COLUMN_NAME_WINDOW_ID };
+
+	// static final String LIST_PROJECTION[] = { BaseColumns._ID,
+	// WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
+	// WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
+	// WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
+	//
+	// WindowViewEntry.COLUMN_NAME_USER_ID,
+	// WindowViewEntry.COLUMN_NAME_WINDOW_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
@@ -210,9 +225,10 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 			// Returns a new CursorLoader
 			return new CursorLoader(
 					getActivity(), // Parent activity context
-					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
+					ProviderContracts.CONTENT_URI_WINDOW_VIEW,
+//					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
 																	// query
-					null,//LIST_PROJECTION, // Projection to return
+					null,// LIST_PROJECTION, // Projection to return
 					null, // No selection clause
 					null, // No selection arguments
 					null // Default sort order
@@ -234,6 +250,10 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 		mAdapter.changeCursor(null);
 
 	}
+
 	// End: CursorCallback implementation
+	public static interface ChatsViewListener {
+		public void onChatsEmptyViewClick();
+	}
 
 }

@@ -18,6 +18,7 @@ import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
+import com.squareup.picasso.Picasso;
 
 public class ChatInfoItemView extends RelativeLayout {
 	private OPRolodexContact mContact;
@@ -48,39 +49,35 @@ public class ChatInfoItemView extends RelativeLayout {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void updateData(Cursor cursor) {
-		mTitleView.setText(cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES)));
-		String msg = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE));
-		Long time = cursor.getLong(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME));
-		final String idListString = cursor.getString(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_USER_ID));
-		int unreadCount = cursor.getInt(cursor.getColumnIndex(WindowViewEntry.COLUMN_NAME_UNREAD_COUNT));
-		Log.d("test", "ChatInfo user_id " + idListString);
-		if (idListString != null) {
-			String idStrings[] = idListString.split(",");
-			final long IDs[] = new long[idStrings.length];
-			for (int i = 0; i < IDs.length; i++) {
-				IDs[i] = Long.parseLong(idStrings[i]);
-			}
-			this.setOnClickListener(new View.OnClickListener() {
+	public void updateData(final ChatInfo chatInfo) {
+		mTitleView.setText(chatInfo.getmNameString());
+		String msg = chatInfo.getmLastMessage();
+		Long time = chatInfo.getmLastMessageTime();
 
-				@Override
-				public void onClick(View v) {
-					ConversationActivity.launchForChat(getContext(), IDs);
-				}
-			});
+		int unreadCount = chatInfo.getmUnreadCount();
+
+		this.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				ConversationActivity.launchForChat(getContext(), chatInfo.getmUserIDs());
+			}
+		});
+		if (chatInfo.getmUserIDs().length == 1) {
+			Picasso.with(getContext()).load(chatInfo.getAvatarUri()).into(mImageView);
+
 		}
+
 		if (msg != null) {
 			mLastMessageView.setText(msg);
 			mTimeView.setText(DateFormatUtils.getSameDayTime(time));
 		}
 		if (unreadCount > 0) {
 			mBadgeView.setVisibility(View.VISIBLE);
-			mBadgeView.setText(""+unreadCount);
+			mBadgeView.setText("" + unreadCount);
 		} else {
 			mBadgeView.setVisibility(View.GONE);
-
 		}
-
 	}
 
 	public void onClick() {

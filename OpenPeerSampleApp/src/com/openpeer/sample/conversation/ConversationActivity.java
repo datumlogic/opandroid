@@ -67,11 +67,12 @@ public class ConversationActivity extends BaseActivity {
 		String action = intent
 				.getStringExtra(IntentData.ARG_CONVERSATION_ACTION);
 		if (action.equals(IntentData.ACTION_CHAT)) {
+			getActionBar().setTitle(R.string.label_chat);
 			ChatFragment cFragment = ChatFragment.newInstance(intent
 					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS));
 			setContentFragment(cFragment);
 		} else if (action.equals(IntentData.ACTION_CALL)) {
-			//			CallFragment cFragment = CallFragment.newInstance(intent.getStringExtra(IntentData.ARG_PEER_URI));
+			getActionBar().setTitle(R.string.hint_call);
 			CallFragment cFragment = CallFragment.newInstance(intent
 					.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS),
 					intent.getStringExtra(IntentData.ARG_PEER_URI),

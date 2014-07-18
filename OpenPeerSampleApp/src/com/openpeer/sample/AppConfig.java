@@ -1,5 +1,5 @@
 package com.openpeer.sample;
 
 public class AppConfig {
-	public static boolean DEBUG = true;
+	public static boolean FEATURE_CALL = true;
 }
