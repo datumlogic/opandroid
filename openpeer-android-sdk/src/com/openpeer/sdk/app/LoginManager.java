@@ -203,7 +203,7 @@ public class LoginManager {
 							OPDataManager.getInstance().getSharedAccount()
 									.getAssociatedIdentities());
 
-					mListener.onLoginComplete();
+//					mListener.onLoginComplete();
 
 					String version = OPDataManager.getDatastoreDelegate()
 							.getDownloadedContactsVersion(
@@ -239,6 +239,7 @@ public class LoginManager {
 		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
 			CallbackHandler.getInstance().unregisterIdentityDelegate(this);
+			mListener.onLoginComplete();
 			// destroy();
 		}
 
@@ -308,6 +309,7 @@ public class LoginManager {
 		public void onAccountStateReady(OPAccount account) {
 
 			OPDataManager.getInstance().setSharedAccount(mAccount);
+			OPDataManager.getInstance().saveAccount();
 
 			List<OPIdentity> identities = mAccount.getAssociatedIdentities();
 			if (identities.size() == 0) {
@@ -336,7 +338,7 @@ public class LoginManager {
 				} else {
 					OPDataManager.getInstance().setIdentities(identities);
 
-					mListener.onLoginComplete();
+//					mListener.onLoginComplete();
 
 					String version = OPDataManager.getDatastoreDelegate()
 							.getDownloadedContactsVersion(

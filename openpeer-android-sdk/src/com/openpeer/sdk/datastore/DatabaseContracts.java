@@ -24,6 +24,8 @@ public class DatabaseContracts {
 	public static final String COLUMN_NAME_WINDOW_ID = "window_id";
 	public static final String COLUMN_NAME_THREAD_ID = "thread_id";
 	public static final String COLUMN_NAME_GROUP_ID = "group_id";
+	public static final String COLUMN_NAME_STABLE_ID = "stable_id";
+	public static final String COLUMN_NAME_PEER_URI = "peer_uri";
 
 	static String getCompositePrimaryKey(String[] columnNames) {
 		StringBuilder stringBuilder = new StringBuilder("PRIMARY KEY (");
@@ -52,6 +54,7 @@ public class DatabaseContracts {
 		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
+		public static final String COLUMN_NAME_LOGGED_IN = "is_logged_in";
 		public static final String COLUMN_NAME_RELOGIN_INFO = "relogin_info";
 
 	}
@@ -117,12 +120,6 @@ public class DatabaseContracts {
 
 		public static final String URI_PATH_INFO = "/" + TABLE_NAME;
 		public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
-
-		public static final String COLUMN_NAME_STABLE_ID = "stable_id";
-		public static final String COLUMN_NAME_PEER_URI = "peer_uri";
-
-		// A bit redundant informatin but to simplify querying
-		public static final String COLUMN_NAME_USER_NAME = "name";
 	}
 
 	public static abstract class GroupEntry implements BaseColumns {
@@ -294,7 +291,11 @@ public class DatabaseContracts {
 
 	public static final String SQL_CREATE_ACCOUNT = CREATE_TABLE + AccountEntry.TABLE_NAME + " ("
 			+ BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-			+ AccountEntry.COLUMN_NAME_RELOGIN_INFO + TEXT_TYPE + UNIQUE_TYPE
+			+ COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE + " NOT NULL " + COMMA_SEP
+			+ COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + " NOT NULL " + COMMA_SEP
+			+ COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + " NOT NULL " + COMMA_SEP
+			+ AccountEntry.COLUMN_NAME_RELOGIN_INFO + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ AccountEntry.COLUMN_NAME_LOGGED_IN + INTEGER_TYPE + " default 0 " 
 			+ ")";
 	// Beginning of create table statements. new statements should be added at the end and marked with the DB version created
 	public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW + WindowViewEntry.TABLE_NAME + " AS SELECT d." + BaseColumns._ID
@@ -353,10 +354,9 @@ public class DatabaseContracts {
 			+ IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME + INTEGER_TYPE + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_EXPIRE + " )";
 	public static final String SQL_CREATE_USER = CREATE_TABLE + UserEntry.TABLE_NAME + " ("
 			+ UserEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-			+ UserEntry.COLUMN_NAME_STABLE_ID + INTEGER_TYPE + COMMA_SEP
-			+ UserEntry.COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
+			+ COLUMN_NAME_STABLE_ID + INTEGER_TYPE + COMMA_SEP
+			+ COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
 			+ COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
-			+ UserEntry.COLUMN_NAME_USER_NAME + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
 			+ COLUMN_NAME_AVATAR_URI + TEXT_TYPE + " )";
 
 	public static final String SQL_CREATE_WINDOW = CREATE_TABLE + ConversationWindowEntry.TABLE_NAME + " (" + BaseColumns._ID

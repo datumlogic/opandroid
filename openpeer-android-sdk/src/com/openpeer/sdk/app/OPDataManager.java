@@ -80,6 +80,9 @@ public class OPDataManager {
 	 */
 	public void setSharedAccount(OPAccount account) {
 		mAccount = account;
+	}
+	
+	public void saveAccount(){
 		mDatastoreDelegate.saveOrUpdateAccount(mAccount);
 	}
 

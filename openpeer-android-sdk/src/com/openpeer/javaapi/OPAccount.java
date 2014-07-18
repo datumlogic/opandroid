@@ -33,62 +33,71 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
-
 public class OPAccount {
 
 	private long nativeClassPointer;
-	
+
 	public static native String toString(AccountStates state);
 
 	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
 
-    public static native OPAccount login(
-                             OPAccountDelegate delegate,
-                             OPConversationThreadDelegate conversationThreadDelegate,
-                             OPCallDelegate callDelegate,
-                             String namespaceGrantOuterFrameURLUponReload,
-                             String grantID,
-                             String lockboxServiceDomain,
-                             boolean forceCreateNewLockboxAccount
-                             );
+	public static native OPAccount login(
+			OPAccountDelegate delegate,
+			OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate,
+			String namespaceGrantOuterFrameURLUponReload,
+			String grantID,
+			String lockboxServiceDomain,
+			boolean forceCreateNewLockboxAccount
+			);
 
-    public static native OPAccount relogin(
-    						   OPAccountDelegate delegate,
-    						   OPConversationThreadDelegate conversationThreadDelegate,
-    						   OPCallDelegate callDelegate,
-    						   String namespaceGrantOuterFrameURLUponReload,
-                               String reloginInformation
-                               );
+	public static native OPAccount relogin(
+			OPAccountDelegate delegate,
+			OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate,
+			String namespaceGrantOuterFrameURLUponReload,
+			String reloginInformation
+			);
 
-    public native long getStableID();
+	public native long getStableID();
 
-    public native AccountStates getState(
-                                   int outErrorCode,
-                                   String outErrorReason
-                                   );
+	public native AccountStates getState(
+			int outErrorCode,
+			String outErrorReason
+			);
 
-    public native String getReloginInformation();   // NOTE: will return ElementPtr() is relogin information is not available yet
-    
-    public native String getLocationID();
+	public native String getReloginInformation(); // NOTE: will return ElementPtr() is relogin information is not available yet
 
-    public native void shutdown();
+	public native String getLocationID();
 
-    public native String getPeerFilePrivate();
-    public native byte[] getPeerFilePrivateSecret();
+	public native void shutdown();
 
-    public native List<OPIdentity> getAssociatedIdentities();
-    public native void removeIdentities (List<OPIdentity> identitiesToRemove);
+	public native String getPeerFilePrivate();
 
-    public native String getInnerBrowserWindowFrameURL();
+	public native byte[] getPeerFilePrivateSecret();
 
-    public native void notifyBrowserWindowVisible();
-    
-    public native void notifyBrowserWindowClosed();
+	public native List<OPIdentity> getAssociatedIdentities();
 
-    public native String getNextMessageForInnerBrowerWindowFrame();
-    public native void handleMessageFromInnerBrowserWindowFrame(String unparsedMessage);
-//    public String toString(){
-//    	return super.toString() + "reloginInfo "+this.getReloginInformation() + 
-//    			" peerFilePrivate "+this.getPeerFilePrivate() + " stableId "+ this.getStableID();
-//    }
+	public native void removeIdentities(List<OPIdentity> identitiesToRemove);
+
+	public native String getInnerBrowserWindowFrameURL();
+
+	public native void notifyBrowserWindowVisible();
+
+	public native void notifyBrowserWindowClosed();
+
+	public native String getNextMessageForInnerBrowerWindowFrame();
+
+	public native void handleMessageFromInnerBrowserWindowFrame(String unparsedMessage);
+
+	public OPIdentity getPrimaryIdentity() {
+		List<OPIdentity> identities = getAssociatedIdentities();
+
+		// TODO: proper logic to define primary identity
+		return identities.get(0);
+	}
+
+	public String getPeerUri() {
+		return OPContact.getForSelf(this).getPeerURI();
+	}
 }

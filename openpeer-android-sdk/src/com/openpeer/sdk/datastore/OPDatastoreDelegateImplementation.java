@@ -82,18 +82,37 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	@Override
 	public String getReloginInfo() {
-		return mPreferenceStore.getString(PREF_KEY_RELOGIN_INFO, null);
+		String selection = AccountEntry.COLUMN_NAME_LOGGED_IN + "=1";
+		Cursor cursor = query(AccountEntry.TABLE_NAME, null, selection, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			String reloginInfo = cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME_RELOGIN_INFO));
+			cursor.close();
+			return reloginInfo;
+		}
+		return null;
 	}
 
 	@Override
 	public boolean saveOrUpdateAccount(OPAccount account) {
-		Log.d("test",
-				"DatastoreDelegate saving account id " + account.getStableID()
-						+ " relogin " + account.getReloginInformation());
-		SharedPreferences.Editor editor = mPreferenceStore.edit();
-		editor.putString(PREF_KEY_RELOGIN_INFO, account.getReloginInformation());
-		editor.putLong(PREF_KEY_HOMEUSER_STABLEID, account.getStableID());
-		editor.apply();
+		String peerUri = account.getPeerUri();
+		OPIdentity identity = account.getPrimaryIdentity();
+		String stableId = identity.getSelfIdentityContact().getStableID();
+		String identityUri = identity.getIdentityURI();
+		ContentValues values = new ContentValues();
+		values.put(AccountEntry.COLUMN_NAME_LOGGED_IN, 0);
+		update(AccountEntry.TABLE_NAME, values, null, null);
+
+		values.put(AccountEntry.COLUMN_NAME_LOGGED_IN, 1);
+		values.put(DatabaseContracts.COLUMN_NAME_STABLE_ID, stableId);
+		values.put(AccountEntry.COLUMN_NAME_RELOGIN_INFO, account.getReloginInformation());
+		values.put(DatabaseContracts.COLUMN_NAME_PEER_URI, peerUri);
+		values.put(DatabaseContracts.COLUMN_NAME_IDENTITY_URI, stableId);
+
+		String selection = DatabaseContracts.COLUMN_NAME_STABLE_ID + "=? or " + DatabaseContracts.COLUMN_NAME_PEER_URI + "=? or "
+				+ DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?";
+		String args[] = new String[] { stableId, peerUri, identityUri };
+		upsert(AccountEntry.TABLE_NAME, values, selection, args);
 		return true;
 	}
 
@@ -472,11 +491,10 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			ContentValues values = new ContentValues();
 			values.put(DatabaseContracts.COLUMN_NAME_AVATAR_URI, contact.getDefaultAvatarUrl());
 			values.put(COLUMN_NAME_IDENTITY_URI, contact.getIdentityURI());
-			values.put(UserEntry.COLUMN_NAME_STABLE_ID, contact.getStableID());
-			values.put(UserEntry.COLUMN_NAME_USER_NAME, contact.getName());
+			values.put(COLUMN_NAME_STABLE_ID, contact.getStableID());
 			OPContact oContact = OPContact.createFromPeerFilePublic(OPDataManager.getInstance().getSharedAccount(), contact
 					.getPeerFilePublic().getPeerFileString());
-			values.put(UserEntry.COLUMN_NAME_PEER_URI, oContact.getPeerURI());
+			values.put(COLUMN_NAME_PEER_URI, oContact.getPeerURI());
 
 			Uri uri = mContext.getContentResolver().insert(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values);
 			if (uri != null) {
@@ -486,8 +504,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				saveOrUpdateContact(contact, associatedIdentityId);
 
 			} else {
-				String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
-						UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
+				String selection = COLUMN_NAME_STABLE_ID + "=?" + " or " +
+						COLUMN_NAME_PEER_URI + "=?" + " or " +
 						COLUMN_NAME_IDENTITY_URI + "=?";
 				String args[] = { contact.getStableID(), oContact.getPeerURI(), contact.getIdentityURI() };
 				mContext.getContentResolver().update(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values, selection, args);
@@ -516,15 +534,13 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		}
 
 		values.put(COLUMN_NAME_IDENTITY_URI, user.getIdentityUri());
-		values.put(UserEntry.COLUMN_NAME_STABLE_ID, user.getLockboxStableId());
-		if (user.getName() != null) {
-			values.put(UserEntry.COLUMN_NAME_USER_NAME, user.getName());
-		}
-		values.put(UserEntry.COLUMN_NAME_PEER_URI, user.getPeerUri());
+		values.put(COLUMN_NAME_STABLE_ID, user.getLockboxStableId());
+
+		values.put(COLUMN_NAME_PEER_URI, user.getPeerUri());
 		Log.d("test", "saveUser values " + Arrays.deepToString(values.valueSet().toArray()));
 
-		String selection = UserEntry.COLUMN_NAME_STABLE_ID + "=?" + " or " +
-				UserEntry.COLUMN_NAME_PEER_URI + "=?" + " or " +
+		String selection = COLUMN_NAME_STABLE_ID + "=?" + " or " +
+				COLUMN_NAME_PEER_URI + "=?" + " or " +
 				COLUMN_NAME_IDENTITY_URI + "=?";
 		String aueryArgs[] = { user.getLockboxStableId(), user.getPeerUri(), user.getIdentityUri() };
 		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), null, selection,
@@ -533,7 +549,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			// TODO: Compare and Update
 			cursor.moveToFirst();
 			userID = cursor.getLong(0);
-			selection = UserEntry.COLUMN_NAME_STABLE_ID + "=" + userID;
+			selection = COLUMN_NAME_STABLE_ID + "=" + userID;
 			cursor.close();
 			int count = mContext.getContentResolver().update(OPContentProvider.getContentUri(UserEntry.URI_PATH_INFO), values,
 					"_id=" + userID, null);
@@ -556,7 +572,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	OPUser getUserByPeerUri(String peerUri) {
 		String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + " in (select _id from " + UserEntry.TABLE_NAME + " where "
-				+ UserEntry.COLUMN_NAME_PEER_URI + "=?)";
+				+ COLUMN_NAME_PEER_URI + "=?)";
 		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null,
 				selection, new String[] { peerUri }, null);
 		Log.d("test", "getUserByPeerUri " + cursor.getCount());
