@@ -333,14 +333,13 @@ public class OPSession extends Observable {
 	}
 
 	public void onMessageReceived(OPMessage message) {
-		OPUser user = getUserByContact(message.getFrom());
-		message.setSenderId(user.getUserId());
-		if (isWindowAttached()) {
-			message.setRead(true);
-		}
-
 		if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
 			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
+			OPUser user = getUserByContact(message.getFrom());
+			message.setSenderId(user.getUserId());
+			if (isWindowAttached()) {
+				message.setRead(true);
+			}
 		} else {
 			Log.d("test", "SessionManager onMessageReceived " + message.getMessageType());
 		}
