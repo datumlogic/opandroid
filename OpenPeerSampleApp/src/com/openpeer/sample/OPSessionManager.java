@@ -93,6 +93,12 @@ public class OPSessionManager {
 
 	private OPCallDelegate mBackgroundCallHandler;
 
+	private OPCallDelegate mCallDelegate;
+
+	public OPCallDelegate getCallDelegate() {
+		return mCallDelegate;
+	}
+
 	public void onEnteringBackground() {
 	}
 
@@ -128,7 +134,7 @@ public class OPSessionManager {
 		}
 
 		OPCall call = session.placeCall(users.get(0), audio, video);
-		mCalls.put(call.getPeer().getPeerURI(), call);
+		mCalls.put(users.get(0).getPeerUri(), call);
 		return call;
 	}
 
@@ -181,7 +187,7 @@ public class OPSessionManager {
 
 			}
 		};
-		OPCallDelegate callDelegate = new OPCallDelegate() {
+		mCallDelegate = new OPCallDelegate() {
 
 			@Override
 			public void onCallStateChanged(OPCall call, CallStates state) {
@@ -201,6 +207,9 @@ public class OPSessionManager {
 					ConversationActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
 					break;
 				case CallState_Closed:
+					if (mCallListeners.get(call) != null) {
+						mCallListeners.get(call).onCallStateChanged(call, state);
+					}
 					onCallEnd(call);
 					break;
 
@@ -208,9 +217,6 @@ public class OPSessionManager {
 			}
 		};
 		CallbackHandler.getInstance().registerConversationThreadDelegate(threadDelegate);
-		if (AppConfig.FEATURE_CALL) {
-			CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
-		}
 	}
 
 	public OPCall getOngoingCallForPeer(String peerUri) {
@@ -229,5 +235,21 @@ public class OPSessionManager {
 	public OPUser getPeerUserForCall(OPCall call) {
 		OPContact contact = call.getPeer();
 		return new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
+	}
+
+	private Hashtable<OPCall, CallStateListener> mCallListeners = new Hashtable<OPCall, CallStateListener>();
+
+	public void registerCallListener(OPCall call, CallStateListener listener) {
+		mCallListeners.put(call, listener);
+	}
+
+	public void unregisterCallListener(OPCall call) {
+		mCallListeners.remove(call);
+	}
+
+	public interface CallStateListener {
+		public void onCallStateChanged(OPCall call, CallStates state);
+
+		public void onNewCallIncoming(OPCall call);
 	}
 }

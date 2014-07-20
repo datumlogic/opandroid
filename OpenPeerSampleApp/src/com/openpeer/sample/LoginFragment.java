@@ -79,17 +79,21 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 		@Override
 		protected Void doInBackground(Void... params) {
 
-//			OPHelper.getInstance().init(getActivity(), null);
+			// OPHelper.getInstance().init(getActivity(), null);
 			String reloginInfo = OPDataManager.getInstance().getReloginInfo();
 			if (reloginInfo == null || reloginInfo.length() == 0) {
 				Log.d("login", "LoginFragment startLogin() logging in");
-				LoginManager.getInstance()
-						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation()).login();
+				LoginManager
+						.getInstance()
+						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView,
+								OPSessionManager.getInstance().getCallDelegate()).login();
 			} else {
 				Log.d("login", "LoginFragment startLogin() relogging in");
 
-				LoginManager.getInstance()
-						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation())
+				LoginManager
+						.getInstance()
+						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView,
+								OPSessionManager.getInstance().getCallDelegate())
 						.relogin(OPDataManager.getInstance().getReloginInfo());
 			}
 
