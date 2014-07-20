@@ -75,7 +75,7 @@ public class LoginManager {
 		CallbackHandler.getInstance().registerAccountDelegate(account,
 				accountDelegate);
 
-		account = OPAccount.login(null, null, null,
+		account = OPAccount.login(null, null, mCallDelegate,
 				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
 				OPSdkConfig.getInstance().getGrantId(),
 				OPSdkConfig.getInstance().getLockboxServiceDomain(),
@@ -101,7 +101,7 @@ public class LoginManager {
 			}
 		});
 
-		account = OPAccount.relogin(null, null, null,
+		account = OPAccount.relogin(null, null, mCallDelegate,
 				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
 				reloginInfo);
 		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
