@@ -76,7 +76,7 @@ public class ContactItemView extends RelativeLayout {
 				}
 			});
 
-			if (AppConfig.FEATURE_CALL) {
+			if (!AppConfig.FEATURE_CALL) {
 				mCallView.setVisibility(View.GONE);
 			} else {
 				mCallView.setOnClickListener(new View.OnClickListener() {
