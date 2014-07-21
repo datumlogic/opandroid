@@ -476,6 +476,7 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/OpenPeerCoreManager.cpp \
 		OpenPeerNativeSampleApp/jni/globals.cpp \
 		OpenPeerNativeSampleApp/jni/EventManager.cpp \
+		OpenPeerNativeSampleApp/jni/AccountDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/CacheDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/SettingsDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/CallDelegateWrapper.cpp \

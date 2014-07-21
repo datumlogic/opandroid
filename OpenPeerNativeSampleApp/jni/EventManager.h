@@ -17,7 +17,7 @@ using namespace openpeer::core;
 class EventManager : public IStackMessageQueueDelegate,
 public IStackDelegate,
 public IMediaEngineDelegate,
-public IAccountDelegate,
+//public IAccountDelegate,
 public IIdentityDelegate,
 //public IConversationThreadDelegate,
 //public ICallDelegate,
@@ -38,10 +38,10 @@ public:
 	virtual void onMediaEngineFaceDetected();
 	virtual void onMediaEngineVideoCaptureRecordStopped();
 
-	//IAccountDelegate implementation
-	virtual void onAccountStateChanged(IAccountPtr account, IAccount::AccountStates state);
-	virtual void onAccountAssociatedIdentitiesChanged(IAccountPtr account);
-	virtual void onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account);
+//	//IAccountDelegate implementation
+//	virtual void onAccountStateChanged(IAccountPtr account, IAccount::AccountStates state);
+//	virtual void onAccountAssociatedIdentitiesChanged(IAccountPtr account);
+//	virtual void onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account);
 
 //	//IConversationThreadDelegate implementation
 //	virtual void onConversationThreadNew(IConversationThreadPtr conversationThread);

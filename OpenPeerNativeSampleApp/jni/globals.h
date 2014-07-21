@@ -1,5 +1,6 @@
 #include <jni.h>
 #include "EventManager.h"
+#include "AccountDelegateWrapper.h"
 #include "CacheDelegateWrapper.h"
 #include "SettingsDelegateWrapper.h"
 #include "CallDelegateWrapper.h"
@@ -33,6 +34,7 @@ extern IStackMessageQueuePtr queuePtr;
 //extern IIdentityLookupPtr identityLookupPtr;
 extern IMediaEnginePtr mediaEnginePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
+extern AccountDelegateWrapperPtr accountDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
 extern CallDelegateWrapperPtr callDelegatePtr;
 extern ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;

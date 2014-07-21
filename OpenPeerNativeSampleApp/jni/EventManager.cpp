@@ -180,77 +180,77 @@ void EventManager::onMediaEngineVideoCaptureRecordStopped()
 }
 
 //IAccountDelegate implementation
-void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountStates state)
-{
-
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	//JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0)
-	{
-		return;
-	}
-
-	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onAccountStateChanged", "(I)V");
-	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
-
-	if (gEnv->ExceptionCheck()) {
-		gEnv->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-
-}
-void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
-{
-
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onAccountAssociatedIdentitiesChanged", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account)
-{
-
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onAccountPendingMessageForInnerBrowserWindowFrame", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
+//void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountStates state)
+//{
+//
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	//JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
+//	if (attach_result < 0 || gEnv == 0)
+//	{
+//		return;
+//	}
+//
+//	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = gEnv->GetStaticMethodID(callbackClass, "onAccountStateChanged", "(I)V");
+//	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
+//
+//	if (gEnv->ExceptionCheck()) {
+//		gEnv->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//
+//}
+//void EventManager::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
+//{
+//
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onAccountAssociatedIdentitiesChanged", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
+//void EventManager::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account)
+//{
+//
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onAccountPendingMessageForInnerBrowserWindowFrame", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
 ////IConversationThreadDelegate implementation
 //void EventManager::onConversationThreadNew(IConversationThreadPtr conversationThreadPtr)

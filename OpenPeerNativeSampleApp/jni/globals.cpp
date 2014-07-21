@@ -5,6 +5,7 @@ jobject jni_object;
 
 EventManagerPtr globalEventManager = EventManagerPtr(new EventManager());
 SettingsDelegateWrapperPtr settingsDelegatePtr = SettingsDelegateWrapperPtr(new SettingsDelegateWrapper());
+AccountDelegateWrapperPtr accountDelegatePtr;
 CacheDelegateWrapperPtr cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDelegateWrapper());
 CallDelegateWrapperPtr callDelegatePtr;
 ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;
