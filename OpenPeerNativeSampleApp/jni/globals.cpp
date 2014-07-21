@@ -9,6 +9,7 @@ AccountDelegateWrapperPtr accountDelegatePtr;
 CacheDelegateWrapperPtr cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDelegateWrapper());
 CallDelegateWrapperPtr callDelegatePtr;
 ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;
+IdentityDelegateWrapperPtr identityDelegatePtr;
 
 //IAccountPtr accountPtr;
 //IStackPtr stackPtr;

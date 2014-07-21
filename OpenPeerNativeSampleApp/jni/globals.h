@@ -5,6 +5,7 @@
 #include "SettingsDelegateWrapper.h"
 #include "CallDelegateWrapper.h"
 #include "ConversationThreadDelegateWrapper.h"
+#include "IdentityDelegateWrapper.h"
 
 #ifndef _ANDROID_OPENPEER_GLOBALS_H_
 #define _ANDROID_OPENPEER_GLOBALS_H_
@@ -38,5 +39,6 @@ extern AccountDelegateWrapperPtr accountDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
 extern CallDelegateWrapperPtr callDelegatePtr;
 extern ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;
+extern IdentityDelegateWrapperPtr identityDelegatePtr;
 
 #endif

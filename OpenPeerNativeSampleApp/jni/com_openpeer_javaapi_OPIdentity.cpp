@@ -41,7 +41,11 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentity;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
-(JNIEnv *env, jclass, jobject, jobject, jstring identityProviderDomain, jstring identityURI_or_identityBaseURI, jstring outerFrameURLUponReload)
+(JNIEnv *env, jclass, jobject,
+		jobject javaIdentityDelegate,
+		jstring identityProviderDomain,
+		jstring identityURI_or_identityBaseURI,
+		jstring outerFrameURLUponReload)
 {
 	jclass cls;
 	jmethodID method;
@@ -66,7 +70,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
 		return object;
 	}
 
-	IIdentityPtr identityPtr = IIdentity::login(OpenPeerCoreManager::accountPtr, globalEventManager, (char const *)identityProviderDomainStr,
+	if (javaIdentityDelegate == NULL)
+	{
+		return object;
+	}
+
+	//set java delegate to identity delegate wrapper and init shared pointer for wrappers
+	identityDelegatePtr = IdentityDelegateWrapperPtr(new IdentityDelegateWrapper(javaIdentityDelegate));
+
+	IIdentityPtr identityPtr = IIdentity::login(OpenPeerCoreManager::accountPtr, identityDelegatePtr, (char const *)identityProviderDomainStr,
 			(char const *)identityURIStr, (char const *)outerFrameURLUponReloadStr);
 
 	if(identityPtr)
@@ -98,7 +110,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Lcom/openpeer/javaapi/OPIdentity;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentityPreauthorized
-(JNIEnv *env, jclass, jobject, jobject,
+(JNIEnv *env, jclass, jobject,
+		jobject javaIdentityDelegate,
 		jstring identityProviderDomain,
 		jstring identityURI,
 		jstring identityAccessToken,
@@ -146,8 +159,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 	}
 
+	if (javaIdentityDelegate == NULL)
+	{
+		return object;
+	}
+
+	//set java delegate to identity delegate wrapper and init shared pointer for wrappers
+	identityDelegatePtr = IdentityDelegateWrapperPtr(new IdentityDelegateWrapper(javaIdentityDelegate));
 	IIdentityPtr identityPtr = IIdentity::loginWithIdentityPreauthorized(OpenPeerCoreManager::accountPtr,
-			globalEventManager,
+			identityDelegatePtr,
 			(char const *)identityProviderDomainStr,
 			(char const *)identityURIStr,
 			(char const *)identityAccessTokenStr,
@@ -248,7 +268,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttach
  * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
-(JNIEnv *env, jobject owner, jobject, jstring outerFrameURLUponReload)
+(JNIEnv *env, jobject owner,
+		jobject javaIdentityDelegate,
+		jstring outerFrameURLUponReload)
 {
 
 	const char *outerFrameURLUponReloadStr;
@@ -257,10 +279,18 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
 		return;
 	}
 
+	if (javaIdentityDelegate == NULL)
+	{
+		return;
+	}
+
+	//set java delegate to identity delegate wrapper and init shared pointer for wrappers
+	identityDelegatePtr = IdentityDelegateWrapperPtr(new IdentityDelegateWrapper(javaIdentityDelegate));
+
 	IIdentityPtr identityPtr = OpenPeerCoreManager::getIdentityFromList(owner);
 	if (identityPtr)
 	{
-		identityPtr->attachDelegate(globalEventManager, outerFrameURLUponReloadStr);
+		identityPtr->attachDelegate(identityDelegatePtr, outerFrameURLUponReloadStr);
 	}
 }
 
@@ -270,7 +300,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
  * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPreauthorizedLogin
-(JNIEnv *env, jobject owner, jobject,
+(JNIEnv *env, jobject owner,
+		jobject javaIdentityDelegate,
 		jstring identityAccessToken,
 		jstring identityAccessSecret,
 		jobject identityAccessSecretExpires)
@@ -304,11 +335,19 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPre
 		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 	}
 
+	if (javaIdentityDelegate == NULL)
+	{
+		return;
+	}
+
+	//set java delegate to identity delegate wrapper and init shared pointer for wrappers
+	identityDelegatePtr = IdentityDelegateWrapperPtr(new IdentityDelegateWrapper(javaIdentityDelegate));
+
 	IIdentityPtr identityPtr = OpenPeerCoreManager::getIdentityFromList(owner);
 	if (identityPtr)
 	{
 		identityPtr->attachDelegateAndPreauthorizedLogin(
-				globalEventManager,
+				identityDelegatePtr,
 				(char const *)identityAccessTokenStr,
 				(char const *)identityAccessSecretStr,
 				t);

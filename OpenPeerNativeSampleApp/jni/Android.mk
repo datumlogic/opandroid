@@ -480,6 +480,7 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/CacheDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/SettingsDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/CallDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/IdentityDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/ConversationThreadDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStackMessageQueue.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStack.cpp \

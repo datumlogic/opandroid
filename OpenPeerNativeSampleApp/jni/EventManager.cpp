@@ -523,76 +523,76 @@ void EventManager::onMediaEngineVideoCaptureRecordStopped()
 //}
 
 //IIdentityDelegate implementation
-void EventManager::onIdentityStateChanged(
-		IIdentityPtr identity,
-		IIdentity::IdentityStates state
-)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	//JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
-	if (attach_result < 0 || gEnv == 0)
-	{
-		return;
-	}
-
-	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
-	method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged", "(I)V");
-	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
-
-	if (gEnv->ExceptionCheck()) {
-		gEnv->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onIdentityPendingMessageForInnerBrowserWindowFrame", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-void EventManager::onIdentityRolodexContactsDownloaded(IIdentityPtr identity)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onIdentityRolodexContactsDownloaded", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
+//void EventManager::onIdentityStateChanged(
+//		IIdentityPtr identity,
+//		IIdentity::IdentityStates state
+//)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	//JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&gEnv, NULL);
+//	if (attach_result < 0 || gEnv == 0)
+//	{
+//		return;
+//	}
+//
+//	jclass callbackClass = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = gEnv->GetStaticMethodID(callbackClass, "onIdentityStateChanged", "(I)V");
+//	gEnv->CallStaticVoidMethod(callbackClass, method, (jint) state);
+//
+//	if (gEnv->ExceptionCheck()) {
+//		gEnv->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
+//void EventManager::onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onIdentityPendingMessageForInnerBrowserWindowFrame", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
+//void EventManager::onIdentityRolodexContactsDownloaded(IIdentityPtr identity)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onIdentityRolodexContactsDownloaded", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
 
 //IIdentityLookupDelegate implementation

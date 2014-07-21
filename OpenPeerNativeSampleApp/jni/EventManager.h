@@ -18,7 +18,7 @@ class EventManager : public IStackMessageQueueDelegate,
 public IStackDelegate,
 public IMediaEngineDelegate,
 //public IAccountDelegate,
-public IIdentityDelegate,
+//public IIdentityDelegate,
 //public IConversationThreadDelegate,
 //public ICallDelegate,
 public IIdentityLookupDelegate,
@@ -69,13 +69,13 @@ public:
 //	//ICallDelegate implementation
 //	virtual void onCallStateChanged(ICallPtr call, ICall::CallStates state);
 
-	//IIdentityDelegate implementation
-	virtual void onIdentityStateChanged(
-			IIdentityPtr identity,
-			IIdentity::IdentityStates state
-	);
-	virtual void onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity);
-	virtual void onIdentityRolodexContactsDownloaded(IIdentityPtr identity);
+//	//IIdentityDelegate implementation
+//	virtual void onIdentityStateChanged(
+//			IIdentityPtr identity,
+//			IIdentity::IdentityStates state
+//	);
+//	virtual void onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity);
+//	virtual void onIdentityRolodexContactsDownloaded(IIdentityPtr identity);
 
 	//IIdentityLookupDelegate implementation
 	virtual void onIdentityLookupCompleted(
