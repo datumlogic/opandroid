@@ -18,6 +18,7 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.ConversationActivity;
+import com.openpeer.sample.conversation.CallStatus;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.model.OPSession;
@@ -218,7 +219,9 @@ public class OPSessionManager {
 	}
 
 	public void onCallEnd(OPCall mCall) {
-		mCalls.remove(mCall.getPeer().getPeerURI());
+		String peerUri = mCall.getPeer().getPeerURI();
+		mCalls.remove(peerUri);
+		mCallStates.remove(peerUri);
 	}
 
 	public void hangupCall(OPCall mCall, CallClosedReasons callclosedreasonUser) {
@@ -229,5 +232,23 @@ public class OPSessionManager {
 	public OPUser getPeerUserForCall(OPCall call) {
 		OPContact contact = call.getPeer();
 		return new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
+	}
+
+	Hashtable<String, CallStatus> mCallStates = new Hashtable<String, CallStatus>();
+
+	public CallStatus getMediaStateForCall(String peerUri) {
+		CallStatus state = null;
+		if (mCallStates == null) {
+			mCallStates = new Hashtable<String, CallStatus>();
+
+		} else {
+			state = mCallStates.get(peerUri);
+		}
+		if (state == null) {
+			state = new CallStatus();
+			mCallStates.put(peerUri, state);
+		}
+		return state;
+
 	}
 }
