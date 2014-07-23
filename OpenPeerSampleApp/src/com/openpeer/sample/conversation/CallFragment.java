@@ -29,6 +29,7 @@ import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
 import com.squareup.picasso.Picasso;
@@ -476,7 +477,8 @@ public class CallFragment extends BaseFragment {
 
 	void playRingtone() {
 		if (mRingtone == null) {
-			mRingtone = RingtoneManager.getRingtone(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
+			// mRingtone = RingtoneManager.getRingtone(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
+			mRingtone = SettingsHelper.getRingtone();
 			Log.d(TAG, "play ringtone " + mRingtone.getTitle(getActivity()));
 		}
 		mRingtone.play();

@@ -3,20 +3,26 @@ package com.openpeer.sample;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
+import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import android.view.MenuItem;
 
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
+import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
 
 public class SettingsActivity extends Activity {
@@ -26,6 +32,7 @@ public class SettingsActivity extends Activity {
 	static final String KEY_LOG_LEVEL = "log_level";
 	static final String KEY_OUT_LOG_SERVER = "log_server_url";
 	static final String KEY_FILE_LOGGER_PATH = "log_file";
+	static final String KEY_RINGTONE = "ringtone";
 
 	public static void launch(Context context) {
 		Intent intent = new Intent(context, SettingsActivity.class);
@@ -47,6 +54,7 @@ public class SettingsActivity extends Activity {
 		ListPreference logLevelPref;
 		EditTextPreference logServerPref;
 		EditTextPreference logFilePref;
+		RingtonePreference ringtonePref;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -98,6 +106,10 @@ public class SettingsActivity extends Activity {
 					return true;
 				}
 			});
+			ringtonePref = (RingtonePreference) findPreference(KEY_RINGTONE);
+			Ringtone ringtone = SettingsHelper.getRingtone();
+			ringtonePref.setSummary(ringtone.getTitle(getActivity()));
+
 			setupAboutInfo();
 		}
 
