@@ -19,7 +19,7 @@
         android:layout_marginLeft="20dp"
         android:background="@drawable/bg_circle_dark"
         android:padding="10dp"
-        android:src="@drawable/ic_action_speaker" />
+        android:src="@drawable/ic_action_speaker_on" />
 
     <ImageView
         android:id="@+id/video"
@@ -28,7 +28,7 @@
         android:layout_marginLeft="20dp"
         android:background="@drawable/bg_circle_dark"
         android:padding="10dp"
-        android:src="@drawable/ic_action_video" />
+        android:src="@drawable/ic_action_video_on" />
 
     <ImageView
         android:id="@+id/camera"

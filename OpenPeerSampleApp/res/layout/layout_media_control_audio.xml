@@ -20,13 +20,14 @@
         android:layout_marginLeft="20dp"
         android:background="@drawable/bg_circle_dark"
         android:padding="10dp"
-        android:src="@drawable/ic_action_speaker" />
+        android:src="@drawable/ic_action_speaker_on" />
 
     <ImageView
         android:id="@+id/record"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
+        android:visibility="gone"
         android:background="@drawable/bg_circle_dark"
         android:padding="10dp"
         android:src="@drawable/ic_action_headphones" />
