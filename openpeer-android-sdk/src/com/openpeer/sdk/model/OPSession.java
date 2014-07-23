@@ -334,12 +334,12 @@ public class OPSession extends Observable {
 
 	public void onMessageReceived(OPMessage message) {
 		if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
-			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
 			OPUser user = getUserByContact(message.getFrom());
 			message.setSenderId(user.getUserId());
 			if (isWindowAttached()) {
 				message.setRead(true);
 			}
+			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
 		} else {
 			Log.d("test", "SessionManager onMessageReceived " + message.getMessageType());
 		}
@@ -373,19 +373,10 @@ public class OPSession extends Observable {
 	}
 
 	public boolean isForThread(OPConversationThread thread) {
-		//TODO: create appropriate logic,e.g. based on windowId
+		// TODO: create appropriate logic,e.g. based on windowId
 		if (thread.getThreadID().equals(mConvThread.getThreadID())) {
 			return true;
 		}
 		return false;
 	}
-
-	// public OPCall placeCall(List<OPUser> users, boolean audio, boolean video) {
-	// currentCall = OPCall.placeCall(mConvThread, users.get(0).getOPContact(), audio,
-	// video);
-	// currentCall.setPeerUser(users.get(0));
-	//
-	// return currentCall;
-	//
-	// }
 }
