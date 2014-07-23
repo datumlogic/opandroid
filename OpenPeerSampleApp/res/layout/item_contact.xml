@@ -14,18 +14,6 @@
         android:layout_centerVertical="true"
         android:scaleType="centerCrop" />
 
-    <!--
-         <TextView
-        android:id="@+id/badge_view"
-        android:layout_width="@dimen/badge_image_size_in_contact"
-        android:layout_height="@dimen/badge_image_size_in_contact"
-        android:layout_alignRight="@id/image_view"
-        android:layout_alignTop="@id/image_view"
-        android:background="@color/red"
-        android:text="20+"
-        android:visibility="gone" />
-    -->
-
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
@@ -35,22 +23,12 @@
         android:layout_toRightOf="@id/image_view" />
 
     <ImageView
-        android:id="@+id/call"
+        android:id="@+id/chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_action_call" />
-
-    <ImageView
-        android:id="@+id/chat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/padding_spacing_internal"
-        android:layout_toLeftOf="@id/call"
-        android:layout_alignWithParentIfMissing="true"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_action_chat" />
 

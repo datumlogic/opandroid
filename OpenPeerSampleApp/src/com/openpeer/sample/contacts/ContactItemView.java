@@ -19,6 +19,7 @@ import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.AppConfig;
 import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.R;
+import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.ConversationActivity;
 
 import com.squareup.picasso.Picasso;
@@ -29,7 +30,6 @@ public class ContactItemView extends RelativeLayout {
 	private ImageView mImageView;
 	private TextView mTitleView;
 
-	private View mCallView;
 	private View mChatView;
 	private View mInviteView;
 	long mUserId;
@@ -45,7 +45,6 @@ public class ContactItemView extends RelativeLayout {
 		mImageView = (ImageView) findViewById(R.id.image_view);
 
 		mTitleView = (TextView) findViewById(R.id.title);
-		mCallView = findViewById(R.id.call);
 		mChatView = findViewById(R.id.chat);
 		mInviteView = findViewById(R.id.invite);
 	}
@@ -63,7 +62,6 @@ public class ContactItemView extends RelativeLayout {
 		mUserId = cursor.getLong(4);
 		if (!TextUtils.isEmpty(stableId)) {
 			mInviteView.setVisibility(View.GONE);
-			mCallView.setVisibility(View.VISIBLE);
 			mChatView.setVisibility(View.VISIBLE);
 			final long mUserIds[] = { mUserId };
 
@@ -76,41 +74,6 @@ public class ContactItemView extends RelativeLayout {
 				}
 			});
 
-			if (!AppConfig.FEATURE_CALL) {
-				mCallView.setVisibility(View.GONE);
-			} else {
-				mCallView.setOnClickListener(new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Log.d("test", "Call button tapped");
-
-						AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-						builder.setPositiveButton(R.string.audio, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								// OPCall call =
-								// OPSessionManager.getInstance().placeCall(ids,
-								// true, false);
-
-								ConversationActivity.launchForCall(getContext(), mUserIds, true, false);
-							}
-						}).setNeutralButton(R.string.video, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								// OPCall call =
-								// OPSessionManager.getInstance().placeCall(ids,
-								// true, true);
-								ConversationActivity.launchForCall(getContext(), mUserIds, true, true);
-							}
-						}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.dismiss();
-							}
-						});
-						builder.create().show();
-					}
-				});
-			}
-
 		} else {
 			mInviteView.setVisibility(View.VISIBLE);
 			mInviteView.setOnClickListener(new View.OnClickListener() {
@@ -121,7 +84,6 @@ public class ContactItemView extends RelativeLayout {
 				}
 			});
 
-			mCallView.setVisibility(View.GONE);
 			mChatView.setVisibility(View.GONE);
 		}
 	}
@@ -129,10 +91,6 @@ public class ContactItemView extends RelativeLayout {
 	public void onClick() {
 		final long userIds[] = { mUserId };
 		ConversationActivity.launchForChat(getContext(), userIds);
-	}
-
-	public void onLongPress() {
-
 	}
 
 }
