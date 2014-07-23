@@ -13,12 +13,14 @@
         android:layout_height="@dimen/profile_image_size_in_chat"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_marginRight="@dimen/padding_spacing_internal"
         android:layout_toLeftOf="@id/avatar"
         android:hint="send time" />
@@ -27,6 +29,7 @@
         android:id="@+id/user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_marginRight="@dimen/padding_spacing_internal"
         android:layout_toLeftOf="@id/time"
         android:text="Me" />
@@ -35,11 +38,13 @@
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_below="@id/time"
         android:layout_marginRight="@dimen/padding_spacing_internal"
         android:layout_marginTop="@dimen/padding_spacing_internal"
         android:layout_toLeftOf="@+id/avatar"
-        android:background="@drawable/speech_bubble_green" android:text="dd">
+        android:background="@drawable/speech_bubble_green"
+        android:text="dd" >
     </TextView>
 
 </RelativeLayout>

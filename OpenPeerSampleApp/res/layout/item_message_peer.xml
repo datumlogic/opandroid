@@ -12,6 +12,7 @@
         android:layout_width="@dimen/profile_image_size_in_chat"
         android:layout_height="@dimen/profile_image_size_in_chat"
         android:layout_alignParentBottom="true"
+        android:visibility="gone"
         android:scaleType="centerCrop" />
 
     <TextView
