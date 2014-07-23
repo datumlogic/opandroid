@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="1" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
-        android:id="@+id/users_container"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:orientation="horizontal"
-        android:padding="10dp" >
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1" >
 
-    <ListView
-        android:id="@+id/listview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@null" >
-    </ListView>
-
-    <LinearLayout
-        android:id="@+id/layout_compose"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:hint="@string/hint_compose" />
+            android:divider="@null" >
+        </ListView>
 
-        <Button
-            android:id="@+id/send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:text="@string/label_send" />
+        <LinearLayout
+            android:id="@+id/layout_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <EditText
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/hint_compose" />
+
+            <Button
+                android:id="@+id/send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="@string/label_send" />
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+    <com.openpeer.sample.conversation.CallInfoView
+        android:id="@+id/call_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#aa2f2f2f"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/padding_vertical"
+        android:paddingLeft="@dimen/padding_edge"
+        android:paddingRight="@dimen/padding_edge"
+        android:paddingTop="@dimen/padding_vertical" />
+
+</FrameLayout>

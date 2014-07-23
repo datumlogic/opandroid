@@ -27,6 +27,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.openpeer.javaapi.CallStates;
+import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
@@ -59,13 +61,13 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	private View mSendButton;
 	private MessagesAdaptor mAdapter;
 	private List<OPMessage> mMessages;
-	private LinearLayout usersContainer;
 
 	private OPIdentityContact mSelfContact;
 	private OPConversationThread mConvThread;
 	private long mWindowId;
 	private OPSession mSession;
 	long[] mUserIDs;
+	private CallInfoView mCallInfoView;
 
 	public static ChatFragment newInstance(long[] userIdList) {
 		ChatFragment fragment = new ChatFragment();
@@ -129,28 +131,38 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		super.onResume();
 		mSession.setWindowAttached(true);
 		OPDataManager.getDatastoreDelegate().markMessagesRead(mWindowId);
+
+		// TODO: proper look up
+		String peerUri = mSession.getParticipants().get(0).getPeerUri();
+		// OPCall call = mSession.getCurrentCall();
+		OPCall call = OPSessionManager.getInstance().getOngoingCallForPeer(peerUri);
+		if (call != null && (call.getState() == CallStates.CallState_Open
+				|| call.getState() == CallStates.CallState_Active)) {
+			Log.d(TAG, "now show call info");
+			mCallInfoView.setVisibility(View.VISIBLE);
+			mCallInfoView.bindCall(call);
+
+		} else {
+			mCallInfoView.setVisibility(View.GONE);
+
+		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		mSession.setWindowAttached(false);
-	}
-
-	void updateUsersView(List<OPUser> users) {
-		int width = (int) (getActivity().getResources().getDisplayMetrics().density * 50);
-		this.usersContainer.removeAllViews();
-		for (OPUser user : users) {
-			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, width);
-			ImageView view = (ImageView) LayoutInflater.from(getActivity()).inflate(R.layout.imageview_profile, null);
-			usersContainer.addView(view, lp);
-			if (user.getAvatarUri() != null) {
-				Picasso.with(getActivity()).load(user.getAvatarUri()).into(view);
-			}
+		if (mCallInfoView.isShown()) {
+			mCallInfoView.unbind();
 		}
 	}
 
+	void updateUsersView(List<OPUser> users) {
+		getActivity().getActionBar().setTitle(users.get(0).getName());
+	}
+
 	View setupView(View view) {
+		mCallInfoView = (CallInfoView) view.findViewById(R.id.call_info);
 		View emptyView = view.findViewById(R.id.empty_view);
 		mMessagesList = (ListView) view.findViewById(R.id.listview);
 		mMessagesList.setEmptyView(emptyView);
@@ -159,7 +171,6 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		View layout = view.findViewById(R.id.layout_compose);
 		mComposeBox = (TextView) layout.findViewById(R.id.text);
 		mSendButton = layout.findViewById(R.id.send);
-		usersContainer = (LinearLayout) view.findViewById(R.id.users_container);
 
 		updateUsersView(mSession.getParticipants());
 		mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -212,11 +223,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		@Override
 		public int getItemViewType(int position) {
 			Cursor cursor = (Cursor) getItem(position);
-			long sender_id = cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
-			if (sender_id == 0) {
-				return 0;
-			}
-			return 1;
+			return getItemViewType(cursor);
 
 		}
 
@@ -280,11 +287,11 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		void update(OPMessage data) {
 			switch (viewType) {
 			case VIEWTYPE_SELF_MESSAGE_VIEW:
-				Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
+				// Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
 				break;
 			case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
 				OPUser sender = mSession.getUserBySenderId(data.getSenderId());
-				Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
+				// Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
 
 				break;
 			}
@@ -303,9 +310,9 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 					}
 				}
 			}
-			if (avatar != null) {
-				Picasso.with(getActivity()).load(avatar).into(avatarView);
-			}
+			// if (avatar != null) {
+			// Picasso.with(getActivity()).load(avatar).into(avatarView);
+			// }
 
 			time.setText(DateFormatUtils.getSameDayTime(data.getTime().toMillis(true)));
 			text.setText(data.getMessage());
@@ -321,12 +328,21 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		// case R.id.menu_call:
-		// makeCall();
-		// return true;
-		case R.id.menu_add:
-			addParticipant();
+		case R.id.menu_call:
+			if (mSession.getCurrentCall() != null) {
+				CallActivity.launchForCall(getActivity(), mSession.getCurrentCall().getPeer().getPeerURI());
+				return true;
+			} else
+				return false;
+		case R.id.menu_audio:
+			makeCall(false);
 			return true;
+		case R.id.menu_video:
+			makeCall(true);
+			return true;
+			// case R.id.menu_add:
+			// addParticipant();
+			// return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -381,8 +397,13 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	private void makeCall() {
-		Toast.makeText(getActivity(), "makeCall to be implmented", Toast.LENGTH_LONG);
+	private void makeCall(boolean video) {
+		String peerUri = mSession.getUserBySenderId(mUserIDs[0]).getPeerUri();
+		if (null != OPSessionManager.getInstance().getOngoingCallForPeer(peerUri)) {
+			CallActivity.launchForCall(getActivity(), peerUri);
+		} else {
+			CallActivity.launchForCall(getActivity(), mUserIDs, true, video);
+		}
 	}
 
 	// Begin: CursorCallback implementation
@@ -423,6 +444,5 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		mAdapter.changeCursor(null);
 	}
-	// End: CursorCallback implementation
 
 }
