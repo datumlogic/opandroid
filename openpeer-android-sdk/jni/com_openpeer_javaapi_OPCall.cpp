@@ -190,7 +190,6 @@ extern "C" {
 	ICallPtr coreCall = OpenPeerCoreManager::getCallFromList(owner);
 	if (coreCall) {
 		contact = coreCall->getCallee();
-		contact = coreCall->getCaller();
 		jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
 		jmethodID contactConstructorMethodID = jni_env->GetMethodID(
 				contactClass, "<init>", "()V");
