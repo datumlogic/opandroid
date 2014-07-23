@@ -11,13 +11,15 @@ import android.util.Log;
 
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPMessage;
+import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.ConversationActivity;
 import com.openpeer.sdk.model.OPSession;
 
 public class OPNotificationBuilder {
 	private static String TAG = OPNotificationBuilder.class.getSimpleName();
 
-	private static final int NOTIFICATION_ID_BASE = 1000;
+	private static final int NOTIFICATION_ID_BASE_CALL = 100000;
+	private static final int NOTIFICATION_ID_BASE_MESSAGE = 200000;
 
 	public static void showNotificationForCall(OPCall call) {
 		Intent launchIntent = null;
@@ -32,7 +34,7 @@ public class OPNotificationBuilder {
 				.setContentText(message)
 				.setSmallIcon(R.drawable.ic_action_call_light);
 		// Create the notification
-		launchIntent = new Intent(context, ConversationActivity.class);
+		launchIntent = new Intent(context, CallActivity.class);
 		String peerUri = call.getPeer().getPeerURI();
 		launchIntent.putExtra(IntentData.ARG_CONVERSATION_ACTION, IntentData.ACTION_CALL);
 		launchIntent.putExtra(IntentData.ARG_PEER_URI, peerUri);
@@ -46,7 +48,7 @@ public class OPNotificationBuilder {
 
 		builder.setContentIntent(contentIntent);
 
-		int notificationId = (int) (2 + NOTIFICATION_ID_BASE);
+		int notificationId = (int) (call.getPeerUser().getUserId() + NOTIFICATION_ID_BASE_CALL);
 		Notification notification = builder.build();// new Notification(appIcon, message, System.currentTimeMillis());
 
 		// Show the notification
@@ -80,7 +82,7 @@ public class OPNotificationBuilder {
 		builder.setContentIntent(contentIntent);
 
 		// int notificationId = (int) (session.getCurrentWindowId() + NOTIFICATION_ID_BASE);
-		int notificationId = (int) (1 + NOTIFICATION_ID_BASE);
+		int notificationId = (int) session.getCurrentWindowId() + NOTIFICATION_ID_BASE_MESSAGE;
 
 		Notification notification = builder.build();
 		// Show the notification
@@ -91,14 +93,16 @@ public class OPNotificationBuilder {
 	public static void cancelNotificationForChat(int windowId) {
 		NotificationManager notificationManager = (NotificationManager) OPApplication.getInstance().getSystemService(
 				Context.NOTIFICATION_SERVICE);
-		notificationManager.cancel(NOTIFICATION_ID_BASE + 1);
+		notificationManager.cancel(NOTIFICATION_ID_BASE_MESSAGE + windowId);
 	}
 
-	public static void cancelNotificationForCall(String callId) {
-
+	public static void cancelNotificationForCall(OPCall call) {
+		NotificationManager notificationManager = (NotificationManager) OPApplication.getInstance().getSystemService(
+				Context.NOTIFICATION_SERVICE);
+		notificationManager.cancel(NOTIFICATION_ID_BASE_CALL + (int)call.getPeerUser().getUserId());
 	}
 
 	static int getNotificationId(int windowId) {
-		return 1 + NOTIFICATION_ID_BASE;
+		return 1 + NOTIFICATION_ID_BASE_CALL;
 	}
 }

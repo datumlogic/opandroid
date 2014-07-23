@@ -60,6 +60,10 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name=".conversation.CallActivity"
+            android:exported="true" >
+        </activity>
+        <activity
             android:name=".contacts.ProfilePickerActivity"
             android:exported="true"
             android:label="@string/label_select_contact"

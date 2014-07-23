@@ -2,6 +2,8 @@ package com.openpeer.sample.conversation;
 
 import java.util.List;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.openpeer.delegates.CallbackHandler;
+import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.CameraTypes;
 import com.openpeer.javaapi.OPCall;
@@ -32,7 +35,7 @@ import com.squareup.picasso.Picasso;
 
 public class CallFragment extends BaseFragment {
 	public static final String TAG = CallFragment.class.getSimpleName();
-	TextView mNameView;
+	// TextView mNameView;
 	ImageView mPeerAvatarView;
 
 	OPCall mCall;
@@ -50,9 +53,10 @@ public class CallFragment extends BaseFragment {
 	private ImageView cameraSwitchButton;
 	private ImageView speakerButton;
 	private ImageView recordButton;
-	private CallStatus state;
+	private CallStatus mCallStatus;
 	private View mStatusOverlay;
 	private View mCallView;
+	Ringtone mRingtone;
 
 	public static CallFragment newInstance(long[] peerContactId, boolean audio, boolean video) {
 		CallFragment fragment = new CallFragment();
@@ -131,50 +135,29 @@ public class CallFragment extends BaseFragment {
 
 		mPeerAvatarView = (ImageView) view.findViewById(R.id.peer_image);
 
-		mStatusOverlay.setOnClickListener(new View.OnClickListener() {
+		// No point in hiding the overlay for audio call
+		if (mVideo) {
+			mStatusOverlay.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				v.setVisibility(View.GONE);
-			}
-		});
-		mNameView = (TextView) view.findViewById(R.id.name);
-		mStatusView = (TextView) view.findViewById(R.id.time);
+				@Override
+				public void onClick(View v) {
+					hideOverlay();
+				}
+			});
+		}
 
 		CallControlView mCallControlView = (CallControlView) view.findViewById(R.id.call_control);
-		// mCallControlView.registerActionListener(new CallControlView.CallActionListener() {
-		//
-		// @Override
-		// public void onAnswerClick() {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		//
-		// @Override
-		// public void onEndClick() {
-		// // TODO: we should call parent activity onCallEndListener if we want to use this fragment in multipane layout
-		// getActivity().finish();
-		// }
-		// });
-		Bundle args = getArguments();
-		// mVideo = args.getBoolean(IntentData.ARG_VIDEO, false);
+
 		if (mVideo) {
 			mVideoView.setVisibility(View.VISIBLE);
 			mVideoView.setOnClickListener(new View.OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-					mStatusOverlay.setVisibility(View.VISIBLE);
+					showOverlay();
 				}
 			});
 		} else {
-			mCallView.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					mStatusOverlay.setVisibility(View.VISIBLE);
-				}
-			});
 			mVideoView.setVisibility(View.GONE);
 		}
 
@@ -206,51 +189,64 @@ public class CallFragment extends BaseFragment {
 			// if (mVideo) {
 			// OPMediaEngine.getInstance().startVideoCapture();
 			// }
+		} else {
+			if (mCall.getState() == CallStates.CallState_Incoming || mCall.getState() == CallStates.CallState_Ringing) {
+
+				playRingtone();
+				OPNotificationBuilder.cancelNotificationForCall(mCall);
+			} else if (mCall.getState() == CallStates.CallState_Open) {
+				startShowDuration();
+			}
 		}
 		mCallControlView.bindCall(mCall);
-		mNameView.setText(mCall.getPeerUser().getName());
-		Picasso.with(getActivity())
-				.load(mCall.getPeerUser().getAvatarUri())
-				.into(mPeerAvatarView);
+		// mNameView.setText(mCall.getPeerUser().getName());
+		getActivity().getActionBar().setTitle(mCall.getPeerUser().getName());
+		String avatarUri = mCall.getPeerUser().getAvatarUri();
+		if (avatarUri != null) {
+			Picasso.with(getActivity())
+					.load(avatarUri)
+					.into(mPeerAvatarView);
+		}
 
 		return view;
 	}
 
 	void setupMediaControl() {
-		state = OPSessionManager.getInstance().getMediaStateForCall(peerUri);
-		audioButton.setImageResource(state.isMuted() ? R.drawable.ic_action_mic_muted : R.drawable.ic_action_mic);
+		mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(peerUri);
+		audioButton.setImageResource(mCallStatus.isMuted() ? R.drawable.ic_action_mic_muted : R.drawable.ic_action_mic);
 		audioButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				state.setMuted(!state.isMuted());
-				audioButton.setImageResource(state.isMuted() ? R.drawable.ic_action_mic_muted : R.drawable.ic_action_mic);
-				OPMediaEngine.getInstance().setMuteEnabled(state.isMuted());
+				mCallStatus.setMuted(!mCallStatus.isMuted());
+				audioButton.setImageResource(mCallStatus.isMuted() ? R.drawable.ic_action_mic_muted : R.drawable.ic_action_mic);
+				OPMediaEngine.getInstance().setMuteEnabled(mCallStatus.isMuted());
 			}
 		});
 
-		speakerButton.setImageResource(state.isSpeakerOn() ? R.drawable.ic_action_speaker : R.drawable.ic_action_speaker_off);
+		speakerButton.setImageResource(mCallStatus.isSpeakerOn() ? R.drawable.ic_action_speaker_on : R.drawable.ic_action_speaker_off);
 
 		speakerButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				state.setSpeakerOn(!state.isSpeakerOn());
-				audioButton.setImageResource(state.isSpeakerOn() ? R.drawable.ic_action_speaker : R.drawable.ic_action_speaker_off);
+				mCallStatus.setSpeakerOn(!mCallStatus.isSpeakerOn());
+				speakerButton.setImageResource(mCallStatus.isSpeakerOn() ? R.drawable.ic_action_speaker_on
+						: R.drawable.ic_action_speaker_off);
 
-				OPMediaEngine.getInstance().setLoudspeakerEnabled(state.isSpeakerOn());
+				OPMediaEngine.getInstance().setLoudspeakerEnabled(mCallStatus.isSpeakerOn());
 
 			}
 		});
 		if (mVideo) {
-			videoButton.setImageResource(state.isCapturing() ? R.drawable.ic_action_video : R.drawable.ic_action_video);
+			videoButton.setImageResource(mCallStatus.isCapturing() ? R.drawable.ic_action_video : R.drawable.ic_action_video);
 			videoButton.setOnClickListener(new View.OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-					state.setCapturing(!state.isCapturing());
-					videoButton.setImageResource(state.isCapturing() ? R.drawable.ic_action_video : R.drawable.ic_action_video);
-					if (state.isCapturing()) {
+					mCallStatus.setCapturing(!mCallStatus.isCapturing());
+					videoButton.setImageResource(mCallStatus.isCapturing() ? R.drawable.ic_action_video_on : R.drawable.ic_action_video_off);
+					if (mCallStatus.isCapturing()) {
 						OPMediaEngine.getInstance().startVideoCapture();
 					} else {
 						OPMediaEngine.getInstance().stopVideoCapture();
@@ -262,8 +258,8 @@ public class CallFragment extends BaseFragment {
 
 				@Override
 				public void onClick(View v) {
-					state.setUseFrontCamera(!state.useFrontCamera());
-					if (state.useFrontCamera()) {
+					mCallStatus.setUseFrontCamera(!mCallStatus.useFrontCamera());
+					if (mCallStatus.useFrontCamera()) {
 						OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
 					} else {
 						OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
@@ -291,21 +287,53 @@ public class CallFragment extends BaseFragment {
 	void updateCallView(CallStates state) {
 		int strResId = STATE_STRINGS[state.ordinal()];
 		if (strResId != 0) {
-			mStatusView.setText(getActivity().getText(strResId));
+			getActivity().getActionBar().setSubtitle(getActivity().getText(strResId));
 		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (mCall != null && mCall.getState() != CallStates.CallState_Closing && mCall.getState() != CallStates.CallState_Closed) {
-			OPNotificationBuilder.showNotificationForCall(mCall);
+
+	}
+
+	public void onStop() {
+		super.onStop();
+		Log.d(TAG, "onStop");
+
+	}
+
+	public void onDestroy() {
+		super.onDestroy();
+		if (mCall != null) {
+			CallStates state = mCall.getState();
+			switch (state) {
+			case CallState_Open:
+			case CallState_Active:
+			case CallState_Hold:
+				OPNotificationBuilder.showNotificationForCall(mCall);
+				break;
+
+			case CallState_Closing:
+			case CallState_Closed:
+				break;
+			default:
+				mCall.hangup(CallClosedReasons.CallClosedReason_User);
+				OPSessionManager.getInstance().onCallEnd(mCall);
+				break;
+
+			}
 		}
 		if (mVideo) {
 			localViewLinearLayout.removeAllViews();
 			remoteViewLinearLayout.removeAllViews();
 		}
+	}
 
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		Log.d(TAG, "onDetach");
 	}
 
 	public class OPCallDelegateImplementation extends OPCallDelegate {
@@ -324,16 +352,19 @@ public class CallFragment extends BaseFragment {
 					switch (state) {
 					case CallState_Placed:
 						if (!isDetached()) {
-							mNameView.setText("" + state);
+							// mNameView.setText("" + state);
 						}
 						break;
 					case CallState_Incoming:
+						playRingtone();
 						break;
 					case CallState_Early:
 						break;
 					case CallState_Ringing:
+						playRingtone();
 						break;
 					case CallState_Ringback:
+						playRingtone();
 						break;
 					case CallState_Open: // call is open
 						onCallAnswered();
@@ -353,17 +384,21 @@ public class CallFragment extends BaseFragment {
 				}
 
 				private void onCallAnswered() {
-
-					startTime = SystemClock.uptimeMillis();
-					mStatusView.postDelayed(timerThread, 1000);
+					mCallStatus.setAnswerTime(System.currentTimeMillis());
+					startShowDuration();
 					if (mVideo) {
 						mCallView.setVisibility(View.GONE);
-						mStatusOverlay.setVisibility(View.VISIBLE);
+						hideOverlay();
+					}
+					if (mRingtone != null) {
+						mRingtone.stop();
 					}
 				}
 
 				private void onCallClosed() {
-					// OPSessionManager.getInstance().onCallEnd(mCall);
+					if (mRingtone != null) {
+						mRingtone.stop();
+					}
 					CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
 					getActivity().finish();
 				}
@@ -387,7 +422,7 @@ public class CallFragment extends BaseFragment {
 
 	void initMedia(View view) {
 
-		if (state.useFrontCamera())
+		if (mCallStatus.useFrontCamera())
 			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
 		else
 			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
@@ -414,21 +449,45 @@ public class CallFragment extends BaseFragment {
 		}
 	}
 
-	private long startTime;
-	private TextView mStatusView;
+	// private long startTime;
+	// private TextView mStatusView;
+
+	private void startShowDuration() {
+		mCallView.postDelayed(timerThread, 1000);
+	}
+
 	private Runnable timerThread = new Runnable() {
 
 		public void run() {
+			if (!isAdded()) {
+				return;
+			}
 
-			long timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+			long timeInMilliseconds = mCallStatus.getDuration();
 
 			int secs = (int) (timeInMilliseconds / 1000);
 			int mins = secs / 60;
 			secs = secs % 60;
-			mStatusView.setText("" + mins + ":"
-					+ String.format("%02d", secs));
-			mStatusView.postDelayed(this, 0);
+			getActivity().getActionBar().setSubtitle(mins + ":" + String.format("%02d", secs));
+			mCallView.postDelayed(this, 1000);
 		}
 	};
 
+	void playRingtone() {
+		if (mRingtone == null) {
+			mRingtone = RingtoneManager.getRingtone(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
+			Log.d(TAG, "play ringtone " + mRingtone.getTitle(getActivity()));
+		}
+		mRingtone.play();
+	}
+
+	void showOverlay() {
+		getActivity().getActionBar().show();
+		mStatusOverlay.setVisibility(View.VISIBLE);
+	}
+
+	void hideOverlay() {
+		getActivity().getActionBar().hide();
+		mStatusOverlay.setVisibility(View.GONE);
+	}
 }
