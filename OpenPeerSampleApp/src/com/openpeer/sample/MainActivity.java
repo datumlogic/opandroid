@@ -198,6 +198,6 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener,
 
 	@Override
 	public void onChatsEmptyViewClick() {
-		mViewPager.setCurrentItem(TAB_CONTACTS);
+		mViewPager.setCurrentItem(TAB_FAVORITES);
 	}
 }
