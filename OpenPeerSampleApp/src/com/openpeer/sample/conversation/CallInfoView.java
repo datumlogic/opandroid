@@ -51,19 +51,25 @@ public class CallInfoView extends LinearLayout {
 		mDelegate = new OPCallDelegate() {
 
 			@Override
-			public void onCallStateChanged(OPCall call, CallStates state) {
+			public void onCallStateChanged(OPCall call, final CallStates state) {
 				if (!call.getCallID().equals(mCall.getCallID())) {
 					return;
 				}
+
 				switch (state) {
 				case CallState_Closing:
 				case CallState_Closed:
-					setVisibility(View.GONE);
+					post(new Runnable() {
+						public void run() {
+							setVisibility(View.GONE);
+						}
+					});
 					CallbackHandler.getInstance().unregisterCallDelegate(call, this);
 					break;
 				default:
 					break;
 				}
+
 			}
 
 		};
@@ -72,7 +78,7 @@ public class CallInfoView extends LinearLayout {
 
 			@Override
 			public void onClick(View v) {
-				
+
 				CallActivity.launchForCall(getContext(), mCall.getPeer().getPeerURI());
 			}
 		});

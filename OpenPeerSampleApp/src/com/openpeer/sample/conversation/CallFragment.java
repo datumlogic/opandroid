@@ -193,9 +193,10 @@ public class CallFragment extends BaseFragment {
 			if (mCall.getState() == CallStates.CallState_Incoming || mCall.getState() == CallStates.CallState_Ringing) {
 
 				playRingtone();
-				OPNotificationBuilder.cancelNotificationForCall(mCall);
 			} else if (mCall.getState() == CallStates.CallState_Open) {
+				OPNotificationBuilder.cancelNotificationForCall(mCall);
 				startShowDuration();
+				mCallView.setVisibility(View.GONE);
 			}
 		}
 		mCallControlView.bindCall(mCall);

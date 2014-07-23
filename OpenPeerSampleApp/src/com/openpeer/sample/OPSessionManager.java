@@ -17,7 +17,7 @@ import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.sample.conversation.ConversationActivity;
+import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.CallStatus;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
@@ -198,8 +198,12 @@ public class OPSessionManager {
 						// return;
 					}
 
+					OPUser user = getPeerUserForCall(call);
+					call.setPeerUser(user);
+					Log.d("test", "found user for incoming call " + user);
+
 					mCalls.put(caller.getPeerURI(), call);
-					ConversationActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
+					CallActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
 					break;
 				case CallState_Closed:
 					onCallEnd(call);
@@ -222,6 +226,7 @@ public class OPSessionManager {
 		String peerUri = mCall.getPeer().getPeerURI();
 		mCalls.remove(peerUri);
 		mCallStates.remove(peerUri);
+		OPNotificationBuilder.cancelNotificationForCall(mCall);
 	}
 
 	public void hangupCall(OPCall mCall, CallClosedReasons callclosedreasonUser) {
@@ -231,7 +236,10 @@ public class OPSessionManager {
 
 	public OPUser getPeerUserForCall(OPCall call) {
 		OPContact contact = call.getPeer();
-		return new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
+
+		OPUser user = new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
+		user = OPDataManager.getDatastoreDelegate().saveUser(user);
+		return user;
 	}
 
 	Hashtable<String, CallStatus> mCallStates = new Hashtable<String, CallStatus>();
