@@ -118,9 +118,13 @@ public class LoginManager {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
-		OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
+		final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
 				identity);
-		mIdentityLoginWebView.setWebViewClient(client);
+		mIdentityLoginWebView.post(new Runnable() {
+			public void run() {
+				mIdentityLoginWebView.setWebViewClient(client);
+			}
+		});
 
 		OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
 				mIdentityLoginWebView, identity);
