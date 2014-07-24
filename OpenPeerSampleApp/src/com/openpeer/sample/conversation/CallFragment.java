@@ -24,6 +24,7 @@ import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.VideoOrientations;
+import com.openpeer.sample.AppConfig;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
@@ -126,6 +127,7 @@ public class CallFragment extends BaseFragment {
 			mAudio = args.getBoolean(IntentData.ARG_AUDIO, true);
 			mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
 		}
+        mVideo= mVideo && AppConfig.FEATURE_CALL;
 
 	}
 

@@ -11,7 +11,8 @@
                 android:title="@string/audio"/>
             <item
                 android:id="@+id/menu_video"
-                android:title="@string/video"/>
+                android:title="@string/video"
+                android:visible="false"/>
         </menu>
     </item>
     <!--
