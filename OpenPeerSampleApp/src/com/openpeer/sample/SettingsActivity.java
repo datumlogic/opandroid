@@ -33,8 +33,11 @@ public class SettingsActivity extends Activity {
 	static final String KEY_OUT_LOG_SERVER = "log_server_url";
 	static final String KEY_FILE_LOGGER_PATH = "log_file";
 	static final String KEY_RINGTONE = "ringtone";
+    static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
+    static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
 
-	public static void launch(Context context) {
+
+    public static void launch(Context context) {
 		Intent intent = new Intent(context, SettingsActivity.class);
 		context.startActivity(intent);
 	}
@@ -55,8 +58,10 @@ public class SettingsActivity extends Activity {
 		EditTextPreference logServerPref;
 		EditTextPreference logFilePref;
 		RingtonePreference ringtonePref;
+        RingtonePreference notificationSoundPref;
 
-		@Override
+
+        @Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 
@@ -65,6 +70,7 @@ public class SettingsActivity extends Activity {
 			SwitchPreference outTelnetLogging = (SwitchPreference) findPreference(KEY_OUT_TELNET_LOGGER);
 			SwitchPreference localTelnetLogging = (SwitchPreference) findPreference(KEY_LOCAL_TELNET_LOGGER);
 			SwitchPreference fileLogging = (SwitchPreference) findPreference(KEY_FILE_LOGGER);
+            SwitchPreference notificationSoundSwitchPref = (SwitchPreference) findPreference(KEY_NOTIFICATION_SOUND_SWITCH);
 
 			logLevelPref = (ListPreference) findPreference(KEY_LOG_LEVEL);
 			logServerPref = (EditTextPreference) findPreference(KEY_OUT_LOG_SERVER);
@@ -106,9 +112,8 @@ public class SettingsActivity extends Activity {
 					return true;
 				}
 			});
+            notificationSoundPref=(RingtonePreference) findPreference(KEY_NOTIFICATION_SOUND_SELECT);
 			ringtonePref = (RingtonePreference) findPreference(KEY_RINGTONE);
-			Ringtone ringtone = SettingsHelper.getRingtone();
-			ringtonePref.setSummary(ringtone.getTitle(getActivity()));
 
 			setupAboutInfo();
 		}
@@ -137,7 +142,14 @@ public class SettingsActivity extends Activity {
 			logLevelPref.setTitle("Log level       " + logLevelPref.getEntry());
 			logServerPref.setTitle("Log server:  " + logServerPref.getText());
 			logFilePref.setTitle("Log file:  " + logFilePref.getText());
-
+            Ringtone ringtone = SettingsHelper.getRingtone();
+            ringtonePref.setSummary(ringtone.getTitle(getActivity()));
+            Uri notificationSound = SettingsHelper.getNotificationSound();
+            if(notificationSound!=null) {
+                notificationSoundPref.setSummary(RingtoneManager.getRingtone(getActivity(),notificationSound).getTitle(getActivity()));
+            } else {
+                notificationSoundPref.setSummary("None");
+            }
 		}
 
 		@Override

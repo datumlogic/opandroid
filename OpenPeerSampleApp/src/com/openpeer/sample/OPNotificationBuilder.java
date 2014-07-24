@@ -13,6 +13,7 @@ import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.ConversationActivity;
+import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.model.OPSession;
 
 public class OPNotificationBuilder {
@@ -68,6 +69,9 @@ public class OPNotificationBuilder {
 				.setContentTitle(title)
 				.setContentText(message.getMessage())
 				.setSmallIcon(R.drawable.ic_launcher);
+        if(SettingsHelper.isSoundNotificationOnForNewMessage()){
+            builder.setSound(SettingsHelper.getNotificationSound());
+        }
 		// Create the notification
 		launchIntent = new Intent(context, ConversationActivity.class);
 		launchIntent.putExtra(IntentData.ARG_CONVERSATION_ACTION, IntentData.ACTION_CHAT);

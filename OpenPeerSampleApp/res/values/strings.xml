@@ -53,6 +53,9 @@
     <string name="label_build">Build</string>
     <string name="legal_info">Legal Information</string>
     <string name="ringtone_select">Select Ringtone</string>
+    <string name="notification_sound_switch">Message notification</string>
+    <string name="notification_sound_select">Select Notification Sound</string>
+
 
     <!-- End of setting strings -->
 
