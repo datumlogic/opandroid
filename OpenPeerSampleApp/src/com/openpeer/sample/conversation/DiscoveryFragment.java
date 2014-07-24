@@ -27,11 +27,11 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.openpeer.sample.BaseFragment;
-import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ContactItemView;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.sdk.datastore.OPContentProvider;
 
 public class DiscoveryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
 		SearchView.OnQueryTextListener, SearchView.OnCloseListener {
@@ -179,7 +179,7 @@ public class DiscoveryFragment extends BaseFragment implements SwipeRefreshLayou
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					ProviderContracts.CONTENT_URI_CONTACTS_VIEW,
+                    OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO),
 
 					LIST_PROJECTION, // Projection to return
 					builder.toString(), // No selection clause

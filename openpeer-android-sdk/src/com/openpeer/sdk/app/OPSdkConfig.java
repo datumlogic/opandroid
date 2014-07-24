@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import com.openpeer.javaapi.OPStack;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.provider.Settings.Secure;
 import android.text.format.Time;
@@ -17,13 +18,20 @@ import android.util.Log;
 
 /**
  * 
- * Global SDK configurations. TODO: put them in a file like openpeersdk.properties
+ * Global SDK configurations. TODO: put them in a file like
+ * openpeersdk.properties
  * 
- * All configurable items should have a default value and the value will be overwritten if the configuration file exists
+ * All configurable items should have a default value and the value will be
+ * overwritten if the configuration file exists
  */
 public class OPSdkConfig {
+
+	private static final String PREF_NAME = "sdk.pref";
+
 	// TODO add configuration items in
 	private static final String PATH_CONFIG_FILE = "openpeersdk.properties";
+	private static final String KEY_GRANT_ID = "grantId";
+
 	private static final String PREFIX_APP_COMMON_SETTING = "openpeer/common/";
 	private static final String PREFIX_APP_CALCULATED_SETTING = "openpeer/calculated/";
 
@@ -46,9 +54,8 @@ public class OPSdkConfig {
 	private Context mContext;
 	private Properties mProperties = new Properties();
 	private static OPSdkConfig instance;
-	private static final String instanceId = java.util.UUID
-			.randomUUID().toString();
-	private static final String KEY_GRANT_ID = "grantId";
+	private static final String instanceId = java.util.UUID.randomUUID()
+			.toString();
 
 	public static String getInstanceid() {
 		return instanceId;
@@ -84,9 +91,15 @@ public class OPSdkConfig {
 	public String getLockboxServiceDomain() {
 		return mProperties.getProperty(KEY_LOCKBOX_SERVICE_DOMAIN);
 	}
-	
-	public String getGrantId(){
-		return mProperties.getProperty(KEY_GRANT_ID);
+
+	public String getGrantId() {
+		String id = mContext.getSharedPreferences(PREF_NAME,
+				Context.MODE_PRIVATE).getString(KEY_GRANT_ID, null);
+		if (id == null) {
+			java.util.UUID.randomUUID().toString();
+			saveGrantId(id);
+		}
+		return id;
 	}
 
 	public String getAPPSettingsString() {
@@ -168,6 +181,13 @@ public class OPSdkConfig {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	private void saveGrantId(String grantId) {
+		SharedPreferences sp = mContext.getSharedPreferences(PREF_NAME,
+				Context.MODE_PRIVATE);
+		sp.edit().putString(KEY_GRANT_ID, grantId).apply();
 
 	}
 
