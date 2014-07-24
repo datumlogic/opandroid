@@ -25,12 +25,13 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.openpeer.sample.BaseFragment;
-import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
-import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
-import static com.openpeer.sdk.datastore.DatabaseContracts.*;
+import com.openpeer.sdk.datastore.OPContentProvider;
+
+import static com.openpeer.sdk.datastore.DatabaseContracts.COLUMN_NAME_AVATAR_URI;
+import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
 
 
 public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
@@ -190,9 +191,8 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					ProviderContracts.CONTENT_URI_CONTACTS_VIEW,
-//					DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
-																		// query
+					OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO),
+
 					LIST_PROJECTION, // Projection to return
 					builder.toString(), // No selection clause
 					slectionArgs, // No selection arguments
