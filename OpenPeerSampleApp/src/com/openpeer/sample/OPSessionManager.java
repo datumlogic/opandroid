@@ -3,6 +3,7 @@ package com.openpeer.sample;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.util.Log;
 
@@ -32,7 +33,7 @@ public class OPSessionManager {
 	public static OPSessionManager getInstance() {
 		if (instance == null) {
 			instance = new OPSessionManager();
-			instance.mSessions = new ArrayList<OPSession>();
+			instance.mSessions = new CopyOnWriteArrayList<OPSession>();
 		}
 		return instance;
 	}
@@ -213,10 +214,9 @@ public class OPSessionManager {
 			}
 		};
 		CallbackHandler.getInstance().registerConversationThreadDelegate(threadDelegate);
-		if (AppConfig.FEATURE_CALL) {
-			CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
-		}
-	}
+        CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
+
+    }
 
 	public OPCall getOngoingCallForPeer(String peerUri) {
 		return mCalls.get(peerUri);
