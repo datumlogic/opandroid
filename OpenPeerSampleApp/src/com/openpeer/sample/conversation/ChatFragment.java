@@ -38,13 +38,13 @@ import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
-import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
@@ -421,7 +421,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					ProviderContracts.getContentUri(DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + mWindowId),
+                    OPContentProvider.getContentUri(DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + mWindowId),
 					null,
 					null, // No selection clause
 					null, // No selection arguments
