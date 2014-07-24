@@ -1,4 +1,4 @@
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
+//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/IAccount.h"
 #include "openpeer/core/IIdentity.h"
@@ -14,29 +14,29 @@
 
 using namespace openpeer::core;
 
-class EventManager : public IStackMessageQueueDelegate,
-public IStackDelegate,
-public IMediaEngineDelegate,
+class EventManager : public IStackMessageQueueDelegate
+//public IStackDelegate,
+//public IMediaEngineDelegate
 //public IAccountDelegate,
 //public IIdentityDelegate,
 //public IConversationThreadDelegate,
 //public ICallDelegate,
-public IIdentityLookupDelegate,
-public ILoggerDelegate
+//public IIdentityLookupDelegate,
+//public ILoggerDelegate
 {
 public:
 	//IStackMessageQueueDelegate implementation
 	virtual void onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread();
 
-	//IStackDelegate implementation
-	virtual void onStackShutdown(openpeer::core::IStackAutoCleanupPtr);
+//	//IStackDelegate implementation
+//	virtual void onStackShutdown(openpeer::core::IStackAutoCleanupPtr);
 
-	//IMediaEngineDelegate implementation
-	virtual void onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute);
-	virtual void onMediaEngineAudioSessionInterruptionBegan();
-	virtual void onMediaEngineAudioSessionInterruptionEnded();
-	virtual void onMediaEngineFaceDetected();
-	virtual void onMediaEngineVideoCaptureRecordStopped();
+//	//IMediaEngineDelegate implementation
+//	virtual void onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute);
+//	virtual void onMediaEngineAudioSessionInterruptionBegan();
+//	virtual void onMediaEngineAudioSessionInterruptionEnded();
+//	virtual void onMediaEngineFaceDetected();
+//	virtual void onMediaEngineVideoCaptureRecordStopped();
 
 //	//IAccountDelegate implementation
 //	virtual void onAccountStateChanged(IAccountPtr account, IAccount::AccountStates state);
@@ -77,26 +77,26 @@ public:
 //	virtual void onIdentityPendingMessageForInnerBrowserWindowFrame(IIdentityPtr identity);
 //	virtual void onIdentityRolodexContactsDownloaded(IIdentityPtr identity);
 
-	//IIdentityLookupDelegate implementation
-	virtual void onIdentityLookupCompleted(
-			IIdentityLookupPtr identity
-	);
+//	//IIdentityLookupDelegate implementation
+//	virtual void onIdentityLookupCompleted(
+//			IIdentityLookupPtr identity
+//	);
 
-	//ILoggerDelegate implementation
-	virtual void onNewSubsystem(
-			SubsystemID subsystemUniqueID,
-			const char *subsystemName
-	);
-	virtual void onLog(
-			SubsystemID subsystemUniqueID,
-			const char *subsystemName,
-			Severity severity,
-			Level level,
-			const char *message,
-			const char *function,
-			const char *filePath,
-			ULONG lineNumber
-	);
+//	//ILoggerDelegate implementation
+//	virtual void onNewSubsystem(
+//			SubsystemID subsystemUniqueID,
+//			const char *subsystemName
+//	);
+//	virtual void onLog(
+//			SubsystemID subsystemUniqueID,
+//			const char *subsystemName,
+//			Severity severity,
+//			Level level,
+//			const char *message,
+//			const char *function,
+//			const char *filePath,
+//			ULONG lineNumber
+//	);
 
 
 	virtual ~EventManager();

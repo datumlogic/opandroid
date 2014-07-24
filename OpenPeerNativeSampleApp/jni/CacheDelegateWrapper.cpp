@@ -1,4 +1,4 @@
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
+//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "globals.h"
 #include "CacheDelegateWrapper.h"
 #include <android/log.h>

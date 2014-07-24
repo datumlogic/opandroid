@@ -79,6 +79,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getAssociatedAccou
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPContact_hintAboutLocation
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     com_openpeer_javaapi_OPContact
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPContact_releaseCoreObjects
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

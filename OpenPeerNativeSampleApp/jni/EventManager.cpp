@@ -1,6 +1,6 @@
 #include "EventManager.h"
 #include "globals.h"
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
+//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include <android/log.h>
 #include "OpenPeerCoreManager.h"
 
@@ -30,154 +30,154 @@ void EventManager::onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread
 	IStackMessageQueue::singleton()->notifyProcessMessageFromCustomThread();
 }
 
-//IStackDelegate implementation
-void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
+////IStackDelegate implementation
+//void EventManager::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onStackShutdown", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	stackPair.second.reset();
+//	//delete stackPair;
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onStackShutdown", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	stackPair.second.reset();
-	//delete stackPair;
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-
-//IMediaEngine implementation
-void EventManager::onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioRouteChanged");
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioRouteChanged", "(I)V");
-	jni_env->CallStaticVoidMethod(cls, method, (jint) audioRoute);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-
-}
-void EventManager::onMediaEngineAudioSessionInterruptionBegan()
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioSessionInterruptionBegan");
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioSessionInterruptionBegan", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-void EventManager::onMediaEngineAudioSessionInterruptionEnded()
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioSessionInterruptionEnded");
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioSessionInterruptionEnded", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-
-void EventManager::onMediaEngineFaceDetected()
-{
-
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineFaceDetected", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-void EventManager::onMediaEngineVideoCaptureRecordStopped()
-{
-
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onMediaEngineVideoCaptureRecordStopped", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
+////IMediaEngine implementation
+//void EventManager::onMediaEngineAudioRouteChanged(openpeer::core::IMediaEngine::OutputAudioRoutes audioRoute)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioRouteChanged");
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioRouteChanged", "(I)V");
+//	jni_env->CallStaticVoidMethod(cls, method, (jint) audioRoute);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//
+//}
+//void EventManager::onMediaEngineAudioSessionInterruptionBegan()
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioSessionInterruptionBegan");
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioSessionInterruptionBegan", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
+//void EventManager::onMediaEngineAudioSessionInterruptionEnded()
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","EventManager::onMediaEngineAudioSessionInterruptionEnded");
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onMediaEngineAudioSessionInterruptionEnded", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
+//
+//void EventManager::onMediaEngineFaceDetected()
+//{
+//
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onMediaEngineFaceDetected", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
+//void EventManager::onMediaEngineVideoCaptureRecordStopped()
+//{
+//
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onMediaEngineVideoCaptureRecordStopped", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
 //IAccountDelegate implementation
 //void EventManager::onAccountStateChanged(IAccountPtr account, IAccount::AccountStates state)
@@ -595,89 +595,89 @@ void EventManager::onMediaEngineVideoCaptureRecordStopped()
 //}
 
 
-//IIdentityLookupDelegate implementation
-void EventManager::onIdentityLookupCompleted(
-		IIdentityLookupPtr identity
-)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
+////IIdentityLookupDelegate implementation
+//void EventManager::onIdentityLookupCompleted(
+//		IIdentityLookupPtr identity
+//)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onIdentityLookupCompleted", "()V");
+//	jni_env->CallStaticVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onIdentityLookupCompleted", "()V");
-	jni_env->CallStaticVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-
-//ILoggerDelegate implementation
-void EventManager::onNewSubsystem(
-		SubsystemID subsystemUniqueID,
-		const char *subsystemName
-)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onNewSubsystem", "()V");
-	jni_env->CallVoidMethod(cls, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
-void EventManager::onLog(
-		SubsystemID subsystemUniqueID,
-		const char *subsystemName,
-		Severity severity,
-		Level level,
-		const char *message,
-		const char *function,
-		const char *filePath,
-		ULONG lineNumber
-)
-{
-	jclass cls;
-	jmethodID method;
-	jobject object;
-	JNIEnv *jni_env = 0;
-
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "onLog", "()V");
-	jni_env->CallStaticVoidMethod(gCallbackClass, method);
-
-	if (jni_env->ExceptionCheck()) {
-		jni_env->ExceptionDescribe();
-	}
-
-	android_jvm->DetachCurrentThread();
-}
+////ILoggerDelegate implementation
+//void EventManager::onNewSubsystem(
+//		SubsystemID subsystemUniqueID,
+//		const char *subsystemName
+//)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onNewSubsystem", "()V");
+//	jni_env->CallVoidMethod(cls, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
+//void EventManager::onLog(
+//		SubsystemID subsystemUniqueID,
+//		const char *subsystemName,
+//		Severity severity,
+//		Level level,
+//		const char *message,
+//		const char *function,
+//		const char *filePath,
+//		ULONG lineNumber
+//)
+//{
+//	jclass cls;
+//	jmethodID method;
+//	jobject object;
+//	JNIEnv *jni_env = 0;
+//
+//	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+//	if (attach_result < 0 || jni_env == 0)
+//	{
+//		return;
+//	}
+//	cls = findClass("com/openpeer/delegates/CallbackHandler");
+//	method = jni_env->GetStaticMethodID(cls, "onLog", "()V");
+//	jni_env->CallStaticVoidMethod(gCallbackClass, method);
+//
+//	if (jni_env->ExceptionCheck()) {
+//		jni_env->ExceptionDescribe();
+//	}
+//
+//	android_jvm->DetachCurrentThread();
+//}
 
 EventManager::~EventManager()
 {

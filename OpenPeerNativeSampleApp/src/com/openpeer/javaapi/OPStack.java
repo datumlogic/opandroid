@@ -1,11 +1,14 @@
 package com.openpeer.javaapi;
 
 import android.text.format.Time;
+import android.util.Log;
 
 
 public class OPStack {
 
 	private long nativeClassPointer;
+	
+	private long nativeDelegatePointer;
 	
 	public static native OPStack singleton();
 	
@@ -31,4 +34,17 @@ public class OPStack {
             String authorizedApplicationID,
             Time minimumValidityWindowRequired
             );
+	
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0 || nativeDelegatePointer != 0)
+    	{
+    		Log.d("output", "Cleaning stack core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 }

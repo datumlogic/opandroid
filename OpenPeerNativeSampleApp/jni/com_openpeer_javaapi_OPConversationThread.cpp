@@ -1,4 +1,4 @@
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
+//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IConversationThread.h"
 #include "openpeer/core/IContact.h"
 #include "openpeer/core/IHelper.h"
@@ -53,7 +53,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
-(JNIEnv *, jclass, jobject, jobject identityContacts)
+(JNIEnv *, jclass,
+		jobject javaAccount,
+		jobject identityContacts)
 {
 	jclass cls;
 	jmethodID method;
@@ -67,14 +69,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Conversation thread create called...");
 
+	jni_env = getEnv();
+	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(javaAccount, accountFid);
+
+	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
+
 	//check if account is existing
-	if(!OpenPeerCoreManager::accountPtr)
+	if(!coreAccountPtr)
 	{
 		return object;
 	}
 
-	//fetch JNI env
-	jni_env = getEnv();
 	if(jni_env)
 	{
 		//create return object - java/util/List is interface, ArrayList is implementation
@@ -239,7 +246,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 		}
 	}
 
-	conversationThreadPtr = IConversationThread::create(OpenPeerCoreManager::accountPtr, coreIdentityContacts);
+	conversationThreadPtr = IConversationThread::create(*coreAccountPtr, coreIdentityContacts);
 
 	if(conversationThreadPtr)
 	{
@@ -272,7 +279,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
  * Signature: (Lcom/openpeer/javaapi/OPAccount;)Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConversationThreads
-(JNIEnv *, jclass, jobject)
+(JNIEnv *, jclass, jobject javaAccount)
 {
 	jclass cls;
 	jmethodID method;
@@ -281,12 +288,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
 
 	//Core identity list
 	ConversationThreadListPtr coreConversationThreads;
+	jni_env = getEnv();
+	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(javaAccount, accountFid);
 
+	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
 
 	//take associated identities from core
-	if(OpenPeerCoreManager::accountPtr)
+	if(coreAccountPtr)
 	{
-		coreConversationThreads = IConversationThread::getConversationThreads(OpenPeerCoreManager::accountPtr);
+		coreConversationThreads = IConversationThread::getConversationThreads(*coreAccountPtr);
 	}
 
 	//fetch JNI env
@@ -333,24 +345,31 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/lang/String;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConversationThreadByID
-(JNIEnv *env, jclass, jobject, jstring threadID)
+(JNIEnv *, jclass, jobject javaAccount, jstring threadID)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 	IConversationThreadPtr conversationThreadPtr;
-
+	jni_env = getEnv();
 	const char *threadIDStr;
-	threadIDStr = env->GetStringUTFChars(threadID, NULL);
+	threadIDStr = jni_env->GetStringUTFChars(threadID, NULL);
 	if (threadIDStr == NULL) {
 		return object;
 	}
 
+
+	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(javaAccount, accountFid);
+
+	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
+
 	//TODO refactor entire method, this list should be kept in upper layer, and never call native method
-	if(OpenPeerCoreManager::accountPtr)
+	if(coreAccountPtr)
 	{
-		conversationThreadPtr = IConversationThread::getConversationThreadByID(OpenPeerCoreManager::accountPtr, threadIDStr);
+		conversationThreadPtr = IConversationThread::getConversationThreadByID(*coreAccountPtr, threadIDStr);
 	}
 
 	if(conversationThreadPtr)
@@ -454,10 +473,34 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_amIHos
  * Signature: ()Lcom/openpeer/javaapi/OPAccount;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getAssociatedAccount
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-	//TODO This should not be native call. Current limitation is single account at the time, so it should return OPaccount object
-	return (jobject) OpenPeerCoreManager::accountPtr.get();
+	jobject accountObject;
+	JNIEnv * jni_env = 0;
+
+	jni_env = getEnv();
+	jclass conversationThreadClass = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID conversationThreadFid = jni_env->GetFieldID(conversationThreadClass, "nativeClassPointer", "J");
+	jlong conversationThreadPointerValue = jni_env->GetLongField(owner, conversationThreadFid);
+
+	IConversationThreadPtr* conversationThreadPtr = (IConversationThreadPtr*)conversationThreadPointerValue;
+	if (conversationThreadPtr)
+	{
+		IAccountPtr accountPtr = conversationThreadPtr->get()->getAssociatedAccount();
+		if (accountPtr)
+		{
+			jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+			jmethodID accountMethod = jni_env->GetMethodID(accountClass, "<init>", "()V");
+			accountObject = jni_env->NewObject(accountClass, accountMethod);
+
+			IAccountPtr* ptrToAccount = new boost::shared_ptr<IAccount>(accountPtr);
+			jfieldID fid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+			jlong acc = (jlong) ptrToAccount;
+			jni_env->SetLongField(accountObject, fid, acc);
+		}
+	}
+
+	return accountObject;
 }
 
 /*

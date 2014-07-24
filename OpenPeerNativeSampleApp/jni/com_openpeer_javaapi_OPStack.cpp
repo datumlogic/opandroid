@@ -1,4 +1,4 @@
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
+//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
 
@@ -18,7 +18,7 @@ extern "C" {
  * Signature: ()Lcom/openpeer/javaapi/OPStack;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
-(JNIEnv *, jclass owner)
+(JNIEnv *, jclass)
 {
 	jclass cls;
 	jmethodID method;
@@ -32,13 +32,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
 
-		IStackPtr stackPtr = IStack::singleton();
+		IStackPtr* ptrToStack = new boost::shared_ptr<IStack>(IStack::singleton());
 		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-		jlong stack = (jlong) OpenPeerCoreManager::stackPtr.get();
+		jlong stack = (jlong) ptrToStack;
 		jni_env->SetLongField(object, fid, stack);
-
-		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-				"CorePtr raw = %p, ptr as long = %Lu",OpenPeerCoreManager::stackPtr.get(), stack);
 	}
 	return object;
 }
@@ -49,30 +46,42 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
  * Signature: (Lcom/openpeer/javaapi/OPStackDelegate;Lcom/openpeer/javaapi/OPMediaEngineDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
-(JNIEnv *env, jobject owner, jobject, jobject)
+(JNIEnv *env, jobject owner,
+		jobject javaStackDelegate,
+		jobject javaMediaEngineDelegate)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (OpenPeerCoreManager::stackPtr)
-	{
-		OpenPeerCoreManager::stackPtr->setup(globalEventManager, globalEventManager);
-	}
-	else
-	{
-		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not initialized. It will be auto initialized.");
-		OpenPeerCoreManager::stackPtr = IStack::singleton();
-		OpenPeerCoreManager::stackPtr->setup(globalEventManager, globalEventManager);
-		jni_env = getEnv();
-		if(jni_env)
-		{
-			cls = findClass("com/openpeer/javaapi/OPStack");
-			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong stack = (jlong) OpenPeerCoreManager::stackPtr.get();
-			jni_env->SetLongField(owner, fid, stack);
-		}
+	jni_env = getEnv();
+	jclass stackClass = findClass("com/openpeer/javaapi/OPStack");
+	jfieldID stackFid = jni_env->GetFieldID(stackClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, stackFid);
 
+	IStackPtr* coreStackPtr = (IStackPtr*)pointerValue;
+
+	StackDelegateWrapperPtr stackDelegatePtr = StackDelegateWrapperPtr(new StackDelegateWrapper(javaStackDelegate));
+
+	mediaEngineDelegatePtr = MediaEngineDelegateWrapperPtr(new MediaEngineDelegateWrapper(javaMediaEngineDelegate));
+
+	if (coreStackPtr)
+	{
+		coreStackPtr->get()->setup(stackDelegatePtr, mediaEngineDelegatePtr);
+		if (stackDelegatePtr)
+		{
+			StackDelegateWrapperPtr* ptrToStackDelegate = new boost::shared_ptr<StackDelegateWrapper>(stackDelegatePtr);
+			jfieldID delegateFid = jni_env->GetFieldID(stackClass, "nativeDelegatePointer", "J");
+			jlong delegate = (jlong) ptrToStackDelegate;
+		    jni_env->SetLongField(owner, delegateFid, delegate);
+		}
 	}
+//	else
+//	{
+//		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not initialized. It will be auto initialized.");
+//		OpenPeerCoreManager::stackPtr = IStack::singleton();
+//		OpenPeerCoreManager::stackPtr->setup(stackDelegatePtr, globalEventManager);
+//
+//	}
 }
 
 /*
@@ -83,14 +92,22 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
 (JNIEnv *, jobject owner)
 {
-	if (OpenPeerCoreManager::stackPtr)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass stackClass = findClass("com/openpeer/javaapi/OPStack");
+	jfieldID stackFid = jni_env->GetFieldID(stackClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, stackFid);
+
+	IStackPtr* coreStackPtr = (IStackPtr*)pointerValue;
+	if (coreStackPtr)
 	{
-		OpenPeerCoreManager::stackPtr->shutdown();
+		coreStackPtr->get()->shutdown();
 	}
 	else
 	{
-		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not initialized. It will be auto initialized.");
-		IStack::singleton()->shutdown();
+		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not shutdown.");
+		//IStack::singleton()->shutdown();
 	}
 }
 
@@ -192,6 +209,36 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPStack_isAuthorizedApplica
 	Duration duration = Seconds(1);
 
 	ret = IStack::isAuthorizedApplicationIDExpiryWindowStillValid(authorizedApplicationIDString, duration);
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPStack
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_releaseCoreObjects
+(JNIEnv *, jobject javaObject)
+{
+	if(javaObject != NULL)
+	{
+		JNIEnv *jni_env = getEnv();
+		jclass cls = findClass("com/openpeer/javaapi/OPStack");
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (IStackPtr*)pointerValue;
+
+		fid = jni_env->GetFieldID(cls, "nativeDelegatePointer", "J");
+		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (StackDelegateWrapperPtr*)delegatePointerValue;
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+	}
 }
 
 #ifdef __cplusplus
