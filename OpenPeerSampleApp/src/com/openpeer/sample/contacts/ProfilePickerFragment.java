@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
-import com.openpeer.sample.ProviderContracts;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts;
@@ -41,6 +40,7 @@ import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.*;
 import static com.openpeer.sdk.datastore.DatabaseContracts.*;
 
 
+import com.openpeer.sdk.datastore.OPContentProvider;
 import com.squareup.picasso.Picasso;
 
 public class ProfilePickerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener,
@@ -207,9 +207,8 @@ public class ProfilePickerFragment extends BaseFragment implements SwipeRefreshL
 			}
 
 			return new CursorLoader(getActivity(), // Parent activity context
-					ProviderContracts.CONTENT_URI_CONTACTS_VIEW,
-					// DatabaseContracts.ContactsViewEntry.CONTENT_URI, // Table to
-																		// query
+                    OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO),
+
 					LIST_PROJECTION, // Projection to return
 					builder.toString(), // No selection clause
 					slectionArgs, // No selection arguments
