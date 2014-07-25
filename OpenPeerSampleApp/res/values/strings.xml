@@ -56,7 +56,8 @@
     <string name="notification_sound_switch">Message notification</string>
     <string name="notification_sound_select">Select Notification Sound</string>
 
-
     <!-- End of setting strings -->
+    <string name="msg_failed_login">Failed to login, try again later.</string>
+    <string name="msg_not_logged_in">You\'re not logged in. Please quit the app and relogin.</string>
 
 </resources>

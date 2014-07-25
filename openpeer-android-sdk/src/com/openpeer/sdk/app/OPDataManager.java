@@ -22,9 +22,11 @@ import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 
 /**
- * Hold reference to objects that cannot be constructed from database, and manages contacts data change. This class is probably unneccessary
- * -- at the least I don't want it to be a simple wrapper of OPDatastoreDelegateImplementation. Might end up merging this with OPHelper, but
- * for now let's keep it so OPHelper doesn't grow weird.
+ * Hold reference to objects that cannot be constructed from database, and
+ * manages contacts data change. This class is probably unneccessary -- at the
+ * least I don't want it to be a simple wrapper of
+ * OPDatastoreDelegateImplementation. Might end up merging this with OPHelper,
+ * but for now let's keep it so OPHelper doesn't grow weird.
  * 
  */
 public class OPDataManager {
@@ -38,6 +40,8 @@ public class OPDataManager {
 	private List<OPIdentityContact> mSelfContacts;
 	private Hashtable<Long, String> downloadedIdentityContactVersions;
 	private String mReloginInfo;
+
+	private boolean mAccountReady;
 
 	public static OPDatastoreDelegate getDatastoreDelegate() {
 		return getInstance().mDatastoreDelegate;
@@ -71,9 +75,9 @@ public class OPDataManager {
 		// }
 	}
 
-
 	/**
-	 * This function should only be called in AccountState_Ready from OPAccountDelegate. This function update the database
+	 * This function should only be called in AccountState_Ready from
+	 * OPAccountDelegate. This function update the database
 	 * 
 	 * @param account
 	 *            the logged in account
@@ -81,8 +85,8 @@ public class OPDataManager {
 	public void setSharedAccount(OPAccount account) {
 		mAccount = account;
 	}
-	
-	public void saveAccount(){
+
+	public void saveAccount() {
 		mDatastoreDelegate.saveOrUpdateAccount(mAccount);
 	}
 
@@ -94,8 +98,7 @@ public class OPDataManager {
 		mIdentities = identities;
 		mSelfContacts = new ArrayList<OPIdentityContact>();
 		for (OPIdentity identity : identities) {
-			mSelfContacts.add(
-					identity.getSelfIdentityContact());
+			mSelfContacts.add(identity.getSelfIdentityContact());
 		}
 		mDatastoreDelegate.saveOrUpdateIdentities(mIdentities,
 				mAccount.getStableID());
@@ -168,8 +171,8 @@ public class OPDataManager {
 				"OPDataManager updateIdentityContacts "
 						+ Arrays.deepToString(iContacts.toArray()));
 		// Each IdentityContact represents a user. Update user info
-		mDatastoreDelegate.saveOrUpdateUsers(iContacts,
-				mIdentity.getStableID());
+		mDatastoreDelegate
+				.saveOrUpdateUsers(iContacts, mIdentity.getStableID());
 
 		notifyContactsChanged();
 	}
@@ -184,27 +187,32 @@ public class OPDataManager {
 	public void refreshContacts() {
 		List<OPIdentity> identities = mAccount.getAssociatedIdentities();
 		for (OPIdentity identity : identities) {
-			CallbackHandler.getInstance().registerIdentityDelegate(identity, new OPIdentityDelegate() {
+			CallbackHandler.getInstance().registerIdentityDelegate(identity,
+					new OPIdentityDelegate() {
 
-				@Override
-				public void onIdentityStateChanged(OPIdentity identity, IdentityStates state) {
-					// TODO Auto-generated method stub
+						@Override
+						public void onIdentityStateChanged(OPIdentity identity,
+								IdentityStates state) {
+							// TODO Auto-generated method stub
 
-				}
+						}
 
-				@Override
-				public void onIdentityPendingMessageForInnerBrowserWindowFrame(OPIdentity identity) {
-					// TODO Auto-generated method stub
+						@Override
+						public void onIdentityPendingMessageForInnerBrowserWindowFrame(
+								OPIdentity identity) {
+							// TODO Auto-generated method stub
 
-				}
+						}
 
-				@Override
-				public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
-					onDownloadedRolodexContacts(identity);
-					CallbackHandler.getInstance().unregisterIdentityDelegate(this);
-				}
+						@Override
+						public void onIdentityRolodexContactsDownloaded(
+								OPIdentity identity) {
+							onDownloadedRolodexContacts(identity);
+							CallbackHandler.getInstance()
+									.unregisterIdentityDelegate(this);
+						}
 
-			});
+					});
 			identity.refreshRolodexContacts();
 		}
 	}
@@ -213,6 +221,14 @@ public class OPDataManager {
 			OPIdentityContact iContact) {
 		// TODO implement proper userId querying and gereration
 		return contact.getPeerURI().hashCode();
+	}
+
+	public boolean isAccountReady() {
+		return mAccountReady;
+	}
+
+	public void setAccountReady(boolean value) {
+		mAccountReady = value;
 	}
 
 }

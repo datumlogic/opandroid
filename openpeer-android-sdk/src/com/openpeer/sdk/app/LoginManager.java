@@ -1,6 +1,5 @@
 package com.openpeer.sdk.app;
 
-import java.util.Arrays;
 import java.util.List;
 
 import android.text.TextUtils;
@@ -225,8 +224,18 @@ public class LoginManager {
 
 				}
 				break;
+			case IdentityState_Shutdown:
+				// Temporary defensive code. Proper logic will be put in place soon.
+				if (mListener != null) {
+					mLoginView.post(new Runnable() {
+						public void run() {
+							mListener.onLoginError();
+							mLoginView = null;
+						}
+					});
+				}
+				break;
 			}
-
 		}
 
 		@Override
@@ -304,9 +313,20 @@ public class LoginManager {
 				break;
 			case AccountState_Ready:
 				Log.w("login", "Account READY !!!!!!!!!!!!");
+				OPDataManager.getInstance().setAccountReady(true);
+
 				onAccountStateReady(account);
 				break;
-			// LoginManager.loadOuterFrame();
+			case AccountState_Shutdown:
+				OPDataManager.getInstance().setAccountReady(false);
+				if (mListener != null) {
+					mLoginView.post(new Runnable() {
+						public void run() {
+							mListener.onLoginError();
+						}
+					});
+				}
+				break;
 			}
 		}
 
@@ -357,8 +377,6 @@ public class LoginManager {
 										+ version);
 						identity.startRolodexDownload(version);
 					}
-					CallbackHandler.getInstance().unregisterAccountDelegate(
-							this);
 				}
 			}
 
