@@ -17,6 +17,7 @@ import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.openpeer.sdk.app.OPDataManager;
 
 public class CallActivity extends BaseActivity {
 
@@ -49,9 +50,13 @@ public class CallActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        if(!OPDataManager.getInstance().isAccountReady()){
+            BaseActivity.showInvalidStateWarning(this);
+            finish();
+            return;
+        }
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.activity_container);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
