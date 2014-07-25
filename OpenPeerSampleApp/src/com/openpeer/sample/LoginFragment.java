@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
@@ -143,8 +144,10 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	@Override
 	public void onLoginError() {
-		// TODO Auto-generated method stub
-
+        if(!isDetached()){
+            Toast.makeText(getActivity(),R.string.msg_failed_login,Toast.LENGTH_LONG).show();
+            ((BaseFragmentActivity) getActivity()).hideLoginFragment();
+        }
 	}
 
 	@Override
