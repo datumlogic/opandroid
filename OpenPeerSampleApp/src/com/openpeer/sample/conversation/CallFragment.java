@@ -199,7 +199,9 @@ public class CallFragment extends BaseFragment {
 			} else if (mCall.getState() == CallStates.CallState_Open) {
 				OPNotificationBuilder.cancelNotificationForCall(mCall);
 				startShowDuration();
-				mCallView.setVisibility(View.GONE);
+                if(mVideo) {
+                    mCallView.setVisibility(View.GONE);
+                }
 			}
 		}
 		mCallControlView.bindCall(mCall);
