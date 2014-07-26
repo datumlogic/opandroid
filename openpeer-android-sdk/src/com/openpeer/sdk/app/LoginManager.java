@@ -174,7 +174,7 @@ public class LoginManager {
 						Log.d("login", "loading identity webview");
 						mListener.onStartIdentityLogin();
 						mLoginView
-								.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose");
+								.loadUrl(OPSdkConfig.getInstance().getOuterFrameUrl());//"http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose");
 					}
 				});
 				break;
