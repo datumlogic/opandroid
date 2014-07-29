@@ -14,7 +14,6 @@ import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
-import com.openpeer.sdk.app.OPIdentityLoginWebViewClient;
 import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
 import com.openpeer.sample.contacts.ContactsFragment;
 import com.openpeer.sample.delegates.OPCallDelegateImplementation;
@@ -58,11 +57,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	void startLogin() {
 		if (loginTask == null) {
-            OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(null);
-            mIdentityLoginWebView.setWebViewClient(client);
-            mIdentityLoginWebView.setTag(client);
-
-            loginTask = new AccountLogin();
+			loginTask = new AccountLogin();
 		}
 		loginTask.execute();
 		// String reloginInfo = OPDataManager.getInstance().getReloginInfo();
@@ -82,13 +77,11 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	private class AccountLogin extends AsyncTask<Void, Void, Void> {
 
-
 		@Override
 		protected Void doInBackground(Void... params) {
 
 //			OPHelper.getInstance().init(getActivity(), null);
 			String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-
 			if (reloginInfo == null || reloginInfo.length() == 0) {
 				Log.d("login", "LoginFragment startLogin() logging in");
 				LoginManager.getInstance()
