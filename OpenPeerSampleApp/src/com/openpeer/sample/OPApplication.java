@@ -4,6 +4,9 @@ import android.app.Application;
 import android.content.Context;
 
 import com.openpeer.sdk.app.OPHelper;
+import com.urbanairship.AirshipConfigOptions;
+import com.urbanairship.UAirship;
+import com.urbanairship.push.PushManager;
 
 public class OPApplication extends Application {
 	private static OPApplication instance;
@@ -24,6 +27,11 @@ public class OPApplication extends Application {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		instance = this;
+
+        AirshipConfigOptions options = AirshipConfigOptions.loadDefaultOptions(this);
+        UAirship.takeOff(this, options);
+        PushManager.enablePush();
+
 		OPHelper.getInstance().init(this, null);
 		OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
 		OPSessionManager.getInstance().init();
