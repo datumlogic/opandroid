@@ -32,8 +32,7 @@ public class LoginManager {
 	}
 
 	public LoginManager setup(LoginUIListener mListener,
-			WebView mAccountLoginWebView, WebView mIdentityLoginWebView,
-			OPCallDelegate callDelegate) {
+			WebView mAccountLoginWebView, WebView mIdentityLoginWebView, OPCallDelegate callDelegate) {
 		this.mListener = mListener;
 		this.mAccountLoginWebView = mAccountLoginWebView;
 		this.mIdentityLoginWebView = mIdentityLoginWebView;
@@ -75,10 +74,11 @@ public class LoginManager {
 		CallbackHandler.getInstance().registerAccountDelegate(account,
 				accountDelegate);
 
-		account = OPAccount.login(null, null, null, OPSdkConfig.getInstance()
-				.getNamespaceGrantServiceUrl(), OPSdkConfig.getInstance()
-				.getGrantId(), OPSdkConfig.getInstance()
-				.getLockboxServiceDomain(), false);
+		account = OPAccount.login(null, null, null,
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+				OPSdkConfig.getInstance().getGrantId(),
+				OPSdkConfig.getInstance().getLockboxServiceDomain(),
+				false);
 		OPDataManager.getInstance().setSharedAccount(account);
 		client.mAccount = account;
 		accountDelegate.mAccount = account;
@@ -100,8 +100,9 @@ public class LoginManager {
 			}
 		});
 
-		account = OPAccount.relogin(null, null, null, OPSdkConfig.getInstance()
-				.getNamespaceGrantServiceUrl(), reloginInfo);
+		account = OPAccount.relogin(null, null, null,
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+				reloginInfo);
 		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
 				mAccountLoginWebView, account);
 		CallbackHandler.getInstance().registerAccountDelegate(account,
@@ -116,10 +117,13 @@ public class LoginManager {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
-
-		final OPIdentityLoginWebViewClient client = (OPIdentityLoginWebViewClient) mIdentityLoginWebView
-				.getTag();
-		client.setIdentity(identity);
+		final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
+				identity);
+		mIdentityLoginWebView.post(new Runnable() {
+			public void run() {
+				mIdentityLoginWebView.setWebViewClient(client);
+			}
+		});
 
 		OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
 				mIdentityLoginWebView, identity);
@@ -202,7 +206,7 @@ public class LoginManager {
 							OPDataManager.getInstance().getSharedAccount()
 									.getAssociatedIdentities());
 
-					// mListener.onLoginComplete();
+//					mListener.onLoginComplete();
 
 					String version = OPDataManager.getDatastoreDelegate()
 							.getDownloadedContactsVersion(
@@ -352,13 +356,13 @@ public class LoginManager {
 							mIdentityLoginWebView, identity);
 					CallbackHandler.getInstance().registerIdentityDelegate(
 							identity, identityDelegate);
-					identity.attachDelegate(identityDelegate, OPSdkConfig
-							.getInstance().getOuterFrameUrl());
+					identity.attachDelegate(identityDelegate,
+							OPSdkConfig.getInstance().getOuterFrameUrl());
 
 				} else {
 					OPDataManager.getInstance().setIdentities(identities);
 
-					// mListener.onLoginComplete();
+//					mListener.onLoginComplete();
 
 					String version = OPDataManager.getDatastoreDelegate()
 							.getDownloadedContactsVersion(
