@@ -1,4 +1,3 @@
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/ICall.h"
 #include "openpeer/core/ILogger.h"
 #include "OpenPeerCoreManager.h"
@@ -76,8 +75,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 
 	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
 
-	//	IConversationThreadPtr convThread = OpenPeerCoreManager::getConversationThreadFromList(conversationThread);
-	//	IContactPtr contact = OpenPeerCoreManager::getContactFromList(toContact);
 	if(coreConversationThreadPtr && contactPtr)
 	{
 
@@ -101,8 +98,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",callPtr.get(), call);
-
-			//OpenPeerCoreManager::coreCallList.push_back(callPtr);
 
 		}
 	}
@@ -336,7 +331,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
 		if(jni_env)
 		{
 			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallStates", state);
-
 		}
 	}
 
@@ -369,7 +363,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
 		if(jni_env)
 		{
 			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallClosedReason", reason);
-
 		}
 	}
 

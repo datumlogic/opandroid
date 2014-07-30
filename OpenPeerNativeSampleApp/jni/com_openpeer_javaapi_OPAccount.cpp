@@ -451,8 +451,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
 		SecureByteBlockPtr sec = coreAccountPtr->get()->getPeerFilePrivateSecret();
 		returnArr = env->NewByteArray(sec->SizeInBytes());
 		env->SetByteArrayRegion(returnArr, (int)0, (int)sec->SizeInBytes(), (const signed char *)sec->data());
-
-		//bufferPtr = env->GetByteArrayElements(sec->BytePtr(), 0);
 	}
 
 	return returnArr;

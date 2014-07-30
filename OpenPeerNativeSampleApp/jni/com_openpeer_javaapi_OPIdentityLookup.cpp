@@ -1,4 +1,3 @@
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IIdentityLookup.h"
 #include "openpeer/core/ILogger.h"
 #include "openpeer/core/IHelper.h"
@@ -275,12 +274,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 	IdentityContact coreContact;
 	IdentityContactListPtr coreContactList;
-	//if(OpenPeerCoreManager::identityLookupPtr)
 	if(identityLookupPtr)
 	{
-		//coreContactList = OpenPeerCoreManager::identityLookupPtr->getUpdatedIdentities();
 		coreContactList = identityLookupPtr->get()->getUpdatedIdentities();
-
 	}
 
 	if(jni_env)

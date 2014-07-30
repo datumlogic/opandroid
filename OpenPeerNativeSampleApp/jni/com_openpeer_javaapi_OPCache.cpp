@@ -1,4 +1,3 @@
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/ICache.h"
 #include "openpeer/core/ILogger.h"
 

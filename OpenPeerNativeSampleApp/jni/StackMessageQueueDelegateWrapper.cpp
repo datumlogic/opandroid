@@ -45,8 +45,6 @@ void StackMessageQueueDelegateWrapper::onStackMessageQueueWakeUpCustomThreadAndP
 	}
 
 	android_jvm->DetachCurrentThread();
-
-	//IStackMessageQueue::singleton()->notifyProcessMessageFromCustomThread();
 }
 
 StackMessageQueueDelegateWrapper::~StackMessageQueueDelegateWrapper()

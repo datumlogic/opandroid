@@ -1,4 +1,3 @@
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IConversationThread.h"
 #include "openpeer/core/IContact.h"
 #include "openpeer/core/IHelper.h"
@@ -264,9 +263,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",conversationThreadPtr.get(), convThread);
-//
-//			OpenPeerCoreManager::coreConversationThreadList.push_back(conversationThreadPtr);
-			//conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThreadPtr));
 
 		}
 	}
@@ -388,8 +384,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",conversationThreadPtr.get(), convThread);
-
-			//OpenPeerCoreManager::coreConversationThreadList.push_back(conversationThreadPtr);
 		}
 	}
 	return object;
@@ -556,7 +550,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 			jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
 			jlong contact = (jlong) ptrToContact;
 			jni_env->SetLongField(contactObject, fid, contact);
-			//OpenPeerCoreManager::coreContactList.push_back((*coreListIter));
 
 			//add to return List
 			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , contactObject);

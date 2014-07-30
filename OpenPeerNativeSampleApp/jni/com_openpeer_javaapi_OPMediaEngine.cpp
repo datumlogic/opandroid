@@ -1,5 +1,4 @@
 #include "com_openpeer_javaapi_OPMediaEngine.h"
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "OpenPeerCoreManager.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"

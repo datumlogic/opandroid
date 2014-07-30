@@ -1,4 +1,3 @@
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
 
@@ -100,7 +99,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
 	else
 	{
 		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not shutdown.");
-		//IStack::singleton()->shutdown();
 	}
 }
 

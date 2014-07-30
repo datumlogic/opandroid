@@ -1,4 +1,3 @@
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IContact.h"
 #include "openpeer/core/IHelper.h"
 #include "openpeer/core/ILogger.h"
@@ -67,7 +66,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFile
 			cls = findClass("com/openpeer/javaapi/OPContact");
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
-			//contactMap.insert(std::pair<jobject, IContactPtr>(object, contactPtr));
 
 			IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(contactPtr);
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -76,8 +74,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFile
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",contactPtr.get(), contact);
-
-			//OpenPeerCoreManager::coreContactList.push_back(contactPtr);
 
 		}
 	}
@@ -126,8 +122,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",contactPtr.get(), contact);
-
-			//OpenPeerCoreManager::coreContactList.push_back(contactPtr);
 
 		}
 	}
