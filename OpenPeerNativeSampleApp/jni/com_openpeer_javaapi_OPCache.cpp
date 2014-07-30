@@ -15,8 +15,9 @@ extern "C" {
  * Signature: (Lcom/openpeer/javaapi/OPCacheDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_setup
-(JNIEnv *, jclass, jobject)
+(JNIEnv *, jclass, jobject javaCacheDelegate)
 {
+	cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDelegateWrapper(javaCacheDelegate));
 	ICache::setup(cacheDelegatePtr);
 }
 

@@ -1,9 +1,14 @@
-//#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "globals.h"
 #include "CacheDelegateWrapper.h"
 #include <android/log.h>
+#include "OpenPeerCoreManager.h"
 
 //ICacheDelegate implementation
+CacheDelegateWrapper::CacheDelegateWrapper(jobject delegate)
+{
+	JNIEnv *jni_env = getEnv();
+	javaDelegate = jni_env->NewGlobalRef(delegate);
+}
 zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 {
 	jclass cls;
@@ -12,6 +17,8 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	JNIEnv *jni_env = 0;
 	jstring cookieJavaString;
 	const char *fetchedStr;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache fetch called");
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -30,15 +37,27 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	}
 
 	cookieJavaString =  jni_env->NewStringUTF(cookieNamePath);
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "fetch", "(Ljava/lang/String;)Ljava/lang/String;");
-	object = jni_env->CallStaticObjectMethod(cls, method, cookieJavaString);
 
-	cls = findClass("java/lang/String");
-	if(jni_env->IsInstanceOf(object, cls) == JNI_TRUE)
+	if (javaDelegate != NULL)
 	{
-		fetchedStr = jni_env->GetStringUTFChars((jstring)object, NULL);
 
+		//get delegate implementation class name in order to get method
+		String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
+
+		jclass callbackClass = findClass(className.c_str());
+		method = jni_env->GetMethodID(callbackClass, "fetch", "(Ljava/lang/String;)Ljava/lang/String;");
+		object = jni_env->CallObjectMethod(javaDelegate, method, cookieJavaString);
+
+		cls = findClass("java/lang/String");
+		if(jni_env->IsInstanceOf(object, cls) == JNI_TRUE)
+		{
+			fetchedStr = jni_env->GetStringUTFChars((jstring)object, NULL);
+
+		}
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache fetch Java delegate is NULL !!!");
 	}
 
 	if (jni_env->ExceptionCheck()) {
@@ -62,6 +81,8 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	jstring cookieJavaString;
 	jstring storeStr;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache store called");
+
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
@@ -80,10 +101,32 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 
 	cookieJavaString =  jni_env->NewStringUTF(cookieNamePath);
 	storeStr =  jni_env->NewStringUTF(str);
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "store", "(Ljava/lang/String;ILjava/lang/String;)V");
-	jni_env->CallStaticVoidMethod(cls, method, cookieJavaString, 123456789, storeStr);
 
+	//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+	Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+	jclass timeCls = findClass("android/text/format/Time");
+	jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+	jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
+
+	//calculate and set Expires Time
+	zsLib::Duration closedTimeDuration = expires - time_t_epoch;
+	object = jni_env->NewObject(timeCls, timeMethodID);
+	jni_env->CallVoidMethod(object, timeSetMillisMethodID, closedTimeDuration.total_milliseconds());
+
+	if (javaDelegate != NULL)
+	{
+
+		//get delegate implementation class name in order to get method
+		String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
+
+		jclass callbackClass = findClass(className.c_str());
+		method = jni_env->GetMethodID(callbackClass, "store", "(Ljava/lang/String;Landroid/text/format/Time;Ljava/lang/String;)V");
+		jni_env->CallVoidMethod(javaDelegate, method, cookieJavaString, object, storeStr);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache store Java delegate is NULL !!!");
+	}
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
 	}
@@ -100,6 +143,8 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	jobject object;
 	JNIEnv *jni_env = 0;
 	jstring cookieJavaString;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache clear called");
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -118,10 +163,20 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	}
 
 	cookieJavaString = jni_env->NewStringUTF(cookieNamePath);
-	cls = findClass("com/openpeer/delegates/CallbackHandler");
-	method = jni_env->GetStaticMethodID(cls, "clear", "(Ljava/lang/String;)V");
-	jni_env->CallStaticVoidMethod(cls, method, cookieJavaString);
+	if (javaDelegate != NULL)
+	{
 
+		//get delegate implementation class name in order to get method
+		String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
+
+		jclass callbackClass = findClass(className.c_str());
+		method = jni_env->GetMethodID(callbackClass, "clear", "(Ljava/lang/String;)V");
+		jni_env->CallVoidMethod(javaDelegate, method, cookieJavaString);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache clear Java delegate is NULL !!!");
+	}
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
 	}
@@ -134,5 +189,6 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 
 CacheDelegateWrapper::~CacheDelegateWrapper()
 {
-
+	JNIEnv *jni_env = getEnv();
+	jni_env->DeleteGlobalRef(javaDelegate);
 }

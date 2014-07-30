@@ -1,5 +1,4 @@
 #include <jni.h>
-#include "EventManager.h"
 #include "AccountDelegateWrapper.h"
 #include "CacheDelegateWrapper.h"
 #include "SettingsDelegateWrapper.h"
@@ -8,6 +7,7 @@
 #include "IdentityDelegateWrapper.h"
 #include "IdentityLookupDelegateWrapper.h"
 #include "StackDelegateWrapper.h"
+#include "StackMessageQueueDelegateWrapper.h"
 #include "LoggerDelegateWrapper.h"
 #include "MediaEngineDelegateWrapper.h"
 
@@ -20,32 +20,16 @@ extern jobject jni_object;
 static jobject gClassLoader;
 static jmethodID gFindClassMethod;
 
-//static std::map<jobject, IIdentityPtr> identityMap;
-//static std::map<jobject, ICallPtr> callMap;
-//static std::map<jobject, IConversationThreadPtr> conversationThreadMap;
-//static std::map<jobject, IContactPtr> contactMap;
-
-//single instance objects in pairs
-//static std::pair<jobject, IStackPtr> stackPair;
-
 static jclass gCallbackClass;
 static jobject globalAccount;
 
-extern EventManagerPtr globalEventManager;
-//extern IAccountPtr accountPtr;
-//extern IStackPtr stackPtr;
-extern IStackMessageQueuePtr queuePtr;
-//extern IIdentityPtr identityPtr;
-//extern IIdentityLookupPtr identityLookupPtr;
 extern IMediaEnginePtr mediaEnginePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
-//extern AccountDelegateWrapperPtr accountDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
 extern CallDelegateWrapperPtr callDelegatePtr;
 extern ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;
 extern LoggerDelegateWrapperPtr loggerDelegatePtr;
 extern MediaEngineDelegateWrapperPtr mediaEngineDelegatePtr;
-//extern IdentityDelegateWrapperPtr identityDelegatePtr;
 
 jclass findClass(const char* name);
 

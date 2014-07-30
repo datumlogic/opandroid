@@ -13,13 +13,13 @@ import android.provider.Settings.Secure;
 import android.text.format.Time;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPAccountDelegateImplementation;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
 import com.openpeer.delegates.OPCallDelegateImplementation;
 import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
 import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
+import com.openpeer.delegates.OPSettingsDelegateImplementation;
 import com.openpeer.delegates.OPStackDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
@@ -38,6 +38,7 @@ import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettings;
+import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackDelegate;
 import com.openpeer.javaapi.OPStackMessageQueue;
@@ -46,7 +47,6 @@ import com.openpeer.javaapi.OPMediaEngineDelegate;
 
 public class LoginManager {
 
-	public static CallbackHandler mCallbackHandler = new CallbackHandler();
 	public static Context mContext;
 	public static String mInstanceId;
 	public static String mDeviceId;
@@ -74,11 +74,12 @@ public class LoginManager {
 		mStack = OPStack.singleton();
 
 		mCacheDelegate = new OPCacheDelegateImplementation();
-		mCallbackHandler.registerCacheDelegate(mCacheDelegate);
 		OPCache.setup(mCacheDelegate);
 
-		//OPSettings.setup(null);
 		OPSettings.applyDefaults();
+		//mSettingsDelegate = new OPSettingsDelegateImplementation();
+		//OPSettings.setup(mSettingsDelegate);
+		
 
 		String httpSettings = createHttpSettings();
 		OPSettings.apply(httpSettings);
@@ -119,6 +120,7 @@ public class LoginManager {
 	public static OPConversationThread mConvThread;
 	public static OPConversationThreadDelegate mConversationThreadDelegate;
 	public static OPCacheDelegate mCacheDelegate;
+	public static OPSettingsDelegate mSettingsDelegate;
 	public static OPCall mCall;
 	public static OPCallDelegate mCallDelegate;
 	public static IChatMessageReceiver mChatMessageReceiver;

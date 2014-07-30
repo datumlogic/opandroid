@@ -3,10 +3,10 @@
 JavaVM *android_jvm;
 jobject jni_object;
 
-EventManagerPtr globalEventManager = EventManagerPtr(new EventManager());
-SettingsDelegateWrapperPtr settingsDelegatePtr = SettingsDelegateWrapperPtr(new SettingsDelegateWrapper());
+//EventManagerPtr globalEventManager = EventManagerPtr(new EventManager());
+SettingsDelegateWrapperPtr settingsDelegatePtr;// = SettingsDelegateWrapperPtr(new SettingsDelegateWrapper());
 //AccountDelegateWrapperPtr accountDelegatePtr;
-CacheDelegateWrapperPtr cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDelegateWrapper());
+CacheDelegateWrapperPtr cacheDelegatePtr;// = CacheDelegateWrapperPtr(new CacheDelegateWrapper());
 CallDelegateWrapperPtr callDelegatePtr;
 ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;
 LoggerDelegateWrapperPtr loggerDelegatePtr;
@@ -15,7 +15,7 @@ MediaEngineDelegateWrapperPtr mediaEngineDelegatePtr;
 
 //IAccountPtr accountPtr;
 //IStackPtr stackPtr;
-IStackMessageQueuePtr queuePtr;
+//IStackMessageQueuePtr queuePtr;
 //IIdentityPtr identityPtr;
 //IIdentityLookupPtr identityLookupPtr;
 IMediaEnginePtr mediaEnginePtr;
@@ -36,7 +36,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
 		std::cout << "GetEnv: version not supported" << std::endl;
 	}
 
-	jclass randomClass = gEnv->FindClass("com/openpeer/delegates/CallbackHandler");
+	jclass randomClass = gEnv->FindClass("com/openpeer/javaapi/OPAccount");
 	jclass classClass = gEnv->FindClass("java/lang/Class");
 	jclass classLoaderClass = gEnv->FindClass("java/lang/ClassLoader");
 	jmethodID getClassLoaderMethod = gEnv->GetMethodID(classClass, "getClassLoader",

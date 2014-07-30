@@ -75,13 +75,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 		    jni_env->SetLongField(owner, delegateFid, delegate);
 		}
 	}
-//	else
-//	{
-//		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not initialized. It will be auto initialized.");
-//		OpenPeerCoreManager::stackPtr = IStack::singleton();
-//		OpenPeerCoreManager::stackPtr->setup(stackDelegatePtr, globalEventManager);
-//
-//	}
 }
 
 /*

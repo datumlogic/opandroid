@@ -156,6 +156,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Account Relogin called");
+
 	const char *namespaceGrantOuterFrameURLUponReloadStr;
 	namespaceGrantOuterFrameURLUponReloadStr = env->GetStringUTFChars(namespaceGrantOuterFrameURLUponReload, NULL);
 	if (namespaceGrantOuterFrameURLUponReloadStr == NULL) {

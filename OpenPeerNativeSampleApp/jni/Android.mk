@@ -475,8 +475,8 @@ $(ANDROIDNDK_PATH)/platforms/android-9/arch-arm/usr/include \
 LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/OpenPeerCoreManager.cpp \
 		OpenPeerNativeSampleApp/jni/globals.cpp \
-		OpenPeerNativeSampleApp/jni/EventManager.cpp \
 		OpenPeerNativeSampleApp/jni/StackDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/StackMessageQueueDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/LoggerDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/AccountDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/CacheDelegateWrapper.cpp \

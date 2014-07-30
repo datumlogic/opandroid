@@ -235,20 +235,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setVideoOrientati
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderView
 (JNIEnv *, jobject owner, jobject glSurface)
 {
-	JNIEnv *jni_env = 0;
 
-	jni_env = getEnv();
-	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
-	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
-	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
-
-	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
-	if (coreMediaEnginePtr)
-	{
-
-		g_glChannelSurface = jni_env->NewGlobalRef(glSurface);
-		coreMediaEnginePtr->get()->setCaptureRenderView(g_glChannelSurface);
-	}
 }
 
 /*

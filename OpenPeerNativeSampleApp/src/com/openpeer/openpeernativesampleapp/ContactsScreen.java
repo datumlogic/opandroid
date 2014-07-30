@@ -50,11 +50,7 @@ public class ContactsScreen extends Activity {
 			getFragmentManager().beginTransaction()
 			.add(R.id.container, new PlaceholderFragment()).commit();
 		}
-		//mRolodexContacts = LoginManager.mIdentity.getDownloadedRolodexContacts();
-		//LoginManager.mConvThreadDelegate = new OPConversationThreadDelegateImplementation();
-		//LoginManager.mCallbackHandler.registerConversationThreadDelegate(LoginManager.mConvThreadDelegate);
 		mAdapter = new ContactsScreen.UserItemAdapter(this, R.layout.contact_list_item, LoginManager.mIdentityContacts);
-		//mAdapter.
 	}
 	public class UserItemAdapter extends ArrayAdapter<OPIdentityContact> {
 		private List<OPIdentityContact> users;
