@@ -1034,8 +1034,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 				jmethodID contactConstructorMethodID = jni_env->GetMethodID(contactClass, "<init>", "()V");
 				jobject from = jni_env->NewObject(contactClass, contactConstructorMethodID);
 
+                IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(outFrom);
 				jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
-				jlong contact = (jlong) outFrom.get();
+                jlong contact = (jlong) ptrToContact;
 				jni_env->SetLongField(from, fid, contact);
 
 
