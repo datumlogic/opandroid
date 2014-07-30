@@ -237,7 +237,7 @@ void ConversationThreadDelegateWrapper::onConversationThreadMessageDeliveryState
 		String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
 
 		jclass callbackClass = findClass(className.c_str());
-		jobject messageDeliveryState = OpenPeerCoreManager::getJavaEnumObject("java/lang/String;Lcom/openpeer/javaapi/MessageDeliveryStates", state);
+		jobject messageDeliveryState = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/MessageDeliveryStates", state);
 
 		method = jni_env->GetMethodID(callbackClass, "onConversationThreadMessageDeliveryStateChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Ljava/lang/String;Lcom/openpeer/javaapi/MessageDeliveryStates;)V");
 		jni_env->CallVoidMethod(javaDelegate, method, object, messageIDStr, messageDeliveryState);
