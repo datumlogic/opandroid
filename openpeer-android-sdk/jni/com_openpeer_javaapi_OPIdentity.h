@@ -29,7 +29,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_toDebugString
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentity;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
-  (JNIEnv *, jobject, jobject, jobject, jstring, jstring, jstring);
+  (JNIEnv *, jclass, jobject, jobject, jstring, jstring, jstring);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
@@ -173,6 +173,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_cancel
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_releaseCoreObjects
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

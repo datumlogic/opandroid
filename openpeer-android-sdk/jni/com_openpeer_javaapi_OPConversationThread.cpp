@@ -1,4 +1,3 @@
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IConversationThread.h"
 #include "openpeer/core/IContact.h"
 #include "openpeer/core/IHelper.h"
@@ -53,7 +52,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
-(JNIEnv *, jclass, jobject, jobject identityContacts)
+(JNIEnv *, jclass,
+		jobject javaAccount,
+		jobject identityContacts)
 {
 	jclass cls;
 	jmethodID method;
@@ -67,14 +68,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Conversation thread create called...");
 
+	jni_env = getEnv();
+	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(javaAccount, accountFid);
+
+	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
+
 	//check if account is existing
-	if(!OpenPeerCoreManager::accountPtr)
+	if(!coreAccountPtr)
 	{
 		return object;
 	}
 
-	//fetch JNI env
-	jni_env = getEnv();
 	if(jni_env)
 	{
 		//create return object - java/util/List is interface, ArrayList is implementation
@@ -186,7 +192,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 				coreIdentityContact.mName = jni_env->GetStringUTFChars(name, NULL);
 
 				jclass cls = findClass("com/openpeer/javaapi/OPPeerFilePublic");
-
 				jfieldID fid = jni_env->GetFieldID(cls, "mPeerFileString", "Ljava/lang/String;");
 				jstring peerFileString = (jstring) jni_env->GetObjectField(peerFilePublic, fid);
 				String corePeerFileString = jni_env->GetStringUTFChars(peerFileString, NULL);
@@ -226,13 +231,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 				t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 				coreIdentityContact.mExpires = t;
 
-//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mIdentityProvider %s ", coreIdentityContact.mIdentityProvider.c_str());
-//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mIdentityProofBundleEl %s ", IHelper::convertToString(coreIdentityContact.mIdentityProofBundleEl).c_str());
-//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mIdentityURI %s ", coreIdentityContact.mIdentityURI.c_str());
-//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mProfileURL %s ", coreIdentityContact.mProfileURL.c_str());
-//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mName %s ", coreIdentityContact.mName.c_str());
-//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "disposition %d ", coreIdentityContact.mDisposition);
-
+				//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mIdentityProvider %s ", coreIdentityContact.mIdentityProvider.c_str());
+				//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mIdentityProofBundleEl %s ", IHelper::convertToString(coreIdentityContact.mIdentityProofBundleEl).c_str());
+				//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mIdentityURI %s ", coreIdentityContact.mIdentityURI.c_str());
+				//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mProfileURL %s ", coreIdentityContact.mProfileURL.c_str());
+				//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "mName %s ", coreIdentityContact.mName.c_str());
+				//				__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "disposition %d ", coreIdentityContact.mDisposition);
 
 				//add core identity contacts to list
 				coreIdentityContacts.push_front(coreIdentityContact);
@@ -241,7 +245,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 		}
 	}
 
-	conversationThreadPtr = IConversationThread::create(OpenPeerCoreManager::accountPtr, coreIdentityContacts);
+	conversationThreadPtr = IConversationThread::create(*coreAccountPtr, coreIdentityContacts);
 
 	if(conversationThreadPtr)
 	{
@@ -252,16 +256,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
 
+			IConversationThreadPtr* ptrToConversationThread = new boost::shared_ptr<IConversationThread>(conversationThreadPtr);
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong convThread = (jlong) conversationThreadPtr.get();
+			jlong convThread = (jlong) ptrToConversationThread;
 			jni_env->SetLongField(object, fid, convThread);
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",conversationThreadPtr.get(), convThread);
-
-			OpenPeerCoreManager::coreConversationThreadList.push_back(conversationThreadPtr);
-
-			//conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(object, conversationThreadPtr));
 
 		}
 	}
@@ -274,7 +275,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
  * Signature: (Lcom/openpeer/javaapi/OPAccount;)Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConversationThreads
-(JNIEnv *, jclass, jobject)
+(JNIEnv *, jclass, jobject javaAccount)
 {
 	jclass cls;
 	jmethodID method;
@@ -283,12 +284,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
 
 	//Core identity list
 	ConversationThreadListPtr coreConversationThreads;
+	jni_env = getEnv();
+	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(javaAccount, accountFid);
 
+	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
 
 	//take associated identities from core
-	if(OpenPeerCoreManager::accountPtr)
+	if(coreAccountPtr)
 	{
-		coreConversationThreads = IConversationThread::getConversationThreads(OpenPeerCoreManager::accountPtr);
+		coreConversationThreads = IConversationThread::getConversationThreads(*coreAccountPtr);
 	}
 
 	//fetch JNI env
@@ -313,6 +319,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
 			jmethodID conversationThreadConstructorMethodID = jni_env->GetMethodID(conversationThreadClass, "<init>", "()V");
 			jobject conversationThreadObject = jni_env->NewObject(conversationThreadClass, conversationThreadConstructorMethodID);
 
+			IConversationThreadPtr* ptrToConversationThread = new boost::shared_ptr<IConversationThread>(*coreListIter);
+			jfieldID fid = jni_env->GetFieldID(conversationThreadClass, "nativeClassPointer", "J");
+			jlong convThread = (jlong) ptrToConversationThread;
+			jni_env->SetLongField(conversationThreadObject, fid, convThread);
 			//add to map for future calls
 			//conversationThreadMap.insert(std::pair<jobject, IConversationThreadPtr>(conversationThreadObject, *coreListIter));
 
@@ -331,24 +341,31 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/lang/String;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConversationThreadByID
-(JNIEnv *env, jclass, jobject, jstring threadID)
+(JNIEnv *, jclass, jobject javaAccount, jstring threadID)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 	IConversationThreadPtr conversationThreadPtr;
-
+	jni_env = getEnv();
 	const char *threadIDStr;
-	threadIDStr = env->GetStringUTFChars(threadID, NULL);
+	threadIDStr = jni_env->GetStringUTFChars(threadID, NULL);
 	if (threadIDStr == NULL) {
 		return object;
 	}
 
+
+	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(javaAccount, accountFid);
+
+	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
+
 	//TODO refactor entire method, this list should be kept in upper layer, and never call native method
-	if(OpenPeerCoreManager::accountPtr)
+	if(coreAccountPtr)
 	{
-		conversationThreadPtr = IConversationThread::getConversationThreadByID(OpenPeerCoreManager::accountPtr, threadIDStr);
+		conversationThreadPtr = IConversationThread::getConversationThreadByID(*coreAccountPtr, threadIDStr);
 	}
 
 	if(conversationThreadPtr)
@@ -360,14 +377,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
 			method = jni_env->GetMethodID(cls, "<init>", "()V");
 			object = jni_env->NewObject(cls, method);
 
+			IConversationThreadPtr* ptrToConversationThread = new boost::shared_ptr<IConversationThread>(conversationThreadPtr);
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
-			jlong convThread = (jlong) conversationThreadPtr.get();
+			jlong convThread = (jlong) ptrToConversationThread;
 			jni_env->SetLongField(object, fid, convThread);
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",conversationThreadPtr.get(), convThread);
-
-			OpenPeerCoreManager::coreConversationThreadList.push_back(conversationThreadPtr);
 		}
 	}
 	return object;
@@ -382,10 +398,17 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPConversationThread_getStable
 (JNIEnv *, jobject owner)
 {
 	jlong ret = 0;
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		ret = coreThread->getID();
+		ret = coreConversationThreadPtr->get()->getID();
 	}
 	return ret;
 }
@@ -396,13 +419,20 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPConversationThread_getStable
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getThreadID
-(JNIEnv *env, jobject owner)
+(JNIEnv *, jobject owner)
 {
 	jstring ret;
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		ret = env->NewStringUTF(coreThread->getThreadID().c_str());
+		ret = jni_env->NewStringUTF(coreConversationThreadPtr->get()->getThreadID().c_str());
 	}
 	return ret;
 }
@@ -416,10 +446,17 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_amIHos
 (JNIEnv *, jobject owner)
 {
 	jboolean ret;
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		ret = coreThread->amIHost();
+		ret = coreConversationThreadPtr->get()->amIHost();
 	}
 	return ret;
 }
@@ -430,10 +467,34 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThread_amIHos
  * Signature: ()Lcom/openpeer/javaapi/OPAccount;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getAssociatedAccount
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-	//TODO This should not be native call. Current limitation is single account at the time, so it should return OPaccount object
-	return (jobject) OpenPeerCoreManager::accountPtr.get();
+	jobject accountObject;
+	JNIEnv * jni_env = 0;
+
+	jni_env = getEnv();
+	jclass conversationThreadClass = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID conversationThreadFid = jni_env->GetFieldID(conversationThreadClass, "nativeClassPointer", "J");
+	jlong conversationThreadPointerValue = jni_env->GetLongField(owner, conversationThreadFid);
+
+	IConversationThreadPtr* conversationThreadPtr = (IConversationThreadPtr*)conversationThreadPointerValue;
+	if (conversationThreadPtr)
+	{
+		IAccountPtr accountPtr = conversationThreadPtr->get()->getAssociatedAccount();
+		if (accountPtr)
+		{
+			jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+			jmethodID accountMethod = jni_env->GetMethodID(accountClass, "<init>", "()V");
+			accountObject = jni_env->NewObject(accountClass, accountMethod);
+
+			IAccountPtr* ptrToAccount = new boost::shared_ptr<IAccount>(accountPtr);
+			jfieldID fid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+			jlong acc = (jlong) ptrToAccount;
+			jni_env->SetLongField(accountObject, fid, acc);
+		}
+	}
+
+	return accountObject;
 }
 
 /*
@@ -454,14 +515,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 
 
 	//take contacts from core conversation thread
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		coreContacts = coreThread->getContacts();
+		coreContacts = coreConversationThreadPtr->get()->getContacts();
 	}
 
-	//fetch JNI env
-	jni_env = getEnv();
 	if(jni_env)
 	{
 		//create return object - java/util/List is interface, ArrayList is implementation
@@ -482,10 +546,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 			jmethodID contactConstructorMethodID = jni_env->GetMethodID(contactClass, "<init>", "()V");
 			jobject contactObject = jni_env->NewObject(contactClass, contactConstructorMethodID);
 
+			IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(*coreListIter);
 			jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
-			jlong contact = (jlong) (*coreListIter).get();
+			jlong contact = (jlong) ptrToContact;
 			jni_env->SetLongField(contactObject, fid, contact);
-			OpenPeerCoreManager::coreContactList.push_back((*coreListIter));
 
 			//add to return List
 			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , contactObject);
@@ -509,18 +573,28 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getIden
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	IContactPtr contactPtr = OpenPeerCoreManager::getContactFromList(contact);
 	IdentityContact coreContact;
 	IdentityContactListPtr coreContactList;
 
 	//take contacts from core conversation thread
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+
+	cls = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(contact, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+	if (coreConversationThreadPtr && contactPtr)
 	{
-		coreContactList = coreThread->getIdentityContactList(contactPtr);
+		coreContactList = coreConversationThreadPtr->get()->getIdentityContactList(*contactPtr);
 
 	}
-	jni_env = getEnv();
+
 	if(jni_env)
 	{
 		//create return object - java/util/List is interface, ArrayList is implementation
@@ -620,7 +694,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getIden
 
 			//OPAvatar class and methods fetch
 			jclass avatarClass = findClass("com/openpeer/javaapi/OPRolodexContact$OPAvatar");
-			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "()V");
+			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "(Lcom/openpeer/javaapi/OPRolodexContact;)V");
 			jmethodID setAvatarNameMethodID = jni_env->GetMethodID(avatarClass, "setName", "(Ljava/lang/String;)V");
 			jmethodID setAvatarURLMethodID = jni_env->GetMethodID(avatarClass, "setURL", "(Ljava/lang/String;)V");
 			jmethodID setAvatarWidthMethodID = jni_env->GetMethodID(avatarClass, "setWidth", "(I)V");
@@ -702,12 +776,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 	JNIEnv *jni_env = 0;
 	jint state = 0;
 
-	IContactPtr coreContact = OpenPeerCoreManager::getContactFromList(contact);
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread &&coreContact)
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+
+	cls = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(contact, contactfid);
+
+	IContactPtr* coreContactPtr = (IContactPtr*)contactPointerValue;
+
+	if (coreConversationThreadPtr &&coreContactPtr)
 	{
-		state = (jint) coreThread->getContactState(coreContact);
-		jni_env = getEnv();
+		state = (jint) coreConversationThreadPtr->get()->getContactState(*coreContactPtr);
 		if(jni_env)
 		{
 			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/ContactStates", state);
@@ -764,9 +848,13 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_addContact
 
 				// Call "getContact method to fetch contact from Contact profile info
 				jobject contactObject = jni_env->CallObjectMethod( contactProfileInfoObject, getContactMethodID );
-				IContactPtr contact = OpenPeerCoreManager::getContactFromList(contactObject);
+				jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+				jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+				jlong contactPointerValue = jni_env->GetLongField(contactObject, contactfid);
+
+				IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
 				ContactProfileInfo contactProfileInfo;
-				contactProfileInfo.mContact = contact;
+				contactProfileInfo.mContact = *contactPtr;
 				//todo add profile bundle to contact profile info
 
 				//add core contacts to list for removal
@@ -776,10 +864,14 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_addContact
 		}
 	}
 	//remove contacts from conversation thread
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		coreThread->addContacts(coreContactProfilesToAdd);
+		coreConversationThreadPtr->get()->addContacts(coreContactProfilesToAdd);
 	}
 }
 
@@ -823,19 +915,25 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
 			jobject contactObject = jni_env->CallObjectMethod( contactsToRemove, listGetMethodID, i);
 			if( contactObject != NULL )
 			{
-				IContactPtr contact = contactMap.find(contactObject)->second;
+				cls = findClass("com/openpeer/javaapi/OPContact");
+				jfieldID contactfid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+				jlong pointerValue = jni_env->GetLongField(contactObject, contactfid);
+
+				IContactPtr* coreContactPtr = (IContactPtr*)pointerValue;
 				//add core contacts to list for removal
-				coreContactsToRemove.push_front(contact);
-				//remove contact entry from jni contact map
-				contactMap.erase(contactObject);
+				coreContactsToRemove.push_front(*coreContactPtr);
 			}
 		}
 	}
 	//remove contacts from conversation thread
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		coreThread->removeContacts(coreContactsToRemove);
+		coreConversationThreadPtr->get()->removeContacts(coreContactsToRemove);
 	}
 }
 
@@ -845,30 +943,36 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessage
-(JNIEnv *env, jobject owner, jstring messageID, jstring messageType, jstring message)
+(JNIEnv *, jobject owner, jstring messageID, jstring messageType, jstring message)
 {
+	JNIEnv *jni_env = 0;
+	jni_env = getEnv();
 	const char *messageIDStr;
-	messageIDStr = env->GetStringUTFChars(messageID, NULL);
+	messageIDStr = jni_env->GetStringUTFChars(messageID, NULL);
 	if (messageIDStr == NULL) {
 		return;
 	}
 
 	const char *messageTypeStr;
-	messageTypeStr = env->GetStringUTFChars(messageType, NULL);
+	messageTypeStr = jni_env->GetStringUTFChars(messageType, NULL);
 	if (messageTypeStr == NULL) {
 		return;
 	}
 
 	const char *messageStr;
-	messageStr = env->GetStringUTFChars(message, NULL);
+	messageStr = jni_env->GetStringUTFChars(message, NULL);
 	if (messageStr == NULL) {
 		return;
 	}
 
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		coreThread->sendMessage(messageIDStr, messageTypeStr, messageStr, true);
+		coreConversationThreadPtr->get()->sendMessage(messageIDStr, messageTypeStr, messageStr, true);
 	}
 }
 
@@ -890,11 +994,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 	if (messageIDStr == NULL) {
 		return NULL;
 	}
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		jni_env = getEnv();
+
 		if(jni_env)
 		{
 			IContactPtr outFrom;
@@ -902,7 +1010,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 			String outMessage;
 			Time outTime;
 
-			jboolean exists = coreThread->getMessage(messageIDStr, outFrom, outMessageType, outMessage, outTime);
+			jboolean exists = coreConversationThreadPtr->get()->getMessage(messageIDStr, outFrom, outMessageType, outMessage, outTime);
 			if (exists)
 			{
 				//Convert out parameters from c++ to return object for java
@@ -981,14 +1089,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 		return NULL;
 	}
 
-	IConversationThreadPtr coreThread = OpenPeerCoreManager::getConversationThreadFromList(owner);
-	if (coreThread)
+	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+	if (coreConversationThreadPtr)
 	{
-		jni_env = getEnv();
 		if(jni_env)
 		{
 			IConversationThread::MessageDeliveryStates stateValue;
-			jboolean exists = coreThread->getMessageDeliveryState(messageIDStr, stateValue);
+			jboolean exists = coreConversationThreadPtr->get()->getMessageDeliveryState(messageIDStr, stateValue);
 			if (exists)
 			{
 				object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/OPMessageDeliveryStates", (jint)stateValue);
@@ -1000,6 +1112,31 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 		}
 	}
 	return object;
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_releaseCoreObjects
+(JNIEnv *, jobject javaObject)
+{
+	if(javaObject != NULL)
+	{
+		JNIEnv *jni_env = getEnv();
+		jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (IConversationThreadPtr*)pointerValue;
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Conversation Thread Core object deleted.");
+
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Conversation Thread Core object not deleted - already NULL!");
+	}
 }
 
 #ifdef __cplusplus
