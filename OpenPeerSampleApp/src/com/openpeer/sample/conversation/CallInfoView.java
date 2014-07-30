@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
@@ -64,7 +63,6 @@ public class CallInfoView extends LinearLayout {
 							setVisibility(View.GONE);
 						}
 					});
-					CallbackHandler.getInstance().unregisterCallDelegate(call, this);
 					break;
 				default:
 					break;
@@ -73,7 +71,6 @@ public class CallInfoView extends LinearLayout {
 			}
 
 		};
-		CallbackHandler.getInstance().registerCallDelegate(mCall, mDelegate);
 		this.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -86,7 +83,7 @@ public class CallInfoView extends LinearLayout {
 	}
 
 	public void unbind() {
-		CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
+//		CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
 		mCall = null;
 	}
 

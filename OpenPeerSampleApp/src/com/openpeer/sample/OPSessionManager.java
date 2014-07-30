@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
@@ -94,6 +93,8 @@ public class OPSessionManager {
 
 	private OPCallDelegate mBackgroundCallHandler;
 
+	private OPConversationThreadDelegate threadDelegate;
+
 	public void onEnteringBackground() {
 	}
 
@@ -135,7 +136,7 @@ public class OPSessionManager {
 
 	void init() {
 		mCalls = new Hashtable<String, OPCall>();
-		OPConversationThreadDelegate threadDelegate = new OPConversationThreadDelegate() {
+		 threadDelegate = new OPConversationThreadDelegate() {
 
 			@Override
 			public void onConversationThreadNew(OPConversationThread conversationThread) {
@@ -212,10 +213,7 @@ public class OPSessionManager {
 				}
 			}
 		};
-		CallbackHandler.getInstance().registerConversationThreadDelegate(threadDelegate);
-		if (AppConfig.FEATURE_CALL) {
-			CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
-		}
+
 	}
 
 	public OPCall getOngoingCallForPeer(String peerUri) {
@@ -258,5 +256,10 @@ public class OPSessionManager {
 		}
 		return state;
 
+	}
+
+	public OPConversationThreadDelegate getConversationThreadDelegate() {
+		// TODO Auto-generated method stub
+		return threadDelegate;
 	}
 }

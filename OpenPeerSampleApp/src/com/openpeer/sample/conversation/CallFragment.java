@@ -3,9 +3,7 @@ package com.openpeer.sample.conversation;
 import java.util.List;
 
 import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -14,9 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.CameraTypes;
@@ -113,14 +109,6 @@ public class CallFragment extends BaseFragment {
 			}
 		}
 		if (mCall != null) {
-			// long userIDs[] = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
-			//
-			// mAudio = args.getBoolean(IntentData.ARG_AUDIO, true);
-			// mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
-			//
-			// mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio, mVideo);
-			// }
-			CallbackHandler.getInstance().registerCallDelegate(mCall, mDelegate);
 			mVideo = mCall.hasVideo();
 		} else {
 
@@ -188,7 +176,6 @@ public class CallFragment extends BaseFragment {
 		if (mCall == null) {
 
 			mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio, mVideo);
-			CallbackHandler.getInstance().registerCallDelegate(mCall, mDelegate);
 			// if (mVideo) {
 			// OPMediaEngine.getInstance().startVideoCapture();
 			// }
@@ -405,7 +392,7 @@ public class CallFragment extends BaseFragment {
 					if (mRingtone != null) {
 						mRingtone.stop();
 					}
-					CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
+//					CallbackHandler.getInstance().unregisterCallDelegate(mCall, mDelegate);
 					getActivity().finish();
 				}
 			});

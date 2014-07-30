@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.ContactStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPContact;
@@ -37,7 +36,6 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	private List<OPSession> mSessions;
 	private ListView mMessagesList;
 
-	private ConversationThreadDelegate mConvThreadDelegate;
 
 	public static ChatsFragment newInstance() {
 		ChatsFragment fragment = new ChatsFragment();
@@ -78,8 +76,7 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		CallbackHandler.getInstance().unregisterConversationThreadDelegate(
-				mConvThreadDelegate);
+
 	}
 
 	View setupView(View view) {
@@ -129,76 +126,6 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 			// TODO Auto-generated method stub
 			return new ChatInfoItemView(arg2.getContext());
 		}
-	}
-
-	class ConversationThreadDelegate extends OPConversationThreadDelegate {
-
-		@Override
-		public void onConversationThreadNew(
-				OPConversationThread conversationThread) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onConversationThreadContactsChanged(
-				OPConversationThread conversationThread) {
-			Log.d("ChatFragment", "onConversationThreadContactsChanged"
-					+ conversationThread);
-		}
-
-		@Override
-		public void onConversationThreadContactStateChanged(
-				OPConversationThread conversationThread, OPContact contact,
-				ContactStates state) {
-			Log.d("ChatFragment", "onConversationThreadContactStateChanged = "
-					+ contact + " state " + state);
-		}
-
-		@Override
-		public void onConversationThreadMessage(
-				OPConversationThread conversationThread, String messageID) {
-			final OPMessage message = conversationThread.getMessage(messageID);
-			Log.d("ChatFragment", "onConversationThreadMessage = " + messageID
-					+ " full message " + message);
-			Log.d("ChatFragment", "onConversationThreadPushMessage = "
-					+ messageID + " thread " + conversationThread);
-			getActivity().runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-
-				}
-
-			});
-		}
-
-		@Override
-		public void onConversationThreadMessageDeliveryStateChanged(
-				OPConversationThread conversationThread, String messageID,
-				MessageDeliveryStates state) {
-			Log.d("ChatFragment",
-					"onConversationThreadMessageDeliveryStateChanged = "
-							+ messageID + " state " + state + " thread "
-							+ conversationThread);
-		}
-
-		@Override
-		public void onConversationThreadPushMessage(
-				OPConversationThread conversationThread, String messageID,
-				OPContact contact) {
-			Log.d("ChatFragment", "onConversationThreadPushMessage = "
-					+ messageID + " thread " + conversationThread);
-			// getActivity().runOnUiThread(new Runnable() {
-			//
-			// @Override
-			// public void run() {
-			// // TODO Auto-generated method stub
-			// mAdapter.notifyDataSetChanged();
-			// }
-			// });
-		}
-
 	}
 
 	@Override
