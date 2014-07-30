@@ -55,6 +55,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_getAuthorizedApplica
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPStack_isAuthorizedApplicationIDExpiryWindowStillValid
   (JNIEnv *, jclass, jstring, jobject);
 
+/*
+ * Class:     com_openpeer_javaapi_OPStack
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_releaseCoreObjects
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

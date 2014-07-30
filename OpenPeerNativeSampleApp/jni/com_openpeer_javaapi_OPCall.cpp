@@ -1,4 +1,3 @@
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/ICall.h"
 #include "openpeer/core/ILogger.h"
 #include "OpenPeerCoreManager.h"
@@ -58,19 +57,34 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 	JNIEnv *jni_env = 0;
 	ICallPtr callPtr;
 
-	IConversationThreadPtr convThread = OpenPeerCoreManager::getConversationThreadFromList(conversationThread);
-	IContactPtr contact = OpenPeerCoreManager::getContactFromList(toContact);
-	if(convThread && contact)
+	if (conversationThread == NULL || toContact == NULL)
+	{
+		return object;
+	}
+
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPConversationThread");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(conversationThread, fid);
+	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
+
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(toContact, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+
+	if(coreConversationThreadPtr && contactPtr)
 	{
 
 		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Placing call...");
-		callPtr = ICall::placeCall(convThread, contact ,includeAudio, includeVideo);
+		callPtr = ICall::placeCall(*coreConversationThreadPtr, *contactPtr ,includeAudio, includeVideo);
 
 	}
 
 	if(callPtr)
 	{
-		jni_env = getEnv();
 		if(jni_env)
 		{
 			ICallPtr* ptrToCall = new boost::shared_ptr<ICall>(callPtr);
@@ -84,8 +98,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 
 			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
 					"CorePtr raw = %p, ptr as long = %Lu",callPtr.get(), call);
-
-			//OpenPeerCoreManager::coreCallList.push_back(callPtr);
 
 		}
 	}
@@ -159,18 +171,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread
 
 	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
 
-	IConversationThreadPtr convThread;
+	IConversationThreadPtr convThreadPtr;
 	if (coreCallPtr)
 	{
-		convThread = coreCallPtr->get()->getConversationThread();
-		for(std::map<jobject, IConversationThreadPtr>::iterator iter = conversationThreadMap.begin(); iter != conversationThreadMap.end(); ++iter)
-		{
-			if (iter->second == convThread)
-			{
-				ret = iter->first;
-				break;
-			}
-		}
+		convThreadPtr = coreCallPtr->get()->getConversationThread();
+		IConversationThreadPtr* ptrToConversationThread = new boost::shared_ptr<IConversationThread>(convThreadPtr);
+		cls = findClass("com/openpeer/javaapi/OPConversationThread");
+		jmethodID method = jni_env->GetMethodID(cls, "<init>", "()V");
+		ret = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong convThread = (jlong) ptrToConversationThread;
+		jni_env->SetLongField(ret, fid, convThread);
 	}
 	return ret;
 
@@ -194,18 +206,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller
 
 	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
 
-	IContactPtr contact;
+	IContactPtr contactPtr;
 	if (coreCallPtr)
 	{
-		contact = coreCallPtr->get()->getCaller();
-		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
-		{
-			if (iter->second == contact)
-			{
-				ret = iter->first;
-				break;
-			}
-		}
+		contactPtr = coreCallPtr->get()->getCaller();
+		IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(contactPtr);
+		cls = findClass("com/openpeer/javaapi/OPContact");
+		jmethodID method = jni_env->GetMethodID(cls, "<init>", "()V");
+		ret = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong contact = (jlong) ptrToContact;
+		jni_env->SetLongField(ret, fid, contact);
+
 	}
 	return ret;
 }
@@ -228,18 +241,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee
 
 	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
 
-	IContactPtr contact;
+	IContactPtr contactPtr;
 	if (coreCallPtr)
 	{
-		contact = coreCallPtr->get()->getCallee();
-		for(std::map<jobject, IContactPtr>::iterator iter = contactMap.begin(); iter != contactMap.end(); ++iter)
-		{
-			if (iter->second == contact)
-			{
-				ret = iter->first;
-				break;
-			}
-		}
+		contactPtr = coreCallPtr->get()->getCallee();
+		IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(contactPtr);
+		cls = findClass("com/openpeer/javaapi/OPContact");
+		jmethodID method = jni_env->GetMethodID(cls, "<init>", "()V");
+		ret = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong contact = (jlong) ptrToContact;
+		jni_env->SetLongField(ret, fid, contact);
 	}
 	return ret;
 }
@@ -318,7 +331,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
 		if(jni_env)
 		{
 			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallStates", state);
-
 		}
 	}
 
@@ -351,7 +363,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
 		if(jni_env)
 		{
 			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallClosedReason", reason);
-
 		}
 	}
 
