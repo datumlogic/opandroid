@@ -85,5 +85,16 @@ public class OPCall {
 		// TODO Auto-generated method stub
 		return nativeClassPointer;
 	}
+    private native void releaseCoreObjects(); 
+
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0)
+    	{
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 
 }

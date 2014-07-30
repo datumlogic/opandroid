@@ -2,16 +2,18 @@ package com.openpeer.sdk.app;
 
 import java.util.List;
 
+import javax.security.auth.callback.CallbackHandler;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPCallDelegate;
+import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 
@@ -21,6 +23,7 @@ public class LoginManager {
 	private WebView mAccountLoginWebView;
 	private WebView mIdentityLoginWebView;
 	private OPCallDelegate mCallDelegate;
+	OPConversationThreadDelegate conversationThreadDelegate;
 
 	private static LoginManager instance;
 
@@ -31,12 +34,13 @@ public class LoginManager {
 		return instance;
 	}
 
-	public LoginManager setup(LoginUIListener mListener,
-			WebView mAccountLoginWebView, WebView mIdentityLoginWebView, OPCallDelegate callDelegate) {
+	public LoginManager setup(LoginUIListener mListener, WebView mAccountLoginWebView, WebView mIdentityLoginWebView,
+			OPCallDelegate callDelegate, OPConversationThreadDelegate conversationThreadDelegate) {
 		this.mListener = mListener;
 		this.mAccountLoginWebView = mAccountLoginWebView;
 		this.mIdentityLoginWebView = mIdentityLoginWebView;
 		this.mCallDelegate = callDelegate;
+		this.conversationThreadDelegate = conversationThreadDelegate;
 		return this;
 	}
 
@@ -60,28 +64,20 @@ public class LoginManager {
 		// if (OPDatastoreDelegateImplementation.getInstance().getReloginInfo()
 		// == null) {
 		OPAccount account = new OPAccount();
-		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
-				account);
+		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(account);
 		mAccountLoginWebView.post(new Runnable() {
 			public void run() {
 				mAccountLoginWebView.setWebViewClient(client);
 			}
 		});
 
-		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
-				mAccountLoginWebView, account);
+		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(mAccountLoginWebView, account);
 
-		CallbackHandler.getInstance().registerAccountDelegate(account,
-				accountDelegate);
-
-		account = OPAccount.login(null, null, null,
-				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
-				OPSdkConfig.getInstance().getGrantId(),
-				OPSdkConfig.getInstance().getLockboxServiceDomain(),
-				false);
+		account = OPAccount.login(accountDelegate, conversationThreadDelegate, mCallDelegate, OPSdkConfig.getInstance()
+				.getNamespaceGrantServiceUrl(), OPSdkConfig.getInstance().getGrantId(),
+				OPSdkConfig.getInstance().getLockboxServiceDomain(), false);
 		OPDataManager.getInstance().setSharedAccount(account);
 		client.mAccount = account;
-		accountDelegate.mAccount = account;
 		startIdentityLogin();
 	}
 
@@ -92,24 +88,19 @@ public class LoginManager {
 		} else {
 			account = new OPAccount();
 		}
-		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
-				account);
+		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(account);
 		mAccountLoginWebView.post(new Runnable() {
 			public void run() {
 				mAccountLoginWebView.setWebViewClient(client);
 			}
 		});
+		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(mAccountLoginWebView, account);
 
-		account = OPAccount.relogin(null, null, null,
-				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
-				reloginInfo);
-		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
-				mAccountLoginWebView, account);
-		CallbackHandler.getInstance().registerAccountDelegate(account,
-				accountDelegate);
+		account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, mCallDelegate, OPSdkConfig.getInstance()
+				.getNamespaceGrantServiceUrl(), reloginInfo);
+
 		OPDataManager.getInstance().setSharedAccount(account);
 		client.mAccount = account;
-		accountDelegate.mAccount = account;
 	}
 
 	public void startIdentityLogin() {
@@ -117,24 +108,17 @@ public class LoginManager {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
-		OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
-				identity);
+		OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(identity);
 		mIdentityLoginWebView.setWebViewClient(client);
 
-		OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
-				mIdentityLoginWebView, identity);
-		CallbackHandler.getInstance().registerIdentityDelegate(identity,
-				identityDelegate);
+		OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(mIdentityLoginWebView, identity);
 
 		OPSdkConfig config = OPSdkConfig.getInstance();
 		Log.d("login", "identity initial " + identity);
-		identity = identity.login(account, null,
-				config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
+		identity = identity.login(account, identityDelegate, config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
 				config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
 				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
 		client.setIdentity(identity);
-		identityDelegate.setmIdentity(identity);
-
 	}
 
 	// public static LoginManager getInstance(){
@@ -154,15 +138,13 @@ public class LoginManager {
 			// this.mIdentity = mIdentity;
 		}
 
-		public OPIdentityDelegateImplementation(WebView loginView,
-				OPIdentity identity) {
+		public OPIdentityDelegateImplementation(WebView loginView, OPIdentity identity) {
 			this.mLoginView = loginView;
 			// mIdentity = identity;
 		}
 
 		@Override
-		public void onIdentityStateChanged(OPIdentity identity,
-				IdentityStates state) {
+		public void onIdentityStateChanged(OPIdentity identity, IdentityStates state) {
 			// TODO Auto-generated method stub
 			Log.d("state", "identity state " + state);
 
@@ -173,8 +155,7 @@ public class LoginManager {
 					public void run() {
 						Log.d("login", "loading identity webview");
 						mListener.onStartIdentityLogin();
-						mLoginView
-								.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
+						mLoginView.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
 					}
 				});
 				break;
@@ -196,25 +177,18 @@ public class LoginManager {
 				break;
 			case IdentityState_Ready:
 				// LoginManager.mIdentity.;
-				if (OPDataManager.getInstance().getSharedAccount()
-						.getState(0, "") == AccountStates.AccountState_Ready) {
-					OPDataManager.getInstance().setIdentities(
-							OPDataManager.getInstance().getSharedAccount()
-									.getAssociatedIdentities());
+				if (OPDataManager.getInstance().getSharedAccount().getState(0, "") == AccountStates.AccountState_Ready) {
+					OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
 
-//					mListener.onLoginComplete();
+					// mListener.onLoginComplete();
 
-					String version = OPDataManager.getDatastoreDelegate()
-							.getDownloadedContactsVersion(
-									identity.getStableID());
+					String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
 					if (TextUtils.isEmpty(version)) {
 						Log.d("login", "start download initial contacts");
 						identity.startRolodexDownload("");
 					} else {
 						// check for new contacts
-						Log.d("login",
-								"start download  contacts since version "
-										+ version);
+						Log.d("login", "start download  contacts since version " + version);
 						identity.startRolodexDownload(version);
 					}
 
@@ -235,8 +209,7 @@ public class LoginManager {
 		}
 
 		@Override
-		public void onIdentityPendingMessageForInnerBrowserWindowFrame(
-				OPIdentity identity) {
+		public void onIdentityPendingMessageForInnerBrowserWindowFrame(OPIdentity identity) {
 			// TODO Auto-generated method stub
 			String msg = identity.getNextMessageForInnerBrowerWindowFrame();
 			Log.d("login", "identity pendingMessageForInnerFrame " + msg);
@@ -247,7 +220,6 @@ public class LoginManager {
 		@Override
 		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
-			CallbackHandler.getInstance().unregisterIdentityDelegate(this);
 			mListener.onLoginComplete();
 			// destroy();
 		}
@@ -255,8 +227,7 @@ public class LoginManager {
 		public void passMessageToJS(final String msg) {
 			mLoginView.post(new Runnable() {
 				public void run() {
-					String cmd = String.format(
-							"javascript:sendBundleToJS(\'%s\')", msg);
+					String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
 					Log.w("login", "Identity webview Pass to JS: " + cmd);
 					mLoginView.loadUrl(cmd);
 				}
@@ -266,15 +237,11 @@ public class LoginManager {
 
 	public class OPAccountDelegateImplementation extends OPAccountDelegate {
 		WebView mLoginView;
-		OPAccount mAccount;// somehow the orignal account created is different
-							// from
-							// the account passed in the callback.
+		
 
-		public OPAccountDelegateImplementation(WebView mLoginView,
-				OPAccount mAccount) {
+		public OPAccountDelegateImplementation(WebView mLoginView, OPAccount mAccount) {
 			super();
 			this.mLoginView = mLoginView;
-			this.mAccount = mAccount;
 		}
 
 		@Override
@@ -286,8 +253,7 @@ public class LoginManager {
 			case AccountState_WaitingForBrowserWindowToBeLoaded:
 				mLoginView.post(new Runnable() {
 					public void run() {
-						mLoginView.loadUrl(OPSdkConfig.getInstance()
-								.getNamespaceGrantServiceUrl());
+						mLoginView.loadUrl(OPSdkConfig.getInstance().getNamespaceGrantServiceUrl());
 					}
 				});
 				break;
@@ -297,7 +263,7 @@ public class LoginManager {
 						mListener.onAccountLoginWebViewMadeVisible();
 					}
 				});
-				mAccount.notifyBrowserWindowVisible();
+				account.notifyBrowserWindowVisible();
 				break;
 			case AccountState_WaitingForBrowserWindowToClose:
 				mLoginView.post(new Runnable() {
@@ -305,7 +271,7 @@ public class LoginManager {
 						mListener.onAccountLoginWebViewMadeClose();
 					}
 				});
-				mAccount.notifyBrowserWindowClosed();
+				account.notifyBrowserWindowClosed();
 				break;
 			case AccountState_Ready:
 				Log.w("login", "Account READY !!!!!!!!!!!!");
@@ -328,10 +294,9 @@ public class LoginManager {
 
 		public void onAccountStateReady(OPAccount account) {
 
-			OPDataManager.getInstance().setSharedAccount(mAccount);
 			OPDataManager.getInstance().saveAccount();
 
-			List<OPIdentity> identities = mAccount.getAssociatedIdentities();
+			List<OPIdentity> identities = account.getAssociatedIdentities();
 			if (identities.size() == 0) {
 				Log.d("TODO", "Account test FAILED identities emppty ");
 
@@ -340,37 +305,29 @@ public class LoginManager {
 
 			for (OPIdentity identity : identities) {
 				if (!identity.isDelegateAttached()) {
-					final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
-							identity);
+					final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(identity);
 					mIdentityLoginWebView.post(new Runnable() {
 						public void run() {
 							mIdentityLoginWebView.setWebViewClient(client);
 
 						}
 					});
-					OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
-							mIdentityLoginWebView, identity);
-					CallbackHandler.getInstance().registerIdentityDelegate(
-							identity, identityDelegate);
-					identity.attachDelegate(identityDelegate,
-							OPSdkConfig.getInstance().getOuterFrameUrl());
+					OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(mIdentityLoginWebView,
+							identity);
+					identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getOuterFrameUrl());
 
 				} else {
 					OPDataManager.getInstance().setIdentities(identities);
 
-//					mListener.onLoginComplete();
+					// mListener.onLoginComplete();
 
-					String version = OPDataManager.getDatastoreDelegate()
-							.getDownloadedContactsVersion(
-									identity.getStableID());
+					String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
 					if (TextUtils.isEmpty(version)) {
 						Log.d("login", "start download initial contacts");
 						identity.startRolodexDownload("");
 					} else {
 						// check for new contacts
-						Log.d("login",
-								"start download  contacts since version "
-										+ version);
+						Log.d("login", "start download  contacts since version " + version);
 						identity.startRolodexDownload(version);
 					}
 				}
@@ -385,11 +342,10 @@ public class LoginManager {
 		}
 
 		@Override
-		public void onAccountPendingMessageForInnerBrowserWindowFrame(
-				OPAccount account) {
+		public void onAccountPendingMessageForInnerBrowserWindowFrame(OPAccount account) {
 			// TODO Auto-generated method stub
 			// LoginManager.pendingMessageForNamespaceGrantInnerFrame();
-			String msg = mAccount.getNextMessageForInnerBrowerWindowFrame();
+			String msg = account.getNextMessageForInnerBrowerWindowFrame();
 			Log.d("output", "pendingMessageForNamespaceGrantInnerFrame " + msg);
 			passMessageToJS(msg);
 		}
@@ -397,8 +353,7 @@ public class LoginManager {
 		void passMessageToJS(final String msg) {
 			mLoginView.post(new Runnable() {
 				public void run() {
-					String cmd = String.format(
-							"javascript:sendBundleToJS(\'%s\')", msg);
+					String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
 					Log.w("JNI", "Pass to JS: " + cmd);
 					mLoginView.loadUrl(cmd);
 				}

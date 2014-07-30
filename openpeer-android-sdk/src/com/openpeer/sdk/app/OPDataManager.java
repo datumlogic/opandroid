@@ -8,7 +8,6 @@ import java.util.List;
 import android.content.Intent;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
@@ -101,7 +100,7 @@ public class OPDataManager {
 			mSelfContacts.add(identity.getSelfIdentityContact());
 		}
 		mDatastoreDelegate.saveOrUpdateIdentities(mIdentities,
-				mAccount.getStableID());
+				mAccount.getID());
 	}
 
 	public List<OPIdentityContact> getSelfContacts() {
@@ -143,8 +142,6 @@ public class OPDataManager {
 		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation(
 				identity);
 		OPIdentityLookup mIdentityLookup = new OPIdentityLookup();
-		CallbackHandler.getInstance().registerIdentityLookupDelegate(
-				mIdentityLookup, mIdentityLookupDelegate);
 
 		List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
 
@@ -187,32 +184,7 @@ public class OPDataManager {
 	public void refreshContacts() {
 		List<OPIdentity> identities = mAccount.getAssociatedIdentities();
 		for (OPIdentity identity : identities) {
-			CallbackHandler.getInstance().registerIdentityDelegate(identity,
-					new OPIdentityDelegate() {
 
-						@Override
-						public void onIdentityStateChanged(OPIdentity identity,
-								IdentityStates state) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void onIdentityPendingMessageForInnerBrowserWindowFrame(
-								OPIdentity identity) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void onIdentityRolodexContactsDownloaded(
-								OPIdentity identity) {
-							onDownloadedRolodexContacts(identity);
-							CallbackHandler.getInstance()
-									.unregisterIdentityDelegate(this);
-						}
-
-					});
 			identity.refreshRolodexContacts();
 		}
 	}

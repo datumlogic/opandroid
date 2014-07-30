@@ -36,35 +36,24 @@ import java.util.List;
 public class OPAccount {
 
 	private long nativeClassPointer;
+	private long nativeDelegatePointer;
 
 	public static native String toString(AccountStates state);
 
 	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
 
-	public static native OPAccount login(
-			OPAccountDelegate delegate,
-			OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate,
-			String namespaceGrantOuterFrameURLUponReload,
-			String grantID,
-			String lockboxServiceDomain,
-			boolean forceCreateNewLockboxAccount
-			);
+	public static native OPAccount login(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String grantID, String lockboxServiceDomain,
+			boolean forceCreateNewLockboxAccount);
 
-	public static native OPAccount relogin(
-			OPAccountDelegate delegate,
-			OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate,
-			String namespaceGrantOuterFrameURLUponReload,
-			String reloginInformation
-			);
+	public static native OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String reloginInformation);
 
-	public native long getStableID();
+	public native long getID();
 
-	public native AccountStates getState(
-			int outErrorCode,
-			String outErrorReason
-			);
+	public native String getStableID();
+
+	public native AccountStates getState(int outErrorCode, String outErrorReason);
 
 	public native String getReloginInformation(); // NOTE: will return ElementPtr() is relogin information is not available yet
 
@@ -99,5 +88,16 @@ public class OPAccount {
 
 	public String getPeerUri() {
 		return OPContact.getForSelf(this).getPeerURI();
+	}
+
+	private native void releaseCoreObjects();
+
+	protected void finalize() throws Throwable {
+
+		if (nativeClassPointer != 0 || nativeDelegatePointer != 0) {
+			releaseCoreObjects();
+		}
+
+		super.finalize();
 	}
 }

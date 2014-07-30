@@ -7,6 +7,7 @@ import java.util.List;
 import com.openpeer.sdk.app.OPDataManager;
 
 import android.text.format.Time;
+import android.util.Log;
 
 public class OPConversationThread {
 
@@ -17,17 +18,13 @@ public class OPConversationThread {
 
 	public static native String toString(ContactStates state);
 
-	public static native String toDebugString(OPConversationThread thread,
-			boolean includeCommaPrefix);
+	public static native String toDebugString(OPConversationThread thread, boolean includeCommaPrefix);
 
-	public static native OPConversationThread create(OPAccount account,
-			List<OPIdentityContact> identityContacts);
+	public static native OPConversationThread create(OPAccount account, List<OPIdentityContact> identityContacts);
 
-	public static native List<OPConversationThread> getConversationThreads(
-			OPAccount account);
+	public static native List<OPConversationThread> getConversationThreads(OPAccount account);
 
-	public static native OPConversationThread getConversationThreadByID(
-			OPAccount account, String threadID);
+	public static native OPConversationThread getConversationThreadByID(OPAccount account, String threadID);
 
 	public native long getStableID();
 
@@ -39,20 +36,17 @@ public class OPConversationThread {
 
 	public native List<OPContact> getContacts();
 
-	public native List<OPIdentityContact> getIdentityContactList(
-			OPContact contact);
+	public native List<OPIdentityContact> getIdentityContactList(OPContact contact);
 
 	public native ContactStates getContactState(OPContact contact);
 
-	public native void addContacts(
-			List<OPContactProfileInfo> contactProfileInfos);
+	public native void addContacts(List<OPContactProfileInfo> contactProfileInfos);
 
 	public native void removeContacts(List<OPContact> contacts);
 
 	// sending a message will cause the message to be delivered to all the
 	// contacts currently in the conversation
-	public native void sendMessage(String messageID, String messageType,
-			String message, boolean signMessage);
+	public native void sendMessage(String messageID, String messageType, String message, boolean signMessage);
 
 	// returns false if the message ID is not known
 	public native OPMessage getMessage(String messageID);
@@ -60,13 +54,24 @@ public class OPConversationThread {
 	// returns false if the message ID is not known
 	public native MessageDeliveryStates getMessageDeliveryState(String messageID);
 
+	private native void releaseCoreObjects();
+
+	protected void finalize() throws Throwable {
+
+		if (nativeClassPointer != 0) {
+			Log.d("output", "Cleaning conversation thread core objects");
+			releaseCoreObjects();
+		}
+
+		super.finalize();
+	}
+
 	// END OF JNI
 
 	@Override
 	public boolean equals(Object o) {
 		// TODO Auto-generated method stub
-		return o instanceof OPConversationThread
-				&& this.nativeClassPointer == ((OPConversationThread) o).nativeClassPointer;
+		return o instanceof OPConversationThread && this.nativeClassPointer == ((OPConversationThread) o).nativeClassPointer;
 	}
 
 	public List<OPIdentityContact> getIdentityContacts() {

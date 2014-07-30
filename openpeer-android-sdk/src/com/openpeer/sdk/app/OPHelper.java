@@ -10,7 +10,6 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPConversationThread;
@@ -124,7 +123,6 @@ public class OPHelper {
 
 				//
 				OPCacheDelegate cacheDelegate = OPCacheDelegateImplementation.getInstance(mContext);
-				CallbackHandler.getInstance().registerCacheDelegate(cacheDelegate);
 				OPCache.setup(cacheDelegate);
 
 				OPSettings.applyDefaults();

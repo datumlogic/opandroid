@@ -3,17 +3,20 @@ package com.openpeer.javaapi;
 import java.util.List;
 
 import android.text.format.Time;
+import android.util.Log;
 
 
 public class OPIdentity {
 
 	private long nativeClassPointer;
 	
+	private long nativeDelegatePointer;
+	
 	public static native String toString(IdentityStates state);
 
 	public static native String toDebugString(OPIdentity identity, Boolean includeCommaPrefix);
 	
-	public native OPIdentity login(
+	public static native OPIdentity login(
                               OPAccount account,
                               OPIdentityDelegate delegate,
                               String identityProviderDomain, // used when identity URI is of legacy or oauth-type
@@ -74,9 +77,17 @@ public class OPIdentity {
 	public native OPDownloadedRolodexContacts getDownloadedRolodexContacts();
 	
 	public native void cancel();
-//	public String toString(){
-//		return super.toString()+ " identityUri " + getIdentityURI()+" innerBrowserWindowFrameURL " + 
-//				getInnerBrowserWindowFrameURL() + " identityProviderDomain "+getIdentityProviderDomain()
-//				+ " state " + getState(0,"");
-//	}
+	
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0 || nativeDelegatePointer != 0)
+    	{
+    		Log.d("output", "Cleaning identity core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 }
