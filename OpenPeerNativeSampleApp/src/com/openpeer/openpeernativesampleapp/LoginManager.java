@@ -19,6 +19,7 @@ import com.openpeer.delegates.OPCallDelegateImplementation;
 import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
 import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
+import com.openpeer.delegates.OPMediaEngineDelegateImplementation;
 import com.openpeer.delegates.OPSettingsDelegateImplementation;
 import com.openpeer.delegates.OPStackDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
@@ -47,7 +48,7 @@ import com.openpeer.javaapi.OPMediaEngineDelegate;
 
 public class LoginManager {
 
-	public static Context mContext;
+	//public static Context mContext;
 	public static String mInstanceId;
 	public static String mDeviceId;
 
@@ -56,21 +57,19 @@ public class LoginManager {
 		mInstanceId = java.util.UUID.randomUUID().toString();
 		mInstanceId = mInstanceId.replace("-", "");
 		
-		mDeviceId = Secure.getString(mContext.getContentResolver(),Secure.ANDROID_ID);
-		
 		Log.d("output", "instance ID = " + mInstanceId);
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
-		stackMessageQueue = OPStackMessageQueue.singleton(); 
+		//stackMessageQueue = OPStackMessageQueue.singleton(); 
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
-		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+		//OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 		//OPLogger.setLogLevel("openpeer_services_transport_stream", OPLogLevel.LogLevel_Insane);
 		//OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
 		String telnetLogString = mDeviceId + "-" + mInstanceId + "\n";
 		Log.d("output", "Outgoing log string = " + telnetLogString);
 		//OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true, telnetLogString);
 		OPLogger.installTelnetLogger(59999, 60, true);
-		OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
+		//OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
 		mStack = OPStack.singleton();
 
 		mCacheDelegate = new OPCacheDelegateImplementation();
@@ -93,7 +92,8 @@ public class LoginManager {
 		//TODO: After interception is done, we can call setup
 
 		mStackDelegate = new OPStackDelegateImplementation();
-		mStack.setup(mStackDelegate, null);
+		mMediaEngineDelegate = new OPMediaEngineDelegateImplementation();
+		mStack.setup(mStackDelegate, mMediaEngineDelegate);
 	}
 
 
@@ -107,6 +107,7 @@ public class LoginManager {
 
 	public static OPStack mStack;
 	public static OPStackDelegate mStackDelegate;
+	public static OPMediaEngineDelegate mMediaEngineDelegate;
 	public static OPStackMessageQueue stackMessageQueue;
 	public static OPAccount mAccount;
 	public static OPAccountDelegate mAccountDelegate;
@@ -256,17 +257,9 @@ public class LoginManager {
 
 
 
-	public static void initializeContext(Context context) {
+	public static void setDeviceId(String deviceId) {
 		// TODO Auto-generated method stub
-		//		OPLogger.installTelnetLogger(59999, 60, true);
-		//		stackMessageQueue = OPStackMessageQueue.singleton(); 
-		//
-		//		//stackMessageQueue.interceptProcessing(null);
-		//		
-		//		//TODO: After interception is done, we can call setup
-		//		stack = new OPStack();
-		//		stack.setup(null, null);
-		mContext = context;
+		mDeviceId = deviceId;
 
 	}
 
@@ -277,16 +270,13 @@ public class LoginManager {
 		long stableId = 0;
 		if (mAccount == null)
 		{
-			mAccountDelegate = new OPAccountDelegateImplementation();
-			//mAccount = new OPAccount();
-			//mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
-
 
 			SharedPreferences sharedPref = OpenPeerApplication.getAppContext().getSharedPreferences(
 					OpenPeerApplication.getAppContext().getString( R.string.preference_file_key), Context.MODE_PRIVATE);
 
 			String reloginInfo = sharedPref.getString("/openpeer/reloginInformation", "");
 
+			mAccountDelegate = new OPAccountDelegateImplementation();
 			mConversationThreadDelegate = new OPConversationThreadDelegateImplementation();
 			mCallDelegate = new OPCallDelegateImplementation();
 			if(reloginInfo.length() == 0)

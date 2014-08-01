@@ -59,6 +59,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 
 	if (conversationThread == NULL || toContact == NULL)
 	{
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Place call - invalid parameters");
 		return object;
 	}
 
