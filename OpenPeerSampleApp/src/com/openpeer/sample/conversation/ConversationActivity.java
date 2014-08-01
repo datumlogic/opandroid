@@ -13,6 +13,7 @@ import com.openpeer.sample.BaseFragmentActivity;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.openpeer.sdk.app.OPDataManager;
 
 public class ConversationActivity extends BaseActivity {
 
@@ -61,8 +62,14 @@ public class ConversationActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+        if(!OPDataManager.getInstance().isAccountReady()){
+            BaseActivity.showInvalidStateWarning(this);
+            finish();
+            return;
+        }
 		setContentView(R.layout.activity_container);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		Intent intent = getIntent();
 		String action = intent
 				.getStringExtra(IntentData.ARG_CONVERSATION_ACTION);

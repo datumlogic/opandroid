@@ -1,6 +1,5 @@
 package com.openpeer.sdk.app;
 
-import java.util.Arrays;
 import java.util.List;
 
 import android.text.TextUtils;
@@ -118,13 +117,9 @@ public class LoginManager {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
-		final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
+		OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
 				identity);
-		mIdentityLoginWebView.post(new Runnable() {
-			public void run() {
-				mIdentityLoginWebView.setWebViewClient(client);
-			}
-		});
+		mIdentityLoginWebView.setWebViewClient(client);
 
 		OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
 				mIdentityLoginWebView, identity);
@@ -179,7 +174,7 @@ public class LoginManager {
 						Log.d("login", "loading identity webview");
 						mListener.onStartIdentityLogin();
 						mLoginView
-								.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose");
+								.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
 					}
 				});
 				break;
@@ -225,8 +220,18 @@ public class LoginManager {
 
 				}
 				break;
+			case IdentityState_Shutdown:
+				// Temporary defensive code. Proper logic will be put in place soon.
+				if (mListener != null) {
+					mLoginView.post(new Runnable() {
+						public void run() {
+							mListener.onLoginError();
+							mLoginView = null;
+						}
+					});
+				}
+				break;
 			}
-
 		}
 
 		@Override
@@ -304,9 +309,20 @@ public class LoginManager {
 				break;
 			case AccountState_Ready:
 				Log.w("login", "Account READY !!!!!!!!!!!!");
+				OPDataManager.getInstance().setAccountReady(true);
+
 				onAccountStateReady(account);
 				break;
-			// LoginManager.loadOuterFrame();
+			case AccountState_Shutdown:
+				OPDataManager.getInstance().setAccountReady(false);
+				if (mListener != null) {
+					mLoginView.post(new Runnable() {
+						public void run() {
+							mListener.onLoginError();
+						}
+					});
+				}
+				break;
 			}
 		}
 
@@ -357,8 +373,6 @@ public class LoginManager {
 										+ version);
 						identity.startRolodexDownload(version);
 					}
-					CallbackHandler.getInstance().unregisterAccountDelegate(
-							this);
 				}
 			}
 

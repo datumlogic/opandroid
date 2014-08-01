@@ -40,13 +40,6 @@ public class MediaScreen extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_media_screen);
-
-		myLocalSurface = ViERenderer.CreateLocalRenderer(this);
-		myRemoteSurface = ViERenderer.CreateRenderer(this, true);
-		LinearLayout localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
-		LinearLayout remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
-		localViewLinearLayout.addView(myLocalSurface);
-		remoteViewLinearLayout.addView(myRemoteSurface);
 		
 		EditText remoteIPAddressEditText = (EditText) findViewById(R.id.remoteIPAddressEditText);
 		remoteIPAddressEditText.setText("127.0.0.1");
@@ -67,7 +60,6 @@ public class MediaScreen extends Activity {
 		OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
 		OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
 		OPMediaEngine.getInstance().setFaceDetection(false);
-		OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
 		
 		setupMediaControlButton();
 		setupAudioOutputButton();
@@ -77,18 +69,28 @@ public class MediaScreen extends Activity {
 		final Button mediaControlButton = (Button) findViewById(R.id.buttonMedia);
 		final EditText remoteIPAddressEditText = (EditText) findViewById(R.id.remoteIPAddressEditText);
 		mediaControlButton.setText("Start Video Capture");
+		final MediaScreen screen = this;
 		
 		mediaControlButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) { 
+				LinearLayout localViewLinearLayout;
+				LinearLayout remoteViewLinearLayout;
 				switch (mediaEngineStatus) {
 				case 0:
+					myLocalSurface = ViERenderer.CreateLocalRenderer(screen);
+					localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
+					localViewLinearLayout.addView(myLocalSurface);
 					OPMediaEngine.getInstance().startVideoCapture();
 					mediaControlButton.setText("Start Media Channel");
 					mediaEngineStatus++;
 					break;
 				case 1:
+					myRemoteSurface = ViERenderer.CreateRenderer(screen, true);
+					remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
+					remoteViewLinearLayout.addView(myRemoteSurface);
+					OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).setReceiverAddress(remoteIPAddressEditText.getText().toString());
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVoice();
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVideoChannel();
@@ -98,11 +100,17 @@ public class MediaScreen extends Activity {
 				case 2:
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVoice();
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVideoChannel();
+					remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
+					remoteViewLinearLayout.removeView(myRemoteSurface);
+					myRemoteSurface = null;
 					mediaControlButton.setText("Stop Video Capture");
 					mediaEngineStatus++;
 					break;
 				case 3:
 					OPMediaEngine.getInstance().stopVideoCapture();
+					localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
+					localViewLinearLayout.removeView(myLocalSurface);
+					myLocalSurface = null;
 					mediaControlButton.setText("Start Video Capture");
 					mediaEngineStatus = 0;
 					break;

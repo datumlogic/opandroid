@@ -3,8 +3,6 @@ package com.openpeer.delegates;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.text.format.Time;
 import android.util.Log;
@@ -41,7 +39,7 @@ public class CallbackHandler {
 	// ///////////////////////////////////////////////////////////////////
 	// OPAccountDelegate support
 	private static OPAccount mAccount;
-	static List<OPAccountDelegate> accountDelegates = new CopyOnWriteArrayList<OPAccountDelegate>();
+	static ArrayList<OPAccountDelegate> accountDelegates = new ArrayList<OPAccountDelegate>();
 	private static CallbackHandler instance;
 	private static OPDatastoreDelegate sDatastoreDelegate;
 	private static OPConversationThreadDelegate mBackgroundConversationHandler;
@@ -148,7 +146,7 @@ public class CallbackHandler {
 	// ///////////////////////////////////////////////////////////////////
 	// OPIdentityDelegate support
 	private static OPIdentity mIdentity;
-	static List<OPIdentityDelegate> identityDelegates = new CopyOnWriteArrayList<OPIdentityDelegate>();
+	static ArrayList<OPIdentityDelegate> identityDelegates = new ArrayList<OPIdentityDelegate>();
 
 	public static void onIdentityStateChanged(int state) {
 
@@ -207,7 +205,7 @@ public class CallbackHandler {
 	// OPCallDelegate support
 	//	private static OPCall mCall;
 	private static Hashtable<Long, OPCall> mCalls = new Hashtable<Long, OPCall>();
-	static CopyOnWriteArrayList<OPCallDelegate> callDelegates = new CopyOnWriteArrayList<OPCallDelegate>();
+	static ArrayList<OPCallDelegate> callDelegates = new ArrayList<OPCallDelegate>();
 
 	public static void onCallStateChanged(long nativeClsPtr, int state) {
 		Log.d("test", "onCallStateChanged " + nativeClsPtr + " state " + state);
@@ -258,7 +256,7 @@ public class CallbackHandler {
 	// ///////////////////////////////////////////////////////////////////
 	// OPConversationThreadDelegate support
 	// private static OPConversationThread mConversationThread;
-	static CopyOnWriteArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new CopyOnWriteArrayList<OPConversationThreadDelegate>();
+	static ArrayList<OPConversationThreadDelegate> conversationThreadDelegates = new ArrayList<OPConversationThreadDelegate>();
 
 	static HashMap<Long, OPConversationThread> mThreads = new HashMap<Long, OPConversationThread>();
 

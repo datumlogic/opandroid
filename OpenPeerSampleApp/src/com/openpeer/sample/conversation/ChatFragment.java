@@ -27,12 +27,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
+import com.openpeer.sample.BaseActivity;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
@@ -102,22 +104,26 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 		}
 		mWindowId = OPModelUtils.getWindowId(mUserIDs);
 		OPNotificationBuilder.cancelNotificationForChat((int) mWindowId);
-		mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
-		if (mSession == null) {
-			// this is user intiiated session
-			List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(mUserIDs);
-			mSession = new OPSession(users);
-			OPSessionManager.getInstance().addSession(mSession);
-		}
-		// mPeerContact =
-		// OPDataManager.getDatastoreDelegate().getIdentityContact(
-		// args.getString(IntentData.ARG_PEER_CONTACT_ID));
 		mSelfContact = OPDataManager.getInstance().getSelfContacts().get(0);
 		this.setHasOptionsMenu(true);
-		// mSelfContact =
-		// OPDataManager.getDatastoreDelegate().getIdentityContact(
-		// mSelfContactId);
+        //TODO:remove this call and use lazy loading.
+        getSession();
 	}
+
+    /**
+     * Lazy creating session. Call this when user sends message
+     * @return
+     */
+    private OPSession getSession(){
+        mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
+        if (mSession == null) {
+            // this is user intiiated session
+            List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(mUserIDs);
+            mSession = new OPSession(users);
+            OPSessionManager.getInstance().addSession(mSession);
+        }
+        return mSession;
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -177,7 +183,10 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
+                if(!OPDataManager.getInstance().isAccountReady()){
+                    BaseActivity.showInvalidStateWarning(getActivity());
+                    return;
+                }
 				Log.d("TODO", "call actual send function");
 				if (mComposeBox.getText() == null || mComposeBox.getText().length() == 0) {
 					return;
@@ -191,7 +200,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 				mComposeBox.setText("");
 
-				mSession.sendMessage(msg, false);
+				getSession().sendMessage(msg, false);
 			}
 		});
 		getLoaderManager().initLoader(URL_LOADER, null, this);
@@ -329,6 +338,10 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_call:
+            if(OPDataManager.getInstance().getSharedAccount().getState(0,null)!= AccountStates.AccountState_Ready){
+                BaseActivity.showInvalidStateWarning(getActivity());
+                return true;
+            }
 			if (mSession.getCurrentCall() != null) {
 				CallActivity.launchForCall(getActivity(), mSession.getCurrentCall().getPeer().getPeerURI());
 				return true;

@@ -96,9 +96,10 @@ public class OPSdkConfig {
 		String id = mContext.getSharedPreferences(PREF_NAME,
 				Context.MODE_PRIVATE).getString(KEY_GRANT_ID, null);
 		if (id == null) {
-			java.util.UUID.randomUUID().toString();
+			id = java.util.UUID.randomUUID().toString();
 			saveGrantId(id);
 		}
+		Log.d("Test", "getGrantId " + id);
 		return id;
 	}
 
