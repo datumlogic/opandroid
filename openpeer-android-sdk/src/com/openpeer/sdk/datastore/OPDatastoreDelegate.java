@@ -68,6 +68,8 @@ public interface OPDatastoreDelegate {
 
 	boolean updateMessageDeliveryStatus(long windowId, String messageId, int deliveryStatus, long updateTime);
 
+	public OPUser getUserByPeerUri(String uri);
+
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record); public boolean saveCallRecord(OPConversationRecord record);
 	 * public List<OPConversationRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords); public

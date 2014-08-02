@@ -1,5 +1,10 @@
 package com.openpeer.sdk.datastore;
 
+import static com.openpeer.sdk.datastore.DatabaseContracts.COLUMN_NAME_IDENTITY_URI;
+import static com.openpeer.sdk.datastore.DatabaseContracts.COLUMN_NAME_PEER_URI;
+import static com.openpeer.sdk.datastore.DatabaseContracts.COLUMN_NAME_STABLE_ID;
+import static com.openpeer.sdk.datastore.DatabaseContracts.COLUMN_NAME_WINDOW_ID;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +13,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
@@ -20,6 +24,7 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts.AccountEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.AvatarEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
@@ -31,10 +36,7 @@ import com.openpeer.sdk.datastore.DatabaseContracts.UserEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.sdk.model.OPHomeUser;
-import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
-
-import static com.openpeer.sdk.datastore.DatabaseContracts.*;
 
 /**
  * The data being stored in preference: -- Relogin information for account -- stableId
@@ -410,7 +412,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	@Override
 	public boolean saveMessage(OPMessage message, long windowId, String threadId) {
 		Log.d("TODO", "OPDatastoreDelegate saveMessage " + message.getMessage()
-				+ " sessionId " + windowId);
+				+ " sessionId " + windowId+" messageId "+message.getMessageId());
 		ContentValues values = new ContentValues();
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, message.getMessageId());
 		values.put(MessageEntry.COLUMN_NAME_MESSAGE_TEXT, message.getMessage());
@@ -570,7 +572,8 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 
 	}
 
-	OPUser getUserByPeerUri(String peerUri) {
+	@Override
+	public OPUser getUserByPeerUri(String peerUri) {
 		String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + " in (select _id from " + UserEntry.TABLE_NAME + " where "
 				+ COLUMN_NAME_PEER_URI + "=?)";
 		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null,

@@ -86,6 +86,7 @@ public class OPHelper {
 
 	public void toggleTelnetLogging(boolean enable, int port) {
 		if (enable) {
+			
 			OPLogger.installTelnetLogger(port, 60, true);
 		} else {
 			OPLogger.uninstallTelnetLogger();

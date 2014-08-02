@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.openpeer.javaapi.CallClosedReasons;
@@ -18,13 +19,22 @@ import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.CallStatus;
+import com.openpeer.sample.push.PushRegistrationManager;
+import com.openpeer.sample.push.PushResult;
+import com.openpeer.sample.push.PushToken;
+import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class OPSessionManager {
-	List<OPSession> mSessions;
+    static final String TAG = OPSessionManager.class.getSimpleName();
+    List<OPSession> mSessions;
 
 	private static OPSessionManager instance;
 
@@ -37,14 +47,13 @@ public class OPSessionManager {
 	}
 
 	public OPSession addSession(OPSession session) {
-		Log.d("test", "add session for thread " + session.getThread().getThreadID() + " window " + session.getCurrentWindowId());
 		mSessions.add(session);
 		return session;
 	}
 
 	/**
 	 * Look up existing session for thread. Uses thread id to look up
-	 * 
+	 *
 	 * @param thread
 	 * @return
 	 */
@@ -180,10 +189,39 @@ public class OPSessionManager {
 
 			@Override
 			public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
+                final OPMessage message = conversationThread.getMessage(messageID);
 
+                if (TextUtils.isEmpty(message.getMessageId())) {
+                    Log.e("test", "weird! message id is empty " + message);
+                    message.setMessageId(messageID);
+                }
+
+                PushRegistrationManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
+
+                    @Override
+                    public void success(PushToken token, Response response) {
+                        Log.e("test", "onConversationThreadPushMessage push message " + message);
+                        new UAPushProviderImpl().pushMessage(message, token, new Callback<PushResult>() {
+                            @Override
+                            public void success(PushResult pushResult, Response response) {
+
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                Log.e(TAG, "eror pushing message " + error.getMessage());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                    }
+                });
 			}
 		};
-		OPCallDelegate callDelegate = new OPCallDelegate() {
+        OPCallDelegate callDelegate = new OPCallDelegate() {
 
 			@Override
 			public void onCallStateChanged(OPCall call, CallStates state) {
@@ -216,50 +254,50 @@ public class OPSessionManager {
 
 	}
 
-	public OPCall getOngoingCallForPeer(String peerUri) {
-		return mCalls.get(peerUri);
-	}
-
-	public void onCallEnd(OPCall mCall) {
-		String peerUri = mCall.getPeer().getPeerURI();
-		mCalls.remove(peerUri);
-		mCallStates.remove(peerUri);
-		OPNotificationBuilder.cancelNotificationForCall(mCall);
-	}
-
-	public void hangupCall(OPCall mCall, CallClosedReasons callclosedreasonUser) {
-		mCall.hangup(CallClosedReasons.CallClosedReason_User);
-		onCallEnd(mCall);
-	}
-
-	public OPUser getPeerUserForCall(OPCall call) {
-		OPContact contact = call.getPeer();
-
-		OPUser user = new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
-		user = OPDataManager.getDatastoreDelegate().saveUser(user);
-		return user;
-	}
-
-	Hashtable<String, CallStatus> mCallStates = new Hashtable<String, CallStatus>();
-
-	public CallStatus getMediaStateForCall(String peerUri) {
-		CallStatus state = null;
-		if (mCallStates == null) {
-			mCallStates = new Hashtable<String, CallStatus>();
-
-		} else {
-			state = mCallStates.get(peerUri);
-		}
-		if (state == null) {
-			state = new CallStatus();
-			mCallStates.put(peerUri, state);
-		}
-		return state;
-
-	}
-
 	public OPConversationThreadDelegate getConversationThreadDelegate() {
-		// TODO Auto-generated method stub
 		return threadDelegate;
 	}
+
+
+    public OPCall getOngoingCallForPeer(String peerUri) {
+        return mCalls.get(peerUri);
+    }
+
+    public void onCallEnd(OPCall mCall) {
+        String peerUri = mCall.getPeer().getPeerURI();
+        mCalls.remove(peerUri);
+        mCallStates.remove(peerUri);
+        OPNotificationBuilder.cancelNotificationForCall(mCall);
+    }
+
+    public void hangupCall(OPCall mCall, CallClosedReasons callclosedreasonUser) {
+        mCall.hangup(CallClosedReasons.CallClosedReason_User);
+        onCallEnd(mCall);
+    }
+
+    public OPUser getPeerUserForCall(OPCall call) {
+        OPContact contact = call.getPeer();
+
+        OPUser user = new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
+        user = OPDataManager.getDatastoreDelegate().saveUser(user);
+        return user;
+    }
+
+    Hashtable<String, CallStatus> mCallStates = new Hashtable<String, CallStatus>();
+
+    public CallStatus getMediaStateForCall(String peerUri) {
+        CallStatus state = null;
+        if (mCallStates == null) {
+            mCallStates = new Hashtable<String, CallStatus>();
+
+        } else {
+            state = mCallStates.get(peerUri);
+        }
+        if (state == null) {
+            state = new CallStatus();
+            mCallStates.put(peerUri, state);
+        }
+        return state;
+
+    }
 }

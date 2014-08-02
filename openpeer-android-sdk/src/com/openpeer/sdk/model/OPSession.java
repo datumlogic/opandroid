@@ -69,9 +69,9 @@ public class OPSession extends Observable {
 
 	public OPMessage sendMessage(OPMessage message, boolean signMessage) {
 		Log.d("test", "sending messge " + message);
-		mConvThread.sendMessage(message.getMessageId(),
+		getThread().sendMessage(message.getMessageId(),
 				message.getMessageType(), message.getMessage(), signMessage);
-		OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
+		OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, getThread().getThreadID());
 		return message;
 	}
 
@@ -145,6 +145,12 @@ public class OPSession extends Observable {
 	}
 
 	public OPConversationThread getThread() {
+		if(mConvThread==null){
+			mConvThread = OPConversationThread.create(OPDataManager.getInstance()
+					.getSharedAccount(), OPDataManager.getInstance()
+					.getSelfContacts());
+			addContactToThread(mParticipants);			
+		}
 		return mConvThread;
 	}
 
@@ -175,13 +181,7 @@ public class OPSession extends Observable {
 	public OPSession(List<OPUser> users) {
 		// TODO: decide if we need to keep selfcontacts in OPDataManager since
 		// we can always get them through account
-
-		mConvThread = OPConversationThread.create(OPDataManager.getInstance()
-				.getSharedAccount(), OPDataManager.getInstance()
-				.getSelfContacts());
-
 		mParticipants = users;
-		addContactToThread(users);
 		mCurrentWindowId = OPModelUtils.getWindowId(mParticipants);
 		OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
 	}
@@ -212,7 +212,7 @@ public class OPSession extends Observable {
 
 		OPContact newContact = user.getOPContact();
 
-		OPCall call = OPCall.placeCall(mConvThread, newContact, includeAudio,
+		OPCall call = OPCall.placeCall(getThread(), newContact, includeAudio,
 				includeVideo);
 		call.setPeerUser(user);
 		// CallbackHandler.getInstance().registerCallDelegate(call,
@@ -339,7 +339,7 @@ public class OPSession extends Observable {
 			if (isWindowAttached()) {
 				message.setRead(true);
 			}
-			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, mConvThread.getThreadID());
+			OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, getThread().getThreadID());
 		} else {
 			Log.d("test", "SessionManager onMessageReceived " + message.getMessageType());
 		}
@@ -374,7 +374,7 @@ public class OPSession extends Observable {
 
 	public boolean isForThread(OPConversationThread thread) {
 		// TODO: create appropriate logic,e.g. based on windowId
-		if (thread.getThreadID().equals(mConvThread.getThreadID())) {
+		if (thread.getThreadID().equals(getThread().getThreadID())) {
 			return true;
 		}
 		return false;
