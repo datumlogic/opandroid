@@ -1,0 +1,95 @@
+package com.openpeer.sample.push;
+
+import java.util.Hashtable;
+
+import retrofit.Callback;
+
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+/**
+ * Copyright (c) 2013, SMB Phone Inc. / Hookflash Inc.
+ * All rights reserved.
+ * <p/>
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * <p/>
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * <p/>
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the FreeBSD Project.
+ */
+public class PushRegistrationManager {
+    HackApiService service;
+    private Hashtable<String, PushToken> tokens;
+    private static PushRegistrationManager instance;
+
+    public static PushRegistrationManager getInstance() {
+        if (instance == null) {
+            instance = new PushRegistrationManager();
+        }
+        return instance;
+    }
+
+    private PushRegistrationManager() {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(HackApiService.HCS_DOMAIN)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
+        service = restAdapter.create(HackApiService.class);
+        tokens = new Hashtable<String, PushToken>();
+    }
+
+    public void associateDeviceToken(String peerUri, String deviceToken, Callback<HackApiService.HackAssociateResult> callback) {
+        service.associate(new HackApiService.HackAssociate(peerUri, deviceToken), callback);
+    }
+
+    public PushToken getDeviceToken(final String peerUri, final Callback<PushToken> cb) {
+        PushToken token = tokens.get(peerUri);
+        if (tokens.get(peerUri) != null) {
+            cb.success(token, null);
+            return token;
+        }
+        Callback<HackApiService.HackGetResult> callback = new Callback<HackApiService.HackGetResult>() {
+            @Override
+            public void success(HackApiService.HackGetResult hackGetResult, Response response) {
+                PushToken token = new PushToken(hackGetResult.getResult().getType(), hackGetResult.getResult().getDeviceToken());
+                saveDeviceToken(peerUri, token);
+                if (cb != null) {
+                    cb.success(token, response);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (cb != null) {
+                    cb.failure(error);
+                }
+            }
+        };
+        service.get(new HackApiService.HackGet(peerUri), callback);
+        return null;
+    }
+
+    void saveDeviceToken(String peerUri, PushToken token) {
+        tokens.put(peerUri, token);
+    }
+
+}
