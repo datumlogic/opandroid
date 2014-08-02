@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
+import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
@@ -35,6 +37,13 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener,
 	// static final String tabNames[] = { "Chats", "Contacts", "Discovery" };
 
 	private String tabNames[];
+
+    public static void launch(Intent addtionalIntent){
+        Context context = OPApplication.getInstance();
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +194,7 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener,
 		case R.id.menu_settings:
 			SettingsActivity.launch(this);
 			break;
+
 		default:
 		}
 		return super.onOptionsItemSelected(item);
