@@ -1,5 +1,7 @@
 package com.openpeer.sample.push;
 
+import android.text.TextUtils;
+
 import java.util.Hashtable;
 
 import retrofit.Callback;
@@ -70,6 +72,9 @@ public class PushRegistrationManager {
         Callback<HackApiService.HackGetResult> callback = new Callback<HackApiService.HackGetResult>() {
             @Override
             public void success(HackApiService.HackGetResult hackGetResult, Response response) {
+                if(TextUtils.isEmpty(hackGetResult.getResult().getDeviceToken())){
+                    return;
+                }
                 PushToken token = new PushToken(hackGetResult.getResult().getType(), hackGetResult.getResult().getDeviceToken());
                 saveDeviceToken(peerUri, token);
                 if (cb != null) {
