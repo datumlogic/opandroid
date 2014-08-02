@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts;
 
 public class OPUser {
 	long mUserId;// locally maintained user id
@@ -41,6 +42,12 @@ public class OPUser {
 	}
 
 	public OPContact getOPContact() {
+		if (mOPContact == null) {
+			OPIdentityContact contact = getPreferredContact();
+
+			mOPContact = OPContact.createFromPeerFilePublic(OPDataManager.getInstance().getSharedAccount(), contact.getPeerFilePublic()
+					.getPeerFileString());
+		}
 		return mOPContact;
 	}
 
@@ -55,9 +62,7 @@ public class OPUser {
 	public void setIdentityContact(List<OPIdentityContact> mIdentityContact) {
 		this.mIdentityContacts = mIdentityContact;
 		OPIdentityContact contact = getPreferredContact();
-		mOPContact = OPContact.createFromPeerFilePublic(OPDataManager.getInstance().getSharedAccount(), contact.getPeerFilePublic()
-				.getPeerFileString());
-		this.mPeerUri = mOPContact.getPeerURI();
+
 		mAvatarUri = contact.getDefaultAvatarUrl();
 		this.mIdentityUri = contact.getIdentityURI();
 		this.mName = contact.getName();
@@ -106,6 +111,8 @@ public class OPUser {
 			OPUser user = new OPUser();
 			List<OPIdentityContact> contacts = new ArrayList<OPIdentityContact>();
 			cursor.moveToFirst();
+			user.mPeerUri = cursor.getString(cursor.getColumnIndex(DatabaseContracts.COLUMN_NAME_PEER_URI));
+			Log.d("test", "OPUser.fromDetailCursor peerUri" + user.mPeerUri);
 			while (!cursor.isAfterLast()) {
 				contacts.add(OPIdentityContact.fromCursor(cursor));
 				cursor.moveToNext();
@@ -126,6 +133,9 @@ public class OPUser {
 	}
 
 	public String getPeerUri() {
+		if (mPeerUri == null) {
+			mPeerUri = getOPContact().getPeerURI();
+		}
 		return mPeerUri;
 	}
 
