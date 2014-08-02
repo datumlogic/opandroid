@@ -131,7 +131,7 @@ public class PushMessage {
         String peerURI;
         //        String avatar;
         String location;
-        String messageID;
+        String messageId;
         String date;
 
         AndroidExtra() {
@@ -140,7 +140,7 @@ public class PushMessage {
         AndroidExtra(String peerUri, String messageId, String location, String timeInMillis) {
             this.peerURI = peerUri;
 //            this.avatar = senderAvatar;
-            this.messageID = messageId;
+            this.messageId = messageId;
             this.date = timeInMillis;
             this.location = location;
         }

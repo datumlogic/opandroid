@@ -46,7 +46,7 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
     public static final String KEY_MESSAGE_ID_KEY = "_uamid";
 
     static final String KEY_PEER_URI = "peerURI";
-    static final String KEY_MESSAGE_ID = "messageID";
+    static final String KEY_MESSAGE_ID = "messageId";
     static final String KEY_SEND_TIME = "date";
 
 

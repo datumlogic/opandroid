@@ -35,7 +35,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
     static final String KEY_PEER_URI = "peerURI";
     static final String KEY_SENDER_NAME = "senderName";
-    static final String KEY_MESSAGE_ID = "messageID";
+    static final String KEY_MESSAGE_ID = "messageId";
     static final String KEY_SEND_TIME = "date";
 
     // A set of actions that launch activities when a push is opened.  Update
