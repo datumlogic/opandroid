@@ -318,6 +318,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic;)V");
 			jni_env->CallVoidMethod(object, method, peerFileObject);
 
+			jni_env->DeleteLocalRef(peerFileObject);
+
+
 			//set IdentityProofBundle to OPIdentityContact
 			method = jni_env->GetMethodID(cls, "setIdentityProofBundle", "(Ljava/lang/String;)V");
 			String proofElementString = IHelper::convertToString(coreContact.mIdentityProofBundleEl);
@@ -346,6 +349,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
 			jni_env->CallVoidMethod(object, method, timeLastUpdatedObject);
 
+			jni_env->DeleteLocalRef(timeLastUpdatedObject);
+
 			//calculate and set Expires
 			zsLib::Duration expires = coreContact.mExpires - time_t_epoch;
 			jobject timeExpiresObject = jni_env->NewObject(timeCls, timeMethodID);
@@ -353,6 +358,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			//Time has been converted, now call OPIdentityContact setter
 			method = jni_env->GetMethodID(cls, "setExpires", "(Landroid/text/format/Time;)V");
 			jni_env->CallVoidMethod(object, method, timeExpiresObject);
+
+			jni_env->DeleteLocalRef(timeExpiresObject);
 
 			///////////////////////////////////////////////////////////////
 			// SET ROLODEX CONTACT FIELDS
@@ -439,10 +446,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 				//add avatar object to avatar list
 				jboolean success = jni_env->CallBooleanMethod(avatarListObject, avatarListAddMethodID , avatarObject);
+
+				jni_env->DeleteLocalRef(avatarObject);
 			}
 
 			//add avatar list to OPRolodexContact
 			jni_env->CallVoidMethod(object, setAvatarsMethodID, avatarListObject);
+
+			jni_env->DeleteLocalRef(avatarListObject);
 
 			//add to return List
 			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , object);
