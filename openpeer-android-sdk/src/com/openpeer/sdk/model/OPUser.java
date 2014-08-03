@@ -41,7 +41,12 @@ public class OPUser {
 		return false;
 	}
 
+	/**
+	 * Lazy insta
+	 * @return
+	 */
 	public OPContact getOPContact() {
+		//	Lazy creation of opcontact to avoid problem before core stack is ready.
 		if (mOPContact == null) {
 			OPIdentityContact contact = getPreferredContact();
 
@@ -102,9 +107,14 @@ public class OPUser {
 	}
 
 	public OPUser() {
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Construct user object from contacts table
+	 * 
+	 * @param cursor
+	 * @return
+	 */
 	public static OPUser fromDetailCursor(Cursor cursor) {
 
 		if (cursor != null & cursor.getCount() > 0) {
@@ -123,7 +133,13 @@ public class OPUser {
 		}
 		return null;
 	}
+	
+	public static OPUser fromIdentityContact(OPAccount account, OPIdentityContact iContact) {
+		List<OPIdentityContact> identities = new ArrayList<OPIdentityContact>();
+		OPContact contact = OPContact.createFromPeerFilePublic(account, iContact.getPeerFilePublic().getPeerFileString());
 
+		return new OPUser(contact, identities);
+	}
 	public long getUserId() {
 		return mUserId;
 	}
@@ -177,13 +193,6 @@ public class OPUser {
 
 	public OPIdentityContact getPreferredContact() {
 		return mIdentityContacts.get(0);
-	}
-
-	public static OPUser fromIdentityContact(OPAccount account, OPIdentityContact iContact) {
-		OPContact contact = OPContact.createFromPeerFilePublic(account, iContact.getPeerFilePublic().getPeerFileString());
-		OPUser user = new OPUser(-1, contact.getPeerURI(), iContact.getStableID(), iContact.getIdentityURI(), iContact.getName(),
-				iContact.getDefaultAvatarUrl());
-		return user;
 	}
 
 	public boolean isSame(OPContact contact) {

@@ -1,13 +1,12 @@
 package com.openpeer.sdk.model;
 
-public class OPHomeUser {
+public class OPHomeUser extends OPUser{
 	private String reloginInfo;
-	private long stableId;
 
-	public OPHomeUser(String reloginInfo, long stableId) {
+	public OPHomeUser(String reloginInfo, String stableId) {
 		super();
 		this.reloginInfo = reloginInfo;
-		this.stableId = stableId;
+		this.mLockboxStableId = stableId;
 	}
 
 	public String getReloginInfo() {
@@ -17,13 +16,4 @@ public class OPHomeUser {
 	public void setReloginInfo(String reloginInfo) {
 		this.reloginInfo = reloginInfo;
 	}
-
-	public long getStableId() {
-		return stableId;
-	}
-
-	public void setStableId(long stableId) {
-		this.stableId = stableId;
-	}
-
 }
