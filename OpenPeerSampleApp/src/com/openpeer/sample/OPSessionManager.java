@@ -24,7 +24,6 @@ import com.openpeer.sample.push.PushResult;
 import com.openpeer.sample.push.PushToken;
 import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 
@@ -36,6 +35,10 @@ public class OPSessionManager {
     static final String TAG = OPSessionManager.class.getSimpleName();
     List<OPSession> mSessions;
 
+    Hashtable<String, OPCall> mCalls;
+
+    private OPConversationThreadDelegate threadDelegate;
+    private OPCallDelegate callDelegate;
 	private static OPSessionManager instance;
 
 	public static OPSessionManager getInstance() {
@@ -94,35 +97,6 @@ public class OPSessionManager {
 	private OPSession getSessionWithUsers(long[] ids) {
 		// TODO: implement proper look up
 		return getSessionForUsers(ids);
-	}
-
-	OPCall mActiveCall;
-	// <callId,call>
-	Hashtable<String, OPCall> mCalls;
-
-	private OPCallDelegate mBackgroundCallHandler;
-
-	private OPConversationThreadDelegate threadDelegate;
-
-	public void onEnteringBackground() {
-	}
-
-	public void onEnteringForeground() {
-	}
-
-	public void onCallStateChanged(OPCall call, CallStates state) {
-		if (OPHelper.getInstance().isAppInBackground()) {
-			mBackgroundCallHandler.onCallStateChanged(call, state);
-		}
-	}
-
-	/**
-	 * Application should provide a background call handler to show an notification for incoming call, and all other fany stuff
-	 * 
-	 * @param delegate
-	 */
-	public void setBackgroundCallDelegate(OPCallDelegate delegate) {
-		mBackgroundCallHandler = delegate;
 	}
 
 	public OPCall placeCall(long[] userIDs, boolean audio, boolean video) {
@@ -221,7 +195,7 @@ public class OPSessionManager {
                 });
 			}
 		};
-        OPCallDelegate callDelegate = new OPCallDelegate() {
+        callDelegate = new OPCallDelegate() {
 
 			@Override
 			public void onCallStateChanged(OPCall call, CallStates state) {
@@ -258,6 +232,9 @@ public class OPSessionManager {
 		return threadDelegate;
 	}
 
+    public OPCallDelegate getCallDelegate() {
+        return callDelegate;
+    }
 
     public OPCall getOngoingCallForPeer(String peerUri) {
         return mCalls.get(peerUri);

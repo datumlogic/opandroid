@@ -16,10 +16,6 @@ import com.openpeer.sample.push.PushRegistrationManager;
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPHelper;
-import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
-import com.openpeer.sample.contacts.ContactsFragment;
-import com.openpeer.sample.delegates.OPCallDelegateImplementation;
 import com.urbanairship.push.PushManager;
 
 import retrofit.Callback;
@@ -34,14 +30,6 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
-    }
-
-    public WebView getmAccountLoginWebView() {
-        return mAccountLoginWebView;
-    }
-
-    public WebView getmIdentityLoginWebView() {
-        return mIdentityLoginWebView;
     }
 
     @Override
@@ -68,16 +56,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
             loginTask = new AccountLogin();
         }
         loginTask.execute();
-        // String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-        // if (reloginInfo == null || reloginInfo.length() == 0) {
-        // Log.d("login", "LoginFragment startLogin() logging in");
-        // LoginManager.getInstance().setup(this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation()).login();
-        // } else {
-        // Log.d("login", "LoginFragment startLogin() relogging in");
-        //
-        // LoginManager.getInstance().setup(this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation())
-        // .relogin(OPDataManager.getInstance().getReloginInfo());
-        // }
+
 
     }
 
@@ -88,22 +67,19 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         @Override
         protected Void doInBackground(Void... params) {
 
-//			OPHelper.getInstance().init(getActivity(), null);
 			String reloginInfo = OPDataManager.getInstance().getReloginInfo();
 			if (reloginInfo == null || reloginInfo.length() == 0) {
 				Log.d("login", "LoginFragment startLogin() logging in");
 				LoginManager.getInstance()
-						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation(),OPSessionManager.getInstance().getConversationThreadDelegate()).login();
+						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(),OPSessionManager.getInstance().getConversationThreadDelegate()).login();
 			} else {
 				Log.d("login", "LoginFragment startLogin() relogging in");
 
 				LoginManager.getInstance()
-						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation(),OPSessionManager.getInstance().getConversationThreadDelegate())
+						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(),OPSessionManager.getInstance().getConversationThreadDelegate())
 						.relogin(OPDataManager.getInstance().getReloginInfo());
 			}
 
-			// TextView txt = (TextView) findViewById(R.id.output);
-			// txt.setText("Executed");
 			return null;
 		}
 

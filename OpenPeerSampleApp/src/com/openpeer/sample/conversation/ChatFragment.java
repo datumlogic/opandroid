@@ -213,28 +213,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
                 mComposeBox.setText("");
 
                 getSession().sendMessage(msg, false);
-//                OPContact contact = mSession.getParticipants().get(0).getOPContact();
-//                PushRegistrationManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
-//                    @Override
-//                    public void success(PushToken token, Response response) {
-//                        new UAPushProviderImpl().pushMessage(msg, token, new Callback<PushResult>() {
-//                            @Override
-//                            public void success(PushResult pushResult, Response response) {
-//
-//                            }
-//
-//                            @Override
-//                            public void failure(RetrofitError error) {
-//
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void failure(RetrofitError error) {
-//
-//                    }
-//                });
+
             }
         });
         getLoaderManager().initLoader(URL_LOADER, null, this);
