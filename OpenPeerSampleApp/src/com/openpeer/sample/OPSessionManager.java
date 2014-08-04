@@ -167,6 +167,7 @@ public class OPSessionManager {
             @Override
             public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
                 OPMessage message = conversationThread.getMessage(messageID);
+                message.setMessageId(messageID);
                 if (message.getFrom().isSelf()) {
                     Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
                             + message.getMessageType());
