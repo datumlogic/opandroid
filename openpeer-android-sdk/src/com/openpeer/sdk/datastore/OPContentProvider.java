@@ -47,6 +47,9 @@ public class OPContentProvider extends ContentProvider {
 		MESSAGE_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW_ID),
 		MESSAGE_THREAD(MessageEntry.URI_PATH_INFO_THREAD_ID),
 		MESSAGE_GROUP(MessageEntry.URI_PATH_INFO_GROUP_ID),
+		
+		MESSAGES(MessageEntry.TABLE_NAME),
+		MESSAGE(MessageEntry.TABLE_NAME+"/#"),
 
 		CONTACTS(DatabaseContracts.ContactsViewEntry.TABLE_NAME),
 		CONTACT(DatabaseContracts.ContactsViewEntry.TABLE_NAME + "/#"),
