@@ -89,14 +89,10 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
         } else if (action.equals(PushManager.ACTION_NOTIFICATION_OPENED)) {
 
-        } else if (action.equals(PushManager.ACTION_REGISTRATION_FINISHED)) {
-
-            Log.i(logTag, "Registration complete. APID:" + intent.getStringExtra(PushManager.EXTRA_APID)
-                    + ". Valid: " + intent.getBooleanExtra(PushManager.EXTRA_REGISTRATION_VALID, false));
         } else if (action.equals(GCMMessageHandler.ACTION_GCM_DELETED_MESSAGES)) {
             Log.i(logTag, "The GCM service deleted " + intent.getStringExtra(GCMMessageHandler.EXTRA_GCM_TOTAL_DELETED) + " messages.");
         } else if (action.equals(PushManager.ACTION_REGISTRATION_FINISHED)) {
-            String apid = PushManager.shared().getAPID();
+            String apid = intent.getStringExtra(PushManager.EXTRA_APID);
             Log.i(logTag, "Push registration finished " + apid);
             if (apid != null && OPDataManager.getInstance().getSharedAccount().getState(0, null) == AccountStates.AccountState_Ready) {
                 PushRegistrationManager.getInstance().associateDeviceToken(OPDataManager.getInstance().getSharedAccount().getPeerUri(), apid, new Callback<HackApiService.HackAssociateResult>() {
