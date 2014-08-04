@@ -79,7 +79,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
             OPMessage opMessage = new OPMessage(sender.getUserId(),
                     OPMessage.OPMessageType.TYPE_TEXT,
                     intent.getStringExtra(PushManager.EXTRA_ALERT),
-                    Long.parseLong(intent.getStringExtra(KEY_SEND_TIME)),
+                    Long.parseLong(intent.getStringExtra(KEY_SEND_TIME)) * 1000,
                     messageId,
                     false,
                     MessageDeliveryStates.MessageDeliveryState_Delivered.ordinal());
