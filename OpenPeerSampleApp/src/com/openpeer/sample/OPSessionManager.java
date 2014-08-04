@@ -210,14 +210,19 @@ public class OPSessionManager {
 
                             @Override
                             public void failure(RetrofitError error) {
-                                Log.e(TAG, "eror pushing message " + error.getMessage());
+
+                                if (error != null) {
+                                    Log.e(TAG, "eror pushing message " + error.getMessage());
+                                }
                             }
                         });
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                        if (error != null) {
+                            Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                        }
                     }
                 });
             }
