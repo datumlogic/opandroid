@@ -1004,26 +1004,32 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 			//set Disposition to OPRolodexContact
 			jobject dispositionObject = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/OPRolodexContact$Dispositions", (jint)coreRolodexContact.mDisposition);
 			jni_env->CallVoidMethod(rolodexContactObject, setDispositionMethodID, dispositionObject);
+			jni_env->DeleteLocalRef(dispositionObject);
 
 			//set identity URI to OPRolodexContact
 			jstring identityUriStr = jni_env->NewStringUTF(coreRolodexContact.mIdentityURI.c_str());
 			jni_env->CallVoidMethod(rolodexContactObject, setIdentityURIMethodID, identityUriStr);
+			jni_env->DeleteLocalRef(identityUriStr);
 
 			//set identity provider to OPRolodexContact
 			jstring identityProviderStr = jni_env->NewStringUTF(coreRolodexContact.mIdentityProvider.c_str());
 			jni_env->CallVoidMethod(rolodexContactObject, setIdentityProviderMethodID, identityProviderStr);
+			jni_env->DeleteLocalRef(identityProviderStr);
 
 			//set name to OPRolodexContact
 			jstring nameStr = jni_env->NewStringUTF(coreRolodexContact.mName.c_str());
 			jni_env->CallVoidMethod(rolodexContactObject, setNameMethodID, nameStr);
+			jni_env->DeleteLocalRef(nameStr);
 
 			//set profile URL to OPRolodexContact
 			jstring profileURLStr = jni_env->NewStringUTF(coreRolodexContact.mProfileURL.c_str());
 			jni_env->CallVoidMethod(rolodexContactObject, setProfileURLMethodID, profileURLStr);
+			jni_env->DeleteLocalRef(profileURLStr);
 
 			//set v profile URL to OPRolodexContact
 			jstring vProfileURLStr = jni_env->NewStringUTF(coreRolodexContact.mVProfileURL.c_str());
 			jni_env->CallVoidMethod(rolodexContactObject, setVProfileURLMethodID, vProfileURLStr);
+			jni_env->DeleteLocalRef(vProfileURLStr);
 
 			//Avatar List object
 			jobject avatarListObject = jni_env->NewObject(avatarListClass, avatarListConstructorMethodID);
@@ -1039,11 +1045,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 				//set avatar name to OPRolodexContact::OPAvatar
 				jstring avatarNameStr = jni_env->NewStringUTF(coreAvatar.mName.c_str());
 				jni_env->CallVoidMethod(avatarObject, setAvatarNameMethodID, avatarNameStr);
+				jni_env->DeleteLocalRef(avatarNameStr);
 
 				//set avatar URL to OPRolodexContact::OPAvatar
-				__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "avatar = %s",coreAvatar.mURL.c_str());
+				//__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "avatar = %s",coreAvatar.mURL.c_str());
 				jstring avatarURLStr = jni_env->NewStringUTF(coreAvatar.mURL.c_str());
 				jni_env->CallVoidMethod(avatarObject, setAvatarURLMethodID, avatarURLStr);
+				jni_env->DeleteLocalRef(avatarURLStr);
 
 				//set avatar width to OPRolodexContact::OPAvatar
 				jni_env->CallVoidMethod(avatarObject, setAvatarWidthMethodID, (jint)coreAvatar.mWidth);
@@ -1053,13 +1061,16 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 
 				//add avatar object to avatar list
 				jboolean success = jni_env->CallBooleanMethod(avatarListObject, avatarListAddMethodID , avatarObject);
+				jni_env->DeleteLocalRef(avatarObject);
 			}
 
 			//add avatar list to OPRolodexContact
 			jni_env->CallVoidMethod(rolodexContactObject, setAvatarsMethodID, avatarListObject);
+			jni_env->DeleteLocalRef(avatarListObject);
 
 			// Call set method to set to OPDownloadedRolodexContacts
 			jni_env->CallBooleanMethod( rolodexListObject, listAddMethodID, rolodexContactObject);
+			jni_env->DeleteLocalRef(rolodexContactObject);
 
 		}
 

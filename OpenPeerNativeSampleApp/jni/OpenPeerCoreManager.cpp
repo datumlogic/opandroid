@@ -15,6 +15,8 @@ jobject OpenPeerCoreManager::getJavaEnumObject(String enumClassName, jint index)
 	jmethodID valuesMethodID = jni_env->GetStaticMethodID(cls, "values", ("()[L" + enumClassName  + ";").c_str());
 	jobjectArray valuesArray = (jobjectArray)jni_env->CallStaticObjectMethod(cls, valuesMethodID);
 	jobject returnObj = jni_env->GetObjectArrayElement(valuesArray, index);
+	jni_env->DeleteLocalRef(valuesArray);
+	jni_env->DeleteLocalRef(cls);
 
 	return returnObj;
 }
@@ -26,6 +28,7 @@ jint OpenPeerCoreManager::getIntValueFromEnumObject(jobject enumObject, String e
 	jclass cls = findClass(enumClassName.c_str());
 	jmethodID ordinalMethodID = jni_env->GetMethodID(cls, "ordinal", "()I");
 	jint intValue = (jint) jni_env->CallIntMethod(enumObject, ordinalMethodID);
+	jni_env->DeleteLocalRef(cls);
 
 	return intValue;
 }
@@ -57,7 +60,10 @@ String OpenPeerCoreManager::getObjectClassName (jobject delegate)
 	printf("\nCalling class is: %s\n", ret.c_str());
 
 
+	env->DeleteLocalRef(clsObj);
+	env->DeleteLocalRef(cls);
 	// Release the memory pinned char array
 	env->ReleaseStringUTFChars(strObj, ret);
+	env->DeleteLocalRef(strObj);
 	return ret;
 }
