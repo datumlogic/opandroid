@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -74,7 +75,7 @@ public class OPSessionManager {
 
 	/**
 	 * Look up the session "for" users. This call use calculated window id to find the session.
-	 * 
+	 *
 	 * @param userIDs
 	 * @return
 	 */
@@ -89,7 +90,7 @@ public class OPSessionManager {
 
 	/**
 	 * Find existing session "including" the users
-	 * 
+	 *
 	 * @param ids
 	 *            user ids
 	 * @return
@@ -199,6 +200,12 @@ public class OPSessionManager {
 
 			@Override
 			public void onCallStateChanged(OPCall call, CallStates state) {
+                Intent intent= new Intent();
+                intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
+                intent.putExtra(IntentData.ARG_CALL_STATE,state);
+                intent.putExtra(IntentData.ARG_CALL_ID,call.getCallID());
+
+                OPApplication.getInstance().sendBroadcast(intent);
 				switch (state) {
 				case CallState_Incoming:
 					OPContact caller = call.getCaller();
