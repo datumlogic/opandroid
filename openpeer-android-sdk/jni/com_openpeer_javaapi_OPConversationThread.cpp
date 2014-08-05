@@ -694,7 +694,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getIden
 
 			//OPAvatar class and methods fetch
 			jclass avatarClass = findClass("com/openpeer/javaapi/OPRolodexContact$OPAvatar");
-			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "(Lcom/openpeer/javaapi/OPRolodexContact;)V");
+			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "()V");
 			jmethodID setAvatarNameMethodID = jni_env->GetMethodID(avatarClass, "setName", "(Ljava/lang/String;)V");
 			jmethodID setAvatarURLMethodID = jni_env->GetMethodID(avatarClass, "setURL", "(Ljava/lang/String;)V");
 			jmethodID setAvatarWidthMethodID = jni_env->GetMethodID(avatarClass, "setWidth", "(I)V");
@@ -1020,6 +1020,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 				messageObject = jni_env->NewObject(messageClass, messageConstructorMethodID);
 
 				//FETCH METHODS TO GET INFO FROM JAVA
+				//Fetch setMessageType method from OPMessage class
+				jmethodID setMessageIdMethodID = jni_env->GetMethodID( messageClass, "setMessageId", "(Ljava/lang/String;)V" );
 				//Fetch setFrom method from OPMessage class
 				jmethodID setFromMethodID = jni_env->GetMethodID( messageClass, "setFrom", "(Lcom/openpeer/javaapi/OPContact;)V" );
 				//Fetch setMessageType method from OPMessage class
@@ -1034,14 +1036,16 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 				jmethodID contactConstructorMethodID = jni_env->GetMethodID(contactClass, "<init>", "()V");
 				jobject from = jni_env->NewObject(contactClass, contactConstructorMethodID);
 
-                IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(outFrom);
+				IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(outFrom);
 				jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
-                jlong contact = (jlong) ptrToContact;
+				jlong contact = (jlong) ptrToContact;
 				jni_env->SetLongField(from, fid, contact);
 
 
 				jni_env->CallVoidMethod( messageObject, setFromMethodID, from );
 
+				//Call setMessageId method on return object
+				jni_env->CallVoidMethod( messageObject, setMessageTypeMethodID, messageID );
 				//Convert parameter and call setMessageType method on return object
 				jstring messageType = jni_env->NewStringUTF(outMessageType.c_str());
 				jni_env->CallVoidMethod( messageObject, setMessageTypeMethodID, messageType );

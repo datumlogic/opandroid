@@ -18,7 +18,7 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	jstring cookieJavaString;
 	const char *fetchedStr;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache fetch called");
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache fetch called - cookieNamePath = %s", cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -81,7 +81,7 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	jstring cookieJavaString;
 	jstring storeStr;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache store called");
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache store called - cookieNamePath = %s, str = %s", cookieNamePath, str);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -144,7 +144,7 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	JNIEnv *jni_env = 0;
 	jstring cookieJavaString;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache clear called");
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache clear called - cookieNamePath = %s", cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
