@@ -253,25 +253,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		return true;
 	}
 
-	@Override
-	public OPHomeUser getHomeUser() {
-		String reloginInfo = this.mPreferenceStore.getString(
-				PREF_KEY_RELOGIN_INFO, null);
-		if (reloginInfo != null) {
-			return new OPHomeUser(reloginInfo, mPreferenceStore.getLong(
-					PREF_KEY_HOMEUSER_STABLEID, 0L));
-		}
-		return null;
-	}
-
-	@Override
-	public boolean saveHomeUser(OPHomeUser user) {
-		SharedPreferences.Editor editor = mPreferenceStore.edit();
-		editor.putString(PREF_KEY_RELOGIN_INFO, user.getReloginInfo());
-		editor.putLong(PREF_KEY_HOMEUSER_STABLEID, user.getStableId());
-		return true;
-	}
-
 	public String getDownloadedContactsVersion(long identityId) {
 		String version = null;
 		Cursor cursor = query(IdentityEntry.TABLE_NAME,

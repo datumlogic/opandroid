@@ -14,11 +14,6 @@ import com.openpeer.sdk.model.OPUser;
 public interface OPDatastoreDelegate {
 	public String getReloginInfo();
 
-	public OPHomeUser getHomeUser();
-
-	public boolean saveHomeUser(OPHomeUser user);
-
-
 	/**
 	 * Retrieve stored OpenPeer contacts for identity
 	 * 

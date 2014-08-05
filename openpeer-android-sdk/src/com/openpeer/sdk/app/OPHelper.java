@@ -23,10 +23,7 @@ import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
-import com.openpeer.sdk.delegates.ContactsBasedMessageDispatcher;
-import com.openpeer.sdk.delegates.GroupBasedMessageDispatcher;
-import com.openpeer.sdk.delegates.MessageDispatcher;
-import com.openpeer.sdk.delegates.MessageReceiver;
+
 import com.openpeer.sdk.delegates.OPCacheDelegateImplementation;
 
 /**
@@ -210,29 +207,14 @@ public class OPHelper {
 	public static final int MODE_CONTACTS_BASED = 0;
 	public static final int MODE_GROUP_BASED = 1;
 
-	public void setChatGroupMode(int mode) {
-		if (mode == MODE_CONTACTS_BASED) {
-			mDispatcher = new ContactsBasedMessageDispatcher();
-		} else {
-			mDispatcher = new GroupBasedMessageDispatcher();
 
-		}
-	}
 
-	private MessageDispatcher mDispatcher;
 	private boolean mAppInBackground;
 
 	public boolean isAppInBackground() {
 		return mAppInBackground;
 	}
 
-	public void dispatchMessage(OPConversationThread thread, OPMessage message) {
-		mDispatcher.dispatch(thread, message);
-	}
-
-	public void registerMessageReceiver(MessageReceiver receiver) {
-
-	}
 
 	public void onEnteringForeground() {
 		mAppInBackground = false;

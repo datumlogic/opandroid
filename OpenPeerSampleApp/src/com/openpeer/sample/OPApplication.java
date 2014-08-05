@@ -38,7 +38,7 @@ public class OPApplication extends Application {
         PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
 
         OPHelper.getInstance().init(this, null);
-        OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
+//        OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
         OPSessionManager.getInstance().init();
     }
 
