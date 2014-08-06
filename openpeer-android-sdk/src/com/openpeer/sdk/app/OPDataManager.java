@@ -8,13 +8,11 @@ import java.util.List;
 import android.content.Intent;
 import android.util.Log;
 
-import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
-import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
@@ -40,10 +38,9 @@ public class OPDataManager {
 	private List<OPIdentityContact> mSelfContacts;
 	private Hashtable<Long, String> downloadedIdentityContactVersions;
 	private String mReloginInfo;
+	Hashtable<String, OPIdentityLookup> mIdentityLookups = new Hashtable<String, OPIdentityLookup>();
 
 	private boolean mAccountReady;
-
-	private OPIdentityLookup mIdentityLookup;
 
 	public static OPDatastoreDelegate getDatastoreDelegate() {
 		return getInstance().mDatastoreDelegate;
@@ -143,19 +140,22 @@ public class OPDataManager {
 			inputLookupList.add(ilInfo);
 		}
 
-		 mIdentityLookup = OPIdentityLookup.create(OPDataManager.getInstance().getSharedAccount(), mIdentityLookupDelegate,
+		OPIdentityLookup identityLookup = OPIdentityLookup.create(OPDataManager.getInstance().getSharedAccount(), mIdentityLookupDelegate,
 				inputLookupList, OPSdkConfig.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
+		if (identityLookup != null) {
+			mIdentityLookups.put(identity.getIdentityURI(), identityLookup);
+		}
 	}
 
 	public String getContactsVersionForIdentity(long id) {
 		return downloadedIdentityContactVersions.get(id);
 	}
 
-	public void updateIdentityContacts(OPIdentity mIdentity, List<OPIdentityContact> iContacts) {
+	public void updateIdentityContacts(String identityUri, List<OPIdentityContact> iContacts) {
 
 		Log.d("TODO", "OPDataManager updateIdentityContacts " + Arrays.deepToString(iContacts.toArray()));
 		// Each IdentityContact represents a user. Update user info
-		mDatastoreDelegate.saveOrUpdateUsers(iContacts, mIdentity.getStableID());
+		mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
 
 		notifyContactsChanged();
 	}
@@ -190,6 +190,18 @@ public class OPDataManager {
 
 	public OPUser getUserByPeerUri(String uri) {
 		return mDatastoreDelegate.getUserByPeerUri(uri);
+	}
+
+	/**
+	 * @param url
+	 * @param lookup
+	 */
+	public void onIdentityLookupCompleted(String url, OPIdentityLookup lookup) {
+		List<OPIdentityContact> iContacts = lookup.getUpdatedIdentities();
+		if (iContacts != null) {
+			updateIdentityContacts(url, iContacts);
+		}
+		mIdentityLookups.remove(url);
 	}
 
 }
