@@ -14,6 +14,7 @@ import com.openpeer.javaapi.test.*;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -106,7 +107,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 
 	private void initializeCore()
 	{
-		LoginManager.initializeContext(getApplicationContext());
+		LoginManager.setDeviceId(Secure.getString(this.getContentResolver(),Secure.ANDROID_ID));
 	}
 
 	private void setupWebView()

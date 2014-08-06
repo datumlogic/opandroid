@@ -283,7 +283,6 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 
 
 							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, true);
-							LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
 
 						}
 					});
@@ -317,7 +316,6 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 
 
 							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
-							//LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
 
 						}
 					});

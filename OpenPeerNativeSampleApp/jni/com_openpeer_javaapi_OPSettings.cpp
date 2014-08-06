@@ -1,5 +1,6 @@
 #include "openpeer/core/ISettings.h"
 #include "openpeer/core/ILogger.h"
+#include <android/log.h>
 
 #include "globals.h"
 
@@ -14,8 +15,9 @@ extern "C" {
  * Signature: (Lcom/openpeer/javaapi/OPSettingsDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setup
-(JNIEnv *, jclass, jobject)
+(JNIEnv *, jclass, jobject javaSettingsDelegate)
 {
+	settingsDelegatePtr = SettingsDelegateWrapperPtr(new SettingsDelegateWrapper(javaSettingsDelegate));
 	ISettings::setup(settingsDelegatePtr);
 }
 

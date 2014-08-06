@@ -1,4 +1,5 @@
 #include "openpeer/core/ISettings.h"
+#include <jni.h>
 
 #ifndef _SETTINGS_DELEGATE_WRAPPER_H_
 #define _SETTINGS_DELEGATE_WRAPPER_H_
@@ -7,6 +8,10 @@ using namespace openpeer::core;
 
 class SettingsDelegateWrapper : public ISettingsDelegate
 {
+private:
+	jobject javaDelegate;
+public:
+	SettingsDelegateWrapper(jobject delegate);
 public:
 	virtual String getString(const char *key) const;
 	virtual LONG getInt(const char *key) const;

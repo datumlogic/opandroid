@@ -475,10 +475,17 @@ $(ANDROIDNDK_PATH)/platforms/android-9/arch-arm/usr/include \
 LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/OpenPeerCoreManager.cpp \
 		OpenPeerNativeSampleApp/jni/globals.cpp \
-		OpenPeerNativeSampleApp/jni/EventManager.cpp \
+		OpenPeerNativeSampleApp/jni/StackDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/StackMessageQueueDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/LoggerDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/AccountDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/CacheDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/SettingsDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/CallDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/MediaEngineDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/IdentityDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/IdentityLookupDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/ConversationThreadDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStackMessageQueue.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPStack.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPAccount.cpp \

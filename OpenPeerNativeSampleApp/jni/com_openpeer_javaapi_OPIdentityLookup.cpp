@@ -1,10 +1,8 @@
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
 #include "openpeer/core/IIdentityLookup.h"
 #include "openpeer/core/ILogger.h"
 #include "openpeer/core/IHelper.h"
 #include "OpenPeerCoreManager.h"
 #include <android/log.h>
-#include <boost/make_shared.hpp>
 
 #include "globals.h"
 
@@ -30,7 +28,11 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_toDebugStri
  * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityLookupDelegate;Ljava/util/List;Ljava/lang/String;)Lcom/openpeer/javaapi/OPIdentityLookup;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
-(JNIEnv *env, jclass, jobject, jobject, jobject identityLookupInfos, jstring identityServiceDomain)
+(JNIEnv *env, jclass,
+		jobject javaAccount,
+		jobject javaIdentityLookupDelegate,
+		jobject identityLookupInfos,
+		jstring identityServiceDomain)
 {
 	jclass cls;
 	jmethodID method;
@@ -40,6 +42,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 	const char *identityServiceDomainStr;
 	identityServiceDomainStr = env->GetStringUTFChars(identityServiceDomain, NULL);
 	if (identityServiceDomainStr == NULL) {
+		return object;
+	}
+
+	if (javaIdentityLookupDelegate == NULL)
+	{
 		return object;
 	}
 
@@ -64,18 +71,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 		// Call "int java.util.List.size()" method and get count of items in the list.
 		int listItemsCount = (int)jni_env->CallIntMethod( identityLookupInfos, sizeMethodID );
 
+		//Fetch OPIdentityLookupInfo class
+		jclass identityLookupInfoClass = findClass("com/openpeer/javaapi/OPIdentityLookupInfo");
+		//Fetch getIdentityURI method from OPIdentityLookupInfo class
+		jmethodID getIdentityURIMethodID = jni_env->GetMethodID( identityLookupInfoClass, "getIdentityURI", "()Ljava/lang/String;" );
+		//Fetch getLastUpdated method from OPIdentityLookupInfo class
+		jmethodID getLastUpdatedMethodID = jni_env->GetMethodID( identityLookupInfoClass, "getLastUpdated", "()Landroid/text/format/Time;" );
+		jclass timeCls = findClass("android/text/format/Time");
+		jmethodID timeMethodID   = jni_env->GetMethodID(timeCls, "toMillis", "(Z)J");
+
 		for( int i=0; i<listItemsCount; ++i )
 		{
 			// Call "java.util.List.get" method and get Contact object by index.
 			jobject identityLookupInfoObject = jni_env->CallObjectMethod( identityLookupInfos, listGetMethodID, i );
+
 			if( identityLookupInfoObject != NULL )
 			{
-				//Fetch OPIdentityLookupInfo class
-				jclass identityLookupInfoClass = findClass("com/openpeer/javaapi/OPIdentityLookupInfo");
-				//Fetch getIdentityURI method from OPIdentityLookupInfo class
-				jmethodID getIdentityURIMethodID = jni_env->GetMethodID( identityLookupInfoClass, "getIdentityURI", "()Ljava/lang/String;" );
-				//Fetch getLastUpdated method from OPIdentityLookupInfo class
-				jmethodID getLastUpdatedMethodID = jni_env->GetMethodID( identityLookupInfoClass, "getLastUpdated", "()Landroid/text/format/Time;" );
 
 				// Call "getIdentityURI method to fetch contact from Identity lookup info
 				jstring identityURI = (jstring)jni_env->CallObjectMethod( identityLookupInfoObject, getIdentityURIMethodID );
@@ -83,33 +94,58 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 				// Call "getLastUpdated method to fetch last updated from Identity lookup info
 				jobject lastUpdated = jni_env->CallObjectMethod( identityLookupInfoObject, getLastUpdatedMethodID );
 
+				jni_env->DeleteLocalRef(identityLookupInfoObject);
+
 				//Add identity URI to IdentityLookupInfo structure
 				IIdentityLookup::IdentityLookupInfo identityLookupInfo;
-				identityLookupInfo.mIdentityURI = env->GetStringUTFChars(identityURI, NULL);
+				const char * tempURI = jni_env->GetStringUTFChars(identityURI, NULL);
+				identityLookupInfo.mIdentityURI = tempURI;
+				jni_env->ReleaseStringUTFChars(identityURI, tempURI);
+				jni_env->DeleteLocalRef(identityURI);
 
 				//Add last updated to IdentityLookupInfo structure
-				jclass timeCls = findClass("android/text/format/Time");
-				jmethodID timeMethodID   = env->GetMethodID(timeCls, "toMillis", "(Z)J");
-				jlong longValue = env->CallLongMethod(lastUpdated, timeMethodID, false);
+
+
+				jlong longValue = jni_env->CallLongMethod(lastUpdated, timeMethodID, false);
+				jni_env->DeleteLocalRef(lastUpdated);
 				Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
 				identityLookupInfo.mLastUpdated = t;
 
 				//add core contacts to list for removal
 				identityLookupInfosForCore.push_front(identityLookupInfo);
 
+				//__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","String chars released");
+
+
+
+
 			}
+
 		}
+
+
+
+		jni_env->DeleteLocalRef(timeCls);
+		jni_env->DeleteLocalRef(identityLookupInfoClass);
 	}
 
-	IIdentityLookupPtr identityLookup = IIdentityLookup::create(OpenPeerCoreManager::accountPtr,
-			globalEventManager,
+	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
+	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(javaAccount, accountFid);
+
+	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
+
+	//set java delegate to identity delegate wrapper and init shared pointer for wrappers
+	IdentityLookupDelegateWrapperPtr identityLookupDelegatePtr = IdentityLookupDelegateWrapperPtr(new IdentityLookupDelegateWrapper(javaIdentityLookupDelegate));
+
+	IIdentityLookupPtr identityLookup = IIdentityLookup::create(*coreAccountPtr,
+			identityLookupDelegatePtr,
 			identityLookupInfosForCore,
 			identityServiceDomainStr);
 
 	if(identityLookup)
 	{
 		IIdentityLookupPtr* ptrToIdentityLookup = new boost::shared_ptr<IIdentityLookup>(identityLookup);
-		jni_env = getEnv();
 		if(jni_env)
 		{
 			cls = findClass("com/openpeer/javaapi/OPIdentityLookup");
@@ -119,6 +155,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 			jlong lookup = (jlong) ptrToIdentityLookup;
 			jni_env->SetLongField(object, fid, lookup);
+
+			if (identityLookupDelegatePtr != NULL)
+			{
+				IdentityLookupDelegateWrapperPtr* ptrToIdentityLookupDelegateWrapperPtr= new boost::shared_ptr<IdentityLookupDelegateWrapper>(identityLookupDelegatePtr);
+				jfieldID delegateFid = jni_env->GetFieldID(cls, "nativeDelegatePointer", "J");
+				jlong delegate = (jlong) ptrToIdentityLookupDelegateWrapperPtr;
+				jni_env->SetLongField(object, delegateFid, delegate);
+			}
+
 		}
 	}
 	return object;
@@ -130,13 +175,20 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jlong pid = 0;
+	JNIEnv *jni_env = 0;
 
-	if (OpenPeerCoreManager::identityLookupPtr)
+	jni_env = getEnv();
+	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
+	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, identityLookupFid);
+
+	IIdentityLookupPtr* coreIdentityLookupPtr = (IIdentityLookupPtr*)pointerValue;
+	if (coreIdentityLookupPtr)
 	{
-		pid = OpenPeerCoreManager::identityLookupPtr->getID();
+		pid = coreIdentityLookupPtr->get()->getID();
 	}
 
 	return pid;
@@ -148,13 +200,21 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jboolean ret = 0;
+	JNIEnv *jni_env = 0;
 
-	if (OpenPeerCoreManager::identityLookupPtr)
+	jni_env = getEnv();
+	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
+	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, identityLookupFid);
+
+	IIdentityLookupPtr* coreIdentityLookupPtr = (IIdentityLookupPtr*)pointerValue;
+
+	if (coreIdentityLookupPtr)
 	{
-		ret = OpenPeerCoreManager::identityLookupPtr->isComplete();
+		ret = coreIdentityLookupPtr->get()->isComplete();
 	}
 
 	return ret;
@@ -166,17 +226,25 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
  * Signature: (ILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccessful
-(JNIEnv *env, jobject, jint outErrorCode, jstring outErrorReason)
+(JNIEnv *, jobject owner, jint outErrorCode, jstring outErrorReason)
 {
 	jboolean ret = 0;
 	String outReasonCore;
 	WORD ourCodeCore;
+	JNIEnv *jni_env = 0;
 
-	if (OpenPeerCoreManager::identityLookupPtr)
+	jni_env = getEnv();
+	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
+	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, identityLookupFid);
+
+	IIdentityLookupPtr* coreIdentityLookupPtr = (IIdentityLookupPtr*)pointerValue;
+
+	if (coreIdentityLookupPtr)
 	{
-		ret = OpenPeerCoreManager::identityLookupPtr->wasSuccessful(&ourCodeCore, &outReasonCore);
+		ret = coreIdentityLookupPtr->get()->wasSuccessful(&ourCodeCore, &outReasonCore);
 		outErrorCode = ourCodeCore;
-		outErrorReason = env->NewStringUTF(outReasonCore);
+		outErrorReason = jni_env->NewStringUTF(outReasonCore);
 	}
 
 	return ret;
@@ -188,11 +256,19 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-	if (OpenPeerCoreManager::identityLookupPtr)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
+	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, identityLookupFid);
+
+	IIdentityLookupPtr* coreIdentityLookupPtr = (IIdentityLookupPtr*)pointerValue;
+	if (coreIdentityLookupPtr)
 	{
-		OpenPeerCoreManager::identityLookupPtr->cancel();
+		coreIdentityLookupPtr->get()->cancel();
 	}
 }
 
@@ -219,14 +295,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 	IdentityContact coreContact;
 	IdentityContactListPtr coreContactList;
-	//if(OpenPeerCoreManager::identityLookupPtr)
 	if(identityLookupPtr)
 	{
-		//coreContactList = OpenPeerCoreManager::identityLookupPtr->getUpdatedIdentities();
 		coreContactList = identityLookupPtr->get()->getUpdatedIdentities();
-
 	}
-	jni_env = getEnv();
+
 	if(jni_env)
 	{
 		//create return object - java/util/List is interface, ArrayList is implementation
@@ -266,6 +339,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			method = jni_env->GetMethodID(cls, "setPeerFilePublic", "(Lcom/openpeer/javaapi/OPPeerFilePublic;)V");
 			jni_env->CallVoidMethod(object, method, peerFileObject);
 
+			jni_env->DeleteLocalRef(peerFileObject);
+
+
 			//set IdentityProofBundle to OPIdentityContact
 			method = jni_env->GetMethodID(cls, "setIdentityProofBundle", "(Ljava/lang/String;)V");
 			String proofElementString = IHelper::convertToString(coreContact.mIdentityProofBundleEl);
@@ -294,6 +370,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			method = jni_env->GetMethodID(cls, "setLastUpdated", "(Landroid/text/format/Time;)V");
 			jni_env->CallVoidMethod(object, method, timeLastUpdatedObject);
 
+			jni_env->DeleteLocalRef(timeLastUpdatedObject);
+
 			//calculate and set Expires
 			zsLib::Duration expires = coreContact.mExpires - time_t_epoch;
 			jobject timeExpiresObject = jni_env->NewObject(timeCls, timeMethodID);
@@ -301,6 +379,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 			//Time has been converted, now call OPIdentityContact setter
 			method = jni_env->GetMethodID(cls, "setExpires", "(Landroid/text/format/Time;)V");
 			jni_env->CallVoidMethod(object, method, timeExpiresObject);
+
+			jni_env->DeleteLocalRef(timeExpiresObject);
 
 			///////////////////////////////////////////////////////////////
 			// SET ROLODEX CONTACT FIELDS
@@ -387,10 +467,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 				//add avatar object to avatar list
 				jboolean success = jni_env->CallBooleanMethod(avatarListObject, avatarListAddMethodID , avatarObject);
+
+				jni_env->DeleteLocalRef(avatarObject);
 			}
 
 			//add avatar list to OPRolodexContact
 			jni_env->CallVoidMethod(object, setAvatarsMethodID, avatarListObject);
+
+			jni_env->DeleteLocalRef(avatarListObject);
 
 			//add to return List
 			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , object);
@@ -407,25 +491,29 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchangedIdentities
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject returnListObject;
-	JNIEnv *jni_env = 0;
 
 	//Core Identity lookup info list
 	IIdentityLookup::IdentityLookupInfoListPtr coreIdentityLookupInfoList;
+	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
+	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, identityLookupFid);
+
+	IIdentityLookupPtr* coreIdentityLookupPtr = (IIdentityLookupPtr*)pointerValue;
 
 	//take list from core identity lookup
-	if (OpenPeerCoreManager::identityLookupPtr)
+	if (coreIdentityLookupPtr)
 	{
-		coreIdentityLookupInfoList = OpenPeerCoreManager::identityLookupPtr->getUnchangedIdentities();
+		coreIdentityLookupInfoList = coreIdentityLookupPtr->get()->getUnchangedIdentities();
 	}
 
-	//fetch JNI env
-	jni_env = getEnv();
 	if(jni_env)
 	{
 		//create return object - java/util/List is interface, ArrayList is implementation
@@ -481,25 +569,29 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
  * Signature: ()Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidIdentities
-(JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject returnListObject;
-	JNIEnv *jni_env = 0;
 
 	//Core Identity lookup info list
 	IIdentityLookup::IdentityLookupInfoListPtr coreIdentityLookupInfoList;
+	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
+	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, identityLookupFid);
+
+	IIdentityLookupPtr* coreIdentityLookupPtr = (IIdentityLookupPtr*)pointerValue;
 
 	//take list from core identity lookup
-	if (OpenPeerCoreManager::identityLookupPtr)
+	if (coreIdentityLookupPtr)
 	{
-		coreIdentityLookupInfoList = OpenPeerCoreManager::identityLookupPtr->getInvalidIdentities();
+		coreIdentityLookupInfoList = coreIdentityLookupPtr->get()->getInvalidIdentities();
 	}
 
-	//fetch JNI env
-	jni_env = getEnv();
 	if(jni_env)
 	{
 		//create return object - java/util/List is interface, ArrayList is implementation
@@ -547,6 +639,36 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidI
 		}
 	}
 	return returnListObject;
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPIdentityLookup
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_releaseCoreObjects
+(JNIEnv *, jobject javaObject)
+{
+	if(javaObject != NULL)
+	{
+		JNIEnv *jni_env = getEnv();
+		jclass cls = findClass("com/openpeer/javaapi/OPIdentityLookup");
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (IIdentityLookupPtr*)pointerValue;
+
+		fid = jni_env->GetFieldID(cls, "nativeDelegatePointer", "J");
+		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (IdentityLookupDelegateWrapperPtr*)delegatePointerValue;
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Identity lookup releaseCoreObjects Core object deleted.");
+
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+	}
 }
 
 #ifdef __cplusplus

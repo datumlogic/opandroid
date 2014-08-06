@@ -2,10 +2,14 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
+import android.util.Log;
+
 
 public class OPIdentityLookup {
 
 	private long nativeClassPointer;
+	
+	private long nativeDelegatePointer;
 	
 	public static native String toDebugString(OPIdentityLookup lookup, boolean includeCommaPrefix);
 
@@ -30,4 +34,17 @@ public class OPIdentityLookup {
 	public native List<OPIdentityContact> getUpdatedIdentities();
 	public native List<OPIdentityLookupInfo> getUnchangedIdentities();
 	public native List<OPIdentityLookupInfo> getInvalidIdentities();
+	
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0 || nativeDelegatePointer != 0)
+    	{
+    		Log.d("output", "Cleaning identity lookup core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 }

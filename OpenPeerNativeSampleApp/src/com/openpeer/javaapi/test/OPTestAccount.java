@@ -16,9 +16,9 @@ public class OPTestAccount {
 		{
 			Log.d("output", "Account test started...");
 			
-			long stableID = 0;
+			String stableID;
 			stableID = account.getStableID();
-			if (stableID == 0)
+			if (stableID.isEmpty())
 			{
 				Log.d("output", "Account test FAILED stableID = " + stableID);
 				return false;
