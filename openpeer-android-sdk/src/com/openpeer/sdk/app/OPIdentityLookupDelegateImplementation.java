@@ -10,10 +10,23 @@ import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupDelegate;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 
-public class OPIdentityLookupDelegateImplementation extends
-		OPIdentityLookupDelegate {
+public class OPIdentityLookupDelegateImplementation extends OPIdentityLookupDelegate {
+
+	private static OPIdentityLookupDelegateImplementation instance;
+
+	public static OPIdentityLookupDelegateImplementation getInstance(OPIdentity identity) {
+		if (instance == null) {
+			instance = new OPIdentityLookupDelegateImplementation();
+
+		}
+		instance.mIdentity = identity;
+		return instance;
+	}
 
 	private OPIdentity mIdentity;
+
+	private OPIdentityLookupDelegateImplementation() {
+	}
 
 	public OPIdentityLookupDelegateImplementation(OPIdentity identity) {
 		mIdentity = identity;
@@ -22,10 +35,10 @@ public class OPIdentityLookupDelegateImplementation extends
 	@Override
 	public void onIdentityLookupCompleted(OPIdentityLookup lookup) {
 		// TODO Auto-generated method stub
-		Log.d("output", "Identity lookup completed " + lookup);
+		Log.d("OPIdentityLookupDelegateImplementation", "onIdentityLookupCompleted " + lookup);
 		List<OPIdentityContact> iContacts = lookup.getUpdatedIdentities();
 		if (iContacts != null) {
-			OPDataManager.getInstance().updateIdentityContacts(mIdentity,iContacts);
+			OPDataManager.getInstance().updateIdentityContacts(mIdentity, iContacts);
 		}
 
 	}

@@ -55,8 +55,10 @@ public class LoginManager {
 	/**
 	 * this function should be called after logging to release resources
 	 */
-	static void destroy() {
-		instance = null;
+	 void destroy() {
+//		instance = null;
+		mAccountLoginWebView = null;
+		mIdentityLoginWebView = null;
 	}
 
 	public void login() {

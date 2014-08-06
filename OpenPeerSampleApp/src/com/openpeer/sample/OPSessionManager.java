@@ -38,8 +38,8 @@ public class OPSessionManager {
 
     Hashtable<String, OPCall> mCalls;
 
-    private OPConversationThreadDelegate threadDelegate;
-    private OPCallDelegate callDelegate;
+    private OPConversationThreadDelegate mThreadDelegate;
+    private OPCallDelegate mCallDelegate;
 	private static OPSessionManager instance;
 
 	public static OPSessionManager getInstance() {
@@ -118,52 +118,57 @@ public class OPSessionManager {
 		return call;
 	}
 
-	void init() {
-		mCalls = new Hashtable<String, OPCall>();
-		 threadDelegate = new OPConversationThreadDelegate() {
 
-			@Override
-			public void onConversationThreadNew(OPConversationThread conversationThread) {
-				// TODO Auto-generated method stub
 
-			}
+    void init() {
+        mCalls = new Hashtable<String, OPCall>();
+         mThreadDelegate = new OPConversationThreadDelegate() {
 
-			@Override
-			public void onConversationThreadContactsChanged(OPConversationThread conversationThread) {
-				// TODO Auto-generated method stub
+            @Override
+            public void onConversationThreadNew(OPConversationThread conversationThread) {
+                // TODO Auto-generated method stub
 
-			}
+            }
 
-			@Override
-			public void onConversationThreadContactStateChanged(OPConversationThread conversationThread, OPContact contact,
-					ContactStates state) {
-				// TODO Auto-generated method stub
+            @Override
+            public void onConversationThreadContactsChanged(OPConversationThread conversationThread) {
+                // TODO Auto-generated method stub
 
-			}
+            }
 
-			@Override
-			public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
-				OPMessage message = conversationThread.getMessage(messageID);
-				if (message.getFrom().isSelf()) {
-					Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
-							+ message.getMessageType());
-					return;
-				}
-				OPSession session = getSessionOfThread(conversationThread);
-				session.onMessageReceived(message);
-				if (OPApplication.getInstance().isInBackground()) {
-					OPNotificationBuilder.showNotificationForMessage(session, message);
-				}
-			}
+            @Override
+            public void onConversationThreadContactStateChanged(OPConversationThread conversationThread, OPContact contact,
+                                                                ContactStates state) {
+                // TODO Auto-generated method stub
 
-			@Override
-			public void onConversationThreadMessageDeliveryStateChanged(OPConversationThread conversationThread, String messageID,
-					MessageDeliveryStates state) {
+            }
 
-			}
+            @Override
+            public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
+                OPMessage message = conversationThread.getMessage(messageID);
+                if (TextUtils.isEmpty(message.getMessageId())) {
+                    message.setMessageId(messageID);
+                }
+                if (message.getFrom().isSelf()) {
+                    Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
+                            + message.getMessageType());
+                    return;
+                }
+                OPSession session = getSessionOfThread(conversationThread);
+                session.onMessageReceived(message);
+                if (OPApplication.getInstance().isInBackground()) {
+                    OPNotificationBuilder.showNotificationForMessage(session, message);
+                }
+            }
 
-			@Override
-			public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
+            @Override
+            public void onConversationThreadMessageDeliveryStateChanged(OPConversationThread conversationThread, String messageID,
+                                                                        MessageDeliveryStates state) {
+
+            }
+
+            @Override
+            public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
                 final OPMessage message = conversationThread.getMessage(messageID);
 
                 if (TextUtils.isEmpty(message.getMessageId())) {
@@ -184,19 +189,24 @@ public class OPSessionManager {
 
                             @Override
                             public void failure(RetrofitError error) {
-                                Log.e(TAG, "eror pushing message " + error.getMessage());
+
+                                if (error != null) {
+                                    Log.e(TAG, "eror pushing message " + error.getMessage());
+                                }
                             }
                         });
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                        if (error != null) {
+                            Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                        }
                     }
                 });
 			}
 		};
-        callDelegate = new OPCallDelegate() {
+        mCallDelegate = new OPCallDelegate() {
 
 			@Override
 			public void onCallStateChanged(OPCall call, CallStates state) {
@@ -236,11 +246,11 @@ public class OPSessionManager {
 	}
 
 	public OPConversationThreadDelegate getConversationThreadDelegate() {
-		return threadDelegate;
+		return mThreadDelegate;
 	}
 
     public OPCallDelegate getCallDelegate() {
-        return callDelegate;
+        return mCallDelegate;
     }
 
     public OPCall getOngoingCallForPeer(String peerUri) {
@@ -254,8 +264,8 @@ public class OPSessionManager {
         OPNotificationBuilder.cancelNotificationForCall(mCall);
     }
 
-    public void hangupCall(OPCall mCall, CallClosedReasons callclosedreasonUser) {
-        mCall.hangup(CallClosedReasons.CallClosedReason_User);
+    public void hangupCall(OPCall mCall, CallClosedReasons reason) {
+        mCall.hangup(reason);
         onCallEnd(mCall);
     }
 

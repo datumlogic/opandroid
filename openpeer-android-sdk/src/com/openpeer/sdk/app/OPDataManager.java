@@ -22,14 +22,14 @@ import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 import com.openpeer.sdk.model.OPUser;
 
 /**
- * Hold reference to objects that cannot be constructed from database, and
- * manages contacts data change. This class is probably unneccessary -- at the
- * least I don't want it to be a simple wrapper of
- * OPDatastoreDelegateImplementation. Might end up merging this with OPHelper,
- * but for now let's keep it so OPHelper doesn't grow weird.
+ * Hold reference to objects that cannot be constructed from database, and manages contacts data change. This class is probably unneccessary
+ * -- at the least I don't want it to be a simple wrapper of OPDatastoreDelegateImplementation. Might end up merging this with OPHelper, but
+ * for now let's keep it so OPHelper doesn't grow weird.
  * 
  */
 public class OPDataManager {
+	private static final String TAG = OPDataManager.class.getSimpleName();
+
 	public static String INTENT_CONTACTS_CHANGED = "com.openpeer.contacts_changed";
 
 	private static OPDataManager instance;
@@ -42,6 +42,8 @@ public class OPDataManager {
 	private String mReloginInfo;
 
 	private boolean mAccountReady;
+
+	private OPIdentityLookup mIdentityLookup;
 
 	public static OPDatastoreDelegate getDatastoreDelegate() {
 		return getInstance().mDatastoreDelegate;
@@ -76,8 +78,7 @@ public class OPDataManager {
 	}
 
 	/**
-	 * This function should only be called in AccountState_Ready from
-	 * OPAccountDelegate. This function update the database
+	 * This function should only be called in AccountState_Ready from OPAccountDelegate. This function update the database
 	 * 
 	 * @param account
 	 *            the logged in account
@@ -100,8 +101,7 @@ public class OPDataManager {
 		for (OPIdentity identity : identities) {
 			mSelfContacts.add(identity.getSelfIdentityContact());
 		}
-		mDatastoreDelegate.saveOrUpdateIdentities(mIdentities,
-				mAccount.getID());
+		mDatastoreDelegate.saveOrUpdateIdentities(mIdentities, mAccount.getID());
 	}
 
 	public List<OPIdentityContact> getSelfContacts() {
@@ -109,19 +109,13 @@ public class OPDataManager {
 	}
 
 	public void onDownloadedRolodexContacts(OPIdentity identity) {
-		OPDownloadedRolodexContacts downloaded = identity
-				.getDownloadedRolodexContacts();
+		OPDownloadedRolodexContacts downloaded = identity.getDownloadedRolodexContacts();
 		long identityId = identity.getStableID();
 		String contactsVersion = downloaded.getVersionDownloaded();
 		downloadedIdentityContactVersions.put(identityId, contactsVersion);
-		mDatastoreDelegate.setDownloadedContactsVersion(identityId,
-				contactsVersion);
+		mDatastoreDelegate.setDownloadedContactsVersion(identityId, contactsVersion);
 		List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
-		// if (downloaded.isFlushAllRolodexContacts()) {
-		// mDatastoreDelegate.flushContactsForIdentity(identityId);
-		// mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
-		// // mContacts.put(identityId, contacts);
-		// } else {
+
 		for (OPRolodexContact contact : contacts) {
 			switch (contact.getDisposition()) {
 			case Disposition_Remove:
@@ -137,40 +131,31 @@ public class OPDataManager {
 		notifyContactsChanged();
 	}
 
-	public void identityLookup(OPIdentity identity,
-			List<OPRolodexContact> contacts) {
+	public void identityLookup(OPIdentity identity, List<OPRolodexContact> contacts) {
 
-		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation(
-				identity);
-		OPIdentityLookup mIdentityLookup = new OPIdentityLookup();
-
+		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = OPIdentityLookupDelegateImplementation.getInstance(identity);
 		List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
 
 		for (OPRolodexContact contact : contacts) {
-			Log.d("output", "contact " + contact.toString());
+			Log.d(TAG, "identityLookup contact " + contact.toString());
 			OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
 			ilInfo.initWithRolodexContact(contact);
 			inputLookupList.add(ilInfo);
 		}
 
-		mIdentityLookup = OPIdentityLookup.create(OPDataManager.getInstance()
-				.getSharedAccount(), mIdentityLookupDelegate, inputLookupList,
-				OPSdkConfig.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
+		 mIdentityLookup = OPIdentityLookup.create(OPDataManager.getInstance().getSharedAccount(), mIdentityLookupDelegate,
+				inputLookupList, OPSdkConfig.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
 	}
 
 	public String getContactsVersionForIdentity(long id) {
 		return downloadedIdentityContactVersions.get(id);
 	}
 
-	public void updateIdentityContacts(OPIdentity mIdentity,
-			List<OPIdentityContact> iContacts) {
+	public void updateIdentityContacts(OPIdentity mIdentity, List<OPIdentityContact> iContacts) {
 
-		Log.d("TODO",
-				"OPDataManager updateIdentityContacts "
-						+ Arrays.deepToString(iContacts.toArray()));
+		Log.d("TODO", "OPDataManager updateIdentityContacts " + Arrays.deepToString(iContacts.toArray()));
 		// Each IdentityContact represents a user. Update user info
-		mDatastoreDelegate
-				.saveOrUpdateUsers(iContacts, mIdentity.getStableID());
+		mDatastoreDelegate.saveOrUpdateUsers(iContacts, mIdentity.getStableID());
 
 		notifyContactsChanged();
 	}
@@ -190,8 +175,7 @@ public class OPDataManager {
 		}
 	}
 
-	public long getUserIdForContact(OPContact contact,
-			OPIdentityContact iContact) {
+	public long getUserIdForContact(OPContact contact, OPIdentityContact iContact) {
 		// TODO implement proper userId querying and gereration
 		return contact.getPeerURI().hashCode();
 	}
@@ -203,8 +187,8 @@ public class OPDataManager {
 	public void setAccountReady(boolean value) {
 		mAccountReady = value;
 	}
-	
-	public OPUser getUserByPeerUri(String uri){
+
+	public OPUser getUserByPeerUri(String uri) {
 		return mDatastoreDelegate.getUserByPeerUri(uri);
 	}
 

@@ -26,7 +26,7 @@ public class PushMessage {
             notification.android.extra = new AndroidExtra(OPDataManager.getInstance().getSharedAccount().getPeerUri(),
                     opMessage.getMessageId(),
                     OPDataManager.getInstance().getSharedAccount().getLocationID(),
-                    opMessage.getTime().toMillis(false) + "");
+                    opMessage.getTime().toMillis(false)/1000 + "");
             pushMessage.notification = notification;
 
         } else {
@@ -41,7 +41,7 @@ public class PushMessage {
                     opMessage.getMessageId(),
                     opMessage.getMessage(),
                     OPDataManager.getInstance().getSharedAccount().getLocationID(),
-                    opMessage.getTime().toMillis(false));
+                    opMessage.getTime().toMillis(false)/1000);
 
             msg.content_type = RichMessage.DEFAULT_CONTENT_TYPE;
             pushMessage.setMessage(msg);

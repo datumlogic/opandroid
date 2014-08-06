@@ -25,11 +25,9 @@ public interface OPDatastoreDelegate {
 
 	public boolean saveOrUpdateAccount(OPAccount account);
 
-	public boolean saveOrUpdateIdentities(List<OPIdentity> identies,
-			long accountId);
+	public boolean saveOrUpdateIdentities(List<OPIdentity> identies, long accountId);
 
-	public boolean saveOrUpdateContacts(
-			List<? extends OPRolodexContact> contacts, long identityId);
+	public boolean saveOrUpdateContacts(List<? extends OPRolodexContact> contacts, long identityId);
 
 	public boolean saveOrUpdateIdentity(OPIdentity identy, long accountId);
 
@@ -64,6 +62,14 @@ public interface OPDatastoreDelegate {
 	boolean updateMessageDeliveryStatus(long windowId, String messageId, int deliveryStatus, long updateTime);
 
 	public OPUser getUserByPeerUri(String uri);
+
+	/**
+	 * Query stored data and return message constructed from stored data
+	 * 
+	 * @param messageId
+	 * @return
+	 */
+	OPMessage getMessage(String messageId);
 
 	/*
 	 * public boolean saveConversationRecord(OPConversationRecord record); public boolean saveCallRecord(OPConversationRecord record);
