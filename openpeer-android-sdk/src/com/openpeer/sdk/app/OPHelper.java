@@ -33,6 +33,9 @@ import com.openpeer.sdk.delegates.OPCacheDelegateImplementation;
  */
 public class OPHelper {
 	private static final String TAG = OPHelper.class.getSimpleName();
+	private static final String DEFAULT_LOG_SERVER = "LOG.OPP.ME:8115";
+	private static final String DEFAULT_LOG_FILE = "/storage/emulated/0/hflog";
+
 	private static OPHelper instance;
 	Context mContext;
 
@@ -48,7 +51,10 @@ public class OPHelper {
 	}
 
 	public void toggleOutgoingTelnetLogging(boolean enable, String url) {
-		if (enable && !TextUtils.isEmpty(url)) {
+		if (enable) {
+			if (TextUtils.isEmpty(url)) {
+				url = DEFAULT_LOG_SERVER;
+			}
 			OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 			// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 			// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
@@ -74,7 +80,10 @@ public class OPHelper {
 		// OPLogLevel.LogLevel_None);
 		// OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_None);
 		// OPLogger.installTelnetLogger(59999, 60, true);
-		if (enabled && !TextUtils.isEmpty(fileName)) {
+		if (enabled) {
+			if (TextUtils.isEmpty(fileName)) {
+				fileName = DEFAULT_LOG_FILE;
+			}
 			OPLogger.installFileLogger(fileName, true);
 		} else {
 			OPLogger.uninstallDebuggerLogger();
@@ -83,7 +92,7 @@ public class OPHelper {
 
 	public void toggleTelnetLogging(boolean enable, int port) {
 		if (enable) {
-			
+
 			OPLogger.installTelnetLogger(port, 60, true);
 		} else {
 			OPLogger.uninstallTelnetLogger();
@@ -124,6 +133,7 @@ public class OPHelper {
 				OPCache.setup(cacheDelegate);
 
 				OPSettings.applyDefaults();
+				OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
 				String httpSettings = createHttpSettings();
 				OPSettings.apply(httpSettings);
@@ -158,6 +168,9 @@ public class OPHelper {
 		mContext = context;
 		// enableTelnetLogging();
 		// initMediaEngine();
+		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
+		toggleOutgoingTelnetLogging(true, null);
+
 		if (datastoreDelegate != null) {
 			OPDataManager.getInstance().init(datastoreDelegate);
 		} else {
@@ -207,14 +220,11 @@ public class OPHelper {
 	public static final int MODE_CONTACTS_BASED = 0;
 	public static final int MODE_GROUP_BASED = 1;
 
-
-
 	private boolean mAppInBackground;
 
 	public boolean isAppInBackground() {
 		return mAppInBackground;
 	}
-
 
 	public void onEnteringForeground() {
 		mAppInBackground = false;
