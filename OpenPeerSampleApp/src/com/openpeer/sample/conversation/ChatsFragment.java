@@ -18,12 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.openpeer.javaapi.ContactStates;
-import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPConversationThreadDelegate;
-import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.datastore.OPContentProvider;
