@@ -90,7 +90,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 {
 	jclass cls;
 	jmethodID method;
-	jobject object;
+	jobject object = NULL;
 	JNIEnv *jni_env = 0;
 	IContactPtr contactPtr;
 
@@ -105,6 +105,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 	if(coreAccountPtr)
 	{
 		contactPtr = IContact::getForSelf(*coreAccountPtr);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "getForSelf - Account Ptr is NULL");
 	}
 
 	if(contactPtr)
@@ -124,6 +128,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 					"CorePtr raw = %p, ptr as long = %Lu",contactPtr.get(), contact);
 
 		}
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "getForSelf - Contact Ptr is NULL");
 	}
 	return object;
 }
