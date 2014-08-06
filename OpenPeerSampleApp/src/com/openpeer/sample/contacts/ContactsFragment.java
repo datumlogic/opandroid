@@ -71,7 +71,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 		mListView = (ListView) view.findViewById(R.id.listview);
 		View emptyView = view.findViewById(R.id.empty_view);
 		mListView.setEmptyView(emptyView);
-		mRootLayout = (SwipeRefreshLayout) view;
+		mRootLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
 		mRootLayout.setOnRefreshListener(this);
 		mAdapter = new ContactsAdapter(getActivity(), null);
 		mListView.setAdapter(mAdapter);
