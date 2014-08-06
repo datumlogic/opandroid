@@ -19,9 +19,9 @@ import com.openpeer.javaapi.OPIdentityDelegate;
 
 public class LoginManager {
 	// private static LoginManager instance;
-	private LoginUIListener mListener;
+	private static LoginUIListener mListener;
 	private WebView mAccountLoginWebView;
-	private WebView mIdentityLoginWebView;
+	private static WebView mIdentityLoginWebView;
 	private OPCallDelegate mCallDelegate;
 	OPConversationThreadDelegate conversationThreadDelegate;
 
@@ -129,7 +129,7 @@ public class LoginManager {
 	// }
 	// return instance;
 	// }
-	public class OPIdentityDelegateImplementation extends OPIdentityDelegate {
+	public static class OPIdentityDelegateImplementation extends OPIdentityDelegate {
 		WebView mLoginView;
 
 		// OPIdentity mIdentity;// somehow the identity passed in the callback
@@ -140,7 +140,7 @@ public class LoginManager {
 			// this.mIdentity = mIdentity;
 		}
 
-		public OPIdentityDelegateImplementation(WebView loginView, OPIdentity identity) {
+		public  OPIdentityDelegateImplementation(WebView loginView, OPIdentity identity) {
 			this.mLoginView = loginView;
 			// mIdentity = identity;
 		}
@@ -237,7 +237,7 @@ public class LoginManager {
 		}
 	}
 
-	public class OPAccountDelegateImplementation extends OPAccountDelegate {
+	public static class OPAccountDelegateImplementation extends OPAccountDelegate {
 		WebView mLoginView;
 		
 

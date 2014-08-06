@@ -12,18 +12,15 @@ import android.util.Log;
 
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
-import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
-import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
-
 import com.openpeer.sdk.delegates.OPCacheDelegateImplementation;
 
 /**
