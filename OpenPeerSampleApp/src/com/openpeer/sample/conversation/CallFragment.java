@@ -32,6 +32,8 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
 import com.squareup.picasso.Picasso;
 
+import org.webrtc.videoengine.ViERenderer;
+
 import java.util.List;
 
 public class CallFragment extends BaseFragment {
@@ -279,8 +281,8 @@ public class CallFragment extends BaseFragment {
             updateCallView(mCall.getState());
             if (mVideo && localViewLinearLayout.getChildCount() == 0) {
                 localViewLinearLayout.addView(myLocalSurface);
-                remoteViewLinearLayout.addView(myRemoteSurface);
-                OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+//                remoteViewLinearLayout.addView(myRemoteSurface);
+//                OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
             }
         }
         getActivity().registerReceiver(receiver, new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
@@ -329,8 +331,9 @@ public class CallFragment extends BaseFragment {
         }
         if (mVideo) {
             localViewLinearLayout.removeAllViews();
-            remoteViewLinearLayout.removeAllViews();
+//            remoteViewLinearLayout.removeAllViews();
             OPMediaEngine.getInstance().setChannelRenderView(null);
+            OPMediaEngine.getInstance().setCaptureRenderView(null);
         }
     }
 
@@ -444,17 +447,19 @@ public class CallFragment extends BaseFragment {
         OPMediaEngine.getInstance().setMuteEnabled(false);
         OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
         if (mVideo) {
-            myLocalSurface = SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
-            myRemoteSurface = SurfaceViewFactory.getRemoteSurfaceView(getActivity().getApplicationContext(), peerUri);
+            myLocalSurface = ViERenderer.CreateLocalRenderer(getActivity());
+//            myLocalSurface=SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
+            myRemoteSurface = ViERenderer.CreateRenderer(getActivity(),true);
             localViewLinearLayout = (LinearLayout) view.findViewById(R.id.localChatViewLinearLayout);
             remoteViewLinearLayout = (LinearLayout) view.findViewById(R.id.remoteChatViewLinearLayout);
-
+            localViewLinearLayout.addView(myLocalSurface);
+            remoteViewLinearLayout.addView(myRemoteSurface);
             OPMediaEngine.getInstance().setContinuousVideoCapture(true);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
             OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
             OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
-//            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
+            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
             // if (mCall != null) {
             // OPMediaEngine.getInstance().startVideoCapture();
             // }
