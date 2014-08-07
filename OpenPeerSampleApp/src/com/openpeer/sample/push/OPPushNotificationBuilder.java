@@ -1,19 +1,3 @@
-package com.openpeer.sample.push;
-
-import android.app.Notification;
-import android.util.Log;
-
-import com.openpeer.javaapi.AccountStates;
-import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPMessage;
-import com.openpeer.sample.OPNotificationBuilder;
-import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.model.OPUser;
-import com.openpeer.sdk.utils.OPModelUtils;
-import com.urbanairship.push.PushNotificationBuilder;
-
-import java.util.Map;
-
 /**
  * Copyright (c) 2013, SMB Phone Inc. / Hookflash Inc.
  * All rights reserved.
@@ -42,13 +26,30 @@ import java.util.Map;
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the FreeBSD Project.
  */
+
+package com.openpeer.sample.push;
+
+import android.app.Notification;
+import android.util.Log;
+
+import com.openpeer.javaapi.AccountStates;
+import com.openpeer.javaapi.MessageDeliveryStates;
+import com.openpeer.javaapi.OPMessage;
+import com.openpeer.sample.OPNotificationBuilder;
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.utils.OPModelUtils;
+import com.urbanairship.push.PushNotificationBuilder;
+
+import java.util.Map;
+
 public class OPPushNotificationBuilder implements PushNotificationBuilder {
+    static final String TAG = OPPushNotificationBuilder.class.getSimpleName();
     public static final String KEY_MESSAGE_ID_KEY = "_uamid";
 
     static final String KEY_PEER_URI = "peerURI";
     static final String KEY_MESSAGE_ID = "messageId";
     static final String KEY_SEND_TIME = "date";
-
 
     @Override
     public Notification buildNotification(String alert, Map<String, String> extras) {
@@ -56,6 +57,11 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
 
         String senderUri = extras.get(KEY_PEER_URI);
         String messageId = extras.get(KEY_MESSAGE_ID);
+        //If message is already received, ignore notification
+        if (null != OPDataManager.getDatastoreDelegate().getMessage(messageId)) {
+            Log.e(TAG, "received push for message that is already received " + messageId);
+            return null;
+        }
         OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(senderUri);
         if (sender == null) {
             Log.e("test", "Couldn't find user for peer " + senderUri);

@@ -64,29 +64,37 @@ public class PushRegistrationManager {
     }
 
     public PushToken getDeviceToken(final String peerUri, final Callback<PushToken> cb) {
-        PushToken token = tokens.get(peerUri);
-        if (tokens.get(peerUri) != null) {
-            cb.success(token, null);
-            return token;
-        }
+
         Callback<HackApiService.HackGetResult> callback = new Callback<HackApiService.HackGetResult>() {
             @Override
             public void success(HackApiService.HackGetResult hackGetResult, Response response) {
-                if(TextUtils.isEmpty(hackGetResult.getResult().getDeviceToken())){
-                    return;
-                }
-                PushToken token = new PushToken(hackGetResult.getResult().getType(), hackGetResult.getResult().getDeviceToken());
-                saveDeviceToken(peerUri, token);
-                if (cb != null) {
-                    cb.success(token, response);
+                String tokenString = hackGetResult.getResult().getDeviceToken();
+                if (TextUtils.isEmpty(tokenString)) {
+                    PushToken token = tokens.get(peerUri);
+                    if (tokens.get(peerUri) != null) {
+                        cb.success(token, null);
+                    } else if (cb != null) {
+                        cb.failure(null);
+                    }
+                } else {
+                    PushToken token = new PushToken(hackGetResult.getResult().getType(), hackGetResult.getResult().getDeviceToken());
+                    saveDeviceToken(peerUri, token);
+                    if (cb != null) {
+                        cb.success(token, response);
+                    }
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                if (cb != null) {
+
+                PushToken token = tokens.get(peerUri);
+                if (tokens.get(peerUri) != null) {
+                    cb.success(token, null);
+                } else if (cb != null) {
                     cb.failure(error);
                 }
+
             }
         };
         service.get(new HackApiService.HackGet(peerUri), callback);
@@ -94,6 +102,7 @@ public class PushRegistrationManager {
     }
 
     void saveDeviceToken(String peerUri, PushToken token) {
+
         tokens.put(peerUri, token);
     }
 

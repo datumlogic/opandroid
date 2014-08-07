@@ -204,7 +204,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
                     return;
                 }
 
-                String messageId = java.util.UUID.randomUUID().toString();
+                String messageId = java.util.UUID.randomUUID().toString().replace("-","");
                 // we use 0 for home user
                 final OPMessage msg = new OPMessage(0, OPMessageType.TYPE_TEXT, mComposeBox.getText().toString(), System.currentTimeMillis(),
                         messageId);

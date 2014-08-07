@@ -167,6 +167,9 @@ public class OPSessionManager {
             @Override
             public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
                 OPMessage message = conversationThread.getMessage(messageID);
+                if (TextUtils.isEmpty(message.getMessageId())) {
+                    message.setMessageId(messageID);
+                }
                 if (message.getFrom().isSelf()) {
                     Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
                             + message.getMessageType());
@@ -207,14 +210,19 @@ public class OPSessionManager {
 
                             @Override
                             public void failure(RetrofitError error) {
-                                Log.e(TAG, "eror pushing message " + error.getMessage());
+
+                                if (error != null) {
+                                    Log.e(TAG, "eror pushing message " + error.getMessage());
+                                }
                             }
                         });
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                        if (error != null) {
+                            Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                        }
                     }
                 });
             }
