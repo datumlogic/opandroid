@@ -226,6 +226,7 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 					// do something
 					EditText text = (EditText) getActivity().findViewById(R.id.editTextMessage);
 					LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(),
+							"",
 							"text/x-application-hookflash-message-text",
 							text.getText().toString(),
 							false);
