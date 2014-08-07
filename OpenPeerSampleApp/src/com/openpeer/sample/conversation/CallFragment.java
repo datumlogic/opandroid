@@ -330,6 +330,7 @@ public class CallFragment extends BaseFragment {
         if (mVideo) {
             localViewLinearLayout.removeAllViews();
             remoteViewLinearLayout.removeAllViews();
+            OPMediaEngine.getInstance().setChannelRenderView(null);
         }
     }
 
@@ -453,7 +454,7 @@ public class CallFragment extends BaseFragment {
             OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
             OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
-            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
+//            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
             // if (mCall != null) {
             // OPMediaEngine.getInstance().startVideoCapture();
             // }
@@ -502,4 +503,5 @@ public class CallFragment extends BaseFragment {
         getActivity().getActionBar().hide();
         mStatusOverlay.setVisibility(View.GONE);
     }
+
 }
