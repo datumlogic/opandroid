@@ -142,8 +142,8 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactStateChanged(
 
 		jclass callbackClass = findClass(className.c_str());
 
-		method = jni_env->GetMethodID(callbackClass, "onConversationThreadContactStateChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;I)V");
-		jni_env->CallVoidMethod(javaDelegate, method, convThreadObject, contactObject, (jint) state);
+		method = jni_env->GetMethodID(callbackClass, "onConversationThreadContactStateChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;Lcom/openpeer/javaapi/ContactStates;)V");
+		jni_env->CallVoidMethod(javaDelegate, method, convThreadObject, contactObject, OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/ContactStates", (jint) state));
 	}
 	else
 	{

@@ -694,7 +694,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getIden
 
 			//OPAvatar class and methods fetch
 			jclass avatarClass = findClass("com/openpeer/javaapi/OPRolodexContact$OPAvatar");
-			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "(Lcom/openpeer/javaapi/OPRolodexContact;)V");
+			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "()V");
 			jmethodID setAvatarNameMethodID = jni_env->GetMethodID(avatarClass, "setName", "(Ljava/lang/String;)V");
 			jmethodID setAvatarURLMethodID = jni_env->GetMethodID(avatarClass, "setURL", "(Ljava/lang/String;)V");
 			jmethodID setAvatarWidthMethodID = jni_env->GetMethodID(avatarClass, "setWidth", "(I)V");
@@ -1045,7 +1045,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 				jni_env->CallVoidMethod( messageObject, setFromMethodID, from );
 
 				//Call setMessageId method on return object
-				jni_env->CallVoidMethod( messageObject, setMessageTypeMethodID, messageID );
+				jni_env->CallVoidMethod( messageObject, setMessageIdMethodID, messageID );
 				//Convert parameter and call setMessageType method on return object
 				jstring messageType = jni_env->NewStringUTF(outMessageType.c_str());
 				jni_env->CallVoidMethod( messageObject, setMessageTypeMethodID, messageType );
