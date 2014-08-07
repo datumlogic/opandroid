@@ -4,8 +4,6 @@ import android.util.Log;
 
 public class OPConversationThreadSystemMessage {
 
-	private long nativeClassPointer;
-
 	public static native String toString(SystemMessageTypes type);
 	public static native  SystemMessageTypes toSystemMessageType(String type);
 
@@ -48,34 +46,17 @@ public class OPConversationThreadSystemMessage {
 	//                                      but is not understood
 	//          outSystemMessage - JSON structure containing system message
 	//                             information that needs parsing
-	public static native SystemMessageTypes parseAsSystemMessage(
+	public static native OPParsedSystemMessage parseAsSystemMessage(
 			String inMessage,
-			String inMessageType,
-			String outSystemMessage
+			String inMessageType
 			);
 
 	//-----------------------------------------------------------------------
 	// PURPOSE: Given a JSON system message extract the call information
 	// RETURNS: outCallee - the callee contact
 	//          outErrorCode - HTTP style error code
-	public static native void getCallMessageInfo(
+	public static native OPCallMessageInfo getCallMessageInfo(
 			OPConversationThread inRelatedConversationThread,
-			String inSystemMessage,
-			OPContact outCallee,
-			int outErrorCode
+			String inSystemMessage
 			);
-
-
-	private native void releaseCoreObjects(); 
-
-	protected void finalize() throws Throwable {
-
-		if (nativeClassPointer != 0)
-		{
-			Log.d("output", "Cleaning conversation thread system message core objects");
-			releaseCoreObjects();
-		}
-
-		super.finalize();
-	}
 }
