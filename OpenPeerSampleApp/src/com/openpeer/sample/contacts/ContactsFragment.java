@@ -175,8 +175,8 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
-		StringBuilder builder = new StringBuilder();
-		String slectionArgs[] = null;
+        StringBuilder builder = new StringBuilder("not (" + ContactsViewEntry.COLUMN_NAME_USER_ID + "=0 and " + ContactsViewEntry.COLUMN_NAME_STABLE_ID + " not null)");
+        String slectionArgs[] = null;
 		if (arg1 != null) {
 			String query = arg1.getString("query");
 			Log.d("test", "ContactsFragment onCreateLoader query " + query);

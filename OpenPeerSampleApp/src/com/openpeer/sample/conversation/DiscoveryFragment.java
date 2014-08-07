@@ -162,8 +162,7 @@ public class DiscoveryFragment extends BaseFragment implements SwipeRefreshLayou
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
-		StringBuilder builder = new StringBuilder(ContactsViewEntry.COLUMN_NAME_USER_ID + "!=0");
-		builder.append(" and " + ContactsViewEntry.COLUMN_NAME_STABLE_ID + "!=''");
+		StringBuilder builder = new StringBuilder(ContactsViewEntry.COLUMN_NAME_USER_ID + ">0");
 		String slectionArgs[] = null;
 		if (arg1 != null) {
 			String query = arg1.getString("query");
