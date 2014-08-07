@@ -4,8 +4,6 @@ import android.util.Log;
 
 public class OPConversationThreadComposingStatus {
 
-	private long nativeClassPointer;
-
     public static native String toString(ComposingStates state);
     public static native ComposingStates toComposingState(String state);
 
@@ -30,17 +28,4 @@ public class OPConversationThreadComposingStatus {
     // RETURNS: "ComposingState_None" when there is no composing state or the
     //          current composing state.
     public static native ComposingStates getComposingStatus(String contactStatusInThreadEl);
-	
-	private native void releaseCoreObjects(); 
-
-	protected void finalize() throws Throwable {
-
-		if (nativeClassPointer != 0)
-		{
-			Log.d("output", "Cleaning conversation thread composing status core objects");
-			releaseCoreObjects();
-		}
-
-		super.finalize();
-	}
 }
