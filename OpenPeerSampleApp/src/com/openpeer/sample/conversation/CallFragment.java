@@ -333,7 +333,7 @@ public class CallFragment extends BaseFragment {
             localViewLinearLayout.removeAllViews();
 //            remoteViewLinearLayout.removeAllViews();
             OPMediaEngine.getInstance().setChannelRenderView(null);
-            OPMediaEngine.getInstance().setCaptureRenderView(null);
+//            OPMediaEngine.getInstance().setCaptureRenderView(null);
         }
     }
 
@@ -447,8 +447,8 @@ public class CallFragment extends BaseFragment {
         OPMediaEngine.getInstance().setMuteEnabled(false);
         OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
         if (mVideo) {
-            myLocalSurface = ViERenderer.CreateLocalRenderer(getActivity());
-//            myLocalSurface=SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
+//            myLocalSurface = ViERenderer.CreateLocalRenderer(getActivity());
+            myLocalSurface=SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
             myRemoteSurface = ViERenderer.CreateRenderer(getActivity(),true);
             localViewLinearLayout = (LinearLayout) view.findViewById(R.id.localChatViewLinearLayout);
             remoteViewLinearLayout = (LinearLayout) view.findViewById(R.id.remoteChatViewLinearLayout);
@@ -459,7 +459,7 @@ public class CallFragment extends BaseFragment {
             OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
             OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
-            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
+//            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
             // if (mCall != null) {
             // OPMediaEngine.getInstance().startVideoCapture();
             // }
