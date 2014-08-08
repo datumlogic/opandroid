@@ -268,7 +268,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
  * Method:    getStableID
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getStableID
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getID
 (JNIEnv *, jobject owner)
 {
 	jlong pid = 0;

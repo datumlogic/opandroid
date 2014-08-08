@@ -42,7 +42,7 @@ public class OPIdentity {
 	public long getStableID(){
 		return getIdentityURI().hashCode();
 	}
-//	public native long getStableID();
+	public native long getID();
 
 	public native boolean isDelegateAttached();
 	public native void attachDelegate(
