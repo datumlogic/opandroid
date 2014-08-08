@@ -64,6 +64,9 @@ public class OPSdkConfig {
 	private OPSdkConfig() {
 
 	}
+	public String getAppId(){
+		return mProperties.getProperty(KEY_APP_ID);
+	}
 
 	public static OPSdkConfig getInstance() {
 		if (instance == null) {

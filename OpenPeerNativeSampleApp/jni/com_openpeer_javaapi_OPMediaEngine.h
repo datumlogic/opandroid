@@ -83,26 +83,26 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderV
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setEcEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setEcEnabled
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setAgcEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setAgcEnabled
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setNsEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setNsEnabled
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
@@ -123,33 +123,33 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceRecord
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setMuteEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setMuteEnabled
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getMuteEnabled
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getMuteEnabled
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getMuteEnabled
   (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setLoudspeakerEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setLoudspeakerEnabled
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getLoudspeakerEnabled
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getLoudspeakerEnabled
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getLoudspeakerEnabled
   (JNIEnv *, jobject);
 
 /*
@@ -163,33 +163,33 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getOutputAudio
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setContinuousVideoCapture
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setContinuousVideoCapture
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getContinuousVideoCapture
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getContinuousVideoCapture
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getContinuousVideoCapture
   (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setFaceDetection
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setFaceDetection
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getFaceDetection
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getFaceDetection
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getFaceDetection
   (JNIEnv *, jobject);
 
 /*
@@ -227,10 +227,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_stopVideoCapture
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    startRecordVideoCapture
- * Signature: (Ljava/lang/String;Ljava/lang/Boolean;)V
+ * Signature: (Ljava/lang/String;Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startRecordVideoCapture
-  (JNIEnv *, jobject, jstring, jobject);
+  (JNIEnv *, jobject, jstring, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
@@ -255,6 +255,14 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVideoTransport
  */
 JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceTransportStatistics
   (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_releaseCoreObjects
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_test_OPTestMediaEngine

@@ -31,7 +31,6 @@ public class OPTestConversationThread {
 			selfContacts.add(self);
 
 			OPConversationThreadDelegate delegate = new OPConversationThreadDelegateImplementation();
-			LoginManager.mCallbackHandler.registerConversationThreadDelegate(delegate);
 			LoginManager.mConvThread = OPConversationThread.create(LoginManager.mAccount, selfContacts);
 
 
@@ -84,7 +83,7 @@ public class OPTestConversationThread {
 
 			if(!isCall)
 			{
-				LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "text/x-application-hookflash-message-text", message, false);
+				LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "", "text/x-application-hookflash-message-text", message, false);
 				contacts = LoginManager.mConvThread.getContacts();
 
 				Log.d("output", "AFTER ADD contacts size = " + contacts.size());
@@ -108,7 +107,6 @@ public class OPTestConversationThread {
 				Log.d("output", "java contact peer file = "+callContact.getPeerFilePublic());
 				Log.d("output", "stable Id = " + callContact.getStableID());
 
-				LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
 				LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
 				isCall = true;
 				Log.d("output", "Call test PASSED");	

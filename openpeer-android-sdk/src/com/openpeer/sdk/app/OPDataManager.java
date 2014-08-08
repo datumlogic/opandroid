@@ -20,6 +20,7 @@ import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
+import com.openpeer.sdk.model.OPUser;
 
 /**
  * Hold reference to objects that cannot be constructed from database, and
@@ -229,6 +230,10 @@ public class OPDataManager {
 
 	public void setAccountReady(boolean value) {
 		mAccountReady = value;
+	}
+	
+	public OPUser getUserByPeerUri(String uri){
+		return mDatastoreDelegate.getUserByPeerUri(uri);
 	}
 
 }

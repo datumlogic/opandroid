@@ -61,7 +61,7 @@ public class OPCall {
     	
     	if (nativeClassPointer != 0)
     	{
-    		Log.d("output", "Cleaning core objects");
+    		Log.d("output", "Cleaning call core objects");
     		releaseCoreObjects();
     	}
     		

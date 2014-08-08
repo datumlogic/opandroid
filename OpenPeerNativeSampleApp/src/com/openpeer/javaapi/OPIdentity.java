@@ -3,11 +3,14 @@ package com.openpeer.javaapi;
 import java.util.List;
 
 import android.text.format.Time;
+import android.util.Log;
 
 
 public class OPIdentity {
 
 	private long nativeClassPointer;
+	
+	private long nativeDelegatePointer;
 	
 	public static native String toString(IdentityStates state);
 
@@ -71,4 +74,17 @@ public class OPIdentity {
 	public native OPDownloadedRolodexContacts getDownloadedRolodexContacts();
 	
 	public native void cancel();
+	
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0 || nativeDelegatePointer != 0)
+    	{
+    		Log.d("output", "Cleaning identity core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 }

@@ -41,10 +41,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 
 /*
  * Class:     com_openpeer_javaapi_OPAccount
- * Method:    getStableID
+ * Method:    getID
  * Signature: ()J;
  */
-JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getID
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPAccount
+ * Method:    getStableID
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
   (JNIEnv *, jobject);
 
 /*
@@ -150,6 +158,14 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForI
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_handleMessageFromInnerBrowserWindowFrame
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPAccount
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_releaseCoreObjects
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

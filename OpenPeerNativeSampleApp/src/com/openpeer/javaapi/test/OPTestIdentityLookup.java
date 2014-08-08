@@ -64,7 +64,6 @@ public class OPTestIdentityLookup {
 						LoginManager.mIdentityLookupDelegate,
 						inputLookupList,
 						"identity-v1-rel-lespaul-i.hcs.io");
-				LoginManager.mCallbackHandler.registerIdentityLookupDelegate(LoginManager.mIdentityLookup, LoginManager.mIdentityLookupDelegate);
 				Log.d("output", "Idenity lookup test RolodexContacts = " + Arrays.deepToString(rolodexContacts.getRolodexContacts().toArray()));
 				Log.d("output", "Identity lookup test Send lookup");
 				

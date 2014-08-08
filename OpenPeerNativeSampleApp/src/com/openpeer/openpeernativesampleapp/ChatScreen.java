@@ -226,6 +226,7 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 					// do something
 					EditText text = (EditText) getActivity().findViewById(R.id.editTextMessage);
 					LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(),
+							"",
 							"text/x-application-hookflash-message-text",
 							text.getText().toString(),
 							false);
@@ -283,7 +284,6 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 
 
 							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, true);
-							LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
 
 						}
 					});
@@ -317,7 +317,6 @@ public class ChatScreen extends Activity implements IChatMessageReceiver{
 
 
 							LoginManager.mCall = OPCall.placeCall(LoginManager.mConvThread, callContact, true, false);
-							//LoginManager.mCallbackHandler.registerCallDelegate(LoginManager.mCall, LoginManager.mCallDelegate);
 
 						}
 					});

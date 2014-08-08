@@ -13,12 +13,15 @@ import android.provider.Settings.Secure;
 import android.text.format.Time;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.delegates.OPAccountDelegateImplementation;
 import com.openpeer.delegates.OPCacheDelegateImplementation;
 import com.openpeer.delegates.OPCallDelegateImplementation;
+import com.openpeer.delegates.OPConversationThreadDelegateImplementation;
 import com.openpeer.delegates.OPIdentityDelegateImplementation;
 import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
+import com.openpeer.delegates.OPMediaEngineDelegateImplementation;
+import com.openpeer.delegates.OPSettingsDelegateImplementation;
+import com.openpeer.delegates.OPStackDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPCache;
@@ -36,15 +39,16 @@ import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSettings;
+import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OPStack;
+import com.openpeer.javaapi.OPStackDelegate;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPMediaEngineDelegate;
 
 public class LoginManager {
 
-	public static CallbackHandler mCallbackHandler = new CallbackHandler();
-	public static Context mContext;
+	//public static Context mContext;
 	public static String mInstanceId;
 	public static String mDeviceId;
 
@@ -53,29 +57,28 @@ public class LoginManager {
 		mInstanceId = java.util.UUID.randomUUID().toString();
 		mInstanceId = mInstanceId.replace("-", "");
 		
-		mDeviceId = Secure.getString(mContext.getContentResolver(),Secure.ANDROID_ID);
-		
 		Log.d("output", "instance ID = " + mInstanceId);
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
-		stackMessageQueue = OPStackMessageQueue.singleton(); 
-//		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-//		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
-//		OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
-//		//OPLogger.setLogLevel("openpeer_services_transport_stream", OPLogLevel.LogLevel_Insane);
-//		//OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
-//		String telnetLogString = mDeviceId + "-" + mInstanceId + "\n";
-//		Log.d("output", "Outgoing log string = " + telnetLogString);
-//		//OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true, telnetLogString);
-//		OPLogger.installTelnetLogger(59999, 60, true);
-//		OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
-		stack = OPStack.singleton();
+		//stackMessageQueue = OPStackMessageQueue.singleton(); 
+		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
+		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
+		//OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+		//OPLogger.setLogLevel("openpeer_services_transport_stream", OPLogLevel.LogLevel_Insane);
+		//OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_Insane);
+		String telnetLogString = mDeviceId + "-" + mInstanceId + "\n";
+		Log.d("output", "Outgoing log string = " + telnetLogString);
+		//OPLogger.installOutgoingTelnetLogger("logs.opp.me:8115", true, telnetLogString);
+		OPLogger.installTelnetLogger(59999, 60, true);
+		//OPLogger.installFileLogger("/storage/emulated/0/HFLog.txt", true);
+		mStack = OPStack.singleton();
 
 		mCacheDelegate = new OPCacheDelegateImplementation();
-		mCallbackHandler.registerCacheDelegate(mCacheDelegate);
 		OPCache.setup(mCacheDelegate);
 
-		//OPSettings.setup(null);
 		OPSettings.applyDefaults();
+		//mSettingsDelegate = new OPSettingsDelegateImplementation();
+		//OPSettings.setup(mSettingsDelegate);
+		
 
 		String httpSettings = createHttpSettings();
 		OPSettings.apply(httpSettings);
@@ -88,7 +91,9 @@ public class LoginManager {
 
 		//TODO: After interception is done, we can call setup
 
-		stack.setup(null, null);
+		mStackDelegate = new OPStackDelegateImplementation();
+		mMediaEngineDelegate = new OPMediaEngineDelegateImplementation();
+		mStack.setup(mStackDelegate, mMediaEngineDelegate);
 	}
 
 
@@ -100,7 +105,9 @@ public class LoginManager {
 		LoginManager.mAccount = account;
 	}
 
-	public static OPStack stack;
+	public static OPStack mStack;
+	public static OPStackDelegate mStackDelegate;
+	public static OPMediaEngineDelegate mMediaEngineDelegate;
 	public static OPStackMessageQueue stackMessageQueue;
 	public static OPAccount mAccount;
 	public static OPAccountDelegate mAccountDelegate;
@@ -112,8 +119,9 @@ public class LoginManager {
 	static LoginHandlerInterface mLoginHandler;
 	public static OPIdentityLookup mIdentityLookup;
 	public static OPConversationThread mConvThread;
-	public static OPConversationThreadDelegate mConvThreadDelegate;
+	public static OPConversationThreadDelegate mConversationThreadDelegate;
 	public static OPCacheDelegate mCacheDelegate;
+	public static OPSettingsDelegate mSettingsDelegate;
 	public static OPCall mCall;
 	public static OPCallDelegate mCallDelegate;
 	public static IChatMessageReceiver mChatMessageReceiver;
@@ -160,10 +168,10 @@ public class LoginManager {
 
 
 		mIdentityDelegate = new OPIdentityDelegateImplementation();
-		mIdentity = new OPIdentity();
-		mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
+		//mIdentity = new OPIdentity();
+		//mCallbackHandler.registerIdentityDelegate(mIdentity, mIdentityDelegate);
 
-		mIdentity = OPIdentity.login(mAccount, null,
+		mIdentity = OPIdentity.login(mAccount, mIdentityDelegate,
 				"identity-v1-rel-lespaul-i.hcs.io", 
 				"identity://identity-v1-rel-lespaul-i.hcs.io/",
 				"http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
@@ -249,17 +257,9 @@ public class LoginManager {
 
 
 
-	public static void initializeContext(Context context) {
+	public static void setDeviceId(String deviceId) {
 		// TODO Auto-generated method stub
-		//		OPLogger.installTelnetLogger(59999, 60, true);
-		//		stackMessageQueue = OPStackMessageQueue.singleton(); 
-		//
-		//		//stackMessageQueue.interceptProcessing(null);
-		//		
-		//		//TODO: After interception is done, we can call setup
-		//		stack = new OPStack();
-		//		stack.setup(null, null);
-		mContext = context;
+		mDeviceId = deviceId;
 
 	}
 
@@ -270,22 +270,20 @@ public class LoginManager {
 		long stableId = 0;
 		if (mAccount == null)
 		{
-			mAccountDelegate = new OPAccountDelegateImplementation();
-			mAccount = new OPAccount();
-			mCallbackHandler.registerAccountDelegate(mAccount, mAccountDelegate);
-
 
 			SharedPreferences sharedPref = OpenPeerApplication.getAppContext().getSharedPreferences(
 					OpenPeerApplication.getAppContext().getString( R.string.preference_file_key), Context.MODE_PRIVATE);
 
 			String reloginInfo = sharedPref.getString("/openpeer/reloginInformation", "");
 
+			mAccountDelegate = new OPAccountDelegateImplementation();
+			mConversationThreadDelegate = new OPConversationThreadDelegateImplementation();
 			mCallDelegate = new OPCallDelegateImplementation();
 			if(reloginInfo.length() == 0)
 			{
 
 				
-				mAccount = OPAccount.login(null, null, mCallDelegate, 
+				mAccount = OPAccount.login(mAccountDelegate, mConversationThreadDelegate, mCallDelegate, 
 						"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
 						"bojanGrantID", 
 						"identity-v1-rel-lespaul-i.hcs.io", false);
@@ -294,7 +292,7 @@ public class LoginManager {
 			else
 			{
 				//stableId = mAccount.getStableID();
-				mAccount = OPAccount.relogin(null, null, mCallDelegate, 
+				mAccount = OPAccount.relogin(mAccountDelegate, mConversationThreadDelegate, mCallDelegate, 
 						"http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", 
 						reloginInfo);
 
@@ -337,7 +335,7 @@ public class LoginManager {
 			{
 				mIdentityDelegate = new OPIdentityDelegateImplementation();
 				//mIdentity = new OPIdentity();
-				mCallbackHandler.registerIdentityDelegate(ident, mIdentityDelegate);
+				//mCallbackHandler.registerIdentityDelegate(ident, mIdentityDelegate);
 				ident.attachDelegate(mIdentityDelegate, "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
 			}
 			mIdentity = ident;
@@ -351,8 +349,8 @@ public class LoginManager {
 	public static void onDownloadedRolodexContacts(OPIdentity identity) {
 		// TODO Auto-generated method stub
 		LoginManager.mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation();
-		LoginManager.mIdentityLookup = new OPIdentityLookup();
-		mCallbackHandler.registerIdentityLookupDelegate(LoginManager.mIdentityLookup, LoginManager.mIdentityLookupDelegate);
+//		LoginManager.mIdentityLookup = new OPIdentityLookup();
+//		mCallbackHandler.registerIdentityLookupDelegate(LoginManager.mIdentityLookup, LoginManager.mIdentityLookupDelegate);
 
 		mLoginHandler.onDownloadedRolodexContacts(identity);
 
