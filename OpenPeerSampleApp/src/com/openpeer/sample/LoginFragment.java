@@ -15,6 +15,7 @@ import com.openpeer.sample.push.HackApiService;
 import com.openpeer.sample.push.PushRegistrationManager;
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
+import com.openpeer.sdk.app.OPAccountLoginWebViewClient;
 import com.openpeer.sdk.app.OPDataManager;
 import com.urbanairship.push.PushManager;
 
@@ -37,6 +38,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         View view = inflater.inflate(R.layout.fragment_login, null);
         progressView = view.findViewById(R.id.progress);
         mAccountLoginWebView = (WebView) view.findViewById(R.id.webview_account_login);
+        mAccountLoginWebView.setWebViewClient(new OPAccountLoginWebViewClient());
         mIdentityLoginWebView = (WebView) view.findViewById(R.id.webview_identity_login);
         setupWebView(mAccountLoginWebView);
 
@@ -67,62 +69,62 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         @Override
         protected Void doInBackground(Void... params) {
 
-			String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-			if (reloginInfo == null || reloginInfo.length() == 0) {
-				Log.d("login", "LoginFragment startLogin() logging in");
-				LoginManager.getInstance()
-						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(),OPSessionManager.getInstance().getConversationThreadDelegate()).login();
-			} else {
-				Log.d("login", "LoginFragment startLogin() relogging in");
+            String reloginInfo = OPDataManager.getInstance().getReloginInfo();
+            if (reloginInfo == null || reloginInfo.length() == 0) {
+                Log.d("login", "LoginFragment startLogin() logging in");
+                LoginManager.getInstance()
+                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate()).login();
+            } else {
+                Log.d("login", "LoginFragment startLogin() relogging in");
 
-				LoginManager.getInstance()
-						.setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(),OPSessionManager.getInstance().getConversationThreadDelegate())
-						.relogin(OPDataManager.getInstance().getReloginInfo());
-			}
+                LoginManager.getInstance()
+                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate())
+                        .relogin(OPDataManager.getInstance().getReloginInfo());
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		@Override
-		protected void onPostExecute(Void result) {
-			loginTask = null;
-		}
+        @Override
+        protected void onPostExecute(Void result) {
+            loginTask = null;
+        }
 
-		@Override
-		protected void onPreExecute() {
-		}
+        @Override
+        protected void onPreExecute() {
+        }
 
-		@Override
-		protected void onProgressUpdate(Void... values) {
-		}
-	}
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+    }
 
-	void setupWebView(WebView view) {
-		WebSettings webSettings = view.getSettings();
-		webSettings.setJavaScriptEnabled(true);
-		webSettings.setDomStorageEnabled(true);
-		webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+    void setupWebView(WebView view) {
+        WebSettings webSettings = view.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
-	}
+    }
 
-	/* START implementation of LoginUIListener */
-	@Override
-	public void onStartIdentityLogin() {
-		progressView.setVisibility(View.GONE);
-		mAccountLoginWebView.setVisibility(View.GONE);
+    /* START implementation of LoginUIListener */
+    @Override
+    public void onStartIdentityLogin() {
+        progressView.setVisibility(View.GONE);
+        mAccountLoginWebView.setVisibility(View.GONE);
 
-		mIdentityLoginWebView.setVisibility(View.VISIBLE);
-	}
+        mIdentityLoginWebView.setVisibility(View.VISIBLE);
+    }
 
-	@Override
-	public void onLoginComplete() {
-		getActivity().runOnUiThread(new Runnable() {
-			public void run() {
-				if (!isDetached()) {
-					((BaseFragmentActivity) getActivity()).hideLoginFragment();
-				}
-			}
-		});
+    @Override
+    public void onLoginComplete() {
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if (!isDetached()) {
+                    ((BaseFragmentActivity) getActivity()).hideLoginFragment();
+                }
+            }
+        });
         PushManager.enablePush();
 
         //TODO: move it to proper place after login refactoring.
@@ -142,12 +144,12 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
                     }
             );
         }
-	}
+    }
 
-	@Override
-	public void onLoginError() {
-        if(!isDetached()){
-            Toast.makeText(getActivity(),R.string.msg_failed_login,Toast.LENGTH_LONG).show();
+    @Override
+    public void onLoginError() {
+        if (!isDetached()) {
+            Toast.makeText(getActivity(), R.string.msg_failed_login, Toast.LENGTH_LONG).show();
 
             ((BaseFragmentActivity) getActivity()).hideLoginFragment();
         }
@@ -174,6 +176,11 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
     public void onAccountLoginWebViewMadeClose() {
         mAccountLoginWebView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public WebView getAccountWebview() {
+        return mAccountLoginWebView;
     }
     /* END implementation of LoginUIListener */
 
