@@ -9,17 +9,10 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.openpeer.javaapi.OPAccount;
-
 public class OPAccountLoginWebViewClient extends WebViewClient {
 
-	OPAccount mAccount;
 	boolean mInnerFrameLoaded;
 	boolean mNamespaceGrantInnerFrameLoaded;
-
-	public OPAccountLoginWebViewClient(OPAccount account) {
-		mAccount = account;
-	}
 
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -60,7 +53,7 @@ public class OPAccountLoginWebViewClient extends WebViewClient {
 
 			Log.d("login", "Account Client Namespace grant Received from JS: " + data);
 			// mAccount.handleMessageFromInnerBrowserWindowFrame(data);
-			mAccount.handleMessageFromInnerBrowserWindowFrame(data);
+			OPDataManager.getInstance().getSharedAccount().handleMessageFromInnerBrowserWindowFrame(data);
 
 			return null;
 		} else if (url.contains("?reload=true")) {
@@ -79,7 +72,7 @@ public class OPAccountLoginWebViewClient extends WebViewClient {
 		if (!mNamespaceGrantInnerFrameLoaded) {
 			mNamespaceGrantInnerFrameLoaded = true;
 			String cmd = String.format("javascript:initInnerFrame(\'%s\')",
-					mAccount.getInnerBrowserWindowFrameURL());
+					OPDataManager.getInstance().getSharedAccount().getInnerBrowserWindowFrameURL());
 			Log.d("login", "Account Client INIT NAMESPACE GRANT INNER FRAME: " + cmd);
 			view.loadUrl(cmd);
 

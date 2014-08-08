@@ -1,5 +1,7 @@
 package com.openpeer.sdk.app;
 
+import android.webkit.WebView;
+
 public interface LoginUIListener {
 	public void onStartIdentityLogin();
 
@@ -14,4 +16,6 @@ public interface LoginUIListener {
 	public void onIdentityLoginWebViewClose();
 
 	public void onAccountLoginWebViewMadeClose();
+	
+	public WebView getAccountWebview();
 }
