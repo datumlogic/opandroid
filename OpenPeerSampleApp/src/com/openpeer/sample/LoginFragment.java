@@ -43,25 +43,62 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         setupWebView(mAccountLoginWebView);
 
         setupWebView(mIdentityLoginWebView);
-
+        // view.setOnClickListener(new View.OnClickListener() {
+        //
+        // @Override
+        // public void onClick(View arg0) {
         startLogin();
+        // }
+        // });
         return view;
     }
 
     void startLogin() {
-    	String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-        if (reloginInfo == null || reloginInfo.length() == 0) {
-            Log.d("login", "LoginFragment startLogin() logging in");
-            LoginManager.getInstance()
-                    .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate()).login();
-        } else {
-            Log.d("login", "LoginFragment startLogin() relogging in");
+        if (loginTask == null) {
+            loginTask = new AccountLogin();
+        }
+        loginTask.execute();
 
-            LoginManager.getInstance()
-                    .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate())
-                    .relogin(OPDataManager.getInstance().getReloginInfo());
+
+    }
+
+    AccountLogin loginTask = null;
+
+    private class AccountLogin extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            String reloginInfo = OPDataManager.getInstance().getReloginInfo();
+            if (reloginInfo == null || reloginInfo.length() == 0) {
+                Log.d("login", "LoginFragment startLogin() logging in");
+                LoginManager.getInstance()
+                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate()).login();
+            } else {
+                Log.d("login", "LoginFragment startLogin() relogging in");
+
+                LoginManager.getInstance()
+                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate())
+                        .relogin(OPDataManager.getInstance().getReloginInfo());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            loginTask = null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
         }
     }
+
     void setupWebView(WebView view) {
         WebSettings webSettings = view.getSettings();
         webSettings.setJavaScriptEnabled(true);
