@@ -235,6 +235,7 @@ public class OPSessionManager {
 					mCalls.put(caller.getPeerURI(), call);
 					CallActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
 					break;
+                case CallState_Closing:
 				case CallState_Closed:
 					onCallEnd(call);
 					break;

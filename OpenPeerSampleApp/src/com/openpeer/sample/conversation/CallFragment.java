@@ -27,6 +27,7 @@ import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.openpeer.sample.util.CallUtil;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
@@ -112,13 +113,6 @@ public class CallFragment extends BaseFragment {
             }
         }
         if (mCall != null) {
-            // long userIDs[] = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
-            //
-            // mAudio = args.getBoolean(IntentData.ARG_AUDIO, true);
-            // mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
-            //
-            // mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio, mVideo);
-            // }
             mVideo = mCall.hasVideo();
         } else {
 
@@ -126,6 +120,8 @@ public class CallFragment extends BaseFragment {
             mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
         }
         mVideo = mVideo && AppConfig.FEATURE_CALL;
+        getActivity().registerReceiver(receiver, new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
+
 
     }
 
@@ -180,15 +176,11 @@ public class CallFragment extends BaseFragment {
             speakerButton = (ImageView) layout.findViewById(R.id.speaker);
             recordButton = (ImageView) layout.findViewById(R.id.record);
         }
-//        setupMediaControl();
-
         initMedia(view);
         if (mCall == null) {
 
             mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio, mVideo);
-            // if (mVideo) {
-            // OPMediaEngine.getInstance().startVideoCapture();
-            // }
+
         } else {
             if (mCall.getState() == CallStates.CallState_Incoming || mCall.getState() == CallStates.CallState_Ringing) {
 
@@ -280,28 +272,39 @@ public class CallFragment extends BaseFragment {
         // TODO Auto-generated method stub
         super.onResume();
         if (mCall != null) {
+
             updateCallView(mCall.getState());
             if (mVideo && localViewLinearLayout.getChildCount() == 0) {
                 localViewLinearLayout.addView(myLocalSurface);
-//                remoteViewLinearLayout.addView(myRemoteSurface);
-//                OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+
             }
         }
-        getActivity().registerReceiver(receiver, new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
 
     }
 
     void updateCallView(CallStates state) {
-        int strResId = STATE_STRINGS[state.ordinal()];
-        if (strResId != 0) {
-            getActivity().getActionBar().setSubtitle(getActivity().getText(strResId));
+        String callStateString = CallUtil.getCallStateStringResId(state);
+        if (null != callStateString) {
+            getActivity().getActionBar().setSubtitle(callStateString);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().unregisterReceiver(receiver);
+        if (mCall != null) {
+            CallStates state = mCall.getState();
+            switch (state) {
+                case CallState_Closing:
+                case CallState_Closed:
+                    break;
+                default:
+                    OPNotificationBuilder.showNotificationForCall(mCall);
+                    stopRingtone();
+                    break;
+
+            }
+        }
     }
 
     public void onStop() {
@@ -312,31 +315,13 @@ public class CallFragment extends BaseFragment {
 
     public void onDestroy() {
         super.onDestroy();
-        if (mCall != null) {
-            CallStates state = mCall.getState();
-            switch (state) {
-                case CallState_Open:
-                case CallState_Active:
-                case CallState_Hold:
-                    OPNotificationBuilder.showNotificationForCall(mCall);
-                    break;
 
-                case CallState_Closing:
-                case CallState_Closed:
-                    break;
-                default:
-                    mCall.hangup(CallClosedReasons.CallClosedReason_User);
-                    OPSessionManager.getInstance().onCallEnd(mCall);
-                    break;
-
-            }
-        }
         if (mVideo) {
             localViewLinearLayout.removeAllViews();
-//            remoteViewLinearLayout.removeAllViews();
             OPMediaEngine.getInstance().setChannelRenderView(null);
-//            OPMediaEngine.getInstance().setCaptureRenderView(null);
         }
+        getActivity().unregisterReceiver(receiver);
+
     }
 
     @Override
@@ -400,42 +385,11 @@ public class CallFragment extends BaseFragment {
                         break;
                 }
             }
-
-            private void onCallAnswered() {
-                mCallStatus.setAnswerTime(System.currentTimeMillis());
-                startShowDuration();
-                if (mVideo) {
-                    mCallView.setVisibility(View.GONE);
-                    hideOverlay();
-                }
-                if (mRingtone != null) {
-                    mRingtone.stop();
-                }
-            }
-
-            private void onCallClosed() {
-                if (mRingtone != null) {
-                    mRingtone.stop();
-                }
-                getActivity().finish();
-            }
         });
     }
 
 
-    int STATE_STRINGS[] = {0,// CallState_None, // call has no state yet
-            0,// CallState_Preparing, // call is negotiating in the background - do not present this call to a user yet...
-            R.string.CallState_Incoming, // call is incoming from a remote party
-            R.string.CallState_Placed, // call has been placed to the remote party
-            0,// CallState_Early, // call is outgoing to a remote party and is receiving early media (media before being answered)
-            R.string.CallState_Ringing,// CallState_Ringing, // call is incoming from a remote party and is ringing
-            R.string.CallState_Ringback, // call is outgoing to a remote party and remote party is ringing
-            0,// R.string.CallState_Open, // call is open
-            0, R.string.CallState_Active, // call is open, and participant is actively communicating
-            R.string.CallState_Inactive, // call is open, and participant is inactive
-            R.string.CallState_Hold, // call is open but on hold
-            R.string.CallState_Closing, // call is hanging up
-            R.string.CallState_Closed}; // call has ended};
+
 
     void initMedia(View view) {
         mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(peerUri);
@@ -451,8 +405,8 @@ public class CallFragment extends BaseFragment {
         OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
         if (mVideo) {
 //            myLocalSurface = ViERenderer.CreateLocalRenderer(getActivity());
-            myLocalSurface=SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
-            myRemoteSurface = ViERenderer.CreateRenderer(getActivity(),true);
+            myLocalSurface = SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
+            myRemoteSurface = ViERenderer.CreateRenderer(getActivity(), true);
             localViewLinearLayout = (LinearLayout) view.findViewById(R.id.localChatViewLinearLayout);
             remoteViewLinearLayout = (LinearLayout) view.findViewById(R.id.remoteChatViewLinearLayout);
             localViewLinearLayout.addView(myLocalSurface);
@@ -494,7 +448,20 @@ public class CallFragment extends BaseFragment {
             mCallView.postDelayed(this, 1000);
         }
     };
+    private void onCallAnswered() {
+        mCallStatus.setAnswerTime(System.currentTimeMillis());
+        startShowDuration();
+        if (mVideo) {
+            mCallView.setVisibility(View.GONE);
+            hideOverlay();
+        }
+        stopRingtone();
+    }
 
+    private void onCallClosed() {
+        stopRingtone();
+        getActivity().finish();
+    }
     void playRingtone() {
         if (mRingtone == null) {
             // mRingtone = RingtoneManager.getRingtone(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
@@ -502,6 +469,13 @@ public class CallFragment extends BaseFragment {
             Log.d(TAG, "play ringtone " + mRingtone.getTitle(getActivity()));
         }
         mRingtone.play();
+    }
+
+    void stopRingtone() {
+        if (mRingtone != null) {
+            mRingtone.stop();
+        }
+        mRingtone = null;
     }
 
     void showOverlay() {
