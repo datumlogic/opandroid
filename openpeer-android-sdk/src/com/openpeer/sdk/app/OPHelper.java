@@ -52,7 +52,6 @@ public class OPHelper {
 			if (TextUtils.isEmpty(url)) {
 				url = DEFAULT_LOG_SERVER;
 			}
-			OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 			// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 			// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
 			String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
@@ -89,7 +88,6 @@ public class OPHelper {
 
 	public void toggleTelnetLogging(boolean enable, int port) {
 		if (enable) {
-
 			OPLogger.installTelnetLogger(port, 60, true);
 		} else {
 			OPLogger.uninstallTelnetLogger();
@@ -109,7 +107,6 @@ public class OPHelper {
 		OPMediaEngine.getInstance().setFaceDetection(false);
 
 		Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
-		// OPMediaEngine.init(mContext);
 	}
 
 	public void init1() {
@@ -163,10 +160,6 @@ public class OPHelper {
 		long start = SystemClock.uptimeMillis();
 
 		mContext = context;
-		// enableTelnetLogging();
-		// initMediaEngine();
-		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-		toggleOutgoingTelnetLogging(true, null);
 
 		if (datastoreDelegate != null) {
 			OPDataManager.getInstance().init(datastoreDelegate);
