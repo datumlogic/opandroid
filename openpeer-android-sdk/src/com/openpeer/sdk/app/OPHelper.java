@@ -109,53 +109,6 @@ public class OPHelper {
 		Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
 	}
 
-	public void init1() {
-		Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				OPMediaEngine.init(mContext);
-
-				OPStackMessageQueue stackMessageQueue = OPStackMessageQueue.singleton();
-				// stackMessageQueue = new OPStackMessageQueue();
-				// stackMessageQueue.interceptProcessing(null);
-				OPStack stack = OPStack.singleton();
-				OPSdkConfig.getInstance().init(mContext);
-
-				//
-				OPCacheDelegate cacheDelegate = OPCacheDelegateImplementation.getInstance(mContext);
-				OPCache.setup(cacheDelegate);
-
-				OPSettings.applyDefaults();
-				OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
-
-				String httpSettings = createHttpSettings();
-				OPSettings.apply(httpSettings);
-
-				String forceDashSettings = createForceDashSetting();
-				OPSettings.apply(forceDashSettings);
-
-				OPSettings.apply(OPSdkConfig.getInstance().getAPPSettingsString());
-
-				stack.setup(null, null);
-
-				initialized = true;
-				if (initListener != null) {
-					initListener.onInitialized();
-				}
-			}
-
-		});
-		thread.run();
-	}
-
-	public static boolean initialized = false;
-	public InitListener initListener;
-
-	public interface InitListener {
-		public void onInitialized();
-	}
-
 	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
 		long start = SystemClock.uptimeMillis();
 
@@ -166,11 +119,44 @@ public class OPHelper {
 		} else {
 			OPDataManager.getInstance().init(OPDatastoreDelegateImplementation.getInstance().init(mContext));
 		}
-		// TODO: Add delegate when implement mechanism to post events to the
-		// android GUI thread
-		init1();
+		OPMediaEngine.init(mContext);
 
+		OPStackMessageQueue stackMessageQueue = OPStackMessageQueue.singleton();
+		// stackMessageQueue = new OPStackMessageQueue();
+		// stackMessageQueue.interceptProcessing(null);
+		OPStack stack = OPStack.singleton();
+		OPSdkConfig.getInstance().init(mContext);
+
+		//
+		OPCacheDelegate cacheDelegate = OPCacheDelegateImplementation.getInstance(mContext);
+		OPCache.setup(cacheDelegate);
+
+		OPSettings.applyDefaults();
+		OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
+
+		String httpSettings = createHttpSettings();
+		OPSettings.apply(httpSettings);
+
+		String forceDashSettings = createForceDashSetting();
+		OPSettings.apply(forceDashSettings);
+
+		OPSettings.apply(OPSdkConfig.getInstance().getAPPSettingsString());
+
+		stack.setup(null, null);
+
+		initialized = true;
+		if (initListener != null) {
+			initListener.onInitialized();
+		}
 	}
+
+	public static boolean initialized = false;
+	public InitListener initListener;
+
+	public interface InitListener {
+		public void onInitialized();
+	}
+
 
 	private String createHttpSettings() {
 		try {

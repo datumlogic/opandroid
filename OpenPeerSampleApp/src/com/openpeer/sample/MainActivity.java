@@ -51,28 +51,7 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		tabNames = this.getResources().getStringArray(R.array.tabs);
-		if (OPHelper.getInstance().initialized) {
-			go();
-		} else {
-			OPHelper.getInstance().initListener = this;
-		}
-		// OPAccount account = OPDataManager.getInstance().getSharedAccount();
-		// String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-		// // Launching app so account hasn't been constructed, and login process
-		// // hasn't started
-		// setupContentView();
-		// if (account == null) {
-		// // if (reloginInfo == null) {
-		// doLogin();
-		// // } else {
-		// // doRelogin();
-		// // }
-		// } else if (account.getState(0, "") == AccountStates.AccountState_Shutdown && reloginInfo != null && NetworkUtil.isConnected()) {
-		// doRelogin();
-		// } else {
-		// // present UI
-		//
-		// }
+		go();
 	}
 
 	void go() {
