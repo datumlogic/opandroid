@@ -1,5 +1,7 @@
 package com.openpeer.sdk.app;
 
+import com.openpeer.javaapi.OPIdentity;
+
 import android.webkit.WebView;
 
 public interface LoginUIListener {
@@ -18,4 +20,7 @@ public interface LoginUIListener {
 	public void onAccountLoginWebViewMadeClose();
 	
 	public WebView getAccountWebview();
+	
+	public WebView getIdentityWebview(OPIdentity identity);
+
 }

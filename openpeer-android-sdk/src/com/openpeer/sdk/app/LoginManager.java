@@ -14,7 +14,6 @@ import com.openpeer.sdk.delegates.OPAccountDelegateImplementation;
 import com.openpeer.sdk.delegates.OPIdentityDelegateImplementation;
 
 public class LoginManager {
-	// private static LoginManager instance;
 	private static LoginUIListener mListener;
 	private static WebView mIdentityLoginWebView;
 	private OPCallDelegate mCallDelegate;
@@ -32,7 +31,7 @@ public class LoginManager {
 	public LoginManager setup(LoginUIListener listener, WebView mAccountLoginWebView, WebView identityLoginWebView,
 			OPCallDelegate callDelegate, OPConversationThreadDelegate conversationThreadDelegate) {
 		mListener = listener;
-		mIdentityLoginWebView = identityLoginWebView;
+//		mIdentityLoginWebView = identityLoginWebView;
 		this.mCallDelegate = callDelegate;
 		this.conversationThreadDelegate = conversationThreadDelegate;
 		return this;
@@ -79,6 +78,7 @@ public class LoginManager {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
+		mIdentityLoginWebView = mListener.getIdentityWebview(null);
 		OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(identity);
 		mIdentityLoginWebView.setWebViewClient(client);
 
@@ -106,6 +106,7 @@ public class LoginManager {
 
 		for (OPIdentity identity : identities) {
 			if (!identity.isDelegateAttached()) {
+				mIdentityLoginWebView=mListener.getIdentityWebview(identity);
 				final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(identity);
 				mIdentityLoginWebView.post(new Runnable() {
 					public void run() {

@@ -11,6 +11,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.sample.push.HackApiService;
 import com.openpeer.sample.push.PushRegistrationManager;
 import com.openpeer.sdk.app.LoginManager;
@@ -183,5 +184,14 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         return mAccountLoginWebView;
     }
     /* END implementation of LoginUIListener */
+
+	/* (non-Javadoc)
+	 * @see com.openpeer.sdk.app.LoginUIListener#getIdentityWebview(com.openpeer.javaapi.OPIdentity)
+	 */
+	@Override
+	public WebView getIdentityWebview(OPIdentity identity) {
+		// TODO Auto-generated method stub
+		return mIdentityLoginWebView;
+	}
 
 }
