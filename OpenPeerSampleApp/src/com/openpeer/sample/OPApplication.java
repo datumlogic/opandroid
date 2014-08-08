@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.openpeer.sample.push.OPPushNotificationBuilder;
 import com.openpeer.sample.push.PushIntentReceiver;
+import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
 import com.urbanairship.AirshipConfigOptions;
 import com.urbanairship.Logger;
@@ -40,6 +41,7 @@ public class OPApplication extends Application {
         OPHelper.getInstance().init(this, null);
 //        OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
         OPSessionManager.getInstance().init();
+        SettingsHelper.getInstance().initLoggers();
     }
 
     public static OPApplication getInstance() {
