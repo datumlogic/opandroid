@@ -18,6 +18,7 @@ import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPAccountLoginWebViewClient;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPIdentityLoginWebview;
 import com.urbanairship.push.PushManager;
 
 import retrofit.Callback;
@@ -27,7 +28,7 @@ import retrofit.client.Response;
 public class LoginFragment extends BaseFragment implements LoginUIListener {
     WebView mAccountLoginWebView;
 
-    WebView mIdentityLoginWebView;
+    OPIdentityLoginWebview mIdentityLoginWebView;
     View progressView;
 
     public static LoginFragment newInstance() {
@@ -40,7 +41,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         progressView = view.findViewById(R.id.progress);
         mAccountLoginWebView = (WebView) view.findViewById(R.id.webview_account_login);
         mAccountLoginWebView.setWebViewClient(new OPAccountLoginWebViewClient());
-        mIdentityLoginWebView = (WebView) view.findViewById(R.id.webview_identity_login);
+        mIdentityLoginWebView = (OPIdentityLoginWebview) view.findViewById(R.id.webview_identity_login);
         setupWebView(mAccountLoginWebView);
 
         setupWebView(mIdentityLoginWebView);
@@ -189,7 +190,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 	 * @see com.openpeer.sdk.app.LoginUIListener#getIdentityWebview(com.openpeer.javaapi.OPIdentity)
 	 */
 	@Override
-	public WebView getIdentityWebview(OPIdentity identity) {
+	public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity) {
 		// TODO Auto-generated method stub
 		return mIdentityLoginWebView;
 	}

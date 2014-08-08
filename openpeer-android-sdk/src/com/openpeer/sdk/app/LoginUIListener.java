@@ -21,6 +21,6 @@ public interface LoginUIListener {
 	
 	public WebView getAccountWebview();
 	
-	public WebView getIdentityWebview(OPIdentity identity);
+	public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity);
 
 }
