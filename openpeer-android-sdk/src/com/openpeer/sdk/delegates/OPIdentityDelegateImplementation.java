@@ -28,6 +28,8 @@
  */
 package com.openpeer.sdk.delegates;
 
+import java.util.Hashtable;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
@@ -38,29 +40,51 @@ import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPIdentityLoginWebview;
 
-public  class OPIdentityDelegateImplementation extends OPIdentityDelegate {
-	WebView mLoginView;
+public class OPIdentityDelegateImplementation extends OPIdentityDelegate {
+	OPIdentityLoginWebview mLoginView;
 	LoginUIListener mListener;
 
-	public void binListener(LoginUIListener listener){
+	static Hashtable<Long, OPIdentityDelegateImplementation> instances = new Hashtable<Long, OPIdentityDelegateImplementation>();
+
+	public static OPIdentityDelegateImplementation getInstance(OPIdentity identity) {
+		Long id = 0L;
+		if (identity != null) {
+			id = identity.getID();
+		}
+		OPIdentityDelegateImplementation instance = instances.get(id);
+		if (instance == null) {
+			instance = new OPIdentityDelegateImplementation();
+			instances.put(id, instance);
+		}
+		return instance;
+	}
+
+	public void bindListener(LoginUIListener listener) {
 		mListener = listener;
 	}
 
-	public void setmIdentity(OPIdentity mIdentity) {
-		// this.mIdentity = mIdentity;
+	public void associateIdentity(OPIdentity identity) {
+		instances.remove(0L);
+		instances.put(identity.getID(), this);
 	}
 
-	public  OPIdentityDelegateImplementation(WebView loginView, OPIdentity identity) {
-		this.mLoginView = loginView;
-		// mIdentity = identity;
+	public void setWebview(OPIdentityLoginWebview webview) {
+		this.mLoginView = webview;
+
+	}
+
+	public OPIdentityDelegateImplementation() {
 	}
 
 	@Override
 	public void onIdentityStateChanged(OPIdentity identity, IdentityStates state) {
 		// TODO Auto-generated method stub
 		Log.d("state", "identity state " + state);
-
+		// why isn' this working? Weird!!
+//		mLoginView = mListener.getIdentityWebview(identity);
+//		mLoginView.getClient().setIdentity(identity);
 		switch (state) {
 		case IdentityState_WaitingForBrowserWindowToBeLoaded:
 			// LoginManager.loadOuterFrame();//load identity.html
@@ -147,4 +171,3 @@ public  class OPIdentityDelegateImplementation extends OPIdentityDelegate {
 		});
 	}
 }
-

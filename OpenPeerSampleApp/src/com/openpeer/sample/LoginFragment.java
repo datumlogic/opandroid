@@ -18,6 +18,7 @@ import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPAccountLoginWebViewClient;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPIdentityLoginWebViewClient;
 import com.openpeer.sdk.app.OPIdentityLoginWebview;
 import com.urbanairship.push.PushManager;
 
@@ -42,6 +43,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         mAccountLoginWebView = (WebView) view.findViewById(R.id.webview_account_login);
         mAccountLoginWebView.setWebViewClient(new OPAccountLoginWebViewClient());
         mIdentityLoginWebView = (OPIdentityLoginWebview) view.findViewById(R.id.webview_identity_login);
+        mIdentityLoginWebView.setClient(new OPIdentityLoginWebViewClient(null));
         setupWebView(mAccountLoginWebView);
 
         setupWebView(mIdentityLoginWebView);

@@ -15,7 +15,6 @@ import com.openpeer.sdk.delegates.OPIdentityDelegateImplementation;
 
 public class LoginManager {
 	private static LoginUIListener mListener;
-	private static OPIdentityLoginWebview mIdentityLoginWebView;
 	private OPCallDelegate mCallDelegate;
 	OPConversationThreadDelegate conversationThreadDelegate;
 
@@ -31,7 +30,7 @@ public class LoginManager {
 	public LoginManager setup(LoginUIListener listener, WebView mAccountLoginWebView, WebView identityLoginWebView,
 			OPCallDelegate callDelegate, OPConversationThreadDelegate conversationThreadDelegate) {
 		mListener = listener;
-//		mIdentityLoginWebView = identityLoginWebView;
+		// mIdentityLoginWebView = identityLoginWebView;
 		this.mCallDelegate = callDelegate;
 		this.conversationThreadDelegate = conversationThreadDelegate;
 		return this;
@@ -49,8 +48,7 @@ public class LoginManager {
 	 * this function should be called after logging to release resources
 	 */
 	void destroy() {
-		// instance = null;
-		mIdentityLoginWebView = null;
+
 	}
 
 	public void login() {
@@ -78,19 +76,19 @@ public class LoginManager {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
-		mIdentityLoginWebView = mListener.getIdentityWebview(null);
-		OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(identity);
-		mIdentityLoginWebView.setClient(client);
+		OPIdentityLoginWebview mIdentityLoginWebView = mListener.getIdentityWebview(null);
 
-		OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(mIdentityLoginWebView, identity);
-		identityDelegate.binListener(mListener);
+		OPIdentityDelegateImplementation identityDelegate = OPIdentityDelegateImplementation.getInstance(null);// new
+																												// OPIdentityDelegateImplementation(mIdentityLoginWebView,
+																												// identity);
+		identityDelegate.bindListener(mListener);
+		identityDelegate.setWebview(mIdentityLoginWebView);
 
 		OPSdkConfig config = OPSdkConfig.getInstance();
-		Log.d("login", "identity initial " + identity);
 		identity = OPIdentity.login(account, identityDelegate, config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
 				config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
 				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
-		client.setIdentity(identity);
+		mIdentityLoginWebView.getClient().setIdentity(identity);
 	}
 
 	public void onAccountStateReady(OPAccount account) {
@@ -106,16 +104,14 @@ public class LoginManager {
 
 		for (OPIdentity identity : identities) {
 			if (!identity.isDelegateAttached()) {
-				mIdentityLoginWebView=mListener.getIdentityWebview(identity);
-				final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(identity);
-//				mIdentityLoginWebView.post(new Runnable() {
-//					public void run() {
-						mIdentityLoginWebView.setClient(client);
+				OPIdentityLoginWebview webview = mListener.getIdentityWebview(identity);
+				webview.getClient().setIdentity(identity);
 
-//					}
-//				});
-				OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(mIdentityLoginWebView, identity);
-				identityDelegate.binListener(mListener);
+				OPIdentityDelegateImplementation identityDelegate = OPIdentityDelegateImplementation.getInstance(identity);// new
+																															// OPIdentityDelegateImplementation(mIdentityLoginWebView,
+																															// identity);
+				identityDelegate.bindListener(mListener);
+				identityDelegate.setWebview(webview);
 				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getOuterFrameUrl());
 
 			} else {
