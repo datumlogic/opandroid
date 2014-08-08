@@ -180,7 +180,7 @@ public class CallFragment extends BaseFragment {
             speakerButton = (ImageView) layout.findViewById(R.id.speaker);
             recordButton = (ImageView) layout.findViewById(R.id.record);
         }
-        setupMediaControl();
+//        setupMediaControl();
 
         initMedia(view);
         if (mCall == null) {
@@ -215,8 +215,9 @@ public class CallFragment extends BaseFragment {
     }
 
     void setupMediaControl() {
-        mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(peerUri);
         audioButton.setImageResource(mCallStatus.isMuted() ? R.drawable.ic_action_mic_muted : R.drawable.ic_action_mic);
+        OPMediaEngine.getInstance().setMuteEnabled(mCallStatus.isMuted());
+
         audioButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -229,6 +230,7 @@ public class CallFragment extends BaseFragment {
 
         speakerButton.setImageResource(mCallStatus.isSpeakerOn() ? R.drawable.ic_action_speaker_on : R.drawable.ic_action_speaker_off);
 
+        OPMediaEngine.getInstance().setLoudspeakerEnabled(mCallStatus.isSpeakerOn());
         speakerButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -436,6 +438,7 @@ public class CallFragment extends BaseFragment {
             R.string.CallState_Closed}; // call has ended};
 
     void initMedia(View view) {
+        mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(peerUri);
 
         if (mCallStatus.useFrontCamera())
             OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
@@ -459,6 +462,8 @@ public class CallFragment extends BaseFragment {
             OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
             OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+            OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+            setupMediaControl();
 //            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
             // if (mCall != null) {
             // OPMediaEngine.getInstance().startVideoCapture();
