@@ -33,8 +33,46 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
-public class OPAccount {
+import com.openpeer.sdk.app.OPSdkConfig;
 
+public class OPAccount {
+	public AccountStates getState() {
+		return getState(0, "");
+	}
+
+	public OPIdentity getPrimaryIdentity() {
+		List<OPIdentity> identities = getAssociatedIdentities();
+
+		// TODO: proper logic to define primary identity
+		return identities.get(0);
+	}
+
+	public String getPeerUri() {
+		return OPContact.getForSelf(this).getPeerURI();
+	}
+
+	public static OPAccount login(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate, boolean forceCreateNewLockboxAccount) {
+		return login(delegate,
+				conversationThreadDelegate,
+				callDelegate,
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+				OPSdkConfig.getInstance().getGrantId(),
+				OPSdkConfig.getInstance().getLockboxServiceDomain(),
+				forceCreateNewLockboxAccount);
+
+	}
+
+	public static OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate, String reloginInformation) {
+		return relogin(delegate,
+				conversationThreadDelegate,
+				callDelegate,
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(), reloginInformation);
+
+	}
+
+	// Beginning of JNI -- BE CAREFUL WITH ANY CHANGES!!!!
 	private long nativeClassPointer;
 	private long nativeDelegatePointer;
 
@@ -42,7 +80,7 @@ public class OPAccount {
 
 	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
 
-	public static native OPAccount login(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+	private static native OPAccount login(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
 			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String grantID, String lockboxServiceDomain,
 			boolean forceCreateNewLockboxAccount);
 
@@ -61,9 +99,9 @@ public class OPAccount {
 
 	public native void shutdown();
 
-	public native String getPeerFilePrivate();
+	private native String getPeerFilePrivate();
 
-	public native byte[] getPeerFilePrivateSecret();
+	private native byte[] getPeerFilePrivateSecret();
 
 	public native List<OPIdentity> getAssociatedIdentities();
 
@@ -79,17 +117,6 @@ public class OPAccount {
 
 	public native void handleMessageFromInnerBrowserWindowFrame(String unparsedMessage);
 
-	public OPIdentity getPrimaryIdentity() {
-		List<OPIdentity> identities = getAssociatedIdentities();
-
-		// TODO: proper logic to define primary identity
-		return identities.get(0);
-	}
-
-	public String getPeerUri() {
-		return OPContact.getForSelf(this).getPeerURI();
-	}
-
 	private native void releaseCoreObjects();
 
 	protected void finalize() throws Throwable {
@@ -100,4 +127,5 @@ public class OPAccount {
 
 		super.finalize();
 	}
+	// END of JNI
 }

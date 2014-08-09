@@ -54,9 +54,7 @@ public class LoginManager {
 	public void login() {
 		OPAccountDelegateImplementation accountDelegate = OPAccountDelegateImplementation.getInstance();
 		accountDelegate.bind(mListener);
-		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, mCallDelegate, OPSdkConfig.getInstance()
-				.getNamespaceGrantServiceUrl(), OPSdkConfig.getInstance().getGrantId(),
-				OPSdkConfig.getInstance().getLockboxServiceDomain(), false);
+		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, mCallDelegate, false);
 		OPDataManager.getInstance().setSharedAccount(account);
 		startIdentityLogin();
 	}
@@ -65,8 +63,7 @@ public class LoginManager {
 
 		OPAccountDelegateImplementation accountDelegate = OPAccountDelegateImplementation.getInstance();
 		accountDelegate.bind(mListener);
-		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, mCallDelegate, OPSdkConfig.getInstance()
-				.getNamespaceGrantServiceUrl(), reloginInfo);
+		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, mCallDelegate, reloginInfo);
 
 		OPDataManager.getInstance().setSharedAccount(account);
 	}

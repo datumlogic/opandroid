@@ -1,9 +1,7 @@
 package com.openpeer.sample;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,59 +45,20 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         setupWebView(mAccountLoginWebView);
 
         setupWebView(mIdentityLoginWebView);
-        // view.setOnClickListener(new View.OnClickListener() {
-        //
-        // @Override
-        // public void onClick(View arg0) {
+
         startLogin();
-        // }
-        // });
         return view;
     }
 
     void startLogin() {
-        if (loginTask == null) {
-            loginTask = new AccountLogin();
-        }
-        loginTask.execute();
-
-
-    }
-
-    AccountLogin loginTask = null;
-
-    private class AccountLogin extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-            if (reloginInfo == null || reloginInfo.length() == 0) {
-                Log.d("login", "LoginFragment startLogin() logging in");
-                LoginManager.getInstance()
-                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate()).login();
-            } else {
-                Log.d("login", "LoginFragment startLogin() relogging in");
-
-                LoginManager.getInstance()
-                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate())
-                        .relogin(OPDataManager.getInstance().getReloginInfo());
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            loginTask = null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
+        String reloginInfo = OPDataManager.getInstance().getReloginInfo();
+        if (reloginInfo == null || reloginInfo.length() == 0) {
+            LoginManager.getInstance()
+                    .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate()).login();
+        } else {
+            LoginManager.getInstance()
+                    .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate())
+                    .relogin(OPDataManager.getInstance().getReloginInfo());
         }
     }
 
@@ -186,15 +145,12 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
     public WebView getAccountWebview() {
         return mAccountLoginWebView;
     }
-    /* END implementation of LoginUIListener */
 
-	/* (non-Javadoc)
-	 * @see com.openpeer.sdk.app.LoginUIListener#getIdentityWebview(com.openpeer.javaapi.OPIdentity)
-	 */
 	@Override
 	public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity) {
 		// TODO Auto-generated method stub
 		return mIdentityLoginWebView;
 	}
+    /* END implementation of LoginUIListener */
 
 }
