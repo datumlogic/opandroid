@@ -133,7 +133,7 @@ public class OPHelper {
 		OPCacheDelegate cacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
 		OPCache.setup(cacheDelegate);
 
-//		OPSettings.setup( OPSettingsDelegateImpl.getInstance(mContext));
+		OPSettings.setup( OPSettingsDelegateImpl.getInstance(mContext));
 		OPSettings.applyDefaults();
 		OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
@@ -166,8 +166,8 @@ public class OPHelper {
 			JSONObject parent = new JSONObject();
 			JSONObject jsonObject = new JSONObject();
 
-			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", "true");
-			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", "true");
+			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", true);
+			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", true);
 			parent.put("root", jsonObject);
 			Log.d("output", parent.toString(2));
 			return parent.toString(2);
