@@ -2,6 +2,10 @@ package com.openpeer.sample.push;
 
 import android.text.TextUtils;
 
+import com.urbanairship.UAirship;
+import com.urbanairship.push.PushManager;
+import com.urbanairship.push.PushPreferences;
+
 import java.util.Hashtable;
 
 import retrofit.Callback;
@@ -38,19 +42,19 @@ import retrofit.client.Response;
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the FreeBSD Project.
  */
-public class PushRegistrationManager {
+public class OPPushManager {
     HackApiService service;
     private Hashtable<String, PushToken> tokens;
-    private static PushRegistrationManager instance;
+    private static OPPushManager instance;
 
-    public static PushRegistrationManager getInstance() {
+    public static OPPushManager getInstance() {
         if (instance == null) {
-            instance = new PushRegistrationManager();
+            instance = new OPPushManager();
         }
         return instance;
     }
 
-    private PushRegistrationManager() {
+    private OPPushManager() {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(HackApiService.HCS_DOMAIN)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
@@ -104,6 +108,11 @@ public class PushRegistrationManager {
     void saveDeviceToken(String peerUri, PushToken token) {
 
         tokens.put(peerUri, token);
+    }
+    public static void shutdown(){
+        UAirship.land();
+        PushManager.disablePush();
+
     }
 
 }

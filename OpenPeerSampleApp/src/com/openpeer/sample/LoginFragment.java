@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.sample.push.HackApiService;
-import com.openpeer.sample.push.PushRegistrationManager;
+import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPAccountLoginWebViewClient;
@@ -98,7 +98,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         //TODO: move it to proper place after login refactoring.
         String apid = PushManager.shared().getAPID();
         if (!TextUtils.isEmpty(apid)) {
-            PushRegistrationManager.getInstance().associateDeviceToken(OPDataManager.getInstance().getSharedAccount().getPeerUri(),
+            OPPushManager.getInstance().associateDeviceToken(OPDataManager.getInstance().getSharedAccount().getPeerUri(),
                     PushManager.shared().getAPID(),
                     new Callback<HackApiService.HackAssociateResult>() {
                         @Override

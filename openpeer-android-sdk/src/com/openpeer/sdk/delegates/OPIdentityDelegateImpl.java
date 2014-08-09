@@ -32,7 +32,6 @@ import java.util.Hashtable;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.WebView;
 
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
@@ -83,8 +82,8 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 		// TODO Auto-generated method stub
 		Log.d("state", "identity state " + state);
 		// why isn' this working? Weird!!
-//		mLoginView = mListener.getIdentityWebview(identity);
-//		mLoginView.getClient().setIdentity(identity);
+		// mLoginView = mListener.getIdentityWebview(identity);
+		// mLoginView.getClient().setIdentity(identity);
 		switch (state) {
 		case IdentityState_WaitingForBrowserWindowToBeLoaded:
 			// LoginManager.loadOuterFrame();//load identity.html
@@ -113,11 +112,8 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 			identity.notifyBrowserWindowClosed();
 			break;
 		case IdentityState_Ready:
-			mLoginView = null;
 			if (OPDataManager.getInstance().getSharedAccount().getState(0, "") == AccountStates.AccountState_Ready) {
 				OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
-
-				// mListener.onLoginComplete();
 
 				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
 				if (TextUtils.isEmpty(version)) {
@@ -128,7 +124,6 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 					Log.d("login", "start download  contacts since version " + version);
 					identity.startRolodexDownload(version);
 				}
-
 			}
 			break;
 		case IdentityState_Shutdown:
@@ -137,6 +132,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 				mLoginView.post(new Runnable() {
 					public void run() {
 						mListener.onLoginError();
+						mListener = null;
 						mLoginView = null;
 					}
 				});
@@ -158,6 +154,9 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 	public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 		OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
 		mListener.onLoginComplete();
+		mListener = null;
+		mLoginView = null;
+
 		// destroy();
 	}
 

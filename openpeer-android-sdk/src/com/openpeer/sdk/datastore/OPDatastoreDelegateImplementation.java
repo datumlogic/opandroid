@@ -595,4 +595,12 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.openpeer.sdk.datastore.OPDatastoreDelegate#shutdown()
+	 */
+	@Override
+	public void shutdown() {
+		OPContentProvider.clear();
+	}
+
 }

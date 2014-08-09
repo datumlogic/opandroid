@@ -95,7 +95,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
             String apid = intent.getStringExtra(PushManager.EXTRA_APID);
             Log.i(logTag, "Push registration finished " + apid);
             if (apid != null && OPDataManager.getInstance().getSharedAccount().getState(0, null) == AccountStates.AccountState_Ready) {
-                PushRegistrationManager.getInstance().associateDeviceToken(OPDataManager.getInstance().getSharedAccount().getPeerUri(), apid, new Callback<HackApiService.HackAssociateResult>() {
+                OPPushManager.getInstance().associateDeviceToken(OPDataManager.getInstance().getSharedAccount().getPeerUri(), apid, new Callback<HackApiService.HackAssociateResult>() {
                     @Override
                     public void success(HackApiService.HackAssociateResult hackAssociateResult, Response response) {
 

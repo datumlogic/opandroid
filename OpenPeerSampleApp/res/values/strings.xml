@@ -42,7 +42,7 @@
     <string name="menu_done">Done(%s)</string>
     <string name="label_chat">Chat</string>
     <string name="label_select_contact">Select friends</string>
-    <string name="label_new_message_received">Message from %s</string>
+    <string name="label_new_message_received">New message received</string>
     <string name="label_chats">Chats</string>
     <string name="label_contacts">Contacts</string>
     <string name="label_favorites">Favorites</string>
@@ -55,9 +55,10 @@
     <string name="ringtone_select">Select Ringtone</string>
     <string name="notification_sound_switch">Message notification</string>
     <string name="notification_sound_select">Select Notification Sound</string>
-
+    <string name="signout">Sign out</string>
     <!-- End of setting strings -->
     <string name="msg_failed_login">Failed to login, try again later.</string>
     <string name="msg_not_logged_in">You\'re not logged in. Please quit the app and relogin.</string>
+
 
 </resources>

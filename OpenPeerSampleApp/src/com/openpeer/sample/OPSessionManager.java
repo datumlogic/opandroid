@@ -20,7 +20,7 @@ import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.CallStatus;
-import com.openpeer.sample.push.PushRegistrationManager;
+import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.PushResult;
 import com.openpeer.sample.push.PushToken;
 import com.openpeer.sample.push.UAPushProviderImpl;
@@ -174,7 +174,7 @@ public class OPSessionManager {
 					message.setMessageId(messageID);
 				}
 
-				PushRegistrationManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
+				OPPushManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
 
 					@Override
 					public void success(PushToken token, Response response) {

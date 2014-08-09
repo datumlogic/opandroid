@@ -83,4 +83,9 @@ public interface OPDatastoreDelegate {
 	 */
 	public OPUser getUserById(long id);
 
+	/**
+	 * 
+	 */
+	public void shutdown();
+
 }

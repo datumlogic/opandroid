@@ -235,4 +235,10 @@ public class OPDataManager {
 		return mDatastoreDelegate.getUserById(id);
 	}
 
+	public static void shutdown() {
+		instance.mAccount.shutdown();
+		instance.mDatastoreDelegate.shutdown();
+		instance = null;
+	}
+
 }

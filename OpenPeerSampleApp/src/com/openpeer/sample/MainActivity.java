@@ -3,6 +3,8 @@ package com.openpeer.sample;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +31,12 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener,
     private static final int TAB_FAVORITES = 2;
 
     private String tabNames[];
+
+    public static void cleanLaunch(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

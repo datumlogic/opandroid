@@ -2,6 +2,8 @@ package com.openpeer.sdk.datastore;
 
 import java.util.List;
 
+import com.openpeer.javaapi.OPAccount;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -33,6 +35,7 @@ public class OPContentProvider extends ContentProvider {
 	UriMatcher mUriMatcher;
 	static String sAuthority = "";
 	static final String SCHEME = "content://";
+	private static OPContentProvider instance;
 
 	static enum MatcherInfo {
 		ACCOUNTS(AccountEntry.TABLE_NAME),
@@ -47,16 +50,16 @@ public class OPContentProvider extends ContentProvider {
 		MESSAGE_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW_ID),
 		MESSAGE_THREAD(MessageEntry.URI_PATH_INFO_THREAD_ID),
 		MESSAGE_GROUP(MessageEntry.URI_PATH_INFO_GROUP_ID),
-		
+
 		MESSAGES(MessageEntry.TABLE_NAME),
-		MESSAGE(MessageEntry.TABLE_NAME+"/#"),
+		MESSAGE(MessageEntry.TABLE_NAME + "/#"),
 
 		CONTACTS(DatabaseContracts.ContactsViewEntry.TABLE_NAME),
 		CONTACT(DatabaseContracts.ContactsViewEntry.TABLE_NAME + "/#"),
-		
+
 		CONVERSATION_WINDOWS(ConversationWindowEntry.URI_PATH_INFO),
 		CONVERSATION_WINDOW(ConversationWindowEntry.URI_PATH_INFO_ID),
-		
+
 		WINDOW_PARTICIPANTS(WindowParticipantEntry.URI_PATH_INFO),
 		WINDOW_PARTICIPANT(WindowParticipantEntry.URI_PATH_INFO_ID),
 
@@ -65,10 +68,10 @@ public class OPContentProvider extends ContentProvider {
 		HISTORY_GROUP(""),
 		USERS(UserEntry.TABLE_NAME),
 		USER(UserEntry.TABLE_NAME + "/#"),
-		
+
 		IDENTITY_CONTACTS(IdentityContactEntry.TABLE_NAME),
 		IDENTITY_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
-		
+
 		ROLODEX_CONTACTS(ContactEntry.TABLE_NAME),
 		ROLODEX_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
 
@@ -206,6 +209,7 @@ public class OPContentProvider extends ContentProvider {
 				null, // uses the default SQLite cursor
 				OPDatabaseHelper.DATABASE_VERSION);
 		initMatcher();
+		instance = this;
 		return true;
 	}
 
@@ -454,5 +458,26 @@ public class OPContentProvider extends ContentProvider {
 
 	void notifyChatGroupChange() {
 		getContext().getContentResolver().notifyChange(getContentUri(WindowViewEntry.URI_PATH_INFO), null);
+	}
+
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		super.shutdown();
+		instance.mOpenHelper.close();
+
+	}
+
+	public static void clear() {
+		instance.shutdown();
+		instance.getContext().deleteDatabase(OPDatabaseHelper.DATABASE_NAME);
+	}
+
+	/**
+	 * @return
+	 */
+	public static OPContentProvider getInstance() {
+		// TODO Auto-generated method stub
+		return instance;
 	}
 }

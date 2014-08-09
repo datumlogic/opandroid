@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -22,17 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseActivity;
@@ -43,10 +37,6 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
-import com.openpeer.sample.push.PushRegistrationManager;
-import com.openpeer.sample.push.PushResult;
-import com.openpeer.sample.push.PushToken;
-import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts;
@@ -55,11 +45,6 @@ import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
-import com.squareup.picasso.Picasso;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
