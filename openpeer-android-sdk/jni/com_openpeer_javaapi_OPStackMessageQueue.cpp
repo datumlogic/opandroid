@@ -67,6 +67,17 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_interceptPr
 
 /*
  * Class:     com_openpeer_javaapi_OPStackMessageQueue
+ * Method:    notifyProcessMessageFromCustomThread
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_notifyProcessMessageFromCustomThread
+  (JNIEnv *, jobject)
+{
+	IStackMessageQueue::singleton()->notifyProcessMessageFromCustomThread();
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPStackMessageQueue
  * Method:    releaseCoreObjects
  * Signature: ()V
  */

@@ -154,8 +154,6 @@ ULONG SettingsDelegateWrapper::getUInt(const char *key) const
 		jclass callbackClass = findClass(className.c_str());
 		method = jni_env->GetMethodID(callbackClass, "getUInt", "(Ljava/lang/String;)J");
 		fetchedUInt = jni_env->CallLongMethod(javaDelegate, method, keyStr);
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Settings delegate %s getUInt %u", key,fetchedUInt);
-
 	}
 	else
 	{
