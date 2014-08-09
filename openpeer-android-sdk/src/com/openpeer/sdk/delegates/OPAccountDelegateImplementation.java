@@ -38,20 +38,24 @@ import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSdkConfig;
 
-public  class OPAccountDelegateImplementation extends OPAccountDelegate {
+public class OPAccountDelegateImplementation extends OPAccountDelegate {
 	LoginUIListener mListener;
 	private static OPAccountDelegateImplementation instance;
-	public static OPAccountDelegateImplementation getInstance(){
-		if(instance==null){
-			instance = new OPAccountDelegateImplementation();			
+
+	public static OPAccountDelegateImplementation getInstance() {
+		if (instance == null) {
+			instance = new OPAccountDelegateImplementation();
 		}
 		return instance;
 	}
 
-	private OPAccountDelegateImplementation(){}
+	private OPAccountDelegateImplementation() {
+	}
+
 	public void bind(LoginUIListener listener) {
 		this.mListener = listener;
 	}
+
 	public void unbind() {
 		this.mListener = null;
 	}
@@ -90,6 +94,7 @@ public  class OPAccountDelegateImplementation extends OPAccountDelegate {
 			OPDataManager.getInstance().setAccountReady(true);
 
 			LoginManager.getInstance().onAccountStateReady(account);
+			mListener = null;
 			break;
 		case AccountState_Shutdown:
 			OPDataManager.getInstance().setAccountReady(false);
@@ -97,19 +102,19 @@ public  class OPAccountDelegateImplementation extends OPAccountDelegate {
 				mListener.getAccountWebview().post(new Runnable() {
 					public void run() {
 						mListener.onLoginError();
+						mListener = null;
 					}
 				});
 			}
-			if(LoginManager.isLogIn()){
-			LoginManager.onAccountShutdown();
+			if (LoginManager.isLogIn()) {
+				LoginManager.onAccountShutdown();
 			}
-			mListener=null;
-			
+
 			break;
-			default:
-				break;
+		default:
+			break;
 		}
-	
+
 	}
 
 	@Override
