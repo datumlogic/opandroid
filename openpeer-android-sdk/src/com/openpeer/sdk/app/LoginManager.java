@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.WebView;
 
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCallDelegate;
@@ -15,8 +14,6 @@ import com.openpeer.sdk.delegates.OPIdentityDelegateImplementation;
 
 public class LoginManager {
 	private static LoginUIListener mListener;
-	private OPCallDelegate mCallDelegate;
-	OPConversationThreadDelegate conversationThreadDelegate;
 
 	private static LoginManager instance;
 
@@ -27,64 +24,44 @@ public class LoginManager {
 		return instance;
 	}
 
-	public LoginManager setup(LoginUIListener listener, WebView mAccountLoginWebView, WebView identityLoginWebView,
-			OPCallDelegate callDelegate, OPConversationThreadDelegate conversationThreadDelegate) {
-		mListener = listener;
-		// mIdentityLoginWebView = identityLoginWebView;
-		this.mCallDelegate = callDelegate;
-		this.conversationThreadDelegate = conversationThreadDelegate;
-		return this;
-	}
-
 	private LoginManager() {
-		// TODO Auto-generated constructor stub
 	}
 
-	public boolean isLoginInProgress() {
-		return instance != null;
-	}
+	public void login(LoginUIListener listener,
+			OPCallDelegate callDelegate,
+			OPConversationThreadDelegate conversationThreadDelegate) {
+		mListener = listener;
 
-	/**
-	 * this function should be called after logging to release resources
-	 */
-	void destroy() {
-
-	}
-
-	public void login() {
 		OPAccountDelegateImplementation accountDelegate = OPAccountDelegateImplementation.getInstance();
 		accountDelegate.bind(mListener);
-		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, mCallDelegate, false);
+		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, callDelegate, false);
 		OPDataManager.getInstance().setSharedAccount(account);
 		startIdentityLogin();
 	}
 
-	public void relogin(String reloginInfo) {
-
+	public void relogin(LoginUIListener listener,
+			OPCallDelegate callDelegate,
+			OPConversationThreadDelegate conversationThreadDelegate,
+			String reloginInfo) {
+		mListener = listener;
 		OPAccountDelegateImplementation accountDelegate = OPAccountDelegateImplementation.getInstance();
 		accountDelegate.bind(mListener);
-		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, mCallDelegate, reloginInfo);
+		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, callDelegate, reloginInfo);
 
 		OPDataManager.getInstance().setSharedAccount(account);
 	}
 
 	public void startIdentityLogin() {
-		// TODO Auto-generated method stub
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
 		OPIdentityLoginWebview mIdentityLoginWebView = mListener.getIdentityWebview(null);
 
-		OPIdentityDelegateImplementation identityDelegate = OPIdentityDelegateImplementation.getInstance(null);// new
-																												// OPIdentityDelegateImplementation(mIdentityLoginWebView,
-																												// identity);
+		OPIdentityDelegateImplementation identityDelegate = OPIdentityDelegateImplementation.getInstance(null);
 		identityDelegate.bindListener(mListener);
 		identityDelegate.setWebview(mIdentityLoginWebView);
 
-		OPSdkConfig config = OPSdkConfig.getInstance();
-		identity = OPIdentity.login(account, identityDelegate, config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
-				config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
-				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
+		identity = OPIdentity.login(account, identityDelegate);
 		mIdentityLoginWebView.getClient().setIdentity(identity);
 	}
 

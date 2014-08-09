@@ -40,10 +40,11 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         progressView = view.findViewById(R.id.progress);
         mAccountLoginWebView = (WebView) view.findViewById(R.id.webview_account_login);
         mAccountLoginWebView.setWebViewClient(new OPAccountLoginWebViewClient());
+        //TODO: Dynamic generate and attach webview
         mIdentityLoginWebView = (OPIdentityLoginWebview) view.findViewById(R.id.webview_identity_login);
         mIdentityLoginWebView.setClient(new OPIdentityLoginWebViewClient(null));
-        setupWebView(mAccountLoginWebView);
 
+        setupWebView(mAccountLoginWebView);
         setupWebView(mIdentityLoginWebView);
 
         startLogin();
@@ -54,11 +55,15 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         String reloginInfo = OPDataManager.getInstance().getReloginInfo();
         if (reloginInfo == null || reloginInfo.length() == 0) {
             LoginManager.getInstance()
-                    .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate()).login();
+                    .login(LoginFragment.this,
+                            OPSessionManager.getInstance().getCallDelegate(),
+                            OPSessionManager.getInstance().getConversationThreadDelegate());
         } else {
             LoginManager.getInstance()
-                    .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, OPSessionManager.getInstance().getCallDelegate(), OPSessionManager.getInstance().getConversationThreadDelegate())
-                    .relogin(OPDataManager.getInstance().getReloginInfo());
+                    .relogin(LoginFragment.this,
+                            OPSessionManager.getInstance().getCallDelegate(),
+                            OPSessionManager.getInstance().getConversationThreadDelegate(),
+                            reloginInfo);
         }
     }
 
@@ -148,7 +153,6 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	@Override
 	public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity) {
-		// TODO Auto-generated method stub
 		return mIdentityLoginWebView;
 	}
     /* END implementation of LoginUIListener */
