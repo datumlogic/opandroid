@@ -67,18 +67,14 @@ public class OPAccountDelegateImpl extends OPAccountDelegate {
 		case AccountState_WaitingForAssociationToIdentity:
 			break;
 		case AccountState_WaitingForBrowserWindowToBeLoaded:
-			mListener.getAccountWebview().post(new Runnable() {
-				public void run() {
-					mListener.getAccountWebview().loadUrl(OPSdkConfig.getInstance().getNamespaceGrantServiceUrl());
-				}
-			});
+
+			mListener.getAccountWebview().loadUrl(OPSdkConfig.getInstance().getNamespaceGrantServiceUrl());
+
 			break;
 		case AccountState_WaitingForBrowserWindowToBeMadeVisible:
-			mListener.getAccountWebview().post(new Runnable() {
-				public void run() {
-					mListener.onAccountLoginWebViewMadeVisible();
-				}
-			});
+
+			mListener.onAccountLoginWebViewMadeVisible();
+
 			account.notifyBrowserWindowVisible();
 			break;
 		case AccountState_WaitingForBrowserWindowToClose:
@@ -98,14 +94,10 @@ public class OPAccountDelegateImpl extends OPAccountDelegate {
 			break;
 		case AccountState_Shutdown:
 			OPDataManager.getInstance().setAccountReady(false);
-			if (mListener != null) {
-				mListener.getAccountWebview().post(new Runnable() {
-					public void run() {
-						mListener.onLoginError();
-						mListener = null;
-					}
-				});
-			}
+
+			mListener.onLoginError();
+			mListener = null;
+
 			if (LoginManager.isLogIn()) {
 				LoginManager.onAccountShutdown();
 			}
@@ -133,12 +125,10 @@ public class OPAccountDelegateImpl extends OPAccountDelegate {
 	}
 
 	void passMessageToJS(final String msg) {
-		mListener.getAccountWebview().post(new Runnable() {
-			public void run() {
-				String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
-				Log.w("JNI", "Pass to JS: " + cmd);
-				mListener.getAccountWebview().loadUrl(cmd);
-			}
-		});
+
+		String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
+		Log.w("JNI", "Pass to JS: " + cmd);
+		mListener.getAccountWebview().loadUrl(cmd);
+
 	}
 }

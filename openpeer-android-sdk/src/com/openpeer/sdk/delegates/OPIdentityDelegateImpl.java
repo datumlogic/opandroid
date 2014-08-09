@@ -129,13 +129,10 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 		case IdentityState_Shutdown:
 			// Temporary defensive code. Proper logic will be put in place soon.
 			if (mListener != null) {
-				mLoginView.post(new Runnable() {
-					public void run() {
 						mListener.onLoginError();
 						mListener = null;
 						mLoginView = null;
-					}
-				});
+
 			}
 			break;
 		}
@@ -153,9 +150,11 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 	@Override
 	public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 		OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
-		mListener.onLoginComplete();
-		mListener = null;
-		mLoginView = null;
+		if (mListener != null) {
+			mListener.onLoginComplete();
+			mListener = null;
+			mLoginView = null;
+		}
 
 		// destroy();
 	}
