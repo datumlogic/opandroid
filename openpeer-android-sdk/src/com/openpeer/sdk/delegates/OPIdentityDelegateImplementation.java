@@ -113,7 +113,7 @@ public class OPIdentityDelegateImplementation extends OPIdentityDelegate {
 			identity.notifyBrowserWindowClosed();
 			break;
 		case IdentityState_Ready:
-			// LoginManager.mIdentity.;
+			mLoginView = null;
 			if (OPDataManager.getInstance().getSharedAccount().getState(0, "") == AccountStates.AccountState_Ready) {
 				OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
 

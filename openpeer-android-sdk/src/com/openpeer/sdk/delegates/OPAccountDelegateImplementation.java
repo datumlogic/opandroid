@@ -100,6 +100,11 @@ public  class OPAccountDelegateImplementation extends OPAccountDelegate {
 					}
 				});
 			}
+			if(LoginManager.isLogIn()){
+			LoginManager.onAccountShutdown();
+			}
+			mListener=null;
+			
 			break;
 			default:
 				break;

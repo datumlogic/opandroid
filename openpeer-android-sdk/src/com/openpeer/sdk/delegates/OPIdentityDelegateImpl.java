@@ -37,6 +37,7 @@ import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
+import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPIdentityLoginWebViewClient;
@@ -166,7 +167,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 	public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 		OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
 		mListener.onLoginComplete();
-		// destroy();
+		LoginManager.onLoginComplete();
 	}
 
 	public void passMessageToJS(final OPIdentity identity, final String msg) {

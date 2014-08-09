@@ -132,4 +132,24 @@ public class LoginManager {
 		}
 
 	}
+
+	public static void onLoginComplete() {
+		instance = null;
+	}
+
+	/**
+	 * @return
+	 */
+	public static boolean isLogIn() {
+		// TODO Auto-generated method stub
+		return instance != null;
+	}
+
+	/**
+	 * 
+	 */
+	public static void onAccountShutdown() {
+		// release resources
+		instance = null;
+	}
 }
