@@ -86,29 +86,22 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 		// mLoginView.getClient().setIdentity(identity);
 		switch (state) {
 		case IdentityState_WaitingForBrowserWindowToBeLoaded:
-			// LoginManager.loadOuterFrame();//load identity.html
-			mLoginView.post(new Runnable() {
-				public void run() {
-					Log.d("login", "loading identity webview");
-					mListener.onStartIdentityLogin();
-					mLoginView.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
-				}
-			});
+
+			Log.d("login", "loading identity webview");
+			mListener.onStartIdentityLogin();
+			mLoginView.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
+
 			break;
 		case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
-			mLoginView.post(new Runnable() {
-				public void run() {
-					mListener.onIdentityLoginWebViewMadeVisible();
-				}
-			});
+
+			mListener.onIdentityLoginWebViewMadeVisible();
+
 			identity.notifyBrowserWindowVisible();
 			break;
 		case IdentityState_WaitingForBrowserWindowToClose:
-			mLoginView.post(new Runnable() {
-				public void run() {
-					mListener.onIdentityLoginWebViewClose();
-				}
-			});
+
+			mListener.onIdentityLoginWebViewClose();
+
 			identity.notifyBrowserWindowClosed();
 			break;
 		case IdentityState_Ready:
@@ -129,9 +122,9 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 		case IdentityState_Shutdown:
 			// Temporary defensive code. Proper logic will be put in place soon.
 			if (mListener != null) {
-						mListener.onLoginError();
-						mListener = null;
-						mLoginView = null;
+				mListener.onLoginError();
+				mListener = null;
+				mLoginView = null;
 
 			}
 			break;
@@ -160,12 +153,10 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 	}
 
 	public void passMessageToJS(final String msg) {
-		mLoginView.post(new Runnable() {
-			public void run() {
-				String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
-				Log.w("login", "Identity webview Pass to JS: " + cmd);
-				mLoginView.loadUrl(cmd);
-			}
-		});
+
+		String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
+		Log.w("login", "Identity webview Pass to JS: " + cmd);
+		mLoginView.loadUrl(cmd);
+
 	}
 }
