@@ -7,20 +7,20 @@ import android.util.Log;
 
 import com.openpeer.javaapi.OPCacheDelegate;
 
-public class OPCacheDelegateImplementation extends OPCacheDelegate {
+public class OPCacheDelegateImpl extends OPCacheDelegate {
 
 	//TODO: Considering the amount of cache to be stored I would prefer using diskbased lru cache
 	private static final String PREF_CACHE_NAME = "core_cache";
-	private static OPCacheDelegateImplementation instance;
+	private static OPCacheDelegateImpl instance;
 
-	private OPCacheDelegateImplementation() {
+	private OPCacheDelegateImpl() {
 	}
 
 	private Context mContext;
 
-	public static OPCacheDelegateImplementation getInstance(Context context) {
+	public static OPCacheDelegateImpl getInstance(Context context) {
 		if (instance == null) {
-			instance = new OPCacheDelegateImplementation();
+			instance = new OPCacheDelegateImpl();
 			instance.mContext = context;
 			instance.applyConfig();
 		}

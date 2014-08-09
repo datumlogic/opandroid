@@ -19,6 +19,7 @@ import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
+import com.openpeer.sdk.delegates.OPIdentityLookupDelegateImpl;
 import com.openpeer.sdk.model.OPUser;
 
 /**
@@ -132,7 +133,7 @@ public class OPDataManager {
 
 	public void identityLookup(OPIdentity identity, List<OPRolodexContact> contacts) {
 
-		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = OPIdentityLookupDelegateImplementation.getInstance(identity);
+		OPIdentityLookupDelegateImpl mIdentityLookupDelegate = OPIdentityLookupDelegateImpl.getInstance(identity);
 		List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
 
 		for (OPRolodexContact contact : contacts) {

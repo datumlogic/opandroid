@@ -16,12 +16,14 @@ import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPSettings;
+import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
-import com.openpeer.sdk.delegates.OPCacheDelegateImplementation;
+import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
+import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 
 /**
  * 
@@ -128,9 +130,10 @@ public class OPHelper {
 		OPSdkConfig.getInstance().init(mContext);
 
 		//
-		OPCacheDelegate cacheDelegate = OPCacheDelegateImplementation.getInstance(mContext);
+		OPCacheDelegate cacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
 		OPCache.setup(cacheDelegate);
 
+//		OPSettings.setup( OPSettingsDelegateImpl.getInstance(mContext));
 		OPSettings.applyDefaults();
 		OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014, SMB Phone Inc. / Hookflash Inc.
+ * Copyright (c) 2013, SMB Phone Inc. / Hookflash Inc.
  * All rights reserved.
  * <p/>
  * Redistribution and use in source and binary forms, with or without
@@ -32,82 +32,72 @@ import java.util.Hashtable;
 
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.WebView;
 
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
-import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPIdentityLoginWebViewClient;
 import com.openpeer.sdk.app.OPIdentityLoginWebview;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
-	protected LoginUIListener mListener;
+	OPIdentityLoginWebview mLoginView;
+	LoginUIListener mListener;
 
 	static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
 
-	public OPIdentityDelegateImpl() {
-	}
-
 	public static OPIdentityDelegateImpl getInstance(OPIdentity identity) {
-		OPIdentityDelegateImpl instance = instances.get(identity.getID());
+		Long id = 0L;
+		if (identity != null) {
+			id = identity.getID();
+		}
+		OPIdentityDelegateImpl instance = instances.get(id);
 		if (instance == null) {
 			instance = new OPIdentityDelegateImpl();
-			instances.put(identity.getID(), instance);
+			instances.put(id, instance);
 		}
 		return instance;
 	}
 
-	public void bindLoginListener(LoginUIListener listener) {
+	public void bindListener(LoginUIListener listener) {
 		mListener = listener;
 	}
 
-	public void unbindLoginListener() {
-		mListener = null;
-	}
-
-	public void bind(OPIdentity identity) {
+	public void associateIdentity(OPIdentity identity) {
+		instances.remove(0L);
 		instances.put(identity.getID(), this);
 	}
 
-	public void unbind(OPIdentity identity) {
-		instances.remove(identity.getID());
+	public void setWebview(OPIdentityLoginWebview webview) {
+		this.mLoginView = webview;
+
 	}
 
-	OPIdentityLoginWebview getWebview(OPIdentity identity) {
-		if (mListener != null) {
-			 OPIdentityLoginWebview webview = mListener.getIdentityWebview(identity);
-			 webview.setClient(new OPIdentityLoginWebViewClient(identity));
-			if (webview != null) {
-				webview.getClient().setIdentity(identity);
-			}
-			return webview;
-		}
-		return null;
+	public OPIdentityDelegateImpl() {
 	}
 
 	@Override
-	public void onIdentityStateChanged(final OPIdentity identity, IdentityStates state) {
+	public void onIdentityStateChanged(OPIdentity identity, IdentityStates state) {
 		// TODO Auto-generated method stub
 		Log.d("state", "identity state " + state);
-		// OPIdentityLoginWebview webview=null;
-
+		// why isn' this working? Weird!!
+//		mLoginView = mListener.getIdentityWebview(identity);
+//		mLoginView.getClient().setIdentity(identity);
 		switch (state) {
 		case IdentityState_WaitingForBrowserWindowToBeLoaded:
 			// LoginManager.loadOuterFrame();//load identity.html
-			getWebview(identity).post(new Runnable() {
+			mLoginView.post(new Runnable() {
 				public void run() {
 					Log.d("login", "loading identity webview");
-
 					mListener.onStartIdentityLogin();
-					getWebview(identity).loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
+					mLoginView.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
 				}
 			});
 			break;
 		case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
-			mListener.getIdentityWebview(identity).post(new Runnable() {
+			mLoginView.post(new Runnable() {
 				public void run() {
 					mListener.onIdentityLoginWebViewMadeVisible();
 				}
@@ -115,7 +105,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 			identity.notifyBrowserWindowVisible();
 			break;
 		case IdentityState_WaitingForBrowserWindowToClose:
-			mListener.getIdentityWebview(identity).post(new Runnable() {
+			mLoginView.post(new Runnable() {
 				public void run() {
 					mListener.onIdentityLoginWebViewClose();
 				}
@@ -123,7 +113,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 			identity.notifyBrowserWindowClosed();
 			break;
 		case IdentityState_Ready:
-			// LoginManager.mIdentity.;
+			mLoginView = null;
 			if (OPDataManager.getInstance().getSharedAccount().getState(0, "") == AccountStates.AccountState_Ready) {
 				OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
 
@@ -144,9 +134,10 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 		case IdentityState_Shutdown:
 			// Temporary defensive code. Proper logic will be put in place soon.
 			if (mListener != null) {
-				mListener.getIdentityWebview(identity).post(new Runnable() {
+				mLoginView.post(new Runnable() {
 					public void run() {
 						mListener.onLoginError();
+						mLoginView = null;
 					}
 				});
 			}
@@ -160,22 +151,22 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 		String msg = identity.getNextMessageForInnerBrowerWindowFrame();
 		Log.d("login", "identity pendingMessageForInnerFrame " + msg);
 
-		passMessageToJS(identity, msg);
+		passMessageToJS(msg);
 	}
 
 	@Override
 	public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
 		OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
 		mListener.onLoginComplete();
-		LoginManager.onLoginComplete();
+		// destroy();
 	}
 
-	public void passMessageToJS(final OPIdentity identity, final String msg) {
-		mListener.getIdentityWebview(identity).post(new Runnable() {
+	public void passMessageToJS(final String msg) {
+		mLoginView.post(new Runnable() {
 			public void run() {
 				String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
 				Log.w("login", "Identity webview Pass to JS: " + cmd);
-				mListener.getIdentityWebview(identity).loadUrl(cmd);
+				mLoginView.loadUrl(cmd);
 			}
 		});
 	}

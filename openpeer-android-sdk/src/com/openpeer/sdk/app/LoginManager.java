@@ -9,8 +9,8 @@ import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentity;
-import com.openpeer.sdk.delegates.OPAccountDelegateImplementation;
-import com.openpeer.sdk.delegates.OPIdentityDelegateImplementation;
+import com.openpeer.sdk.delegates.OPAccountDelegateImpl;
+import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 
 public class LoginManager {
 	private static LoginUIListener mListener;
@@ -32,7 +32,7 @@ public class LoginManager {
 			OPConversationThreadDelegate conversationThreadDelegate) {
 		mListener = listener;
 
-		OPAccountDelegateImplementation accountDelegate = OPAccountDelegateImplementation.getInstance();
+		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
 		accountDelegate.bind(mListener);
 		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, callDelegate, false);
 		OPDataManager.getInstance().setSharedAccount(account);
@@ -44,7 +44,7 @@ public class LoginManager {
 			OPConversationThreadDelegate conversationThreadDelegate,
 			String reloginInfo) {
 		mListener = listener;
-		OPAccountDelegateImplementation accountDelegate = OPAccountDelegateImplementation.getInstance();
+		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
 		accountDelegate.bind(mListener);
 		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, callDelegate, reloginInfo);
 
@@ -57,7 +57,7 @@ public class LoginManager {
 		OPIdentity identity = new OPIdentity();
 		OPIdentityLoginWebview mIdentityLoginWebView = mListener.getIdentityWebview(null);
 
-		OPIdentityDelegateImplementation identityDelegate = OPIdentityDelegateImplementation.getInstance(null);
+		OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(null);
 		identityDelegate.bindListener(mListener);
 		identityDelegate.setWebview(mIdentityLoginWebView);
 
@@ -81,7 +81,7 @@ public class LoginManager {
 				OPIdentityLoginWebview webview = mListener.getIdentityWebview(identity);
 				webview.getClient().setIdentity(identity);
 
-				OPIdentityDelegateImplementation identityDelegate = OPIdentityDelegateImplementation.getInstance(identity);// new
+				OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(identity);// new
 																															// OPIdentityDelegateImplementation(mIdentityLoginWebView,
 																															// identity);
 				identityDelegate.bindListener(mListener);

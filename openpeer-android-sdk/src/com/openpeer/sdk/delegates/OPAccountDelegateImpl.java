@@ -38,18 +38,18 @@ import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSdkConfig;
 
-public class OPAccountDelegateImplementation extends OPAccountDelegate {
+public class OPAccountDelegateImpl extends OPAccountDelegate {
 	LoginUIListener mListener;
-	private static OPAccountDelegateImplementation instance;
+	private static OPAccountDelegateImpl instance;
 
-	public static OPAccountDelegateImplementation getInstance() {
+	public static OPAccountDelegateImpl getInstance() {
 		if (instance == null) {
-			instance = new OPAccountDelegateImplementation();
+			instance = new OPAccountDelegateImpl();
 		}
 		return instance;
 	}
 
-	private OPAccountDelegateImplementation() {
+	private OPAccountDelegateImpl() {
 	}
 
 	public void bind(LoginUIListener listener) {

@@ -60,7 +60,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 
 	@Override
 	public String getString(String key) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "getString key " + key );
 		return preference.getString(key, null);
 	}
 
@@ -71,7 +71,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public long getInt(String key) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "getInt key " + key );
 		return preference.getLong(key, 0);
 	}
 
@@ -82,7 +82,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public long getUInt(String key) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "getUInt key " + key );
 		return preference.getLong(key, 0);
 	}
 
@@ -93,7 +93,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public boolean getBool(String key) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "getBool key " + key );
 		return preference.getBoolean(key, false);
 	}
 
@@ -104,7 +104,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public float getFloat(String key) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "getFloat key " + key );
 		return preference.getFloat(key, 0.0f);
 	}
 
@@ -115,7 +115,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public double getDouble(String key) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "getDouble key " + key );
 		return preference.getFloat(key, 0.0f);
 	}
 
@@ -126,7 +126,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public void setString(String key, String value) {
-		Log.d(TAG, "key " + key + " value " + value);
+		Log.d(TAG, "setString key " + key + " value " + value);
 		getEditor().putString(key, value).apply();
 
 	}
@@ -138,7 +138,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public void setInt(String key, long value) {
-		Log.d(TAG, "key " + key + " value " + value);
+		Log.d(TAG, "setInt key " + key + " value " + value);
 		getEditor().putLong(key, value).apply();
 
 	}
@@ -161,7 +161,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public void setBool(String key, boolean value) {
-		Log.d(TAG, "key " + key + " value " + value);
+		Log.d(TAG, "setBool key " + key + " value " + value);
 		getEditor().putBoolean(key, value).apply();
 	}
 
@@ -172,7 +172,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public void setFloat(String key, float value) {
-		Log.d(TAG, "key " + key + " value " + value);
+		Log.d(TAG, "setFloat key " + key + " value " + value);
 		getEditor().putFloat(key, value).apply();
 	}
 
@@ -183,6 +183,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 */
 	@Override
 	public void setDouble(String key, double value) {
+		Log.d(TAG, "setDouble key " + key + " value " + value);
+
 		getEditor().putFloat(key, (float) value).apply();
 	}
 
