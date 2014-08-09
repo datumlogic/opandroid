@@ -67,7 +67,7 @@ public class OPApplication extends Application {
     public static void signout(){
         OPDataManager.shutdown();
         OPPushManager.shutdown();
-        OPHelper.shutdown();
+//        OPHelper.shutdown();
     }
 
 }
