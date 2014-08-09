@@ -51,7 +51,8 @@ public class OPTestIdentityLookup {
 				Log.d("output", "Identity lookup test started...");
 				OPDownloadedRolodexContacts rolodexContacts = mIdentity.getDownloadedRolodexContacts();
 				
-				List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();;
+				List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
+				int size = rolodexContacts.getRolodexContacts().size();
 				for(OPRolodexContact contact : rolodexContacts.getRolodexContacts())
 				{
 					OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
