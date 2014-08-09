@@ -34,14 +34,14 @@ import com.openpeer.sample.R;
  */
 public class CallUtil {
     final static int STATE_STRINGS[] = {0,// CallState_None, // call has no state yet
-            0,// CallState_Preparing, // call is negotiating in the background - do not present this call to a user yet...
+            R.string.CallState_Preparing,// CallState_Preparing, // call is negotiating in the background - do not present this call to a user yet...
             R.string.CallState_Incoming, // call is incoming from a remote party
             R.string.CallState_Placed, // call has been placed to the remote party
             0,// CallState_Early, // call is outgoing to a remote party and is receiving early media (media before being answered)
             R.string.CallState_Ringing,// CallState_Ringing, // call is incoming from a remote party and is ringing
             R.string.CallState_Ringback, // call is outgoing to a remote party and remote party is ringing
-            0,// R.string.CallState_Open, // call is open
-            0, R.string.CallState_Active, // call is open, and participant is actively communicating
+            R.string.CallState_Open,// R.string.CallState_Open, // call is open
+            R.string.CallState_Active, // call is open, and participant is actively communicating
             R.string.CallState_Inactive, // call is open, and participant is inactive
             R.string.CallState_Hold, // call is open but on hold
             R.string.CallState_Closing, // call is hanging up

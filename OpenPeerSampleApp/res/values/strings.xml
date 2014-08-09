@@ -21,6 +21,7 @@
     <string name="audio">Audio</string>
     <string name="video">Video</string>
     <!-- Beginning of call state strings -->
+    <string name="CallState_Preparing">Preparing</string>
     <string name="CallState_Incoming">Incoming</string>
     <string name="CallState_Placed">Calling</string>
     <string name="CallState_Ringing">Ringing</string>
