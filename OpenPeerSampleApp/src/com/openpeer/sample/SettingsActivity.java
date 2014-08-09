@@ -133,16 +133,16 @@ public class SettingsActivity extends Activity {
             });
             notificationSoundPref = (RingtonePreference) findPreference(KEY_NOTIFICATION_SOUND_SELECT);
             ringtonePref = (RingtonePreference) findPreference(KEY_RINGTONE);
-            Preference signoutPref = findPreference(KEY_SIGNOUT);
-            signoutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    OPApplication.signout();
-                    MainActivity.cleanLaunch(getActivity());
-                    getActivity().finish();
-                    return true;
-                }
-            });
+//            Preference signoutPref = findPreference(KEY_SIGNOUT);
+//            signoutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//                @Override
+//                public boolean onPreferenceClick(Preference preference) {
+//                    OPApplication.signout();
+//                    MainActivity.cleanLaunch(getActivity());
+//                    getActivity().finish();
+//                    return true;
+//                }
+//            });
 
             setupAboutInfo();
         }
