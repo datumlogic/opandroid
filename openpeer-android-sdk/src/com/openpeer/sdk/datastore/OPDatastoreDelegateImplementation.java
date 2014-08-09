@@ -583,4 +583,16 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		return false;
 	}
 
+	public OPUser getUserById(long id) {
+		String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + "=" + id;
+		Cursor cursor = query(ContactsViewEntry.TABLE_NAME, null, selection, null);
+		Log.d(TAG, "getUserById " + cursor);
+		if (cursor != null && cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			return OPUser.fromDetailCursor(cursor);
+		} else {
+			return null;
+		}
+	}
+
 }

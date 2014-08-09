@@ -214,7 +214,6 @@ public class OPSession extends Observable {
 
 		OPCall call = OPCall.placeCall(getThread(), newContact, includeAudio,
 				includeVideo);
-		call.setPeerUser(user);
 		// CallbackHandler.getInstance().registerCallDelegate(call,
 		// delegate);
 		return call;

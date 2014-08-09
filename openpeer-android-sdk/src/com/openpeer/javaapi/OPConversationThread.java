@@ -5,11 +5,26 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.OPUser;
 
 import android.text.format.Time;
 import android.util.Log;
 
 public class OPConversationThread {
+
+	/**
+	 * Helper function to make sure required fields are populated.
+	 * 
+	 * @param messageID
+	 * @return
+	 */
+	public OPMessage getMessageById(String messageID) {
+		OPMessage message = getMessage(messageID);
+		OPContact from = message.getFrom();
+		OPUser user = OPDataManager.getInstance().getUserForMessage(from, this);
+		message.setSenderId(user.getUserId());
+		return message;
+	}
 
 	private long nativeClassPointer;
 
@@ -49,7 +64,7 @@ public class OPConversationThread {
 	public native void sendMessage(String messageID, String messageType, String message, boolean signMessage);
 
 	// returns false if the message ID is not known
-	public native OPMessage getMessage(String messageID);
+	private native OPMessage getMessage(String messageID);
 
 	// returns false if the message ID is not known
 	public native MessageDeliveryStates getMessageDeliveryState(String messageID);

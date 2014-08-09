@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.sdk.app.OPDataManager;

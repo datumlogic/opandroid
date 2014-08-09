@@ -1,18 +1,51 @@
 package com.openpeer.javaapi;
 
-import com.openpeer.sdk.model.OPUser;
-import com.openpeer.sdk.utils.OPModelUtils;
+import java.util.List;
 
 import android.text.format.Time;
 
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.OPUser;
+
 public class OPCall {
+	/**
+	 * Helper function. Get the caller/callee OPContact.
+	 * 
+	 * @return
+	 */
+	public OPContact getPeer() {
+		OPContact peer = getCaller();
+		if (peer.isSelf()) {
+			return getCallee();
+		} else {
+			return peer;
+		}
+	}
+
+	/**
+	 * Helper function to retrieve the peer user information.
+	 * 
+	 * @return
+	 */
+	public OPUser getPeerUser() {
+		return OPDataManager.getInstance().getPeerUserForCall(this);
+	}
+
+	/**
+	 * Helper function. Retrieve identity contact list of the peer
+	 * 
+	 * @param contact
+	 * @return
+	 */
+	public List<OPIdentityContact> getIdentityContactList(OPContact contact) {
+		// TODO Auto-generated method stub
+		return getConversationThread().getIdentityContactList(contact);
+	}
+
 	public OPCall() {
 	}
 
-	public OPCall(long nativeClassPtr) {
-		this.nativeClassPointer = nativeClassPtr;
-	}
-
+	// BEGINNING OF JNI -- BE CAREFUL OF ANY SIGNATURE CHANGES
 	private long nativeClassPointer;
 	private OPUser mUser;
 
@@ -58,43 +91,17 @@ public class OPCall {
 	public native void hold(boolean hold); // place the call on hold (or remove from hold)
 
 	public native void hangup(CallClosedReasons reason); // end the call
-	// End of JNI
 
-	public OPContact getPeer() {
-		OPContact peer = getCaller();
-		if (peer.isSelf()) {
-			return getCallee();
-		} else {
-			return peer;
+	private native void releaseCoreObjects();
+
+	protected void finalize() throws Throwable {
+
+		if (nativeClassPointer != 0)
+		{
+			releaseCoreObjects();
 		}
-	}
 
-	public OPUser getPeerUser() {
-		if (mUser == null) {
-			OPContact contact = getPeer();
-			return new OPUser(contact, getConversationThread().getIdentityContactList(contact));
-		}
-		return mUser;
+		super.finalize();
 	}
-
-	public void setPeerUser(OPUser user) {
-		this.mUser = user;
-	}
-
-	public Long getNativeClsPtr() {
-		// TODO Auto-generated method stub
-		return nativeClassPointer;
-	}
-    private native void releaseCoreObjects(); 
-
-    protected void finalize() throws Throwable {
-    	
-    	if (nativeClassPointer != 0)
-    	{
-    		releaseCoreObjects();
-    	}
-    		
-    	super.finalize();
-    }
 
 }

@@ -33,13 +33,13 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class OPSessionManager {
-    static final String TAG = OPSessionManager.class.getSimpleName();
-    List<OPSession> mSessions;
+	static final String TAG = OPSessionManager.class.getSimpleName();
+	List<OPSession> mSessions;
 
-    Hashtable<String, OPCall> mCalls;
+	Hashtable<String, OPCall> mCalls;
 
-    private OPConversationThreadDelegate mThreadDelegate;
-    private OPCallDelegate mCallDelegate;
+	private OPConversationThreadDelegate mThreadDelegate;
+	private OPCallDelegate mCallDelegate;
 	private static OPSessionManager instance;
 
 	public static OPSessionManager getInstance() {
@@ -57,7 +57,7 @@ public class OPSessionManager {
 
 	/**
 	 * Look up existing session for thread. Uses thread id to look up
-	 *
+	 * 
 	 * @param thread
 	 * @return
 	 */
@@ -75,7 +75,7 @@ public class OPSessionManager {
 
 	/**
 	 * Look up the session "for" users. This call use calculated window id to find the session.
-	 *
+	 * 
 	 * @param userIDs
 	 * @return
 	 */
@@ -90,7 +90,7 @@ public class OPSessionManager {
 
 	/**
 	 * Find existing session "including" the users
-	 *
+	 * 
 	 * @param ids
 	 *            user ids
 	 * @return
@@ -118,109 +118,105 @@ public class OPSessionManager {
 		return call;
 	}
 
+	void init() {
+		mCalls = new Hashtable<String, OPCall>();
+		mThreadDelegate = new OPConversationThreadDelegate() {
 
+			@Override
+			public void onConversationThreadNew(OPConversationThread conversationThread) {
+				// TODO Auto-generated method stub
 
-    void init() {
-        mCalls = new Hashtable<String, OPCall>();
-         mThreadDelegate = new OPConversationThreadDelegate() {
+			}
 
-            @Override
-            public void onConversationThreadNew(OPConversationThread conversationThread) {
-                // TODO Auto-generated method stub
+			@Override
+			public void onConversationThreadContactsChanged(OPConversationThread conversationThread) {
+				// TODO Auto-generated method stub
 
-            }
+			}
 
-            @Override
-            public void onConversationThreadContactsChanged(OPConversationThread conversationThread) {
-                // TODO Auto-generated method stub
+			@Override
+			public void onConversationThreadContactStateChanged(OPConversationThread conversationThread, OPContact contact,
+					ContactStates state) {
+				// TODO Auto-generated method stub
 
-            }
+			}
 
-            @Override
-            public void onConversationThreadContactStateChanged(OPConversationThread conversationThread, OPContact contact,
-                                                                ContactStates state) {
-                // TODO Auto-generated method stub
+			@Override
+			public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
+				OPMessage message = conversationThread.getMessageById(messageID);
+				if (TextUtils.isEmpty(message.getMessageId())) {
+					message.setMessageId(messageID);
+				}
+				if (message.getFrom().isSelf()) {
+					Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
+							+ message.getMessageType());
+					return;
+				}
+				OPSession session = getSessionOfThread(conversationThread);
+				session.onMessageReceived(message);
+				if (OPApplication.getInstance().isInBackground()) {
+					OPNotificationBuilder.showNotificationForMessage(session, message);
+				}
+			}
 
-            }
+			@Override
+			public void onConversationThreadMessageDeliveryStateChanged(OPConversationThread conversationThread, String messageID,
+					MessageDeliveryStates state) {
 
-            @Override
-            public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
-                OPMessage message = conversationThread.getMessage(messageID);
-                if (TextUtils.isEmpty(message.getMessageId())) {
-                    message.setMessageId(messageID);
-                }
-                if (message.getFrom().isSelf()) {
-                    Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
-                            + message.getMessageType());
-                    return;
-                }
-                OPSession session = getSessionOfThread(conversationThread);
-                session.onMessageReceived(message);
-                if (OPApplication.getInstance().isInBackground()) {
-                    OPNotificationBuilder.showNotificationForMessage(session, message);
-                }
-            }
+			}
 
-            @Override
-            public void onConversationThreadMessageDeliveryStateChanged(OPConversationThread conversationThread, String messageID,
-                                                                        MessageDeliveryStates state) {
+			@Override
+			public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
+				final OPMessage message = conversationThread.getMessageById(messageID);
 
-            }
+				if (TextUtils.isEmpty(message.getMessageId())) {
+					Log.e("test", "weird! message id is empty " + message);
+					message.setMessageId(messageID);
+				}
 
-            @Override
-            public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
-                final OPMessage message = conversationThread.getMessage(messageID);
+				PushRegistrationManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
 
-                if (TextUtils.isEmpty(message.getMessageId())) {
-                    Log.e("test", "weird! message id is empty " + message);
-                    message.setMessageId(messageID);
-                }
+					@Override
+					public void success(PushToken token, Response response) {
+						Log.e("test", "onConversationThreadPushMessage push message " + message);
+						new UAPushProviderImpl().pushMessage(message, token, new Callback<PushResult>() {
+							@Override
+							public void success(PushResult pushResult, Response response) {
 
-                PushRegistrationManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
+							}
 
-                    @Override
-                    public void success(PushToken token, Response response) {
-                        Log.e("test", "onConversationThreadPushMessage push message " + message);
-                        new UAPushProviderImpl().pushMessage(message, token, new Callback<PushResult>() {
-                            @Override
-                            public void success(PushResult pushResult, Response response) {
+							@Override
+							public void failure(RetrofitError error) {
 
-                            }
+								if (error != null) {
+									Log.e(TAG, "eror pushing message " + error.getMessage());
+								}
+							}
+						});
+					}
 
-                            @Override
-                            public void failure(RetrofitError error) {
-
-                                if (error != null) {
-                                    Log.e(TAG, "eror pushing message " + error.getMessage());
-                                }
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        if (error != null) {
-                            Log.e(TAG, "eror retrieving device token " + error.getMessage());
-                        }
-                    }
-                });
+					@Override
+					public void failure(RetrofitError error) {
+						if (error != null) {
+							Log.e(TAG, "eror retrieving device token " + error.getMessage());
+						}
+					}
+				});
 			}
 		};
-        mCallDelegate = new OPCallDelegate() {
+		mCallDelegate = new OPCallDelegate() {
 
 			@Override
 			public void onCallStateChanged(OPCall call, CallStates state) {
-                Intent intent= new Intent();
-                intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
-                intent.putExtra(IntentData.ARG_CALL_STATE,state);
-                intent.putExtra(IntentData.ARG_CALL_ID,call.getCallID());
+				Intent intent = new Intent();
+				intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
+				intent.putExtra(IntentData.ARG_CALL_STATE, state);
+				intent.putExtra(IntentData.ARG_CALL_ID, call.getCallID());
 
-                OPApplication.getInstance().sendBroadcast(intent);
+				OPApplication.getInstance().sendBroadcast(intent);
 				switch (state) {
 				case CallState_Incoming:
 					OPContact caller = call.getCaller();
-					Log.d("test",
-							"OPSessionManager onCallStateChanged " + call.getNativeClsPtr() + " caller " + caller.getNativeClassPointer());
 					OPCall currentCall = getOngoingCallForPeer(caller.getPeerURI());
 					if (currentCall != null) {
 						// TODO: auto answer and swap calls
@@ -229,13 +225,12 @@ public class OPSessionManager {
 					}
 
 					OPUser user = getPeerUserForCall(call);
-					call.setPeerUser(user);
 					Log.d("test", "found user for incoming call " + user);
 
 					mCalls.put(caller.getPeerURI(), call);
 					CallActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
 					break;
-                case CallState_Closing:
+				case CallState_Closing:
 				case CallState_Closed:
 					onCallEnd(call);
 					break;
@@ -250,49 +245,49 @@ public class OPSessionManager {
 		return mThreadDelegate;
 	}
 
-    public OPCallDelegate getCallDelegate() {
-        return mCallDelegate;
-    }
+	public OPCallDelegate getCallDelegate() {
+		return mCallDelegate;
+	}
 
-    public OPCall getOngoingCallForPeer(String peerUri) {
-        return mCalls.get(peerUri);
-    }
+	public OPCall getOngoingCallForPeer(String peerUri) {
+		return mCalls.get(peerUri);
+	}
 
-    public void onCallEnd(OPCall mCall) {
-        String peerUri = mCall.getPeer().getPeerURI();
-        mCalls.remove(peerUri);
-        mCallStates.remove(peerUri);
-        OPNotificationBuilder.cancelNotificationForCall(mCall);
-    }
+	public void onCallEnd(OPCall mCall) {
+		String peerUri = mCall.getPeer().getPeerURI();
+		mCalls.remove(peerUri);
+		mCallStates.remove(peerUri);
+		OPNotificationBuilder.cancelNotificationForCall(mCall);
+	}
 
-    public void hangupCall(OPCall mCall, CallClosedReasons reason) {
-        mCall.hangup(reason);
-        onCallEnd(mCall);
-    }
+	public void hangupCall(OPCall mCall, CallClosedReasons reason) {
+		mCall.hangup(reason);
+		onCallEnd(mCall);
+	}
 
-    public OPUser getPeerUserForCall(OPCall call) {
-        OPContact contact = call.getPeer();
+	public OPUser getPeerUserForCall(OPCall call) {
+		OPContact contact = call.getPeer();
 
-        OPUser user = new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
-        user = OPDataManager.getDatastoreDelegate().saveUser(user);
-        return user;
-    }
+		OPUser user = new OPUser(contact, call.getConversationThread().getIdentityContactList(contact));
+		user = OPDataManager.getDatastoreDelegate().saveUser(user);
+		return user;
+	}
 
-    Hashtable<String, CallStatus> mCallStates = new Hashtable<String, CallStatus>();
+	Hashtable<String, CallStatus> mCallStates = new Hashtable<String, CallStatus>();
 
-    public CallStatus getMediaStateForCall(String peerUri) {
-        CallStatus state = null;
-        if (mCallStates == null) {
-            mCallStates = new Hashtable<String, CallStatus>();
+	public CallStatus getMediaStateForCall(String peerUri) {
+		CallStatus state = null;
+		if (mCallStates == null) {
+			mCallStates = new Hashtable<String, CallStatus>();
 
-        } else {
-            state = mCallStates.get(peerUri);
-        }
-        if (state == null) {
-            state = new CallStatus();
-            mCallStates.put(peerUri, state);
-        }
-        return state;
+		} else {
+			state = mCallStates.get(peerUri);
+		}
+		if (state == null) {
+			state = new CallStatus();
+			mCallStates.put(peerUri, state);
+		}
+		return state;
 
-    }
+	}
 }

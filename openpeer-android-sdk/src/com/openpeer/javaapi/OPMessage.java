@@ -1,6 +1,8 @@
 package com.openpeer.javaapi;
 
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.model.OPUser;
 
 import android.database.Cursor;
 import android.text.format.Time;
@@ -140,6 +142,15 @@ public class OPMessage {
 	public String toString() {
 		return super.toString() + " from " + mFrom + " messageType "
 				+ mMessageType + " message " + mMessage + " id " + mMessageId + " sender id " + mSenderId;
+	}
+
+	/**
+	 * Helper function. Get from user of received message. Don't call this function for your own message.
+	 * 
+	 * @return
+	 */
+	public OPUser getFromUser() {
+		return OPDataManager.getInstance().getUserById(mSenderId);
 	}
 
 }

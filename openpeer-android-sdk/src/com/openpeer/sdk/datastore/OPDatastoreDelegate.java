@@ -49,6 +49,12 @@ public interface OPDatastoreDelegate {
 
 	public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long stableID);
 
+	/**
+	 * Return user with updated userId
+	 * 
+	 * @param user
+	 * @return
+	 */
 	OPUser saveUser(OPUser user);
 
 	public List<OPAvatar> getAvatars(String identityUri);
@@ -71,9 +77,10 @@ public interface OPDatastoreDelegate {
 	 */
 	OPMessage getMessage(String messageId);
 
-	/*
-	 * public boolean saveConversationRecord(OPConversationRecord record); public boolean saveCallRecord(OPConversationRecord record);
-	 * public List<OPConversationRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords); public
-	 * List<OPCallRecord> getConversationRecords(String contactId, int pageNumber, int numberofRecords);
+	/**
+	 * @param id
+	 * @return
 	 */
+	public OPUser getUserById(long id);
+
 }

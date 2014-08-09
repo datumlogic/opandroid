@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -192,6 +194,16 @@ public class OPDataManager {
 		return mDatastoreDelegate.getUserByPeerUri(uri);
 	}
 
+	public OPUser getPeerUserForCall(OPCall call) {
+		OPContact contact = call.getPeer();
+		OPUser user = mDatastoreDelegate.getUserByPeerUri(contact.getPeerURI());
+		if (user == null) {
+			user = new OPUser(contact, call.getIdentityContactList(contact));
+			user = mDatastoreDelegate.saveUser(user);
+		}
+		return user;
+	}
+
 	/**
 	 * @param url
 	 * @param lookup
@@ -202,6 +214,24 @@ public class OPDataManager {
 			updateIdentityContacts(url, iContacts);
 		}
 		mIdentityLookups.remove(url);
+	}
+
+	/**
+	 * @param from
+	 * @param opConversationThread
+	 * @return
+	 */
+	public OPUser getUserForMessage(OPContact from, OPConversationThread thread) {
+		OPUser user = getUserByPeerUri(from.getPeerURI());
+		if (user == null) {
+			user = new OPUser(from, thread.getIdentityContactList(from));
+			user = mDatastoreDelegate.saveUser(user);
+		}
+		return user;
+	}
+
+	public OPUser getUserById(long id) {
+		return mDatastoreDelegate.getUserById(id);
 	}
 
 }
