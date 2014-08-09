@@ -21,10 +21,20 @@ void AccountDelegateWrapper::onAccountStateChanged(IAccountPtr account, IAccount
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "onAccountStateChanged state = %d", (jint)state);
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 
 	if (javaDelegate != NULL){
@@ -55,7 +65,10 @@ void AccountDelegateWrapper::onAccountStateChanged(IAccountPtr account, IAccount
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 
 }
 void AccountDelegateWrapper::onAccountAssociatedIdentitiesChanged(IAccountPtr account)
@@ -68,10 +81,20 @@ void AccountDelegateWrapper::onAccountAssociatedIdentitiesChanged(IAccountPtr ac
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "onAccountAssociatedIdentitiesChanged called");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 
 	if (javaDelegate != NULL){
@@ -102,7 +125,10 @@ void AccountDelegateWrapper::onAccountAssociatedIdentitiesChanged(IAccountPtr ac
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 void AccountDelegateWrapper::onAccountPendingMessageForInnerBrowserWindowFrame(IAccountPtr account)
 {
@@ -114,10 +140,20 @@ void AccountDelegateWrapper::onAccountPendingMessageForInnerBrowserWindowFrame(I
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "onAccountPendingMessageForInnerBrowserWindowFrame called");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 
 	if (javaDelegate != NULL){
@@ -148,7 +184,10 @@ void AccountDelegateWrapper::onAccountPendingMessageForInnerBrowserWindowFrame(I
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 
 

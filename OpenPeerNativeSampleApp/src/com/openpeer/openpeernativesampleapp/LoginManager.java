@@ -22,12 +22,14 @@ import com.openpeer.delegates.OPIdentityLookupDelegateImplementation;
 import com.openpeer.delegates.OPMediaEngineDelegateImplementation;
 import com.openpeer.delegates.OPSettingsDelegateImplementation;
 import com.openpeer.delegates.OPStackDelegateImplementation;
+import com.openpeer.delegates.OPStackMessageQueueDelegateImplementation;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
+import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentity;
@@ -45,6 +47,7 @@ import com.openpeer.javaapi.OPStackDelegate;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPMediaEngineDelegate;
+import com.openpeer.javaapi.OPStackMessageQueueDelegate;
 
 public class LoginManager {
 
@@ -59,7 +62,9 @@ public class LoginManager {
 		
 		Log.d("output", "instance ID = " + mInstanceId);
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
-		//stackMessageQueue = OPStackMessageQueue.singleton(); 
+		stackMessageQueueDelegate = new OPStackMessageQueueDelegateImplementation();
+		stackMessageQueue = OPStackMessageQueue.singleton();
+		stackMessageQueue.interceptProcessing(stackMessageQueueDelegate);
 		OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
 		OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
 		//OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
@@ -109,6 +114,7 @@ public class LoginManager {
 	public static OPStackDelegate mStackDelegate;
 	public static OPMediaEngineDelegate mMediaEngineDelegate;
 	public static OPStackMessageQueue stackMessageQueue;
+	public static OPStackMessageQueueDelegate stackMessageQueueDelegate;
 	public static OPAccount mAccount;
 	public static OPAccountDelegate mAccountDelegate;
 	public static OPIdentity mIdentity;
@@ -183,7 +189,7 @@ public class LoginManager {
 		try {
 			JSONObject parent = new JSONObject();
 			JSONObject jsonObject = new JSONObject();
-
+//"setting-name": {"$type:"bool","#text": "true"}
 			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", "true");
 			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", "true");
 			parent.put("root", jsonObject);
@@ -326,6 +332,8 @@ public class LoginManager {
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString("/openpeer/reloginInformation", mAccount.getReloginInformation());
 		editor.commit();
+		
+		OPContact.getForSelf(mAccount);
 
 		//mIdentity = 
 		List<OPIdentity> identityList = mAccount.getAssociatedIdentities();

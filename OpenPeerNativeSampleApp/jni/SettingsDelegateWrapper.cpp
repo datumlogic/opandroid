@@ -152,7 +152,7 @@ ULONG SettingsDelegateWrapper::getUInt(const char *key) const
 		String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
 
 		jclass callbackClass = findClass(className.c_str());
-		method = jni_env->GetMethodID(callbackClass, "getUIntSetting", "(Ljava/lang/String;)J");
+		method = jni_env->GetMethodID(callbackClass, "getUInt", "(Ljava/lang/String;)J");
 		fetchedUInt = jni_env->CallLongMethod(javaDelegate, method, keyStr);
 	}
 	else

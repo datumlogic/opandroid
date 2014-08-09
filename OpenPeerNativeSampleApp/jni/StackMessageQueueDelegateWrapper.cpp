@@ -21,11 +21,22 @@ void StackMessageQueueDelegateWrapper::onStackMessageQueueWakeUpCustomThreadAndP
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "onStackMessageQueueWakeUpCustomThreadAndProcessOnCustomThread called");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
+
 	if (javaDelegate != NULL)
 	{
 		//get delegate implementation class name in order to get method
@@ -44,7 +55,10 @@ void StackMessageQueueDelegateWrapper::onStackMessageQueueWakeUpCustomThreadAndP
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 
 StackMessageQueueDelegateWrapper::~StackMessageQueueDelegateWrapper()

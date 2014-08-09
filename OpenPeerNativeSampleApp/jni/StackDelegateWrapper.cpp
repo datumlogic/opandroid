@@ -20,10 +20,20 @@ void StackDelegateWrapper::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "onStackShutdown called");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 	if (javaDelegate != NULL)
 	{
@@ -42,7 +52,10 @@ void StackDelegateWrapper::onStackShutdown(openpeer::core::IStackAutoCleanupPtr)
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 
 StackDelegateWrapper::~StackDelegateWrapper()
