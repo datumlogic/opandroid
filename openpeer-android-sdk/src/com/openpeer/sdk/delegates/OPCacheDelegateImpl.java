@@ -38,14 +38,14 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
 	}
 
 	@Override
-	public String fetch(String cookieNamePath) {
+	public synchronized String fetch(String cookieNamePath) {
 		// TODO connect with shared preferences
 
 		return getPreference().getString(cookieNamePath, "");
 	}
 
 	@Override
-	public void store(String cookieNamePath, Time expires, String str) {
+	public synchronized void store(String cookieNamePath, Time expires, String str) {
 //		Log.d("OPCacheDelegateImplementation", "cookieNamePath "
 //				+ cookieNamePath + " expires " + expires + " value " + str);
 		SharedPreferences.Editor editor = getPreference().edit();
@@ -55,7 +55,7 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
 	}
 
 	@Override
-	public void clear(String cookieNamePath) {
+	public synchronized void clear(String cookieNamePath) {
 		// TODO connect with shared preferences
 		SharedPreferences.Editor editor = getPreference().edit();
 		editor.remove(cookieNamePath);

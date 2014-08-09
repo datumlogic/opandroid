@@ -59,8 +59,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	}
 
 	@Override
-	public String getString(String key) {
-		Log.d(TAG, "getString key " + key );
+	public synchronized String getString(String key) {
+		Log.d(TAG, "getString key " + key);
 		return preference.getString(key, null);
 	}
 
@@ -70,8 +70,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getInt(java.lang.String)
 	 */
 	@Override
-	public long getInt(String key) {
-		Log.d(TAG, "getInt key " + key );
+	public synchronized long getInt(String key) {
+		Log.d(TAG, "getInt key " + key);
 		return preference.getLong(key, 0);
 	}
 
@@ -81,8 +81,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getUInt(java.lang.String)
 	 */
 	@Override
-	public long getUInt(String key) {
-		Log.d(TAG, "getUInt key " + key );
+	public synchronized long getUInt(String key) {
+		Log.d(TAG, "getUInt key " + key);
 		return preference.getLong(key, 0);
 	}
 
@@ -92,8 +92,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getBool(java.lang.String)
 	 */
 	@Override
-	public boolean getBool(String key) {
-		Log.d(TAG, "getBool key " + key );
+	public synchronized boolean getBool(String key) {
+		Log.d(TAG, "getBool key " + key);
 		return preference.getBoolean(key, false);
 	}
 
@@ -103,8 +103,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getFloat(java.lang.String)
 	 */
 	@Override
-	public float getFloat(String key) {
-		Log.d(TAG, "getFloat key " + key );
+	public synchronized float getFloat(String key) {
+		Log.d(TAG, "getFloat key " + key);
 		return preference.getFloat(key, 0.0f);
 	}
 
@@ -114,8 +114,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getDouble(java.lang.String)
 	 */
 	@Override
-	public double getDouble(String key) {
-		Log.d(TAG, "getDouble key " + key );
+	public synchronized double getDouble(String key) {
+		Log.d(TAG, "getDouble key " + key);
 		return preference.getFloat(key, 0.0f);
 	}
 
@@ -125,7 +125,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setString(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void setString(String key, String value) {
+	public synchronized void setString(String key, String value) {
 		Log.d(TAG, "setString key " + key + " value " + value);
 		getEditor().putString(key, value).apply();
 
@@ -137,7 +137,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setInt(java.lang.String, long)
 	 */
 	@Override
-	public void setInt(String key, long value) {
+	public synchronized void setInt(String key, long value) {
 		Log.d(TAG, "setInt key " + key + " value " + value);
 		getEditor().putLong(key, value).apply();
 
@@ -149,7 +149,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setUInt(java.lang.String, long)
 	 */
 	@Override
-	public void setUInt(String key, long value) {
+	public synchronized void setUInt(String key, long value) {
 		Log.d(TAG, "setUInt key " + key + " value " + value);
 		getEditor().putLong(key, value).apply();
 	}
@@ -160,7 +160,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setBool(java.lang.String, boolean)
 	 */
 	@Override
-	public void setBool(String key, boolean value) {
+	public synchronized void setBool(String key, boolean value) {
 		Log.d(TAG, "setBool key " + key + " value " + value);
 		getEditor().putBoolean(key, value).apply();
 	}
@@ -171,7 +171,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setFloat(java.lang.String, float)
 	 */
 	@Override
-	public void setFloat(String key, float value) {
+	public synchronized void setFloat(String key, float value) {
 		Log.d(TAG, "setFloat key " + key + " value " + value);
 		getEditor().putFloat(key, value).apply();
 	}
@@ -182,7 +182,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setDouble(java.lang.String, double)
 	 */
 	@Override
-	public void setDouble(String key, double value) {
+	public synchronized void setDouble(String key, double value) {
 		Log.d(TAG, "setDouble key " + key + " value " + value);
 
 		getEditor().putFloat(key, (float) value).apply();
@@ -194,7 +194,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#clear(java.lang.String)
 	 */
 	@Override
-	public void clear(String key) {
+	public synchronized void clear(String key) {
 		getEditor().clear().apply();
 	}
 
