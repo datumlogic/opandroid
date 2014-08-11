@@ -2,6 +2,7 @@
 #include "CacheDelegateWrapper.h"
 #include <android/log.h>
 #include "OpenPeerCoreManager.h"
+#include "openpeer/services/IHelper.h"
 
 //ICacheDelegate implementation
 CacheDelegateWrapper::CacheDelegateWrapper(jobject delegate)
@@ -81,7 +82,9 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	jstring cookieJavaString;
 	jstring storeStr;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache store called - cookieNamePath = %s, str = %s", cookieNamePath, str);
+	String expStr = openpeer::services::IHelper::timeToString(expires);
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "TIME = %s cache store called - cookieNamePath = %s, str = %s", expStr.c_str(),cookieNamePath, str);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -102,17 +105,20 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	cookieJavaString =  jni_env->NewStringUTF(cookieNamePath);
 	storeStr =  jni_env->NewStringUTF(str);
 
-	//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
-	Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+
 	jclass timeCls = findClass("android/text/format/Time");
 	jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
-	jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
-
-	//calculate and set Expires Time
-	zsLib::Duration closedTimeDuration = expires - time_t_epoch;
 	object = jni_env->NewObject(timeCls, timeMethodID);
-	jni_env->CallVoidMethod(object, timeSetMillisMethodID, closedTimeDuration.total_milliseconds());
+	if (Time() != expires)
+	{
+		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
+		//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+		Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+		//calculate and set Expires Time
+		zsLib::Duration closedTimeDuration = expires - time_t_epoch;
+		jni_env->CallVoidMethod(object, timeSetMillisMethodID, closedTimeDuration.total_milliseconds());
+	}
 	if (javaDelegate != NULL)
 	{
 

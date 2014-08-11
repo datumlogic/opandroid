@@ -28,6 +28,11 @@ public class OPCacheDelegateImplementation extends OPCacheDelegate{
 		SharedPreferences sharedPref = OpenPeerApplication.getAppContext().getSharedPreferences(
 				OpenPeerApplication.getAppContext().getString( R.string.preference_file_key), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
+		
+		if (Time.isEpoch(expires))
+		{
+			Log.d("output", "evo ga");
+		}
 		editor.putString(cookieNamePath, str);
 		editor.commit();
 		
