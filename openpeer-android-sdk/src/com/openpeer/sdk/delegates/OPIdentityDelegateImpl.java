@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013, SMB Phone Inc. / Hookflash Inc.
+ * Copyright (c) 2014, SMB Phone Inc. / Hookflash Inc.
  * All rights reserved.
  * <p/>
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 	OPIdentityLoginWebview mLoginView;
 	LoginUIListener mListener;
 
-	static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
+	private static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
 
 	public static OPIdentityDelegateImpl getInstance(OPIdentity identity) {
 		Long id = 0L;
@@ -74,7 +74,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 
 	}
 
-	public OPIdentityDelegateImpl() {
+	private OPIdentityDelegateImpl() {
 	}
 
 	@Override
@@ -148,8 +148,6 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 			mListener = null;
 			mLoginView = null;
 		}
-
-		// destroy();
 	}
 
 	public void passMessageToJS(final String msg) {

@@ -44,40 +44,33 @@ import com.openpeer.sdk.model.OPUser;
  * The data being stored in database Contacts Conversation history Call history
  * 
  */
-public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
-	private static final String PREF_DATASTORE = "model_data";
-	private static final String PREF_KEY_RELOGIN_INFO = "relogin_info";
-	private static final String PREF_KEY_HOMEUSER_STABLEID = "homeuser_stable_id";
-	private static final String TAG = OPDatastoreDelegateImplementation.class.getSimpleName();
+public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
-	private static OPDatastoreDelegateImplementation instance;
+	private static final String TAG = OPDatastoreDelegateImpl.class.getSimpleName();
 
-	private SharedPreferences mPreferenceStore;
+	private static OPDatastoreDelegateImpl instance;
+
 	Context mContext;
 
-	private OPDatastoreDelegateImplementation() {
+	private OPDatastoreDelegateImpl() {
 
 	}
 
-	private OPDatastoreDelegateImplementation(Context context) {
+	private OPDatastoreDelegateImpl(Context context) {
 		mContext = context;
 
-		mPreferenceStore = context.getSharedPreferences(PREF_DATASTORE, Context.MODE_PRIVATE);
 	}
 
-	public static OPDatastoreDelegateImplementation getInstance() {
+	public static OPDatastoreDelegateImpl getInstance() {
 		if (instance == null) {
-			instance = new OPDatastoreDelegateImplementation();
+			instance = new OPDatastoreDelegateImpl();
 		}
 		return instance;
 	}
 
-	public OPDatastoreDelegateImplementation init(Context context) {
+	public OPDatastoreDelegateImpl init(Context context) {
 		mContext = context;
-
-		mPreferenceStore = context.getSharedPreferences(PREF_DATASTORE, Context.MODE_PRIVATE);
 		return this;// fluent API
-
 	}
 
 	@Override
@@ -128,7 +121,7 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	@Override
 	public boolean saveOrUpdateContacts(List<? extends OPRolodexContact> contacts, long identityId) {
 		for (OPRolodexContact contact : contacts) {
-			Log.d("OPDatastoreDelegateImplementation", "saveOrUpdateContacts " + contact + " identityId " + identityId);
+			Log.d(TAG, "saveOrUpdateContacts " + contact + " identityId " + identityId);
 			saveOrUpdateContact(contact, identityId);
 		}
 		mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null);
@@ -473,7 +466,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		values.put(COLUMN_NAME_STABLE_ID, user.getLockboxStableId());
 
 		values.put(COLUMN_NAME_PEER_URI, user.getPeerUri());
-		Log.d("test", "saveUser values " + Arrays.deepToString(values.valueSet().toArray()));
 
 		String selection = COLUMN_NAME_STABLE_ID + "=?" + " or " + COLUMN_NAME_PEER_URI + "=?" + " or " + COLUMN_NAME_IDENTITY_URI + "=?";
 		String aueryArgs[] = { user.getLockboxStableId(), user.getPeerUri(), user.getIdentityUri() };
@@ -510,7 +502,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 				+ COLUMN_NAME_PEER_URI + "=?)";
 		Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null,
 				selection, new String[] { peerUri }, null);
-		Log.d("test", "getUserByPeerUri " + cursor.getCount());
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToFirst();
 			return OPUser.fromDetailCursor(cursor);
@@ -585,7 +576,6 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 	public OPUser getUserById(long id) {
 		String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + "=" + id;
 		Cursor cursor = query(ContactsViewEntry.TABLE_NAME, null, selection, null);
-		Log.d(TAG, "getUserById " + cursor);
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToFirst();
 			return OPUser.fromDetailCursor(cursor);

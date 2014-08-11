@@ -14,7 +14,7 @@ import com.openpeer.sdk.app.OPDataManager;
 public class OPIdentityLookupDelegateImpl extends OPIdentityLookupDelegate {
 	private final static String TAG = OPIdentityLookupDelegateImpl.class.getSimpleName();
 
-	static Hashtable<String, OPIdentityLookupDelegateImpl> instances = new Hashtable<String, OPIdentityLookupDelegateImpl>();
+	private static Hashtable<String, OPIdentityLookupDelegateImpl> instances = new Hashtable<String, OPIdentityLookupDelegateImpl>();
 
 	public static OPIdentityLookupDelegateImpl getInstance(OPIdentity identity) {
 		String url = identity.getIdentityURI();

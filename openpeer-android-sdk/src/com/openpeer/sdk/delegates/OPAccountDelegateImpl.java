@@ -111,23 +111,17 @@ public class OPAccountDelegateImpl extends OPAccountDelegate {
 
 	@Override
 	public void onAccountAssociatedIdentitiesChanged(OPAccount account) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onAccountPendingMessageForInnerBrowserWindowFrame(OPAccount account) {
-		// TODO Auto-generated method stub
-		// LoginManager.pendingMessageForNamespaceGrantInnerFrame();
+
 		String msg = account.getNextMessageForInnerBrowerWindowFrame();
-		Log.d("output", "pendingMessageForNamespaceGrantInnerFrame " + msg);
 		passMessageToJS(msg);
 	}
 
 	void passMessageToJS(final String msg) {
-
 		String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
-		Log.w("JNI", "Pass to JS: " + cmd);
 		mListener.getAccountWebview().loadUrl(cmd);
 
 	}
