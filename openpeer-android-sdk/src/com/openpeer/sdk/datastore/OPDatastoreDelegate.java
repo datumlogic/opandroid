@@ -88,4 +88,9 @@ public interface OPDatastoreDelegate {
 	 */
 	public void shutdown();
 
+	/**
+	 * 
+	 */
+	public void notifyContactsChanged();
+
 }

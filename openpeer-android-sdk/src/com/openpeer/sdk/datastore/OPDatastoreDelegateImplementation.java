@@ -203,10 +203,9 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 			return upsert(IdentityContactEntry.TABLE_NAME, icValues, IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID + "="
 					+ identityId + " and " + DatabaseContracts.COLUMN_NAME_IDENTITY_URI + "=?", args);
 
-		} else {
-			return true;
 		}
 
+		return true;
 	}
 
 	@Override
@@ -595,12 +594,25 @@ public class OPDatastoreDelegateImplementation implements OPDatastoreDelegate {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.openpeer.sdk.datastore.OPDatastoreDelegate#shutdown()
 	 */
 	@Override
 	public void shutdown() {
 		OPContentProvider.clear();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.openpeer.sdk.datastore.OPDatastoreDelegate#notifyContactsChanged()
+	 */
+	@Override
+	public void notifyContactsChanged() {
+		mContext.getContentResolver()
+				.notifyChange(OPContentProvider.getContentUri(DatabaseContracts.ContactsViewEntry.URI_PATH_INFO), null);
 	}
 
 }

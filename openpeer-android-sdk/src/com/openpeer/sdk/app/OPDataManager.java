@@ -127,8 +127,8 @@ public class OPDataManager {
 				mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
 			}
 		}
+		mDatastoreDelegate.notifyContactsChanged();
 		identityLookup(identity, contacts);
-		notifyContactsChanged();
 	}
 
 	public void identityLookup(OPIdentity identity, List<OPRolodexContact> contacts) {
@@ -159,15 +159,9 @@ public class OPDataManager {
 		Log.d("TODO", "OPDataManager updateIdentityContacts " + Arrays.deepToString(iContacts.toArray()));
 		// Each IdentityContact represents a user. Update user info
 		mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
-
-		notifyContactsChanged();
 	}
 
 	private void notifyContactsChanged() {
-
-		Intent intent = new Intent();
-		intent.setAction(INTENT_CONTACTS_CHANGED);
-		OPHelper.getInstance().sendBroadcast(intent);
 	}
 
 	public void refreshContacts() {
