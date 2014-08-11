@@ -54,7 +54,7 @@ String OpenPeerCoreManager::getObjectClassName (jobject delegate)
 	jstring strObj = (jstring)env->CallObjectMethod(clsObj, mid);
 
 	// Now get the c string from the java jstring object
-	ret = env->GetStringUTFChars(strObj, NULL);
+	ret = String(env->GetStringUTFChars(strObj, NULL));
 
 	// Print the class name
 	printf("\nCalling class is: %s\n", ret.c_str());
