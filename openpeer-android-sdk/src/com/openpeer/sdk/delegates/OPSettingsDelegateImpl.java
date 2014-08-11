@@ -44,6 +44,14 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	private Context mContext;
 	private static OPSettingsDelegateImpl instance;
 	private SharedPreferences preference;
+	private static final String TABLE_SETTINGS = "settings";
+
+	private static final String COLUMN_KEY = "key";
+	private static final String COLUMN_VALUE = "value";
+
+	public static final String SQL_CREATE_SETTINGS = "create table if not exists " + TABLE_SETTINGS + " ("
+			+ COLUMN_KEY + " text primary key,"
+			+ COLUMN_VALUE + " text not null)";
 
 	SharedPreferences.Editor getEditor() {
 		return preference.edit();
