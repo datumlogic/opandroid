@@ -58,7 +58,7 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
 		}
 		query.close();
 		if (BuildConfig.DEBUG) {
-			Log.d(TAG, String.format("fetch key %s,string %s", cookieNamePath, value));
+//			Log.d(TAG, String.format("fetch key %s,string %s", cookieNamePath, value));
 		}
 		return value;
 
@@ -78,7 +78,7 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
 		long rowid = mDBHelper.getWritableDatabase()
 				.insertWithOnConflict(TABLE_CACHE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		if (BuildConfig.DEBUG) {
-			Log.d(TAG, String.format("store key %s,expires %d,string %s,result %d", cookieNamePath, expires.toMillis(true), str, rowid));
+//			Log.d(TAG, String.format("store key %s,expires %d,string %s,result %d", cookieNamePath, expires.toMillis(true), str, rowid));
 		}
 	}
 
