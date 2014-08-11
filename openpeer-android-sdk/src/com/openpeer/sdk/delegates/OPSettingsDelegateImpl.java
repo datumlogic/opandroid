@@ -28,8 +28,11 @@
  */
 package com.openpeer.sdk.delegates;
 
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPSettingsDelegate;
@@ -43,8 +46,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	private static final String PREF_CACHE_NAME = "core_setting";
 	private Context mContext;
 	private static OPSettingsDelegateImpl instance;
-	private SharedPreferences preference;
 	private static final String TABLE_SETTINGS = "settings";
+	static final String QUERY_STRING = "select value from settings where key=?";
+	private OPCoreDBHelper mDBHelper;
 
 	private static final String COLUMN_KEY = "key";
 	private static final String COLUMN_VALUE = "value";
@@ -53,23 +57,37 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 			+ COLUMN_KEY + " text primary key,"
 			+ COLUMN_VALUE + " text not null)";
 
-	SharedPreferences.Editor getEditor() {
-		return preference.edit();
-	}
-
 	public static OPSettingsDelegateImpl getInstance(Context context) {
 		if (instance == null) {
 			instance = new OPSettingsDelegateImpl();
 			instance.mContext = context;
-			instance.preference = instance.mContext.getSharedPreferences(PREF_CACHE_NAME, Context.MODE_PRIVATE);
+			instance.mDBHelper = OPCoreDBHelper.getInstance(context);
 		}
 		return instance;
 	}
 
+	private String simpleQueryForString(String key, String defaultValue) {
+		SQLiteStatement query = mDBHelper.getReadableDatabase().compileStatement(QUERY_STRING);
+		query.bindString(1, key);
+		try {
+			return query.simpleQueryForString();
+		} catch (SQLiteDoneException e) {
+
+		}
+		return defaultValue;
+	}
+
+	private long save(String key, String value) {
+		ContentValues values = new ContentValues();
+		values.put(COLUMN_KEY, key);
+		values.put(COLUMN_VALUE, value);
+		return mDBHelper.getWritableDB()
+				.insertWithOnConflict(TABLE_SETTINGS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+	}
+
 	@Override
-	public synchronized String getString(String key) {
-		Log.d(TAG, "getString key " + key);
-		return preference.getString(key, null);
+	public String getString(String key) {
+		return simpleQueryForString(key, null);
 	}
 
 	/*
@@ -78,9 +96,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getInt(java.lang.String)
 	 */
 	@Override
-	public synchronized long getInt(String key) {
+	public long getInt(String key) {
 		Log.d(TAG, "getInt key " + key);
-		return preference.getLong(key, 0);
+		return Long.parseLong(simpleQueryForString(key, "0"));
 	}
 
 	/*
@@ -89,9 +107,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getUInt(java.lang.String)
 	 */
 	@Override
-	public synchronized long getUInt(String key) {
+	public long getUInt(String key) {
 		Log.d(TAG, "getUInt key " + key);
-		return preference.getLong(key, 0);
+		return Long.parseLong(simpleQueryForString(key, "0"));
 	}
 
 	/*
@@ -100,9 +118,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getBool(java.lang.String)
 	 */
 	@Override
-	public synchronized boolean getBool(String key) {
+	public boolean getBool(String key) {
 		Log.d(TAG, "getBool key " + key);
-		return preference.getBoolean(key, false);
+		return Boolean.parseBoolean(simpleQueryForString(key, "false"));
 	}
 
 	/*
@@ -111,9 +129,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getFloat(java.lang.String)
 	 */
 	@Override
-	public synchronized float getFloat(String key) {
+	public float getFloat(String key) {
 		Log.d(TAG, "getFloat key " + key);
-		return preference.getFloat(key, 0.0f);
+		return Float.parseFloat(simpleQueryForString(key, "0.0"));
 	}
 
 	/*
@@ -122,9 +140,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#getDouble(java.lang.String)
 	 */
 	@Override
-	public synchronized double getDouble(String key) {
+	public double getDouble(String key) {
 		Log.d(TAG, "getDouble key " + key);
-		return preference.getFloat(key, 0.0f);
+		return Float.parseFloat(simpleQueryForString(key, "0.0"));
 	}
 
 	/*
@@ -133,9 +151,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setString(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public synchronized void setString(String key, String value) {
+	public void setString(String key, String value) {
 		Log.d(TAG, "setString key " + key + " value " + value);
-		getEditor().putString(key, value).apply();
+		save(key, value);
 
 	}
 
@@ -145,9 +163,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setInt(java.lang.String, long)
 	 */
 	@Override
-	public synchronized void setInt(String key, long value) {
+	public void setInt(String key, long value) {
 		Log.d(TAG, "setInt key " + key + " value " + value);
-		getEditor().putLong(key, value).apply();
+		save(key, "" + value);
 
 	}
 
@@ -157,9 +175,10 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setUInt(java.lang.String, long)
 	 */
 	@Override
-	public synchronized void setUInt(String key, long value) {
+	public void setUInt(String key, long value) {
 		Log.d(TAG, "setUInt key " + key + " value " + value);
-		getEditor().putLong(key, value).apply();
+		save(key, "" + value);
+
 	}
 
 	/*
@@ -168,9 +187,10 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setBool(java.lang.String, boolean)
 	 */
 	@Override
-	public synchronized void setBool(String key, boolean value) {
+	public void setBool(String key, boolean value) {
 		Log.d(TAG, "setBool key " + key + " value " + value);
-		getEditor().putBoolean(key, value).apply();
+		save(key, "" + value);
+
 	}
 
 	/*
@@ -179,9 +199,10 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setFloat(java.lang.String, float)
 	 */
 	@Override
-	public synchronized void setFloat(String key, float value) {
+	public void setFloat(String key, float value) {
 		Log.d(TAG, "setFloat key " + key + " value " + value);
-		getEditor().putFloat(key, value).apply();
+		save(key, "" + value);
+
 	}
 
 	/*
@@ -190,10 +211,10 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#setDouble(java.lang.String, double)
 	 */
 	@Override
-	public synchronized void setDouble(String key, double value) {
+	public void setDouble(String key, double value) {
 		Log.d(TAG, "setDouble key " + key + " value " + value);
 
-		getEditor().putFloat(key, (float) value).apply();
+		save(key, "" + value);
 	}
 
 	/*
@@ -202,8 +223,10 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
 	 * @see com.openpeer.javaapi.OPSettingsDelegate#clear(java.lang.String)
 	 */
 	@Override
-	public synchronized void clear(String key) {
-		getEditor().clear().apply();
+	public void clear(String key) {
+		String where = COLUMN_KEY + "=?";
+		String args[] = new String[] { key };
+		mDBHelper.getWritableDB().delete(TABLE_SETTINGS, where, args);
 	}
 
 }

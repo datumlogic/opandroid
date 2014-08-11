@@ -10,7 +10,7 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImplementation;
+import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPLogLevel;
@@ -38,7 +38,7 @@ public class OPHelper {
 
 	private static OPHelper instance;
 	Context mContext;
-	private OPStackMessageQueueDelegateImplementation stackMessageQueueDelegate;
+	private OPStackMessageQueueDelegateImpl stackMessageQueueDelegate;
 	private OPStackMessageQueue stackMessageQueue;
 
 	public Context getApplicationContext() {
@@ -124,7 +124,7 @@ public class OPHelper {
 		} else {
 			OPDataManager.getInstance().init(OPDatastoreDelegateImplementation.getInstance().init(mContext));
 		}
-		stackMessageQueueDelegate = new OPStackMessageQueueDelegateImplementation();
+		stackMessageQueueDelegate = new OPStackMessageQueueDelegateImpl();
 		stackMessageQueue = OPStackMessageQueue.singleton();
 		stackMessageQueue.interceptProcessing(stackMessageQueueDelegate);
 		OPMediaEngine.init(mContext);
@@ -139,7 +139,7 @@ public class OPHelper {
 		OPCacheDelegate cacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
 		OPCache.setup(cacheDelegate);
 
-//		OPSettings.setup( OPSettingsDelegateImpl.getInstance(mContext));
+//		OPSettings.setup(OPSettingsDelegateImpl.getInstance(mContext));
 		OPSettings.applyDefaults();
 		OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
@@ -165,7 +165,6 @@ public class OPHelper {
 	public interface InitListener {
 		public void onInitialized();
 	}
-
 
 	private String createHttpSettings() {
 		try {
