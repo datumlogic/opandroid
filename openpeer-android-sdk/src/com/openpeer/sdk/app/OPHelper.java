@@ -22,7 +22,7 @@ import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
-import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
+import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
 import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 
@@ -38,7 +38,6 @@ public class OPHelper {
 
 	private static OPHelper instance;
 	Context mContext;
-	private OPStackMessageQueueDelegateImpl stackMessageQueueDelegate;
 	private OPStackMessageQueue stackMessageQueue;
 
 	public Context getApplicationContext() {
@@ -122,11 +121,10 @@ public class OPHelper {
 		if (datastoreDelegate != null) {
 			OPDataManager.getInstance().init(datastoreDelegate);
 		} else {
-			OPDataManager.getInstance().init(OPDatastoreDelegateImplementation.getInstance().init(mContext));
+			OPDataManager.getInstance().init(OPDatastoreDelegateImpl.getInstance().init(mContext));
 		}
-		stackMessageQueueDelegate = new OPStackMessageQueueDelegateImpl();
 		stackMessageQueue = OPStackMessageQueue.singleton();
-		stackMessageQueue.interceptProcessing(stackMessageQueueDelegate);
+		stackMessageQueue.interceptProcessing(OPStackMessageQueueDelegateImpl.getInstance());
 		OPMediaEngine.init(mContext);
 
 		OPStackMessageQueue stackMessageQueue = OPStackMessageQueue.singleton();
@@ -139,7 +137,7 @@ public class OPHelper {
 		OPCacheDelegate cacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
 		OPCache.setup(cacheDelegate);
 
-//		OPSettings.setup(OPSettingsDelegateImpl.getInstance(mContext));
+		// OPSettings.setup(OPSettingsDelegateImpl.getInstance(mContext));
 		OPSettings.applyDefaults();
 		OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
