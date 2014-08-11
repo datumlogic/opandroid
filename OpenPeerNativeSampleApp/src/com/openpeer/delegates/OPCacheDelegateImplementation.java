@@ -3,6 +3,7 @@ package com.openpeer.delegates;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.format.Time;
+import android.util.Log;
 
 import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.openpeernativesampleapp.OpenPeerApplication;
@@ -26,6 +27,11 @@ public class OPCacheDelegateImplementation extends OPCacheDelegate{
 		SharedPreferences sharedPref = OpenPeerApplication.getAppContext().getSharedPreferences(
 				OpenPeerApplication.getAppContext().getString( R.string.preference_file_key), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
+		
+		if (Time.isEpoch(expires))
+		{
+			Log.d("output", "evo ga");
+		}
 		editor.putString(cookieNamePath, str);
 		editor.commit();
 		
