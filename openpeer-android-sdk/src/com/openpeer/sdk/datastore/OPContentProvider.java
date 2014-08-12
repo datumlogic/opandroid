@@ -115,7 +115,6 @@ public class OPContentProvider extends ContentProvider {
 		String table = uri.getLastPathSegment();
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		int result = db.delete(table, selection, selectionArgs);
-		Log.d("test", "update uri for messages " + uri + " result " + result);
 		return result;
 	}
 
@@ -128,7 +127,6 @@ public class OPContentProvider extends ContentProvider {
 	@Override
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int result = super.bulkInsert(uri, values);
-		Log.d("test", "bulkinsert " + uri + " values" + values.length + " result " + result);
 		// test();
 		return result;
 	}
@@ -169,14 +167,12 @@ public class OPContentProvider extends ContentProvider {
 	private Uri insertWindow(Uri uri, ContentValues values) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		long rowId = db.insert(DatabaseContracts.ConversationWindowEntry.TABLE_NAME, null, values);
-		Log.d("test", "insert result " + rowId + " for uri " + uri);
 		return uri;
 	}
 
 	private Uri insertMessage(Uri uri, ContentValues values) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		long result = db.insert(DatabaseContracts.MessageEntry.TABLE_NAME, null, values);
-		Log.d("test", "result " + result + " inserting uri " + uri);
 		getContext().getContentResolver().notifyChange(ContentUris.withAppendedId(uri, result), null);
 		notifyChatGroupChange();
 		return uri;
@@ -268,7 +264,6 @@ public class OPContentProvider extends ContentProvider {
 					null, // don't filter by row groups
 					sortOrder // The sort order
 					);
-			Log.d("test", "query uri " + uri + " result " + cursor.getCount());
 			cursor.setNotificationUri(getContext().getContentResolver(), uri);
 			return cursor;
 		} else {
@@ -335,7 +330,6 @@ public class OPContentProvider extends ContentProvider {
 			String table = uri.getLastPathSegment();
 			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 			result = db.update(table, values, selection, selectionArgs);
-			Log.d("test", "update uri for messages " + uri + " result " + result);
 		}
 		return result;
 	}

@@ -137,7 +137,6 @@ public class OPDataManager {
 		List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
 
 		for (OPRolodexContact contact : contacts) {
-			Log.d(TAG, "identityLookup contact " + contact.toString());
 			OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
 			ilInfo.initWithRolodexContact(contact);
 			inputLookupList.add(ilInfo);
@@ -156,7 +155,6 @@ public class OPDataManager {
 
 	public void updateIdentityContacts(String identityUri, List<OPIdentityContact> iContacts) {
 
-		Log.d("TODO", "OPDataManager updateIdentityContacts " + Arrays.deepToString(iContacts.toArray()));
 		// Each IdentityContact represents a user. Update user info
 		mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
 	}

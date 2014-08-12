@@ -61,7 +61,6 @@ public class OPHelper {
 			String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
 			String instanceId = OPSdkConfig.getInstanceid();
 			String telnetLogString = deviceId + "-" + instanceId + "\n";
-			Log.d("output", "Bruce Outgoing log string = " + telnetLogString);
 			OPLogger.installOutgoingTelnetLogger(url, true, telnetLogString);
 		} else {
 			// OPLogger.setLogLevel(OPLogLevel.LogLevel_None);
@@ -172,7 +171,6 @@ public class OPHelper {
 			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", true);
 			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", true);
 			parent.put("root", jsonObject);
-			Log.d("output", parent.toString(2));
 			return parent.toString(2);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -187,7 +185,6 @@ public class OPHelper {
 
 			jsonObject.put("openpeer/core/authorized-application-id-split-char", "-");
 			parent.put("root", jsonObject);
-			Log.d("output", parent.toString(2));
 			return parent.toString(2);
 		} catch (JSONException e) {
 			e.printStackTrace();
