@@ -411,6 +411,7 @@ public class CallFragment extends BaseFragment {
             remoteViewLinearLayout = (LinearLayout) view.findViewById(R.id.remoteChatViewLinearLayout);
             localViewLinearLayout.addView(myLocalSurface);
             remoteViewLinearLayout.addView(myRemoteSurface);
+            //This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
             OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
