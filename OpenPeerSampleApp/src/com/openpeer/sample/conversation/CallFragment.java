@@ -236,7 +236,7 @@ public class CallFragment extends BaseFragment {
             }
         });
         if (mVideo) {
-            videoButton.setImageResource(mCallStatus.isCapturing() ? R.drawable.ic_action_video : R.drawable.ic_action_video);
+            videoButton.setImageResource(mCallStatus.isCapturing() ? R.drawable.ic_action_video : R.drawable.ic_action_video_off);
             videoButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -394,16 +394,16 @@ public class CallFragment extends BaseFragment {
     void initMedia(View view) {
         mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(peerUri);
 
-        if (mCallStatus.useFrontCamera())
-            OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
-        else
-            OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
         OPMediaEngine.getInstance().setEcEnabled(true);
         OPMediaEngine.getInstance().setAgcEnabled(true);
         OPMediaEngine.getInstance().setNsEnabled(false);
         OPMediaEngine.getInstance().setMuteEnabled(false);
         OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
         if (mVideo) {
+            if (mCallStatus.useFrontCamera())
+                OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
+            else
+                OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
 //            myLocalSurface = ViERenderer.CreateLocalRenderer(getActivity());
             myLocalSurface = SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
             myRemoteSurface = ViERenderer.CreateRenderer(getActivity(), true);
@@ -411,18 +411,15 @@ public class CallFragment extends BaseFragment {
             remoteViewLinearLayout = (LinearLayout) view.findViewById(R.id.remoteChatViewLinearLayout);
             localViewLinearLayout.addView(myLocalSurface);
             remoteViewLinearLayout.addView(myRemoteSurface);
-            OPMediaEngine.getInstance().setContinuousVideoCapture(true);
+            OPMediaEngine.getInstance().setContinuousVideoCapture(false);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
             OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
             OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
             OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
-            setupMediaControl();
-//            OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
-            // if (mCall != null) {
-            // OPMediaEngine.getInstance().startVideoCapture();
-            // }
         }
+        setupMediaControl();
+
     }
 
     // private long startTime;
