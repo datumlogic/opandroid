@@ -127,7 +127,6 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactStateChanged(
 		IConversationThread::ContactStates state
 )
 {
-
 	jclass cls;
 	jmethodID method;
 	jobject convThreadObject;
@@ -386,10 +385,6 @@ void ConversationThreadDelegateWrapper::onConversationThreadPushMessage(
 		android_jvm->DetachCurrentThread();
 	}
 }
-
-
-
-
 
 ConversationThreadDelegateWrapper::~ConversationThreadDelegateWrapper()
 {

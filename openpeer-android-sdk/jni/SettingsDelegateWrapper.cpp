@@ -127,7 +127,7 @@ ULONG SettingsDelegateWrapper::getUInt(const char *key) const
 	jstring keyStr;
 	long fetchedUInt;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Settings delegate getUInt %s", key);
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Settings delegate getUInt");
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))

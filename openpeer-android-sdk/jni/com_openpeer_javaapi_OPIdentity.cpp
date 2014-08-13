@@ -53,6 +53,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native login called");
+
 	jni_env = getEnv();
 
 	const char *identityProviderDomainStr;
@@ -110,10 +112,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
 				jlong delegate = (jlong) ptrToIdentityDelegateWrapperPtr;
 				jni_env->SetLongField(object, delegateFid, delegate);
 			}
-
-			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"CorePtr raw = %p, ptr as long = %Lu",identityPtr.get(), identity);
 		}
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native login core pointer is NULL!!!");
 	}
 	return object;
 
@@ -138,6 +141,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native loginWithIdentityPreauthorized called");
 
 	const char *identityProviderDomainStr;
 	identityProviderDomainStr = env->GetStringUTFChars(identityProviderDomain, NULL);
@@ -217,11 +222,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 				jlong delegate = (jlong) ptrToIdentityDelegateWrapperPtr;
 				jni_env->SetLongField(object, delegateFid, delegate);
 			}
-
-			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"CorePtr raw = %p, ptr as long = %Lu",identityPtr.get(), identity);
-
 		}
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native loginWithIdentityPreauthorized core pointer is NULL!!!");
 	}
 	return object;
 
@@ -243,6 +248,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
 	unsigned short int outErrorCode;
 	String outErrorReason;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getState called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -259,7 +266,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getState
 
 		}
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getState core pointer is NULL!!!");
+	}
 	return object;
 }
 
@@ -274,6 +284,8 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getID
 	jlong pid = 0;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getStableID called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -285,7 +297,10 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentity_getID
 	{
 		pid = coreIdentityPtr->get()->getID();
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getStableID core pointer is NULL!!!");
+	}
 	return pid;
 }
 
@@ -300,6 +315,8 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttach
 	JNIEnv *jni_env = 0;
 	bool ret = false;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native isDelegateAttached called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -311,7 +328,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentity_isDelegateAttach
 	{
 		ret = coreIdentityPtr->get()->isDelegateAttached();
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native isDelegateAttached core pointer is NULL!!!");
+	}
 	return ret;
 }
 
@@ -327,6 +347,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
 {
 
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native attachDelegate called");
 
 	jni_env = getEnv();
 	const char *outerFrameURLUponReloadStr;
@@ -360,6 +382,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
 			jni_env->SetLongField(owner, delegateFid, delegate);
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native attachDelegate core pointer is NULL!!!");
+	}
 }
 
 /*
@@ -378,6 +404,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPre
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native attachDelegateAndPreauthorizedLogin called");
 
 	const char *identityAccessTokenStr;
 	identityAccessTokenStr = env->GetStringUTFChars(identityAccessToken, NULL);
@@ -433,6 +461,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPre
 		}
 
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native attachDelegateAndPreauthorizedLogin core pointer is NULL!!!");
+	}
 }
 
 /*
@@ -446,6 +478,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityURI
 	jstring identityURI;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getIdentityURI called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -456,7 +490,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityURI
 	{
 		identityURI =  jni_env->NewStringUTF(coreIdentityPtr->get()->getIdentityURI().c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getidentityURI core pointer is NULL!!!");
+	}
 	return identityURI;
 }
 
@@ -471,6 +508,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityProvid
 	jstring identityProviderDomain;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getIdentityProviderDomain called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -482,7 +521,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getIdentityProvid
 
 		identityProviderDomain =  jni_env->NewStringUTF(coreIdentityPtr->get()->getIdentityProviderDomain().c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getIdentityProviderDomain core pointer is NULL!!!");
+	}
 	return identityProviderDomain;
 }
 
@@ -501,6 +543,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 	IdentityContact coreContact;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getSelfIdentityContact called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -514,7 +558,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "IdentityPtr is NULL!!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getSelfIdentityContact core pointer is NULL!!!");
 		return object;
 	}
 	if(jni_env)
@@ -669,10 +713,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getSelfIdentityCo
 
 		//add avatar list to OPRolodexContact
 		jni_env->CallVoidMethod(object, setAvatarsMethodID, avatarListObject);
-
-
-
-
 	}
 	return object;
 }
@@ -688,8 +728,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getInnerBrowserWi
 	String innerBrowserWindowFrameURLString;
 	jstring innerBrowserWindowFrameURL;
 
-
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getIneerBrowserWindowFrameURL called");
 
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
@@ -702,6 +743,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getInnerBrowserWi
 		innerBrowserWindowFrameURLString = coreIdentityPtr->get()->getInnerBrowserWindowFrameURL();
 
 		innerBrowserWindowFrameURL =  jni_env->NewStringUTF(innerBrowserWindowFrameURLString.c_str());
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getInnerBrowserWindowFrameURL core pointer is NULL!!!");
 	}
 
 	return innerBrowserWindowFrameURL;
@@ -717,6 +762,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowV
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native notifyBrowserWindowVisible called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -726,6 +773,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowV
 	if (coreIdentityPtr)
 	{
 		coreIdentityPtr->get()->notifyBrowserWindowVisible();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native notifyBrowserWindowVisible core pointer is NULL!!!");
 	}
 }
 
@@ -739,6 +790,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowC
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native notifyBrowserWindowClosed called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -748,6 +801,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_notifyBrowserWindowC
 	if (coreIdentityPtr)
 	{
 		coreIdentityPtr->get()->notifyBrowserWindowClosed();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native notifyBrowserWindowClosed core pointer is NULL!!!");
 	}
 }
 
@@ -764,6 +821,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageFor
 
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getNextMessageForInnerBrowserWindowFrame called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -775,6 +834,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPIdentity_getNextMessageFor
 		nextMessageForInnerBrowerWindowFrameElement = coreIdentityPtr->get()->getNextMessageForInnerBrowerWindowFrame();
 
 		nextMessageForInnerBrowerWindowFrame =  jni_env->NewStringUTF(IHelper::convertToString(nextMessageForInnerBrowerWindowFrameElement).c_str());
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getNextMessageForInnerBrowserWindowFrame core pointer is NULL!!!");
 	}
 
 	return nextMessageForInnerBrowerWindowFrame;
@@ -789,6 +852,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInn
 (JNIEnv *, jobject owner, jstring unparsedMessage)
 {
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native handleMessageFromInnerBrowserWindowFrame called");
 
 	jni_env = getEnv();
 	String unparsedMessageString;
@@ -806,6 +871,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_handleMessageFromInn
 	{
 		coreIdentityPtr->get()->handleMessageFromInnerBrowserWindowFrame(IHelper::createElement(unparsedMessageString));
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native handleMessageFromInnerBrowserWindowFrame core pointer is NULL!!!");
+	}
 }
 
 /*
@@ -817,6 +886,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_startRolodexDownload
 (JNIEnv *, jobject owner, jstring inLastDownloadedVersion)
 {
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native startRolodexDownload called");
 
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
@@ -841,7 +912,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_startRolodexDownload
 	}
 	else
 	{
-		__android_log_write(ANDROID_LOG_ERROR, "com.openpeer.jni", "IdentityPtr is NULL");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native startRolodexDownload core pointer is NULL!!");
 	}
 }
 
@@ -855,6 +926,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_refreshRolodexContac
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native refreshRolodexContacts called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -867,7 +940,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_refreshRolodexContac
 	}
 	else
 	{
-		__android_log_write(ANDROID_LOG_ERROR, "com.openpeer.jni", "IdentityPtr is NULL");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native refreshRolodexDownload core pointer is NULL!!!");
 	}
 
 }
@@ -888,6 +961,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 
 	RolodexContact coreRolodexContact;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native getDownloadedRolodexContacts called");
+
 	bool outSuccess;
 	bool outFlushAllRolodexContacts;
 	String outVersionDownloaded;
@@ -907,6 +982,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 				outVersionDownloaded,
 				outRolodexContacts);
 
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native getDownloadedRolodexContacts core pointer is NULL!!!");
 	}
 	if(jni_env)
 	{
@@ -1094,6 +1173,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_cancel
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native cancel called");
+
 	jni_env = getEnv();
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -1103,6 +1184,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_cancel
 	if (coreIdentityPtr)
 	{
 		coreIdentityPtr->get()->cancel();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentity native cancel core pointer is NULL!!!");
 	}
 }
 
@@ -1127,12 +1212,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_releaseCoreObjects
 		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (IdentityDelegateWrapperPtr*)delegatePointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity core object deleted.");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPIdentity core object not deleted - already NULL!");
 	}
 }
 

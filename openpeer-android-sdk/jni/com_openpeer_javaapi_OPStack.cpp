@@ -24,6 +24,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_singleton
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStack native singleton called");
+
 	jni_env = getEnv();
 	if(jni_env)
 	{
@@ -52,6 +54,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStack native setup called");
+
 	jni_env = getEnv();
 	jclass stackClass = findClass("com/openpeer/javaapi/OPStack");
 	jfieldID stackFid = jni_env->GetFieldID(stackClass, "nativeClassPointer", "J");
@@ -71,8 +75,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_setup
 			StackDelegateWrapperPtr* ptrToStackDelegate = new boost::shared_ptr<StackDelegateWrapper>(stackDelegatePtr);
 			jfieldID delegateFid = jni_env->GetFieldID(stackClass, "nativeDelegatePointer", "J");
 			jlong delegate = (jlong) ptrToStackDelegate;
-		    jni_env->SetLongField(owner, delegateFid, delegate);
+			jni_env->SetLongField(owner, delegateFid, delegate);
 		}
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPStack native setup core pointer is NULL!!!");
 	}
 }
 
@@ -86,6 +94,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStack native shutdown called");
+
 	jni_env = getEnv();
 	jclass stackClass = findClass("com/openpeer/javaapi/OPStack");
 	jfieldID stackFid = jni_env->GetFieldID(stackClass, "nativeClassPointer", "J");
@@ -98,7 +108,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_shutdown
 	}
 	else
 	{
-		__android_log_write(ANDROID_LOG_WARN, "com.openpeer.jni", "Core stack is not shutdown.");
+		__android_log_write(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPStack native shutdown core pointer is NULL!!!");
 	}
 }
 
@@ -115,6 +125,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPStack_createAuthorizedAppl
 	jobject object;
 	JNIEnv *jni_env = 0;
 	jstring authorizedApplicationID;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStack native createAuthorizedApplicationID called");
 
 	String applicationIDString;
 	applicationIDString = env->GetStringUTFChars(applicationID, NULL);
@@ -150,6 +162,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStack_getAuthorizedApplica
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStack native getAuthorizedApplicationIDExpiry called");
 
 	String authorizedApplicationIDString;
 	authorizedApplicationIDString = env->GetStringUTFChars(authorizedApplicationID, NULL);
@@ -191,6 +205,8 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPStack_isAuthorizedApplica
 	jboolean ret;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStack native isAuthorizedApplicationIDExpiryWindowStillValid called");
+
 	String authorizedApplicationIDString;
 	authorizedApplicationIDString = env->GetStringUTFChars(authorizedApplicationID, NULL);
 	if (authorizedApplicationIDString == NULL) {
@@ -223,12 +239,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStack_releaseCoreObjects
 		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (StackDelegateWrapperPtr*)delegatePointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStack Core object deleted.");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPStack Core object not deleted - already NULL!");
 	}
 }
 
