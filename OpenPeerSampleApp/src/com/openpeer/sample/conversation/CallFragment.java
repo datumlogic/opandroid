@@ -236,7 +236,7 @@ public class CallFragment extends BaseFragment {
             }
         });
         if (mVideo) {
-            videoButton.setImageResource(mCallStatus.isCapturing() ? R.drawable.ic_action_video : R.drawable.ic_action_video_off);
+            videoButton.setImageResource(mCallStatus.isCapturing() ? R.drawable.ic_action_video_on : R.drawable.ic_action_video_off);
             videoButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
