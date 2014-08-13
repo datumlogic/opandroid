@@ -19,7 +19,7 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	jstring cookieJavaString;
 	const char *fetchedStr;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache fetch called - cookieNamePath = %s", cookieNamePath);
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Cache fetch called - cookieNamePath = %s", cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -58,7 +58,7 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache fetch Java delegate is NULL !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Cache fetch Java delegate is NULL !!!");
 	}
 
 	if (jni_env->ExceptionCheck()) {
@@ -84,7 +84,7 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 
 	String expStr = openpeer::services::IHelper::timeToString(expires);
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "TIME = %s cache store called - cookieNamePath = %s, str = %s", expStr.c_str(),cookieNamePath, str);
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Cache store called - cookieNamePath = %s",cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -131,7 +131,7 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache store Java delegate is NULL !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Cache store Java delegate is NULL !!!");
 	}
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -150,7 +150,7 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	JNIEnv *jni_env = 0;
 	jstring cookieJavaString;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache clear called - cookieNamePath = %s", cookieNamePath);
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Cache clear called - cookieNamePath = %s", cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -181,7 +181,7 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache clear Java delegate is NULL !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Cache clear Java delegate is NULL !!!");
 	}
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();

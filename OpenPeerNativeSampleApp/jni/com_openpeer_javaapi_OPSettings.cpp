@@ -17,6 +17,7 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setup
 (JNIEnv *, jclass, jobject javaSettingsDelegate)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native setup called");
 	settingsDelegatePtr = SettingsDelegateWrapperPtr(new SettingsDelegateWrapper(javaSettingsDelegate));
 	ISettings::setup(settingsDelegatePtr);
 }
@@ -29,6 +30,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setup
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setString
 (JNIEnv *env , jclass, jstring key, jstring value)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native setString called");
+
 	const char *keyStr;
 	keyStr = env->GetStringUTFChars(key, NULL);
 	if (keyStr == NULL) {
@@ -40,7 +43,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setString
 	if (valueStr == NULL) {
 		return;
 	}
-
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native setString key = %s, value = %s", keyStr, valueStr);
 	ISettings::setString(keyStr, valueStr);
 }
 
@@ -52,12 +55,15 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setString
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setInt
 (JNIEnv *env, jclass, jstring key, jlong value)
 {
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native setInt called");
+
 	const char *keyStr;
 	keyStr = env->GetStringUTFChars(key, NULL);
 	if (keyStr == NULL) {
 		return;
 	}
-
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native setInt key = %s, value = %d", keyStr, value);
 	ISettings::setInt(keyStr, value);
 }
 
@@ -69,12 +75,14 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setInt
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setUInt
 (JNIEnv *env, jclass, jstring key, jlong value)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native setUInt called");
+
 	const char *keyStr;
 	keyStr = env->GetStringUTFChars(key, NULL);
 	if (keyStr == NULL) {
 		return;
 	}
-
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native setUInt key = %s, value = %u", keyStr, value);
 	ISettings::setUInt(keyStr, value);
 }
 
@@ -86,12 +94,14 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setUInt
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setBool
 (JNIEnv *env, jclass, jstring key, jboolean value)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native setBool called");
+
 	const char *keyStr;
 	keyStr = env->GetStringUTFChars(key, NULL);
 	if (keyStr == NULL) {
 		return;
 	}
-
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native setBool key = %s, value = %d", keyStr, value);
 	ISettings::setBool(keyStr, value);
 }
 
@@ -103,12 +113,14 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setBool
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setFloat
 (JNIEnv *env, jclass, jstring key, jfloat value)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native setFloat called");
+
 	const char *keyStr;
 	keyStr = env->GetStringUTFChars(key, NULL);
 	if (keyStr == NULL) {
 		return;
 	}
-
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native setFloat key = %s, value = %f", keyStr, value);
 	ISettings::setFloat(keyStr, value);
 }
 
@@ -120,12 +132,14 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setFloat
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setDouble
 (JNIEnv *env, jclass, jstring key, jdouble value)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native setDouble called");
+
 	const char *keyStr;
 	keyStr = env->GetStringUTFChars(key, NULL);
 	if (keyStr == NULL) {
 		return;
 	}
-
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native setDouble key = %s, value = %g", keyStr, value);
 	ISettings::setDouble(keyStr, value);
 }
 
@@ -137,12 +151,14 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_setDouble
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_clear
 (JNIEnv *env, jclass, jstring key)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native clear called");
+
 	const char *keyStr;
 	keyStr = env->GetStringUTFChars(key, NULL);
 	if (keyStr == NULL) {
 		return;
 	}
-
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native clear key = %s", keyStr);
 	ISettings::clear(keyStr);
 }
 
@@ -154,11 +170,15 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_clear
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPSettings_apply
 (JNIEnv *env, jclass, jstring jsonSettings)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native apply called");
+
 	const char *jsonSettingsStr;
 	jsonSettingsStr = env->GetStringUTFChars(jsonSettings, NULL);
 	if (jsonSettingsStr == NULL) {
 		return false;
 	}
+
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPSettings native apply jsonSettings = %s", jsonSettingsStr);
 
 	return ISettings::apply(jsonSettingsStr);
 }
@@ -171,6 +191,7 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPSettings_apply
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPSettings_applyDefaults
 (JNIEnv *, jclass)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSettings native applyDefaults called");
 	ISettings::applyDefaults();
 }
 

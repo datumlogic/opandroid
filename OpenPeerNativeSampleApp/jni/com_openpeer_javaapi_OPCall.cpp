@@ -56,10 +56,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 	jobject object;
 	JNIEnv *jni_env = 0;
 	ICallPtr callPtr;
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native placeCall called");
 
 	if (conversationThread == NULL || toContact == NULL)
 	{
-		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Place call - invalid parameters");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native placeCall - invalid parameters");
 		return object;
 	}
 
@@ -79,9 +80,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 	if(coreConversationThreadPtr && contactPtr)
 	{
 
-		__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Placing call...");
 		callPtr = ICall::placeCall(*coreConversationThreadPtr, *contactPtr ,includeAudio, includeVideo);
-
 	}
 
 	if(callPtr)
@@ -96,11 +95,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_placeCall
 			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 			jlong call = (jlong) ptrToCall;
 			jni_env->SetLongField(object, fid, call);
-
-			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"CorePtr raw = %p, ptr as long = %Lu",callPtr.get(), call);
-
 		}
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native placeCall core pointer is NULL!!! ");
 	}
 	return object;
 }
@@ -116,6 +115,8 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPCall_getStableID
 	jlong ret = 0;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getStableID called");
+
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -125,6 +126,10 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPCall_getStableID
 	if (coreCallPtr)
 	{
 		ret = coreCallPtr->get()->getID();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getStableID core pointer is NULL!!!");
 	}
 	return ret;
 }
@@ -141,6 +146,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_getCallID
 	JNIEnv *jni_env = 0;
 	jni_env = getEnv();
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getCallID called");
+
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 	jlong pointerValue = jni_env->GetLongField(owner, fid);
@@ -150,6 +157,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCall_getCallID
 	if (coreCallPtr)
 	{
 		ret = env->NewStringUTF(coreCallPtr->get()->getCallID().c_str());
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getCallID core pointer is NULL!!!");
 	}
 	return ret;
 }
@@ -164,6 +175,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread
 {
 	jobject ret;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getConversationThread called");
 
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
@@ -185,6 +198,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getConversationThread
 		jlong convThread = (jlong) ptrToConversationThread;
 		jni_env->SetLongField(ret, fid, convThread);
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getConversationThread core pointer is NULL!!!");
+	}
 	return ret;
 
 }
@@ -199,6 +216,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller
 {
 	jobject ret;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getCaller called");
 
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
@@ -221,6 +240,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCaller
 		jni_env->SetLongField(ret, fid, contact);
 
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getCaller core pointer is NULL!!!");
+	}
 	return ret;
 }
 
@@ -234,6 +257,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee
 {
 	jobject ret;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getCallee called");
 
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
@@ -255,6 +280,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCallee
 		jlong contact = (jlong) ptrToContact;
 		jni_env->SetLongField(ret, fid, contact);
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getCallee core pointer is NULL!!!");
+	}
 	return ret;
 }
 
@@ -269,6 +298,8 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasAudio
 	jboolean ret;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native hasAudio called");
+
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -278,6 +309,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasAudio
 	if (coreCallPtr)
 	{
 		ret = coreCallPtr->get()->hasAudio();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native hasAudio core pointer is NULL!!!");
 	}
 	return ret;
 }
@@ -293,6 +328,8 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasVideo
 	jboolean ret;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native hasVideo called");
+
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -302,6 +339,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCall_hasVideo
 	if (coreCallPtr)
 	{
 		ret = coreCallPtr->get()->hasVideo();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native hasVideo core pointer is NULL!!!");
 	}
 	return ret;
 }
@@ -317,6 +358,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
 	jint state = 0;
 	jobject ret;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getState called");
 
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
@@ -334,6 +377,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getState
 			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallStates", state);
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getState core pointer is NULL!!!");
+	}
 
 	return ret;
 }
@@ -349,6 +396,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
 	jint reason = 0;
 	jobject ret;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getClosedReason called");
 
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
@@ -366,7 +415,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedReason
 			ret = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CallClosedReason", reason);
 		}
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getClosedReason core pointer is NULL!!!");
+	}
 	return ret;
 }
 
@@ -383,6 +435,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCreationTime
 	jobject object;
 
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getCreationTime called");
 
 	jni_env = getEnv();
 	cls = findClass("com/openpeer/javaapi/OPCall");
@@ -411,6 +465,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getCreationTime
 			jni_env->CallVoidMethod(object, timeSetMillisMethodID, creationTimeDuration.total_milliseconds());
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getCreationTime core pointer is NULL!!!");
+	}
 	return object;
 }
 
@@ -426,6 +484,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getRingTime
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getRingTime called");
 
 	jni_env = getEnv();
 	cls = findClass("com/openpeer/javaapi/OPCall");
@@ -454,6 +514,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getRingTime
 			jni_env->CallVoidMethod(object, timeSetMillisMethodID, ringTimeDuration.total_milliseconds());
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getRingTime core pointer is NULL!!!");
+	}
 	return object;
 }
 
@@ -469,6 +533,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getAnswerTime
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getAnswerTime called");
 
 	jni_env = getEnv();
 	cls = findClass("com/openpeer/javaapi/OPCall");
@@ -497,6 +563,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getAnswerTime
 			jni_env->CallVoidMethod(object, timeSetMillisMethodID, answerTimeDuration.total_milliseconds());
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getAnswerTime core pointer is NULL!!!");
+	}
 	return object;
 }
 
@@ -512,6 +582,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedTime
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native getClosedTime called");
 
 	jni_env = getEnv();
 	cls = findClass("com/openpeer/javaapi/OPCall");
@@ -541,6 +613,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCall_getClosedTime
 			jni_env->CallVoidMethod(object, timeSetMillisMethodID, closedTimeDuration.total_milliseconds());
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native getClosedTime core pointer is NULL!!!");
+	}
 	return object;
 }
 
@@ -554,6 +630,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_ring
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native ring called");
+
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -561,8 +639,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_ring
 
 	ICallPtr* coreCallPtr = (ICallPtr*)pointerValue;
 	if (coreCallPtr)
-	{;
-	coreCallPtr->get()->ring();
+	{
+		coreCallPtr->get()->ring();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native ring core pointer is NULL!!!");
 	}
 }
 
@@ -576,6 +658,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_answer
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native answer called");
+
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -585,6 +669,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_answer
 	if (coreCallPtr)
 	{
 		coreCallPtr->get()->answer();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native answer core pointer is NULL!!!");
 	}
 }
 
@@ -598,6 +686,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hold
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native hold called");
+
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -607,6 +697,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hold
 	if (coreCallPtr)
 	{
 		coreCallPtr->get()->hold(hold);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native hold core pointer is NULL!!!");
 	}
 }
 
@@ -619,6 +713,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
 (JNIEnv *, jobject owner, jobject callClosedReasonObj)
 {
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall native hangup called");
 
 	jni_env = getEnv();
 	jclass cls = findClass("com/openpeer/javaapi/OPCall");
@@ -637,8 +733,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_hangup
 
 			ICall::CallClosedReasons reason = (ICall::CallClosedReasons)intValue;
 			coreCallPtr->get()->hangup(reason);
-			//todo Catch call ended state, and reset and remove call from OpenPeerCoreManager call vector
 		}
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCall native hangup core pointer is NULL!!!");
 	}
 }
 
@@ -658,12 +757,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCall_releaseCoreObjects
 		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (ICallPtr*)pointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCall core object deleted.");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPCall core object not deleted - already NULL!");
 	}
 }
 

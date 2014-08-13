@@ -56,10 +56,6 @@ String OpenPeerCoreManager::getObjectClassName (jobject delegate)
 	// Now get the c string from the java jstring object
 	ret = String(env->GetStringUTFChars(strObj, NULL));
 
-	// Print the class name
-	printf("\nCalling class is: %s\n", ret.c_str());
-
-
 	env->DeleteLocalRef(clsObj);
 	env->DeleteLocalRef(cls);
 	// Release the memory pinned char array

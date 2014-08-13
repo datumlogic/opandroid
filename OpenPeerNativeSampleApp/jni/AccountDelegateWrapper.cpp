@@ -19,7 +19,7 @@ void AccountDelegateWrapper::onAccountStateChanged(IAccountPtr account, IAccount
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "onAccountStateChanged state = %d", (jint)state);
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "onAccountStateChanged called state = %d", (jint)state);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
