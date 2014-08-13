@@ -63,6 +63,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native login called");
+
 	const char *namespaceGrantOuterFrameURLUponReloadStr;
 	namespaceGrantOuterFrameURLUponReloadStr = env->GetStringUTFChars(namespaceGrantOuterFrameURLUponReload, NULL);
 	if (namespaceGrantOuterFrameURLUponReloadStr == NULL) {
@@ -93,6 +95,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 	{
 		return object;
 	}
+
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPAccount native login parameters are valid");
 
 	//set java delegate to account delegate wrapper and init shared pointer for wrappers
 	AccountDelegateWrapperPtr accountDelegatePtr = AccountDelegateWrapperPtr(new AccountDelegateWrapper(javaAccountDelegate));
@@ -128,11 +132,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_login
 				jni_env->SetLongField(object, delegateFid, delegate);
 			}
 
-			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"CorePtr raw = %p, ptr as long = %Lu",accountPtr.get(), acc);
-
 		}
 
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native login core pointer is NULL !!!");
 	}
 	return object;
 
@@ -156,7 +161,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Account Relogin called");
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native relogin called");
 
 	const char *namespaceGrantOuterFrameURLUponReloadStr;
 	namespaceGrantOuterFrameURLUponReloadStr = env->GetStringUTFChars(namespaceGrantOuterFrameURLUponReload, NULL);
@@ -183,6 +188,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 		return object;
 	}
 
+	__android_log_print(ANDROID_LOG_VERBOSE, "com.openpeer.jni", "OPAccount native login parameters are valid");
 	//set java delegate to account delegate wrapper and init shared pointer for wrappers
 	AccountDelegateWrapperPtr accountDelegatePtr = AccountDelegateWrapperPtr(new AccountDelegateWrapper(javaAccountDelegate));
 	//set java delegate to conversation thread delegate wrapper and init shared pointer for wrappers
@@ -218,11 +224,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_relogin
 				jni_env->SetLongField(object, delegateFid, delegate);
 			}
 
-			__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni",
-					"CorePtr raw = %p, ptr as long = %Lu",accountPtr.get(), acc);
-
 		}
 
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native relogin core pointer is NULL !!!");
 	}
 	return object;
 }
@@ -238,6 +245,8 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getID
 	jlong pid = 0;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getID called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -248,6 +257,10 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPAccount_getID
 	if (coreAccountPtr)
 	{
 		pid = coreAccountPtr->get()->getID();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getID core pointer is NULL !!!");
 	}
 
 	return pid;
@@ -265,6 +278,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
 	jstring stableId;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getStableID called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -276,7 +291,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getStableID
 	{
 		stableId = jni_env->NewStringUTF(coreAccountPtr->get()->getStableID().c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getStableID core pointer is NULL !!!");
+	}
 	return stableId;
 
 }
@@ -297,6 +315,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
 	unsigned short int outErrorCode;
 	String outErrorReason;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getState called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -313,8 +333,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getState
 			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/AccountStates", state);
 		}
 	}
-
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni", "Account getState completed");
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getState core pointer is NULL !!!");
+	}
 	return object;
 }
 
@@ -330,6 +352,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformat
 	jstring reloginInfo;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getReloginInformation called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -343,7 +367,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getReloginInformat
 
 		reloginInfo =  jni_env->NewStringUTF(IHelper::convertToString(reloginInfoElement).c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getReloginInformation core pointer is NULL !!!");
+	}
 	return reloginInfo;
 }
 
@@ -358,6 +385,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getLocationID
 	jstring locationID;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getLocationID called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -370,7 +399,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getLocationID
 
 		locationID =  jni_env->NewStringUTF(coreAccountPtr->get()->getLocationID().c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getLocationID core pointer is NULL !!!");
+	}
 	return locationID;
 }
 
@@ -384,6 +416,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_shutdown
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native shutdown called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -393,9 +427,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_shutdown
 	if (coreAccountPtr)
 	{
 		coreAccountPtr->get()->shutdown();
-		//todo reset OpenPeerCoreManager::accountPtr when shutdown state is received
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native shutdown core pointer is NULL !!!");
+	}
 }
 
 /*
@@ -410,6 +446,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivate
 	jstring peerFilePrivate;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getPeerFilePrivate called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -423,7 +461,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePrivate
 
 		peerFilePrivate =  env->NewStringUTF(IHelper::convertToString(peerFilePrivateElement).c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getPeerFilePrivate core pointer is NULL !!!");
+	}
 	return peerFilePrivate;
 }
 
@@ -439,6 +480,8 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
 	jbyteArray returnArr;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getPeerFilePrivateSecret called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -452,7 +495,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_openpeer_javaapi_OPAccount_getPeerFilePriv
 		returnArr = env->NewByteArray(sec->SizeInBytes());
 		env->SetByteArrayRegion(returnArr, (int)0, (int)sec->SizeInBytes(), (const signed char *)sec->data());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getPeerFilePrivateSecret core pointer is NULL !!!");
+	}
 	return returnArr;
 
 }
@@ -470,6 +516,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 	jobject returnListObject;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getAssociatedIdentities called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -485,6 +533,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 	if (coreAccountPtr)
 	{
 		coreIdentities = coreAccountPtr->get()->getAssociatedIdentities();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getAssociatedIdentities core pointer is NULL !!!");
 	}
 
 	if(jni_env)
@@ -512,8 +564,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPAccount_getAssociatedIdent
 			jlong identity = (jlong) ptrToIdentity;
 			jni_env->SetLongField(identityObject, fid, identity);
 
-			__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Identity added = %p", (*coreListIter).get());
-
 			//add to return List
 			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , identityObject);
 
@@ -536,6 +586,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native removeIdentities called");
 
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
@@ -586,6 +638,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_removeIdentities
 	{
 		coreAccountPtr->get()->removeIdentities(coreIdentitiesToRemove);
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native removeIdentities core pointer is NULL !!!");
+	}
 }
 
 /*
@@ -600,6 +656,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWin
 	jstring innerBrowserWindowFrameURL;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getInnerBrowserWindowFrameURL called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -613,7 +671,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getInnerBrowserWin
 
 		innerBrowserWindowFrameURL =  jni_env->NewStringUTF(innerBrowserWindowFrameURLString.c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getInnerBrowserWindowFrameURL core pointer is NULL !!!");
+	}
 	return innerBrowserWindowFrameURL;
 }
 
@@ -627,6 +688,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVi
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native notifyBrowserWindowVisible called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -636,6 +699,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowVi
 	if (coreAccountPtr)
 	{
 		coreAccountPtr->get()->notifyBrowserWindowVisible();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native notifyBrowserWindowVisible core pointer is NULL !!!");
 	}
 }
 
@@ -649,6 +716,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowCl
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native notifyBrowserWindowClosed called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -658,6 +727,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_notifyBrowserWindowCl
 	if (coreAccountPtr)
 	{
 		coreAccountPtr->get()->notifyBrowserWindowClosed();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native notifyBrowserWindowClosed core pointer is NULL !!!");
 	}
 }
 
@@ -673,6 +746,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForI
 	jstring nextMessageForInnerBrowerWindowFrame;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native getNextMessageForInnerBrowserWindowFrame called");
+
 	jni_env = getEnv();
 	jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
 	jfieldID accountFid = jni_env->GetFieldID(accountClass, "nativeClassPointer", "J");
@@ -686,7 +761,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPAccount_getNextMessageForI
 
 		nextMessageForInnerBrowerWindowFrame =  jni_env->NewStringUTF(IHelper::convertToString(nextMessageForInnerBrowerWindowFrameElement).c_str());
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native getNextMessageForInnerBrowserWindowFrame core pointer is NULL !!!");
+	}
 	return nextMessageForInnerBrowerWindowFrame;
 }
 
@@ -701,6 +779,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_handleMessageFromInne
 	String unparsedMessageString;
 
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native handleMessageFromInnerBrowserWindowFrame called");
 
 	jni_env = getEnv();
 
@@ -718,6 +798,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_handleMessageFromInne
 	if (coreAccountPtr)
 	{
 		coreAccountPtr->get()->handleMessageFromInnerBrowserWindowFrame(IHelper::createElement(unparsedMessageString));
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPAccount native handleMessageFromInnerBrowserWindowFrame core pointer is NULL !!!");
 	}
 }
 
@@ -742,12 +826,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPAccount_releaseCoreObjects
 		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (AccountDelegateWrapperPtr*)delegatePointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPAccount native object deleted");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPAccount native object not deleted - already NULL");
 	}
 }
 
