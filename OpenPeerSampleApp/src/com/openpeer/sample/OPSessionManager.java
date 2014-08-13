@@ -144,9 +144,7 @@ public class OPSessionManager {
 			@Override
 			public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
 				OPMessage message = conversationThread.getMessageById(messageID);
-				if (TextUtils.isEmpty(message.getMessageId())) {
-					message.setMessageId(messageID);
-				}
+
 				if (message.getFrom().isSelf()) {
 					Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
 							+ message.getMessageType());
@@ -168,11 +166,6 @@ public class OPSessionManager {
 			@Override
 			public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
 				final OPMessage message = conversationThread.getMessageById(messageID);
-
-				if (TextUtils.isEmpty(message.getMessageId())) {
-					Log.e("test", "weird! message id is empty " + message);
-					message.setMessageId(messageID);
-				}
 
 				OPPushManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
 

@@ -46,6 +46,7 @@ public class OPSdkConfig {
 	private static final String KEY_LOCKBOX_SERVICE_DOMAIN = "lockBoxServiceDomain";
 	private static final String KEY_APP_ID = "appId";
 	private static final String KEY_APP_APPKEY = "appKey";
+	private static final Object KEY_USER_AGENT = "user-agent";
 
 	private static final long DURATION_ONE_MONTH_IN_MILLIS = 30 * 24 * 60 * 60
 			* 1000;
@@ -56,6 +57,7 @@ public class OPSdkConfig {
 	private static OPSdkConfig instance;
 	private static final String instanceId = java.util.UUID.randomUUID()
 			.toString();
+
 
 	public static String getInstanceid() {
 		return instanceId;
@@ -102,7 +104,6 @@ public class OPSdkConfig {
 			id = java.util.UUID.randomUUID().toString();
 			saveGrantId(id);
 		}
-		Log.d("Test", "getGrantId " + id);
 		return id;
 	}
 
@@ -110,10 +111,6 @@ public class OPSdkConfig {
 		try {
 			JSONObject parent = new JSONObject();
 			JSONObject jsonObject = new JSONObject();
-
-			Log.d("login", "getAPPSettingsString mProperties" + mProperties);
-			Log.d("login",
-					"getAPPSettingsString " + mProperties.propertyNames());
 
 			jsonObject.put(PREFIX_APP_COMMON_SETTING + KEY_APP_NAME,
 					mProperties.getProperty(KEY_APP_NAME));
@@ -125,12 +122,6 @@ public class OPSdkConfig {
 			Time expires = new Time();
 			expires.set(System.currentTimeMillis()
 					+ DURATION_ONE_MONTH_IN_MILLIS);
-			// expires.set(30, 6, 2014);
-			// rel-dev2
-			// jsonObject.put("openpeer/calculated/authorizated-application-id",
-			// OPStack.createAuthorizedApplicationID("com.openpeer.nativeApp",
-			// "8f1ff375433b6e11026cb806a32ae4d04a59d7b1", expires ));
-			// lespaul
 			jsonObject
 					.put("openpeer/calculated/authorizated-application-id",
 							OPStack.createAuthorizedApplicationID(
@@ -139,7 +130,7 @@ public class OPSdkConfig {
 									expires));
 
 			jsonObject.put("openpeer/calculated/user-agent",
-					"OpenPeerNativeSampleApp");
+					mProperties.get(KEY_USER_AGENT));
 			jsonObject.put("openpeer/calculated/device-id", Secure.getString(
 					mContext.getContentResolver(), Secure.ANDROID_ID));
 			jsonObject.put("openpeer/calculated/os",
@@ -148,7 +139,6 @@ public class OPSdkConfig {
 					.put("openpeer/calculated/system", android.os.Build.MODEL);
 			jsonObject.put("openpeer/calculated/instance-id", instanceId);
 			parent.put("root", jsonObject);
-			Log.d("output", parent.toString(2));
 			return parent.toString(2);
 		} catch (JSONException e) {
 			e.printStackTrace();
