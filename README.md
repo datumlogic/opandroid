@@ -82,7 +82,7 @@ Thank you for your interest in the Hookflash Open Peer Android SDK.
 
 License:
 
- Copyright (c) 2014, SMB Phone Inc.
+ Copyright (c) 2014, Hookflash Inc.
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
