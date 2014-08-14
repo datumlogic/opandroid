@@ -165,7 +165,7 @@ public class OPHelper {
 		OPCacheDelegate cacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
 		OPCache.setup(cacheDelegate);
 
-		// OPSettings.setup(OPSettingsDelegateImpl.getInstance(mContext));
+		 OPSettings.setup(OPSettingsDelegateImpl.getInstance(mContext));
 		OPSettings.applyDefaults();
 		OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
