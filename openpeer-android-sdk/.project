@@ -11,7 +11,7 @@
 			<arguments>
 				<dictionary>
 					<key>?children?</key>
-					<value>?name?=outputEntries\|?children?=?name?=entry\\\\\\\|\\\|?name?=entry\\\\\\\|\\\|\||</value>
+					<value>?children?=?name?=entry\\\\\\\|\\\|?name?=entry\\\\\\\|\\\|\|?name?=outputEntries\||</value>
 				</dictionary>
 				<dictionary>
 					<key>?name?</key>
@@ -28,10 +28,6 @@
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>
 					<value>ndk-build</value>
-				</dictionary>
-				<dictionary>
-					<key>org.eclipse.cdt.make.core.cleanBuildTarget</key>
-					<value>clean</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.contents</key>
@@ -98,17 +94,17 @@
 		<link>
 			<name>audio_device</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/audio_device/android</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/audio_device/android/java/src</locationURI>
 		</link>
 		<link>
 			<name>video_capture</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_capture/android/java</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_capture/android/java/src</locationURI>
 		</link>
 		<link>
 			<name>video_render</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_render/android/java</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_render/android/java/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

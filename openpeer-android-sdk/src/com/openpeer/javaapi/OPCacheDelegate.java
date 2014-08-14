@@ -33,7 +33,10 @@ package com.openpeer.javaapi;
 
 import android.text.format.Time;
 
-
+/**
+ * 
+ * @ExcludeFromJavadoc
+ */
 public abstract class OPCacheDelegate {
 
 	public abstract String fetch(String cookieNamePath);

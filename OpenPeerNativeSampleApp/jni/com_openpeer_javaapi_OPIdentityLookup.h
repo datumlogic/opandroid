@@ -110,6 +110,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidIdentities
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_openpeer_javaapi_OPIdentityLookup
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_releaseCoreObjects
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -34,10 +34,16 @@ package com.openpeer.javaapi;
 import android.text.format.Time;
 
 public class OPMessage {
+	private String mMessageId;
 	private OPContact mFrom;
 	private String mMessageType;
 	private String mMessage;
 	private Time mTime;
+	
+	public OPMessage() 
+	{
+		
+	}
 
 	public OPContact getFrom() {
 		return mFrom;
@@ -62,6 +68,14 @@ public class OPMessage {
 	}
 	public void setTime(Time mTime) {
 		this.mTime = mTime;
+	}
+
+	public String getMessageId() {
+		return mMessageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.mMessageId = messageId;
 	}
 
 }

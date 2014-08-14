@@ -34,9 +34,12 @@ package com.openpeer.javaapi;
 import java.util.List;
 
 import android.text.format.Time;
+import android.util.Log;
 
 public class OPConversationThread {
 
+	private long nativeClassPointer;
+	
 	public static native String toString(MessageDeliveryStates state);
 	public static native String toString(ContactStates state);
 
@@ -88,4 +91,17 @@ public class OPConversationThread {
 	public native MessageDeliveryStates getMessageDeliveryState(
 										 String messageID
                                          );
+	
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0)
+    	{
+    		Log.d("output", "Cleaning conversation thread core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 }

@@ -38,7 +38,7 @@ echo "----------------- Exporting the android-ndk path ----------------"
 export PATH=$PATH:$Input:$Input/toolchains/arm-linux-androideabi-4.7/prebuilt/$HOST_OS-$ARCHTYPE/bin
 
 #create install directories
-mkdir -p /build
+mkdir -p build
 
 #ortc-lib module build
 echo "------------------- Building ortc-lib for ANDROID platform ---------------"
@@ -48,11 +48,11 @@ rm -rf ./obj
 
 export ANDROIDNDK_PATH=$Input
 export NDK_PROJECT_PATH=`pwd`
-ndk-build APP_PLATFORM=android-9 HOST_OS=$HOST_OS V=1 NDK_LOG=1
+ndk-build NDK_DEBUG=1 APP_PLATFORM=android-9 HOST_OS=$HOST_OS V=1 NDK_LOG=1
 popd
 
 echo "-------- Installing ortc-lib -----"
 cp -r ./obj/local/armeabi-v7a/lib* build
 
 #clean
-rm -rf ./obj
+#rm -rf ./obj

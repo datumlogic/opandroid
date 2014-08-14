@@ -30,10 +30,27 @@
  */
 
 package com.openpeer.javaapi;
-
+/**
+ * @ExcludeFromJavadoc
+ *
+ */
 public class OPPeerFilePublic {
 
-	public native String saveToString();
-	public static native OPPeerFilePublic loadFromString(String peerFilePublicString);
-	
+	private String mPeerFileString;
+
+	public OPPeerFilePublic(String str) {
+		mPeerFileString = str;
+	}
+
+	public OPPeerFilePublic() {
+	}
+
+	public String getPeerFileString() {
+		return mPeerFileString;
+	}
+
+	public void setPeerFileString(String peerFile) {
+		mPeerFileString = peerFile;
+	}
+
 }

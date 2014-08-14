@@ -33,7 +33,7 @@ package com.openpeer.javaapi;
 
 import android.text.format.Time;
 
-public class OPIdentityContact {
+public class OPIdentityContact extends OPRolodexContact {
 
 	private String mStableID;
 
@@ -45,6 +45,11 @@ public class OPIdentityContact {
 
     private Time mLastUpdated;
     private Time mExpires;
+    
+    public OPIdentityContact()
+    {
+    	
+    }
 
     public OPIdentityContact( OPRolodexContact rolodexContact)
     {

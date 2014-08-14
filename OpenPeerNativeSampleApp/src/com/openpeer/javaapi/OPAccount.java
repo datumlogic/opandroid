@@ -33,9 +33,15 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
+import android.util.Log;
+
 
 public class OPAccount {
 
+	private long nativeClassPointer;
+	
+	private long nativeDelegatePointer;
+	
 	public static native String toString(AccountStates state);
 
 	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
@@ -58,7 +64,9 @@ public class OPAccount {
                                String reloginInformation
                                );
 
-    public native long getStableID();
+    public native long getID();
+    
+    public native String getStableID();
 
     public native AccountStates getState(
                                    int outErrorCode,
@@ -85,5 +93,18 @@ public class OPAccount {
 
     public native String getNextMessageForInnerBrowerWindowFrame();
     public native void handleMessageFromInnerBrowserWindowFrame(String unparsedMessage);
+    
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0 || nativeDelegatePointer != 0)
+    	{
+    		Log.d("output", "Cleaning account core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
  
 }

@@ -32,11 +32,14 @@
 package com.openpeer.javaapi;
 
 import android.text.format.Time;
+import android.util.Log;
 
 
 
 public class OPCall {
 
+	private long nativeClassPointer;
+	
 	public static native String toString(CallStates state);
 	
 	public static native String toString(CallClosedReasons reason);
@@ -82,5 +85,18 @@ public class OPCall {
     public native void hold(boolean hold); // place the call on hold (or remove from hold)
     
     public native void hangup(CallClosedReasons reason);        // end the call
+    
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0)
+    	{
+    		Log.d("output", "Cleaning call core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 
 }

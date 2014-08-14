@@ -30,7 +30,7 @@
  */
 
 #include "com_openpeer_javaapi_OPMediaEngine.h"
-#include "com_openpeer_javaapi_OPStackMessageQueue.h"
+#include "OpenPeerCoreManager.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
 #include "openpeer/core/internal/core_MediaEngine.h"
@@ -57,7 +57,7 @@ jobject g_glChannelSurface;
  * Signature: (Ljava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_init
-  (JNIEnv *, jclass, jobject context)
+(JNIEnv *, jclass, jobject context)
 {
 	JNIEnv *jni_env = 0;
 
@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_init
 	if(jni_env)
 	{
 		webrtc::VoiceEngine::SetAndroidObjects(android_jvm, jni_env, context);
-		webrtc::VideoEngine::SetAndroidObjects(android_jvm, context);
+		webrtc::VideoEngine::SetAndroidObjects(android_jvm);
 	}
 }
 
@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_init
  * Signature: ()Lcom/openpeer/javaapi/OPMediaEngine;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	jclass cls;
 	jmethodID method;
@@ -90,15 +90,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
 
-	    openpeer::core::test::TestMediaEngineFactoryPtr overrideFactory(new openpeer::core::test::TestMediaEngineFactory);
-	    openpeer::core::internal::Factory::override(overrideFactory);
+		openpeer::core::test::TestMediaEngineFactoryPtr overrideFactory(new openpeer::core::test::TestMediaEngineFactory);
+		openpeer::core::internal::Factory::override(overrideFactory);
 #else
 		cls = findClass("com/openpeer/javaapi/OPMediaEngine");
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
 		object = jni_env->NewObject(cls, method);
-#endif
-		mediaEnginePtr = IMediaEngine::singleton();
 
+
+#endif
+		IMediaEnginePtr* ptrToMediaEngine = new boost::shared_ptr<IMediaEngine>(IMediaEngine::singleton());
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong engine = (jlong) ptrToMediaEngine;
+		jni_env->SetLongField(object, fid, engine);
 	}
 	return object;
 
@@ -110,23 +114,28 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_singleton
  * Signature: (Lcom/openpeer/javaapi/VideoOrientations;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setDefaultVideoOrientation
-  (JNIEnv *, jobject, jobject videoOrientationObj)
+(JNIEnv *, jobject owner, jobject videoOrientationObj)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
 
 		cls = findClass("com/openpeer/javaapi/VideoOrientations");
 		if(jni_env->IsInstanceOf(videoOrientationObj, cls) == JNI_TRUE)
 		{
-			jmethodID videoOrientationMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
-			int intValue = (int) jni_env->CallIntMethod(videoOrientationObj, videoOrientationMID);
+			jint intValue = OpenPeerCoreManager::getIntValueFromEnumObject(videoOrientationObj, "com/openpeer/javaapi/VideoOrientations");
 
 			IMediaEngine::VideoOrientations orientation = (IMediaEngine::VideoOrientations)intValue;
-			mediaEnginePtr->setDefaultVideoOrientation(orientation);
+			coreMediaEnginePtr->get()->setDefaultVideoOrientation(orientation);
 		}
 	}
 }
@@ -137,22 +146,26 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setDefaultVideoOr
  * Signature: ()Lcom/openpeer/javaapi/VideoOrientations;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getDefaultVideoOrientation
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
 		if(jni_env)
 		{
-			IMediaEngine::VideoOrientations value = mediaEnginePtr->getDefaultVideoOrientation();
-			cls = findClass("com/openpeer/javaapi/VideoOrientations");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, (int)value);
+			IMediaEngine::VideoOrientations value = coreMediaEnginePtr->get()->getDefaultVideoOrientation();
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/VideoOrientations", (jint)value);
 		}
 	}
 	return object;
@@ -165,23 +178,28 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getDefaultVide
  * Signature: (Lcom/openpeer/javaapi/VideoOrientations;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setRecordVideoOrientation
-  (JNIEnv *, jobject, jobject videoOrientationObj)
+(JNIEnv *, jobject owner, jobject videoOrientationObj)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
 
 		cls = findClass("com/openpeer/javaapi/VideoOrientations");
 		if(jni_env->IsInstanceOf(videoOrientationObj, cls) == JNI_TRUE)
 		{
-			jmethodID videoOrientationMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
-			int intValue = (int) jni_env->CallIntMethod(videoOrientationObj, videoOrientationMID);
+			jint intValue = OpenPeerCoreManager::getIntValueFromEnumObject(videoOrientationObj, "com/openpeer/javaapi/VideoOrientations");
 
 			IMediaEngine::VideoOrientations orientation = (IMediaEngine::VideoOrientations)intValue;
-			mediaEnginePtr->setRecordVideoOrientation(orientation);
+			coreMediaEnginePtr->get()->setRecordVideoOrientation(orientation);
 		}
 	}
 }
@@ -192,22 +210,26 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setRecordVideoOri
  * Signature: ()Lcom/openpeer/javaapi/VideoOrientations;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getRecordVideoOrientation
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
 		if(jni_env)
 		{
-			IMediaEngine::VideoOrientations value = mediaEnginePtr->getRecordVideoOrientation();
-			cls = findClass("com/openpeer/javaapi/VideoOrientations");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, (int)value);
+			IMediaEngine::VideoOrientations value = coreMediaEnginePtr->get()->getRecordVideoOrientation();
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/VideoOrientations", (jint)value);
 		}
 	}
 	return object;
@@ -219,12 +241,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getRecordVideo
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setVideoOrientation
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
+	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+	if (coreMediaEnginePtr)
 	{
-		mediaEnginePtr->setVideoOrientation();
+		coreMediaEnginePtr->get()->setVideoOrientation();
 	}
 }
 
@@ -234,7 +263,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setVideoOrientati
  * Signature: (Ljava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderView
-  (JNIEnv *, jobject, jobject)
+(JNIEnv *, jobject owner, jobject glSurface)
 {
 
 }
@@ -245,16 +274,21 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderV
  * Signature: (Ljava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderView
-  (JNIEnv *, jobject, jobject glSurface)
+(JNIEnv *, jobject owner, jobject glSurface)
 {
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
 
 		g_glChannelSurface = jni_env->NewGlobalRef(glSurface);
-		mediaEnginePtr->setChannelRenderView(g_glChannelSurface);
+		coreMediaEnginePtr->get()->setChannelRenderView(g_glChannelSurface);
 	}
 
 }
@@ -262,25 +296,25 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderV
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setEcEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setEcEnabled
-  (JNIEnv *, jobject, jobject booleanObj)
+(JNIEnv *, jobject owner, jboolean value)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
-	{
-		jni_env = getEnv();
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
 
-		cls = findClass("java/lang/Boolean");
-		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
-		{
-			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
-			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
-			mediaEnginePtr->setEcEnabled(booleanValue);
-		}
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+
+		coreMediaEnginePtr->get()->setEcEnabled(value);
 	}
 
 }
@@ -288,50 +322,48 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setEcEnabled
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setAgcEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setAgcEnabled
-  (JNIEnv *, jobject, jobject booleanObj)
+(JNIEnv *, jobject owner, jboolean value)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
-	{
-		jni_env = getEnv();
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
 
-		cls = findClass("java/lang/Boolean");
-		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
-		{
-			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
-			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
-			mediaEnginePtr->setAgcEnabled(booleanValue);
-		}
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setAgcEnabled(value);
 	}
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setNsEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setNsEnabled
-  (JNIEnv *, jobject, jobject booleanObj)
+(JNIEnv *, jobject owner, jboolean value)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
-	{
-		jni_env = getEnv();
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
 
-		cls = findClass("java/lang/Boolean");
-		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
-		{
-			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
-			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
-			mediaEnginePtr->setNsEnabled(booleanValue);
-		}
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setNsEnabled(value);
 	}
 }
 
@@ -341,9 +373,29 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setNsEnabled
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setVoiceRecordFile
-  (JNIEnv *, jobject, jstring)
+(JNIEnv *, jobject owner, jstring filename)
 {
+	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+
+	String filenameString;
+	filenameString = jni_env->GetStringUTFChars(filename, NULL);
+	if (filenameString == NULL) {
+		return;
+	}
+
+
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setVoiceRecordFile(filenameString);
+	}
 }
 
 /*
@@ -352,113 +404,131 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setVoiceRecordFil
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceRecordFile
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
+	jstring ret;
+	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		String record = coreMediaEnginePtr->get()->getVoiceRecordFile();
+		ret = jni_env->NewStringUTF(record.c_str());
+	}
+	return ret;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setMuteEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setMuteEnabled
-  (JNIEnv *, jobject, jobject booleanObj)
+(JNIEnv *, jobject owner, jboolean value)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
-	{
-		jni_env = getEnv();
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
 
-		cls = findClass("java/lang/Boolean");
-		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
-		{
-			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
-			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
-			mediaEnginePtr->setMuteEnabled(booleanValue);
-		}
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setMuteEnabled(value);
 	}
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getMuteEnabled
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getMuteEnabled
-  (JNIEnv *, jobject)
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getMuteEnabled
+(JNIEnv *, jobject owner)
 {
-	jclass cls;
-	jmethodID method;
-	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
-		if(jni_env)
-		{
-			bool value = mediaEnginePtr->getMuteEnabled();
-			cls = findClass("java/lang/Boolean");
-			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
-			object = jni_env->NewObject(cls, method, value);
-		}
+		return coreMediaEnginePtr->get()->getMuteEnabled();
 	}
-	return object;
+	else
+	{
+		return IMediaEngine::singleton()->getMuteEnabled();
+	}
+
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setLoudspeakerEnabled
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setLoudspeakerEnabled
-  (JNIEnv *, jobject, jobject booleanObj)
+(JNIEnv *, jobject owner, jboolean value)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
-	{
-		jni_env = getEnv();
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
 
-		cls = findClass("java/lang/Boolean");
-		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
-		{
-			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
-			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
-			mediaEnginePtr->setLoudspeakerEnabled(booleanValue);
-		}
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setLoudspeakerEnabled(value);
 	}
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getLoudspeakerEnabled
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getLoudspeakerEnabled
-  (JNIEnv *, jobject)
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getLoudspeakerEnabled
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
-		if(jni_env)
-		{
-			bool value = mediaEnginePtr->getLoudspeakerEnabled();
-			cls = findClass("java/lang/Boolean");
-			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
-			object = jni_env->NewObject(cls, method, value);
-		}
+
+		return coreMediaEnginePtr->get()->getLoudspeakerEnabled();
 	}
-	return object;
+	else
+	{
+		return IMediaEngine::singleton()->getLoudspeakerEnabled();
+	}
 }
 
 /*
@@ -467,7 +537,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getLoudspeaker
  * Signature: ()Lcom/openpeer/javaapi/OutputAudioRoutes;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getOutputAudioRoute
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 
 	jclass cls;
@@ -475,15 +545,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getOutputAudio
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
 		if(jni_env)
 		{
-			IMediaEngine::OutputAudioRoutes value = mediaEnginePtr->getOutputAudioRoute();
-			cls = findClass("com/openpeer/javaapi/OutputAudioRoutes");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, (int)value);
+			IMediaEngine::OutputAudioRoutes value = coreMediaEnginePtr->get()->getOutputAudioRoute();
+			object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/OutputAudioRoutes", (jint)value);
 		}
 	}
 	return object;
@@ -492,105 +566,111 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getOutputAudio
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setContinuousVideoCapture
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setContinuousVideoCapture
-  (JNIEnv *, jobject, jobject booleanObj)
+(JNIEnv *, jobject owner, jboolean value)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
-	{
-		jni_env = getEnv();
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
 
-		cls = findClass("java/lang/Boolean");
-		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
-		{
-			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
-			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
-			mediaEnginePtr->setContinuousVideoCapture(booleanValue);
-		}
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setContinuousVideoCapture(value);
 	}
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getContinuousVideoCapture
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getContinuousVideoCapture
-  (JNIEnv *, jobject)
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getContinuousVideoCapture
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
-		if(jni_env)
-		{
-			bool value = mediaEnginePtr->getContinuousVideoCapture();
-			cls = findClass("java/lang/Boolean");
-			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
-			object = jni_env->NewObject(cls, method, value);
-		}
+
+		return coreMediaEnginePtr->get()->getContinuousVideoCapture();
 	}
-	return object;
+	else
+	{
+		return IMediaEngine::singleton()->getContinuousVideoCapture();
+	}
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setFaceDetection
- * Signature: (Ljava/lang/Boolean;)V
+ * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setFaceDetection
-  (JNIEnv *, jobject, jobject booleanObj)
+(JNIEnv *, jobject owner, jboolean value)
 {
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
-	{
-		jni_env = getEnv();
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
 
-		cls = findClass("java/lang/Boolean");
-		if(jni_env->IsInstanceOf(booleanObj, cls) == JNI_TRUE)
-		{
-			jmethodID booleanValueMID   = jni_env->GetMethodID(cls, "booleanValue", "()Z");
-			bool booleanValue = (bool) jni_env->CallBooleanMethod(booleanObj, booleanValueMID);
-			mediaEnginePtr->setFaceDetection(booleanValue);
-		}
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setFaceDetection(value);
 	}
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    getFaceDetection
- * Signature: ()Ljava/lang/Boolean;
+ * Signature: ()Z;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getFaceDetection
-  (JNIEnv *, jobject)
+JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getFaceDetection
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
-		if(jni_env)
-		{
-			bool value = mediaEnginePtr->getFaceDetection();
-			cls = findClass("java/lang/Boolean");
-			method = jni_env->GetMethodID(cls, "<init>", "(Z)V");
-			object = jni_env->NewObject(cls, method, value);
-		}
+
+		return coreMediaEnginePtr->get()->getFaceDetection();
 	}
-	return object;
+	else
+	{
+		return IMediaEngine::singleton()->getFaceDetection();
+	}
 }
 
 /*
@@ -599,23 +679,26 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getFaceDetecti
  * Signature: ()Lcom/openpeer/javaapi/CameraTypes;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCameraType
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
-		if(jni_env)
-		{
-			IMediaEngine::CameraTypes value = mediaEnginePtr->getCameraType();
-			cls = findClass("com/openpeer/javaapi/CameraTypes");
-			method = jni_env->GetMethodID(cls, "<init>", "(I)V");
-			object = jni_env->NewObject(cls, method, (int)value);
-		}
+
+		IMediaEngine::CameraTypes value = coreMediaEnginePtr->get()->getCameraType();
+		object = OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/CameraTypes", (jint) value);
+
 	}
 	return object;
 }
@@ -626,25 +709,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCameraType
  * Signature: (Lcom/openpeer/javaapi/CameraTypes;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCameraType
-  (JNIEnv *, jobject, jobject cameraTypeObj)
+(JNIEnv *, jobject owner, jobject cameraTypeObj)
 {
 
 	jclass cls;
 	JNIEnv *jni_env = 0;
 
-	if (mediaEnginePtr)
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		jni_env = getEnv();
-
-		cls = findClass("com/openpeer/javaapi/CameraTypes");
-		if(jni_env->IsInstanceOf(cameraTypeObj, cls) == JNI_TRUE)
-		{
-			jmethodID cameraTypeMID   = jni_env->GetMethodID(cls, "getNumericType", "()I");
-			int intValue = (int) jni_env->CallIntMethod(cameraTypeObj, cameraTypeMID);
-
-			IMediaEngine::CameraTypes cameraType = (IMediaEngine::CameraTypes)intValue;
-			mediaEnginePtr->setCameraType(cameraType);
-		}
+		coreMediaEnginePtr->get()->setCameraType((IMediaEngine::CameraTypes)OpenPeerCoreManager::getIntValueFromEnumObject(cameraTypeObj, "com/openpeer/javaapi/CameraTypes"));
 	}
 }
 
@@ -654,12 +734,21 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCameraType
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
 
-	if (mediaEnginePtr)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		mediaEnginePtr->startVideoCapture();
+		coreMediaEnginePtr->get()->startVideoCapture();
 	}
 }
 
@@ -669,23 +758,52 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startVideoCapture
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_stopVideoCapture
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-	if (mediaEnginePtr)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		mediaEnginePtr->stopVideoCapture();
+		coreMediaEnginePtr->get()->stopVideoCapture();
 	}
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    startRecordVideoCapture
- * Signature: (Ljava/lang/String;Ljava/lang/Boolean;)V
+ * Signature: (Ljava/lang/String;Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startRecordVideoCapture
-  (JNIEnv *, jobject, jstring, jobject)
+(JNIEnv *, jobject owner, jstring filename, jboolean saveToLibrary)
 {
+	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+
+	String filenameString;
+	filenameString = jni_env->GetStringUTFChars(filename, NULL);
+	if (filenameString == NULL) {
+		return;
+	}
+
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+
+		coreMediaEnginePtr->get()->startRecordVideoCapture(filenameString, saveToLibrary);
+	}
 }
 
 /*
@@ -694,11 +812,20 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_startRecordVideoC
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_stopRecordVideoCapture
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject owner)
 {
-	if (mediaEnginePtr)
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
 	{
-		mediaEnginePtr->stopRecordVideoCapture();
+		coreMediaEnginePtr->get()->stopRecordVideoCapture();
 	}
 }
 
@@ -708,7 +835,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_stopRecordVideoCa
  * Signature: (Lcom/openpeer/javaapi/OPRtpRtcpStatistics;)I
  */
 JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVideoTransportStatistics
-  (JNIEnv *, jobject, jobject)
+(JNIEnv *, jobject, jobject)
 {
 
 }
@@ -719,9 +846,39 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVideoTransport
  * Signature: (Lcom/openpeer/javaapi/OPRtpRtcpStatistics;)I
  */
 JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceTransportStatistics
-  (JNIEnv *, jobject, jobject)
+(JNIEnv *, jobject owner, jobject stat)
 {
 
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_releaseCoreObjects
+(JNIEnv *, jobject javaObject)
+{
+	if(javaObject != NULL)
+	{
+		JNIEnv *jni_env = getEnv();
+		jclass cls = findClass("com/openpeer/javaapi/OPMediaEngine");
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (IMediaEnginePtr*)pointerValue;
+
+		fid = jni_env->GetFieldID(cls, "nativeDelegatePointer", "J");
+		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
+
+		delete (MediaEngineDelegateWrapperPtr*)delegatePointerValue;
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Media engine releaseCoreObjects Core object deleted.");
+
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+	}
 }
 
 /*
@@ -730,11 +887,11 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getVoiceTransport
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoice
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 	if (mediaEnginePtr)
 	{
-	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVoice();
+		openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVoice();
 	}
 }
 
@@ -744,11 +901,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoi
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoice
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 	if (mediaEnginePtr)
 	{
-	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVoice();
+		openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVoice();
 	}
 }
 
@@ -758,11 +915,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoic
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVideoChannel
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 	if (mediaEnginePtr)
 	{
-	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVideoChannel();
+		openpeer::core::internal::IMediaEngineForCallTransport::singleton()->startVideoChannel();
 	}
 }
 
@@ -772,11 +929,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVid
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVideoChannel
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
 	if (mediaEnginePtr)
 	{
-	    openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVideoChannel();
+		openpeer::core::internal::IMediaEngineForCallTransport::singleton()->stopVideoChannel();
 	}
 }
 
@@ -786,22 +943,22 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVide
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setReceiverAddress
-  (JNIEnv *, jobject, jstring receiver_address)
+(JNIEnv *, jobject, jstring receiver_address)
 {
 	if (mediaEnginePtr)
 	{
 		JNIEnv *jni_env = getEnv();
-	    const char* receiver_address_utf8;
-	    receiver_address_utf8 = jni_env->GetStringUTFChars(receiver_address, NULL);
-	    if (receiver_address_utf8 == NULL) {
-	    	return;
-	    }
+		const char* receiver_address_utf8;
+		receiver_address_utf8 = jni_env->GetStringUTFChars(receiver_address, NULL);
+		if (receiver_address_utf8 == NULL) {
+			return;
+		}
 
-	    openpeer::core::test::TestMediaEnginePtr testMediaEngine =
-	        boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
-	    testMediaEngine->setReceiverAddress(receiver_address_utf8);
+		openpeer::core::test::TestMediaEnginePtr testMediaEngine =
+				boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
+		testMediaEngine->setReceiverAddress(receiver_address_utf8);
 
-	    jni_env->ReleaseStringUTFChars(receiver_address, receiver_address_utf8);
+		jni_env->ReleaseStringUTFChars(receiver_address, receiver_address_utf8);
 	}
 
 }
@@ -812,20 +969,20 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setRecei
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_getReceiverAddress
-  (JNIEnv *, jobject)
+(JNIEnv *, jobject)
 {
-    jstring receiver_address;
+	jstring receiver_address;
 
 	if (mediaEnginePtr)
 	{
 		JNIEnv *jni_env = getEnv();
 		const char* receiver_address_utf8;
 
-	    openpeer::core::test::TestMediaEnginePtr testMediaEngine =
-	        boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
-	    receiver_address_utf8 = testMediaEngine->getReceiverAddress().c_str();
+		openpeer::core::test::TestMediaEnginePtr testMediaEngine =
+				boost::dynamic_pointer_cast<openpeer::core::test::TestMediaEngine>(mediaEnginePtr);
+		receiver_address_utf8 = testMediaEngine->getReceiverAddress().c_str();
 
-	    receiver_address = jni_env->NewStringUTF((const char*)receiver_address_utf8);
+		receiver_address = jni_env->NewStringUTF((const char*)receiver_address_utf8);
 	}
 
 	return receiver_address;

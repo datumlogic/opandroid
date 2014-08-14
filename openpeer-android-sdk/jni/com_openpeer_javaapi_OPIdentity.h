@@ -206,6 +206,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_getDownloadedRolo
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_cancel
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_openpeer_javaapi_OPIdentity
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_releaseCoreObjects
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="padding_edge">10dp</dimen>
+    <dimen name="padding_vertical">5dp</dimen>
+    <dimen name="padding_spacing_internal">5dp</dimen>
+    <dimen name="profile_image_size_in_list">64dp</dimen>
+    <dimen name="profile_image_size_in_chat">64dp</dimen>
+    <dimen name="badge_image_size_in_contact">16dp</dimen>
+
+</resources>

@@ -31,71 +31,131 @@
 
 package com.openpeer.javaapi;
 
+import java.util.Arrays;
 import java.util.List;
+
+import android.database.Cursor;
+import android.util.Log;
+
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.IdentityContactEntry;
 
 public class OPRolodexContact {
 
-	class OPAvatar {
+	public static class OPAvatar {
 		private String mName;
 		private String mURL;
 		private int mWidth;
 		private int mHeight;
-		
+
+		public OPAvatar(String mName, String mURL, int mWidth, int mHeight) {
+			super();
+			this.mName = mName;
+			this.mURL = mURL;
+			this.mWidth = mWidth;
+			this.mHeight = mHeight;
+		}
+
+		OPAvatar() {
+
+		}
+
 		public String getName() {
 			return mName;
 		}
+
 		public void setName(String mName) {
 			this.mName = mName;
 		}
+
 		public String getURL() {
 			return mURL;
 		}
+
 		public void setURL(String mURL) {
 			this.mURL = mURL;
 		}
+
 		public int getWidth() {
 			return mWidth;
 		}
+
 		public void setWidth(int mWidth) {
 			this.mWidth = mWidth;
 		}
+
 		public int getHeight() {
 			return mHeight;
 		}
+
 		public void setHeight(int mHeight) {
 			this.mHeight = mHeight;
 		}
-		
+
+		public String toString() {
+			return super.toString() + " Name " + mName + " URL " + mURL
+					+ " Width " + mWidth + " Height " + mHeight;
+		}
+
 	};
-	
-	enum Dispositions
-    {
-      Disposition_NA (0),
-      Disposition_Update (1),
-      Disposition_Remove (2);
-      
-      Dispositions (int value)
-      {
-          this.type = value;
-      }
 
-      private int type;
+	public enum Dispositions {
+		Disposition_NA, Disposition_Update, Disposition_Remove;
 
-      public int getNumericType()
-      {
-          return type;
-      }
-    };
-    
-    private Dispositions mDisposition;
-    private String mIdentityURI;
-    private String mIdentityProvider;
+		Dispositions() {
+		}
 
-    private String mName;
-    private String mProfileURL;
-    private String mVProfileURL;
+	};
 
-    private List<OPAvatar> mAvatars;
+	private Dispositions mDisposition;
+	private String mIdentityURI;
+	private String mIdentityProvider;
+
+	private String mName;
+	private String mProfileURL;
+	private String mVProfileURL;
+
+	private List<OPAvatar> mAvatars;
+	private long mAssociatedIdentityId;
+
+	public long getAssociatedIdentityId() {
+		return mAssociatedIdentityId;
+	}
+
+	public void setmAssociatedIdentityId(long mAssociatedIdentityId) {
+		this.mAssociatedIdentityId = mAssociatedIdentityId;
+	}
+
+	public OPRolodexContact(String mIdentityURI, String mIdentityProvider,
+			String mName, String mProfileURL, String mVProfileURL,
+			List<OPAvatar> mAvatars, long associatedIdentityId) {
+		super();
+		this.mIdentityURI = mIdentityURI;
+		this.mIdentityProvider = mIdentityProvider;
+		this.mName = mName;
+		this.mProfileURL = mProfileURL;
+		this.mVProfileURL = mVProfileURL;
+		this.mAvatars = mAvatars;
+		this.mAssociatedIdentityId = associatedIdentityId;
+	}
+
+	public long getId() {
+		// for now just use the profileURL, may need better algorithm
+		return mIdentityURI.hashCode();
+	}
+
+	public OPRolodexContact(String name, String profileURL) {
+		super();
+		this.mName = name;
+		this.mProfileURL = profileURL;
+	}
+
+	public OPRolodexContact() {
+
+	}
 
 	public Dispositions getDisposition() {
 		return mDisposition;
@@ -151,5 +211,75 @@ public class OPRolodexContact {
 
 	public void setAvatars(List<OPAvatar> mAvatars) {
 		this.mAvatars = mAvatars;
+	}
+
+	public String getDefaultAvatarUrl() {
+		if (mAvatars != null && mAvatars.size() != 0) {
+			return mAvatars.get(0).mURL;
+		} else {
+			return null;
+		}
+	}
+
+	OPRolodexContact copy(OPRolodexContact contact) {
+		this.mAvatars = contact.mAvatars;
+		this.mDisposition = contact.mDisposition;
+		this.mIdentityProvider = contact.mIdentityProvider;
+		this.mIdentityURI = contact.mIdentityURI;
+		this.mName = contact.mName;
+		this.mProfileURL = contact.mProfileURL;
+		this.mVProfileURL = contact.mVProfileURL;
+		this.mAssociatedIdentityId = contact.mAssociatedIdentityId;
+		return this;
+	}
+
+	public String toString() {
+		return super.toString()
+				+ " ProfileURL "
+				+ mProfileURL
+				+ " Name "
+				+ mName
+				+ " identityUrl "
+				+ mIdentityURI
+				+ " IdentityProvider "
+				+ mIdentityProvider
+				+ " Disposition "
+				+ mDisposition
+				+ " avatars "
+				+ (mAvatars != null ? Arrays.deepToString(mAvatars.toArray())
+						: "null");
+	}
+
+	/**
+	 * Do NOT use this method if you wish to implement your own data store. This function is bound the default datastore implementation
+	 * 
+	 * @param cursor
+	 * @return
+	 */
+	public static OPRolodexContact contactFromCursor(Cursor cursor) {
+		int identityUrlIndex = cursor
+				.getColumnIndex(DatabaseContracts.COLUMN_NAME_IDENTITY_URI);
+		int identityProviderIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER);
+		int nameIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_CONTACT_NAME);
+		int profileURLIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_URL);
+		int vprofileURLIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_VPROFILE_URL);
+		int assoiatedIdentityIdIndex = cursor
+				.getColumnIndex(ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID);
+
+		OPRolodexContact contact = new OPRolodexContact(
+				cursor.getString(identityUrlIndex),
+				cursor.getString(identityProviderIndex),
+				cursor.getString(nameIndex), cursor.getString(profileURLIndex),
+				cursor.getString(vprofileURLIndex), null,
+				cursor.getLong(assoiatedIdentityIdIndex));
+		List<OPAvatar> avatars = OPDataManager.getDatastoreDelegate().getAvatars(contact.getIdentityURI());
+
+		contact.setAvatars(avatars);
+
+		return contact;
 	}
 }

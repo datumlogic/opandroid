@@ -5,28 +5,32 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="17"
         android:targetSdkVersion="17" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.CAMERA"></uses-permission>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" >
+    </uses-permission>
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
-        android:debuggable="true"
+        android:name="com.openpeer.openpeernativesampleapp.OpenPeerApplication"
         android:allowBackup="true"
-        android:largeHeap="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.openpeer.openpeernativesampleapp.LoginScreen"
@@ -41,8 +45,25 @@
         <activity
             android:name="com.openpeer.openpeernativesampleapp.MediaScreen"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" 
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
+        <activity
+            android:name="com.openpeer.openpeernativesampleapp.ContactsScreen"
+            android:label="@string/title_activity_contacts_screen"
+            android:parentActivityName="com.openpeer.openpeernativesampleapp.LoginScreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.openpeer.openpeernativesampleapp.LoginScreen" />
+        </activity>
+        <activity
+            android:name="com.openpeer.openpeernativesampleapp.ChatScreen"
+            android:label="@string/title_activity_chat_screen"
+            android:parentActivityName="com.openpeer.openpeernativesampleapp.ContactsScreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.openpeer.openpeernativesampleapp.ContactsScreen" />
+        </activity>
     </application>
+
 </manifest>

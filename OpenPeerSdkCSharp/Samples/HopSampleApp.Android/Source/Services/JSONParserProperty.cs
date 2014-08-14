@@ -23,6 +23,7 @@ namespace HopSampleApp
 		public string defaultOutgoingTelnetServer{ get; set; }
 		public string openpeer_stack_bootstrapper_force_well_known_over_insecure_http { get; set;}
 		public string openpeer_stack_bootstrapper_force_well_known_using_post { get; set;}
+		public static bool GestureOption{ get; set;}
 	}
 }
 

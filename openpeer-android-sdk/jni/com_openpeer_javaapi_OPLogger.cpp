@@ -31,6 +31,7 @@
 
 #include "com_openpeer_javaapi_OPLogger.h"
 #include "openpeer/core/ILogger.h"
+#include "OpenPeerCoreManager.h"
 
 #include "globals.h"
 
@@ -46,7 +47,7 @@ extern "C" {
  * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installStdOutLogger
-  (JNIEnv *, jclass, jboolean colorizeOutput)
+(JNIEnv *, jclass, jboolean colorizeOutput)
 {
 	ILogger::installStdOutLogger(colorizeOutput);
 }
@@ -57,7 +58,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installStdOutLogger
  * Signature: (Ljava/lang/String;Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installFileLogger
-  (JNIEnv *env, jclass, jstring fileName, jboolean colorizeOutput)
+(JNIEnv *env, jclass, jstring fileName, jboolean colorizeOutput)
 {
 	const char *fileNameStr;
 	fileNameStr = env->GetStringUTFChars(fileName, NULL);
@@ -76,7 +77,6 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installFileLogger
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installTelnetLogger
 (JNIEnv *, jclass, jint port, jlong maxSecondsWaitForSocketToBeAvailable, jboolean colorizeOutput)
 {
-	ILogger::setLogLevel(ILogger::Trace);
 	ILogger::installTelnetLogger(port, maxSecondsWaitForSocketToBeAvailable, colorizeOutput);
 }
 
@@ -86,7 +86,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installTelnetLogger
  * Signature: (Ljava/lang/String;ZLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installOutgoingTelnetLogger
-  (JNIEnv *env, jclass, jstring serverToConnect, jboolean colorizeOutput, jstring stringToSendUponConnection)
+(JNIEnv *env, jclass, jstring serverToConnect, jboolean colorizeOutput, jstring stringToSendUponConnection)
 {
 	const char *serverToConnectStr;
 	serverToConnectStr = env->GetStringUTFChars(serverToConnect, NULL);
@@ -109,7 +109,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installOutgoingTelnetL
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installDebuggerLogger
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	ILogger::installDebuggerLogger();
 }
@@ -120,9 +120,18 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installDebuggerLogger
  * Signature: (Lcom/openpeer/javaapi/OPLoggerDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installCustomLogger
-  (JNIEnv *, jclass, jobject)
+(JNIEnv *, jclass, jobject javaLoggerDelegate)
 {
-	ILogger::installCustomLogger(globalEventManager);
+	if (javaLoggerDelegate == NULL)
+	{
+		return;
+	}
+
+	//set java delegate to identity delegate wrapper and init shared pointer for wrappers
+	loggerDelegatePtr = LoggerDelegateWrapperPtr(new LoggerDelegateWrapper(javaLoggerDelegate));
+
+	ILogger::installCustomLogger(loggerDelegatePtr);
+
 }
 
 /*
@@ -131,7 +140,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_installCustomLogger
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallStdOutLogger
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	ILogger::uninstallStdOutLogger();
 }
@@ -142,7 +151,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallStdOutLogger
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallFileLogger
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	ILogger::uninstallFileLogger();
 }
@@ -153,7 +162,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallFileLogger
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallTelnetLogger
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	ILogger::uninstallTelnetLogger();
 }
@@ -164,7 +173,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallTelnetLogger
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallOutgoingTelnetLogger
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	ILogger::uninstallOutgoingTelnetLogger();
 }
@@ -175,7 +184,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallOutgoingTelne
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallDebuggerLogger
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	ILogger::uninstallDebuggerLogger();
 }
@@ -186,7 +195,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_uninstallDebuggerLogge
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPLogger_isTelnetLoggerListening
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	return ILogger::isTelnetLoggerListening();
 }
@@ -197,7 +206,7 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPLogger_isTelnetLoggerList
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPLogger_isTelnetLoggerConnected
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	return ILogger::isTelnetLoggerConnected();
 }
@@ -208,7 +217,7 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPLogger_isTelnetLoggerConn
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPLogger_isOutgoingTelnetLoggerConnected
-  (JNIEnv *, jclass)
+(JNIEnv *, jclass)
 {
 	return ILogger::isOutgoingTelnetLoggerConnected();
 }
@@ -219,7 +228,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPLogger_isOutgoingTelnetLo
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPLogger_getApplicationSubsystemID
-  (JNIEnv *, jclass);
+(JNIEnv *, jclass)
+{
+	return (jint) ILogger::getApplicationSubsystemID();
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPLogger
@@ -227,7 +239,10 @@ JNIEXPORT jint JNICALL Java_com_openpeer_javaapi_OPLogger_getApplicationSubsyste
  * Signature: (I)Lcom/openpeer/javaapi/OPLogLevel;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPLogger_getLogLevel
-  (JNIEnv *, jclass, jint);
+(JNIEnv *, jclass, jint subsystemUniqueId)
+{
+	return OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/OPLogLevel", ILogger::getLogLevel(subsystemUniqueId));
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPLogger
@@ -235,7 +250,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPLogger_getLogLevel
  * Signature: (Lcom/openpeer/javaapi/OPLogLevel;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_setLogLevel__Lcom_openpeer_javaapi_OPLogLevel_2
-  (JNIEnv *, jclass, jobject);
+(JNIEnv *, jclass, jobject logLevel)
+{
+	ILogger::setLogLevel((ILogger::Level)OpenPeerCoreManager::getIntValueFromEnumObject(logLevel,"com/openpeer/javaapi/OPLogLevel"));
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPLogger
@@ -243,7 +261,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_setLogLevel__Lcom_open
  * Signature: (ILcom/openpeer/javaapi/OPLogLevel;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_setLogLevel__ILcom_openpeer_javaapi_OPLogLevel_2
-  (JNIEnv *, jclass, jint, jobject);
+(JNIEnv *, jclass, jint subsystemId, jobject logLevel)
+{
+	ILogger::setLogLevel(subsystemId, (ILogger::Level)OpenPeerCoreManager::getIntValueFromEnumObject(logLevel,"com/openpeer/javaapi/OPLogLevel"));
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPLogger
@@ -251,7 +272,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_setLogLevel__ILcom_ope
  * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/OPLogLevel;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_setLogLevel__Ljava_lang_String_2Lcom_openpeer_javaapi_OPLogLevel_2
-  (JNIEnv *, jclass, jstring, jobject);
+(JNIEnv *env, jclass, jstring subsystemName, jobject logLevel)
+{
+	String subsystemNameString;
+	subsystemNameString = env->GetStringUTFChars(subsystemName, NULL);
+	ILogger::setLogLevel(subsystemNameString, (ILogger::Level)OpenPeerCoreManager::getIntValueFromEnumObject(logLevel,"com/openpeer/javaapi/OPLogLevel"));
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPLogger
@@ -259,7 +285,28 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_setLogLevel__Ljava_lan
  * Signature: (ILcom/openpeer/javaapi/OPLogSeverity;Lcom/openpeer/javaapi/OPLogLevel;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPLogger_log
-  (JNIEnv *, jclass, jint, jobject, jobject, jstring, jstring, jstring, jlong);
+(JNIEnv *env, jclass,
+		jint subsystemUniqueID,
+		jobject severity,
+		jobject logLevel,
+		jstring message,
+		jstring function,
+		jstring filePath,
+		jlong lineNumber)
+{
+
+	String messageString = env->GetStringUTFChars(message, NULL);
+	String functionString = env->GetStringUTFChars(function, NULL);
+	String filePathString = env->GetStringUTFChars(filePath, NULL);
+
+	ILogger::log(subsystemUniqueID,
+			(ILogger::Severity)OpenPeerCoreManager::getIntValueFromEnumObject(severity, "com/openpeer/javaapi/OPLogSeverity"),
+			(ILogger::Level)OpenPeerCoreManager::getIntValueFromEnumObject(logLevel, "com/openpeer/javaapi/OPLogLevel"),
+			messageString,
+			functionString,
+			filePathString,
+			lineNumber);
+}
 
 #ifdef __cplusplus
 }

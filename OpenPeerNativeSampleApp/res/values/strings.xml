@@ -7,5 +7,11 @@
     <string name="btnFacebookLoginText">Login with Facebook</string>
     <string name="accountLoginButtonText">Account Login</string>
     <string name="identityLoginButtonText">Identity Login</string>
+    <string name="preference_file_key">com.openpeer.openpeernativesampleapp</string>
+    <string name="title_activity_contacts_screen">Contacts</string>
+    <string name="title_activity_chat_screen">ChatScreen</string>
+    <string name="string_chat_hint">Message</string>
+    <string name="string_chat_button_send">Send</string>
+    <string name="string_chat_button_call">Call</string>
 
 </resources>

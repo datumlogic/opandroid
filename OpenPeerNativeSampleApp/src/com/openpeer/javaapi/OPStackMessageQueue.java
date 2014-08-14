@@ -31,8 +31,14 @@
 
 package com.openpeer.javaapi;
 
+import android.util.Log;
+
 public class OPStackMessageQueue {
 
+	private long nativeClassPointer;
+	
+	private long nativeDelegatePointer;
+	
 	public static native OPStackMessageQueue singleton();
 
     //-----------------------------------------------------------------------
@@ -53,4 +59,17 @@ public class OPStackMessageQueue {
     // NOTE:    Only call this routine from within the context of running from
     //          the custom thread.
     public native void notifyProcessMessageFromCustomThread();
+    
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0 || nativeDelegatePointer != 0)
+    	{
+    		Log.d("output", "Cleaning stack message queue core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 }

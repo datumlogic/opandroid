@@ -33,6 +33,8 @@ package com.openpeer.javaapi;
 
 public class OPSettings {
 
+	private long nativeClassPointer;
+	
 	public static native void setup(OPSettingsDelegate delegate);
 
 	public static native void setString(

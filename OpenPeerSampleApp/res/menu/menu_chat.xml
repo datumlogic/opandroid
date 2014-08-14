@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_call"
+        android:icon="@drawable/ic_action_lightening_bolt"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:title="@string/hint_call">
+        <menu>
+            <item
+                android:id="@+id/menu_audio"
+                android:title="@string/audio"/>
+            <item
+                android:id="@+id/menu_video"
+                android:title="@string/video"
+                android:visible="true"/>
+        </menu>
+    </item>
+    <!--
+    <item
+        android:id="@+id/menu_add"
+        android:icon="@drawable/ic_action_add_person"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:title="@string/hint_invite"/>
+    -->
+
+</menu>

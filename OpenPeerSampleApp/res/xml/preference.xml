@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="notification_sound_switch"
+        android:title="@string/notification_sound_switch" />
+    <RingtonePreference
+        android:key="notification_sound_select"
+        android:ringtoneType="notification"
+        android:showDefault="true"
+        android:showSilent="true"
+        android:title="@string/notification_sound_select" />
+
+    <RingtonePreference
+        android:key="ringtone"
+        android:ringtoneType="ringtone"
+        android:showDefault="true"
+        android:showSilent="true"
+        android:title="@string/ringtone_select" />
+
+    <PreferenceCategory
+        android:key="debug_settings"
+        android:title="@string/debug_settings" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="log_level"
+            android:title="Log level" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="out_telnet_logger"
+            android:title="@string/out_telnet_logger" />
+
+        <EditTextPreference
+            android:defaultValue="log.opp.me:8115"
+            android:key="log_server_url"
+            android:title="Server url" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="local_telnet_logger"
+            android:title="@string/local_telnet_logger" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="file_logger"
+            android:title="@string/file_logger" />
+
+        <EditTextPreference
+            android:defaultValue="/storage/emulated/0/oplog.txt"
+            android:key="log_file"
+            android:title="Log file" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="about"
+        android:title="@string/label_about" >
+        <Preference
+            android:key="version"
+            android:title="@string/label_version" />
+        <Preference
+            android:key="build"
+            android:title="@string/label_build" />
+    </PreferenceCategory>
+    <!--<Preference android:key="signout" android:title="@string/signout"/>-->
+
+</PreferenceScreen>

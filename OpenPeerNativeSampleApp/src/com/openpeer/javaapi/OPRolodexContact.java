@@ -33,13 +33,20 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
+import android.util.Log;
+
 public class OPRolodexContact {
 
-	class OPAvatar {
+	public static class OPAvatar {
 		private String mName;
 		private String mURL;
 		private int mWidth;
 		private int mHeight;
+		
+		OPAvatar()
+		{
+			
+		}
 		
 		public String getName() {
 			return mName;
@@ -68,23 +75,35 @@ public class OPRolodexContact {
 		
 	};
 	
+	public void printInfo()
+	{
+		Log.d("output", "Contact Name is: " + mName);
+		Log.d("output", "Contact Identity URI is: " + mIdentityURI);
+		Log.d("output", "Contact Identity provider is: " + mIdentityProvider);
+		Log.d("output", "Contact Profile URL is: " + mProfileURL);
+		Log.d("output", "Contact VProfileURL is: " + mVProfileURL);
+		Log.d("output", "Contact Disposition is: " + mDisposition.toString());
+		Log.d("output", "Contact Avatars count is: " + mAvatars.size());
+		Log.d("output", "Avatars:");
+		for (OPAvatar avatar : mAvatars)
+		{
+			Log.d("output", "Avatar name is: " + avatar.mName);
+			Log.d("output", "Avatar URL is: " + avatar.mURL);
+			Log.d("output", "Avatar height is: " + avatar.mHeight);
+			Log.d("output", "Avatar width is: " + avatar.mWidth);
+		}
+	}
+	
 	enum Dispositions
     {
-      Disposition_NA (0),
-      Disposition_Update (1),
-      Disposition_Remove (2);
+      Disposition_NA,
+      Disposition_Update,
+      Disposition_Remove;
       
-      Dispositions (int value)
+      Dispositions ()
       {
-          this.type = value;
       }
 
-      private int type;
-
-      public int getNumericType()
-      {
-          return type;
-      }
     };
     
     private Dispositions mDisposition;

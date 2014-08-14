@@ -31,6 +31,10 @@
 
 package com.openpeer.javaapi;
 
+/**
+ * @ExcludeFromJavadoc
+ *
+ */
 public abstract class OPSettingsDelegate {
 
 	public abstract String getString(String key);

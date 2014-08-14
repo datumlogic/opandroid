@@ -182,6 +182,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_releaseCoreObjects
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/padding_vertical"
+    android:paddingLeft="@dimen/padding_edge"
+    android:paddingRight="@dimen/padding_edge"
+    android:paddingTop="@dimen/padding_vertical" >
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="@dimen/profile_image_size_in_list"
+        android:layout_height="@dimen/profile_image_size_in_list"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_action_group" />
+
+    <TextView
+        android:id="@+id/time_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Yesterday" />
+
+    <TextView
+        android:id="@+id/badge_view"
+        android:layout_width="@dimen/badge_image_size_in_contact"
+        android:layout_height="@dimen/badge_image_size_in_contact"
+        android:layout_alignRight="@id/image_view"
+        android:layout_alignTop="@id/image_view"
+        android:background="@drawable/bg_circle"
+        android:text="20+"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/padding_spacing_internal"
+        android:layout_toLeftOf="@id/time_view"
+        android:layout_toRightOf="@id/image_view"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="this is the peers blahblabladkfajfakfjakfjdkfjd" />
+
+    <TextView
+        android:id="@+id/text_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/padding_spacing_internal"
+        android:layout_toRightOf="@id/image_view"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="this is the last messageajdfaklfja;kfjak;lfja;dklfjadk;fja;kfjadkfjalkd;fjadkfj" />
+
+</RelativeLayout>

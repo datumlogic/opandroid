@@ -35,14 +35,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.openpeer.openpeernativesampleapp.R;
+import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.openpeernativesampleapp.LoginManager;
 
+import com.openpeer.javaapi.test.*;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.Menu;
@@ -70,7 +75,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login_screen);
-		
+
 		OPMediaEngine.init(getApplicationContext());
 
 		setupFacebookButton();
@@ -133,7 +138,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 
 	private void initializeCore()
 	{
-		LoginManager.initializeContext(getApplicationContext());
+		LoginManager.setDeviceId(Secure.getString(this.getContentResolver(),Secure.ANDROID_ID));
 	}
 
 	private void setupWebView()
@@ -366,7 +371,7 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 				if(mNamespaceGrantUrl.isEmpty())
 				{
 					Log.d("JNI", "DEBUG: Load outer frame");
-					myWebView.loadUrl("http://jsouter-v1-beta-1-i.hcs.io/identity.html?view=choose&federated=false");
+					myWebView.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose");
 				}
 				else if (mNamespaceGrantUrl.contains("grant"))
 				{
@@ -419,6 +424,47 @@ public class LoginScreen extends Activity implements LoginHandlerInterface{
 		});
 	}
 
+	@Override
+	public void onAccountStateReady() {
+		// TODO Auto-generated method stub
+		//OPTestAccount.execute(LoginManager.mAccount);
+		//		this.runOnUiThread(new Runnable() {
+		//			public void run() {
+		//				myWebView.stopLoading();
+		//				myWebView.clearView();
+		//				myWebView.destroy();
+		//			}
+		//		});
+
+		OPTestIdentityLookup.execute(LoginManager.mIdentity);
+
+	}
+
+	@Override
+	public void onDownloadedRolodexContacts(OPIdentity identity) {
+		// TODO Auto-generated method stub
+//		if(OPTestIdentityLookup.isContactsDownloaded)
+//		{
+//			OPTestIdentityLookup.isRolodexContactsRefreshed = true;
+//		}
+		OPTestIdentityLookup.isContactsDownloaded = true;
+		OPTestIdentityLookup.execute(identity);
+
+		//		Intent intent = new Intent(this, ContactsScreen.class);
+		//		startActivity(intent);
+
+
+	}
+
+	@Override
+	public void onLookupCompleted() {
+		// TODO Auto-generated method stub
+		//OPTestConversationThread.execute();
+		Intent intent = new Intent(this, ContactsScreen.class);
+		startActivity(intent);
+
+	}
+
 
 }
 
@@ -428,4 +474,7 @@ interface LoginHandlerInterface
 	void onInnerFrameInitialized(String innerFrameUrl);
 	void passMessageToJS(String msg);
 	void onNamespaceGrantInnerFrameInitialized(String innerFrameUrl);
+	void onAccountStateReady();
+	void onDownloadedRolodexContacts(OPIdentity identity);
+	void onLookupCompleted();
 }

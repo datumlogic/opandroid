@@ -39,6 +39,7 @@ import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.test.OPTestAccount;
 import com.openpeer.openpeernativesampleapp.LoginManager;
 
 public class OPAccountDelegateImplementation extends OPAccountDelegate {
@@ -60,8 +61,7 @@ public class OPAccountDelegateImplementation extends OPAccountDelegate {
 			break;
 		case AccountState_Ready:
 			Log.w("JNI", "READY !!!!!!!!!!!!");
-			List<OPIdentity> identityList = account.getAssociatedIdentities();
-			Log.w("JNI", identityList.toString());
+			LoginManager.onAccountStateReady();
 			break;
 			//LoginManager.loadOuterFrame();
 		}
