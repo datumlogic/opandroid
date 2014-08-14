@@ -8,7 +8,7 @@ import android.util.Log;
 import com.openpeer.sdk.BuildConfig;
 
 /**
- * Helper class for cache and setting database.
+ * @ExcludeFromJavadoc Helper class for cache and setting database.
  */
 public class OPCoreDBHelper extends SQLiteOpenHelper {
 	private static OPCoreDBHelper instance;
@@ -18,6 +18,7 @@ public class OPCoreDBHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Get writable DB and make it thread safe/optimized
+	 * 
 	 * @return
 	 */
 	public SQLiteDatabase getWritableDB() {

@@ -59,14 +59,19 @@ public class OPConversationThread {
 
 	public native void removeContacts(List<OPContact> contacts);
 
-	// sending a message will cause the message to be delivered to all the
-	// contacts currently in the conversation
+	/**
+	 * sending a message will cause the message to be delivered to all the contacts currently in the conversation
+	 * 
+	 * @param messageID
+	 * @param messageType
+	 * @param message
+	 * @param signMessage
+	 *            whether or not to sign the message
+	 */
 	public native void sendMessage(String messageID, String messageType, String message, boolean signMessage);
 
-	// returns false if the message ID is not known
 	private native OPMessage getMessage(String messageID);
 
-	// returns false if the message ID is not known
 	public native MessageDeliveryStates getMessageDeliveryState(String messageID);
 
 	private native void releaseCoreObjects();
@@ -85,22 +90,7 @@ public class OPConversationThread {
 
 	@Override
 	public boolean equals(Object o) {
-		// TODO Auto-generated method stub
-		return o instanceof OPConversationThread && this.nativeClassPointer == ((OPConversationThread) o).nativeClassPointer;
-	}
-
-	public List<OPIdentityContact> getIdentityContacts() {
-		List<OPIdentityContact> contacts = new ArrayList<OPIdentityContact>();
-		for (OPContact contact : getContacts()) {
-			List<OPIdentityContact> iContacts = getIdentityContactList(contact);
-			if (!iContacts.isEmpty())
-				contacts.add(iContacts.get(0));
-		}
-		return contacts;
-	}
-
-	public long getNativeClassPtr() {
-		return nativeClassPointer;
+		return o instanceof OPConversationThread && this.getStableID() == ((OPConversationThread) o).getStableID();
 	}
 
 }

@@ -8,6 +8,9 @@ import android.util.Log;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.OPStackMessageQueueDelegate;
 
+/**
+ * @ExcludeFromJavadoc
+ */
 public class OPStackMessageQueueDelegateImpl extends OPStackMessageQueueDelegate {
 	private static OPStackMessageQueueDelegateImpl instance;
 

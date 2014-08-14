@@ -219,6 +219,12 @@ public class OPRolodexContact {
 						: "null");
 	}
 
+	/**
+	 * Do NOT use this method if you wish to implement your own data store. This function is bound the default datastore implementation
+	 * 
+	 * @param cursor
+	 * @return
+	 */
 	public static OPRolodexContact contactFromCursor(Cursor cursor) {
 		int identityUrlIndex = cursor
 				.getColumnIndex(DatabaseContracts.COLUMN_NAME_IDENTITY_URI);

@@ -6,6 +6,9 @@ import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogSeverity;
 import com.openpeer.javaapi.OPLoggerDelegate;
 
+/**
+ * @ExcludeFromJavadoc
+ */
 public class OPLoggerDelegateImpl extends OPLoggerDelegate {
 	private static final String TAG = OPLoggerDelegateImpl.class.getSimpleName();
 

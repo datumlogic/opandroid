@@ -2,6 +2,9 @@ package com.openpeer.javaapi;
 
 import android.util.Log;
 
+/**
+ * @ExcludeFromJavadoc
+ */
 public class OPStackMessageQueue {
 
 	private long nativeClassPointer;

@@ -38,7 +38,7 @@ import android.util.Log;
 import com.openpeer.javaapi.OPSettingsDelegate;
 
 /**
- * @author brucexia
+ * @ExcludeFromJavadoc Default implmentation of OPSettingsDelegate based on SQLiteDatabase. This class is thread safe
  * 
  */
 public class OPSettingsDelegateImpl extends OPSettingsDelegate {

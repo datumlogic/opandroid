@@ -1,6 +1,8 @@
 package com.openpeer.javaapi;
 
-
+/**
+ * @ExcludeFromJavadoc
+ */
 public abstract class OPAccountDelegate {
 
 	public abstract void onAccountStateChanged(

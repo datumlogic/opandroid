@@ -38,10 +38,19 @@ import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSdkConfig;
 
+/**
+ * @ExcludeFromJavadoc Default implmentation of OPAccountDelegate. This will be created as singleton and will be passed in
+ *                     LoginManager.login
+ */
 public class OPAccountDelegateImpl extends OPAccountDelegate {
 	LoginUIListener mListener;
 	private static OPAccountDelegateImpl instance;
 
+	/**
+	 * Create and hold on the instance
+	 * 
+	 * @return
+	 */
 	public static OPAccountDelegateImpl getInstance() {
 		if (instance == null) {
 			instance = new OPAccountDelegateImpl();

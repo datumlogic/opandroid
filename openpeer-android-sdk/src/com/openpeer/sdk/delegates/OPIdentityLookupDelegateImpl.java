@@ -11,6 +11,9 @@ import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupDelegate;
 import com.openpeer.sdk.app.OPDataManager;
 
+/**
+ * Default implementatiion of OPIdentityLookupDelegate. Handles identity lookup result and save it to datastore.
+ */
 public class OPIdentityLookupDelegateImpl extends OPIdentityLookupDelegate {
 	private final static String TAG = OPIdentityLookupDelegateImpl.class.getSimpleName();
 

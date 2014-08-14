@@ -20,10 +20,22 @@ public class OPSettings {
 
 	public static native void clear(String key);
 
+	/**
+	 * Apply settings supplied form json blob. This is recommended way for applying a bunch of settings
+	 * 
+	 * @param jsonSettings
+	 * @return
+	 */
 	public static native boolean apply(String jsonSettings);
 
+	/**
+	 * Apply default settings
+	 */
 	public static native void applyDefaults();
 
+	/**
+	 * @ExcludeFromJavadoc
+	 */
 	public static native void redirectLog();
 
 }

@@ -2,7 +2,9 @@ package com.openpeer.javaapi;
 
 import java.util.List;
 
-
+/**
+ * Hold peer contact and associated identities. THis class is primarily used when creating OPConversationThread
+ */
 public class OPContactProfileInfo {
 
 	private OPContact mContact;

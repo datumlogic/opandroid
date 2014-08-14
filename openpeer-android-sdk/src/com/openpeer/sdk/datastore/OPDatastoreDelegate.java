@@ -84,7 +84,7 @@ public interface OPDatastoreDelegate {
 	public OPUser getUserById(long id);
 
 	/**
-	 * 
+	 * Perform data cleanup when signout
 	 */
 	public void shutdown();
 

@@ -7,8 +7,7 @@ import com.openpeer.sdk.model.OPUser;
 import android.database.Cursor;
 import android.text.format.Time;
 
-//Important: Don't remove the empty constructor since it's being used in jni
-// Don't change any existing functions signature without making sure it doesn't break jni!
+
 public class OPMessage {
 	public static final int DS_DISCOVERING = 0;
 	public static final int DS_USER_NOT_AVAILABLE = 1;
@@ -23,6 +22,9 @@ public class OPMessage {
 
 	}
 
+	/**
+	 * @ExcludeFromJavadoc
+	 */
 	public static class SystemMessageType {
 		public static final int SystemMessage_EstablishSessionBetweenTwoPeers = 0;
 		public static final int SystemMessage_IsContactAvailable = 1;

@@ -1,5 +1,8 @@
 package com.openpeer.javaapi;
 
+/**
+ * @ExcludeFromJavadoc
+ */
 public abstract class OPLoggerDelegate {
 	//-----------------------------------------------------------------------
 	// PURPOSE: Notify that a new subsystem has been created.

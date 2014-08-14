@@ -1,14 +1,20 @@
 package com.openpeer.javaapi;
 
-import java.util.List;
-
-import com.openpeer.sdk.app.OPSdkConfig;
-
 import android.text.format.Time;
 import android.util.Log;
 
+import com.openpeer.sdk.app.OPSdkConfig;
+
 public class OPIdentity {
 
+	/**
+	 * Start identity login. This is handled automatically in {@link com.openpeer.sdk.app.LoginManager}. Application should not use this
+	 * method directly
+	 * 
+	 * @param account
+	 * @param delegate
+	 * @return
+	 */
 	public static OPIdentity login(OPAccount account,
 			OPIdentityDelegate delegate) {
 		OPSdkConfig config = OPSdkConfig.getInstance();
@@ -87,12 +93,27 @@ public class OPIdentity {
 
 	public native void handleMessageFromInnerBrowserWindowFrame(String message);
 
-	public native void startRolodexDownload(String inLastDownloadedVersion); // if a previous version of the rolodex was downloaded/stored,
-																				// pass in the version of the last information downloaded to
-																				// prevent redownloading infomration again
+	/**
+	 * Download contacts from Rolodex server. This method is executed asynchrnously and the result will be handled in
+	 * {@link com.openpeer.javaapi.OPIdentityDelegate#onIdentityRolodexContactsDownloaded(OPIdentity)}
+	 * 
+	 * @param inLastDownloadedVersion
+	 *            if a previous version of the rolodex was downloaded/stored, pass in the version of the last information downloaded to
+	 *            prevent redownloading infomration again
+	 */
+	public native void startRolodexDownload(String inLastDownloadedVersion); //
 
-	public native void refreshRolodexContacts(); // force a refresh of the contact list
+	/**
+	 * force a refresh of the contact list This method is executed asynchrnously and the result will be handled in
+	 * {@link com.openpeer.javaapi.OPIdentityDelegate#onIdentityRolodexContactsDownloaded(OPIdentity)}
+	 */
+	public native void refreshRolodexContacts();
 
+	/**
+	 * This method should be called ONLY once
+	 * 
+	 * @return
+	 */
 	public native OPDownloadedRolodexContacts getDownloadedRolodexContacts();
 
 	public native void cancel();

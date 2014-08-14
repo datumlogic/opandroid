@@ -4,8 +4,8 @@ public class OPLogger {
 	static final int appId = getApplicationSubsystemID();
 
 	/**
-	 * Helper function to log through OpenPeer logging utility. This function will retrieve the class,method and line number so there's no
-	 * need to pass those in from application
+	 * @ExcludeFromJavadoc Helper function to log through OpenPeer logging utility. This function will retrieve the class,method and line
+	 *                     number so there's no need to pass those in from application
 	 * 
 	 * @param level
 	 * @param message

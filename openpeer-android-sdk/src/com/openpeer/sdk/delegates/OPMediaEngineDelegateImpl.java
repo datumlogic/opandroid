@@ -5,6 +5,9 @@ import android.util.Log;
 import com.openpeer.javaapi.OPMediaEngineDelegate;
 import com.openpeer.javaapi.OutputAudioRoutes;
 
+/**
+ * @ExcludeFromJavadoc
+ */
 public class OPMediaEngineDelegateImpl extends OPMediaEngineDelegate {
 	private static final String TAG = OPMediaEngineDelegateImpl.class.getSimpleName();
 

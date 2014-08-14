@@ -19,6 +19,18 @@ public class OPIdentityContact extends OPRolodexContact {
 	private Time mLastUpdated;
 	private Time mExpires;
 
+	/**
+	 * @ExcludeFromJavadoc
+	 * @param mStableID
+	 * @param peerFileString
+	 * @param mIdentityProofBundleEl
+	 * @param mPriority
+	 * @param mWeight
+	 * @param lastUpdateTime
+	 * @param expireTime
+	 * @param id
+	 * @return
+	 */
 	public OPIdentityContact setIdentityParams(String mStableID,
 			String peerFileString, String mIdentityProofBundleEl,
 			int mPriority, int mWeight, long lastUpdateTime, long expireTime,
@@ -112,9 +124,8 @@ public class OPIdentityContact extends OPRolodexContact {
 	}
 
 	/**
-	 * A local ID used to identity a user, it's simply the "_ID" field in
-	 * database. A user is deemed the same if any of the follow meet: -- peerURI
-	 * -- stableID -- identityURI( TO BE DETERMINED)
+	 * A local ID used to identity a user, it's simply the "_ID" field in database. A user is deemed the same if any of the follow meet: --
+	 * peerURI -- stableID -- identityURI( TO BE DETERMINED)
 	 * 
 	 * @return
 	 */
@@ -127,6 +138,12 @@ public class OPIdentityContact extends OPRolodexContact {
 		this.userId = userId;
 	}
 
+	/**
+	 * Do not use this function if you wish to create your own datastore. This function is bound to the default implementation.
+	 * 
+	 * @param cursor
+	 * @return
+	 */
 	public static OPIdentityContact fromCursor(Cursor cursor) {
 		OPIdentityContact contact = new OPIdentityContact(OPRolodexContact.contactFromCursor(cursor));
 		return contact

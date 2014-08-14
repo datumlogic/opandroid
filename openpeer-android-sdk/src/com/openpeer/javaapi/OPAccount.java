@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2013, SMB Phone Inc. / Hookflash Inc.
+ Copyright (c) 2014, SMB Phone Inc. / Hookflash Inc.
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -36,10 +36,19 @@ import java.util.List;
 import com.openpeer.sdk.app.OPSdkConfig;
 
 public class OPAccount {
+	/**
+	 * 
+	 * @return Current account state
+	 */
 	public AccountStates getState() {
 		return getState(0, "");
 	}
 
+	/**
+	 * Get the primary identity,e.g. the identity used to login
+	 * 
+	 * @return
+	 */
 	public OPIdentity getPrimaryIdentity() {
 		List<OPIdentity> identities = getAssociatedIdentities();
 
@@ -47,22 +56,50 @@ public class OPAccount {
 		return identities.get(0);
 	}
 
+	/**
+	 * Convenience method to get the peerURI of the account
+	 * 
+	 * @return
+	 */
 	public String getPeerUri() {
 		return OPContact.getForSelf(this).getPeerURI();
 	}
 
-	public static OPAccount login(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate, boolean forceCreateNewLockboxAccount) {
-		return login(delegate,
+	/**
+	 * Log in and return a valid OPAccount instance
+	 * 
+	 * @param accountDelegate
+	 *            Account delegate instance. This instance need to be kept valid throughout the app lifecycle.
+	 * @param conversationThreadDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
+	 * @param callDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
+	 * @return
+	 */
+	public static OPAccount login(OPAccountDelegate accountDelegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate) {
+		return login(accountDelegate,
 				conversationThreadDelegate,
 				callDelegate,
 				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
 				OPSdkConfig.getInstance().getGrantId(),
 				OPSdkConfig.getInstance().getLockboxServiceDomain(),
-				forceCreateNewLockboxAccount);
-
+				false);
 	}
 
+	/**
+	 * Relogin and return a valid OPAccount instance
+	 * 
+	 * @param accountDelegate
+	 *            Account delegate instance. This instance need to be kept valid throughout the app lifecycel.
+	 * @param conversationThreadDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
+	 * @param callDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
+	 * @param reloginInformation
+	 *            valid relogin string cached from last session
+	 * @return
+	 */
 	public static OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
 			OPCallDelegate callDelegate, String reloginInformation) {
 		return relogin(delegate,
@@ -72,7 +109,7 @@ public class OPAccount {
 
 	}
 
-	// Beginning of JNI -- BE CAREFUL WITH ANY CHANGES!!!!
+	// Beginning of JNI -- BE CAREFUL WITH ANY SIGNATUR CHANGES!!!!
 	private long nativeClassPointer;
 	private long nativeDelegatePointer;
 
@@ -84,11 +121,21 @@ public class OPAccount {
 			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String grantID, String lockboxServiceDomain,
 			boolean forceCreateNewLockboxAccount);
 
-	public static native OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+	private static native OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
 			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String reloginInformation);
 
+	/**
+	 * Get the core object PUID
+	 * 
+	 * @return object PUID
+	 */
 	public native long getID();
 
+	/**
+	 * Get account's lockbox key
+	 * 
+	 * @return
+	 */
 	public native String getStableID();
 
 	public native AccountStates getState(int outErrorCode, String outErrorReason);
@@ -97,14 +144,27 @@ public class OPAccount {
 
 	public native String getLocationID();
 
+	/**
+	 * This function should be called during logout
+	 */
 	public native void shutdown();
 
 	private native String getPeerFilePrivate();
 
 	private native byte[] getPeerFilePrivateSecret();
 
+	/**
+	 * 
+	 * @return Identity list associated with this account
+	 */
+
 	public native List<OPIdentity> getAssociatedIdentities();
 
+	/**
+	 * TODO Clarify its usage
+	 * 
+	 * @param identitiesToRemove
+	 */
 	public native void removeIdentities(List<OPIdentity> identitiesToRemove);
 
 	public native String getInnerBrowserWindowFrameURL();

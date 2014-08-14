@@ -1,5 +1,8 @@
 package com.openpeer.javaapi;
 
+/**
+ * @ExcludeFromJavadoc
+ */
 public enum OPLogLevel {
 
     LogLevel_None,     // no logging of any kind

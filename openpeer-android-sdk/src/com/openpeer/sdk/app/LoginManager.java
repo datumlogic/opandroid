@@ -27,6 +27,15 @@ public class LoginManager {
 	private LoginManager() {
 	}
 
+	/**
+	 * 
+	 * @param listener
+	 *            Application need to pass the UI listener to handle state changes.
+	 * @param callDelegate
+	 *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 * @param conversationThreadDelegate
+	 *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 */
 	public void login(LoginUIListener listener,
 			OPCallDelegate callDelegate,
 			OPConversationThreadDelegate conversationThreadDelegate) {
@@ -34,11 +43,23 @@ public class LoginManager {
 
 		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
 		accountDelegate.bind(mListener);
-		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, callDelegate, false);
+		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, callDelegate);
 		OPDataManager.getInstance().setSharedAccount(account);
 		startIdentityLogin();
 	}
 
+	/**
+	 * 
+	 * @param listener
+	 *            Application need to pass the UI listener to handle state changes.
+	 * @param callDelegate
+	 *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 * @param conversationThreadDelegate
+	 *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 * 
+	 * @param reloginInfo
+	 *            relogin jason blob stored from last login session
+	 */
 	public void relogin(LoginUIListener listener,
 			OPCallDelegate callDelegate,
 			OPConversationThreadDelegate conversationThreadDelegate,
@@ -51,7 +72,7 @@ public class LoginManager {
 		OPDataManager.getInstance().setSharedAccount(account);
 	}
 
-	public void startIdentityLogin() {
+	private void startIdentityLogin() {
 		OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
 		OPIdentity identity = new OPIdentity();
@@ -65,6 +86,12 @@ public class LoginManager {
 		mIdentityLoginWebView.getClient().setIdentity(identity);
 	}
 
+	/**
+	 * Handle account state ready. If this is a login, it means the primary identity login has completed, so start downloading contacts. If
+	 * this is a relogin, attach Identity delegates to associated identities and start logging in identities
+	 * 
+	 * @param account
+	 */
 	public void onAccountStateReady(OPAccount account) {
 
 		OPDataManager.getInstance().saveAccount();
@@ -82,8 +109,8 @@ public class LoginManager {
 				webview.getClient().setIdentity(identity);
 
 				OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(identity);// new
-																															// OPIdentityDelegateImplementation(mIdentityLoginWebView,
-																															// identity);
+																										// OPIdentityDelegateImplementation(mIdentityLoginWebView,
+																										// identity);
 				identityDelegate.bindListener(mListener);
 				identityDelegate.setWebview(webview);
 				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getOuterFrameUrl());
@@ -112,6 +139,8 @@ public class LoginManager {
 	}
 
 	/**
+	 * If login in progress
+	 * 
 	 * @return
 	 */
 	public static boolean isLogIn() {
@@ -120,7 +149,7 @@ public class LoginManager {
 	}
 
 	/**
-	 * 
+	 * Handle account shutdown state change.
 	 */
 	public static void onAccountShutdown() {
 		// release resources
