@@ -6,6 +6,8 @@ For a quick introduction to the code please read the following. For more detaile
 From your terminal, please clone the “opandroid” git repository:
 git clone --recursive https://github.com/openpeer/opandroid.git
 
+Note the --recursive option is key to make sure you get all the dependent libraries
+
 This repository will yield the Android Java SDK, Native sample application and dependency libraries like the C++ open peer core, stack, media and libraries needed to support the underlying SDK.
 
 Directory structure:
@@ -19,7 +21,7 @@ How to build:
 1) Download and build required native 3rd party libraries by running buildall_android.sh script from your terminal:
 
 pushd opandroid/
-./buildall_android.sh
+./buildall_android.sh {PATH_TO_NDK}
 popd
 
 NOTE: It is required to have Android NDK r8e installed on the target machine. Path to the NDK is mandatory input for building 3rd party libraries. ninja build sysytem is required for WebRTC library build. You can install ninja using MacPorts or Homebrew (http://martine.github.io/ninja/).
