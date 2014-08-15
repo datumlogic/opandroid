@@ -45,9 +45,11 @@ import com.openpeer.javaapi.OPCacheDelegate;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
+import com.openpeer.javaapi.OPMediaEngineDelegate;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OPStack;
+import com.openpeer.javaapi.OPStackDelegate;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
@@ -64,10 +66,17 @@ public class OPHelper {
 	private static final String TAG = OPHelper.class.getSimpleName();
 	private static final String DEFAULT_LOG_SERVER = "LOG.OPP.ME:8115";
 	private static final String DEFAULT_LOG_FILE = "/storage/emulated/0/hflog";
+	public static final int MODE_CONTACTS_BASED = 0;
+	public static final int MODE_GROUP_BASED = 1;
+
+	private boolean mAppInBackground;
+	private boolean isSigningOut;
 
 	private static OPHelper instance;
 	Context mContext;
-	private OPStackMessageQueue stackMessageQueue;
+	private OPStackMessageQueue mStackMessageQueue;
+	private OPCacheDelegate mCacheDelegate;
+	private OPSettingsDelegate mSettingsDelegate;
 
 	public Context getApplicationContext() {
 		return mContext;
@@ -141,7 +150,30 @@ public class OPHelper {
 		Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
 	}
 
+	/**
+	 * Intilialize the SDK. All the delegates will get default implementation if received null parameter
+	 * 
+	 * @param datastoreDelegate
+	 *            passing in null will use default implementation
+	 */
 	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
+		init(context, datastoreDelegate, null, null, null, null);
+	}
+
+	/**
+	 * Intilialize the SDK. All the delegates will get default implementation if received null parameter
+	 * 
+	 * @param context
+	 * @param datastoreDelegate
+	 * @param cacheDelegate
+	 * @param settingsDelegate
+	 * @param stackDelegate
+	 * @param mediaengineDelegate
+	 */
+	public void init(Context context, OPDatastoreDelegate datastoreDelegate, OPCacheDelegate cacheDelegate,
+			OPSettingsDelegate settingsDelegate, OPStackDelegate stackDelegate, OPMediaEngineDelegate mediaengineDelegate) {
+		mCacheDelegate = cacheDelegate;
+		mSettingsDelegate = settingsDelegate;
 		long start = SystemClock.uptimeMillis();
 
 		mContext = context;
@@ -151,21 +183,21 @@ public class OPHelper {
 		} else {
 			OPDataManager.getInstance().init(OPDatastoreDelegateImpl.getInstance().init(mContext));
 		}
-		stackMessageQueue = OPStackMessageQueue.singleton();
-		stackMessageQueue.interceptProcessing(OPStackMessageQueueDelegateImpl.getInstance());
+		mStackMessageQueue = OPStackMessageQueue.singleton();
+		mStackMessageQueue.interceptProcessing(OPStackMessageQueueDelegateImpl.getInstance());
 		OPMediaEngine.init(mContext);
 
-		OPStackMessageQueue stackMessageQueue = OPStackMessageQueue.singleton();
-		// stackMessageQueue = new OPStackMessageQueue();
-		// stackMessageQueue.interceptProcessing(null);
 		OPStack stack = OPStack.singleton();
 		OPSdkConfig.getInstance().init(mContext);
 
-		//
-		OPCacheDelegate cacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
-		OPCache.setup(cacheDelegate);
-
-		 OPSettings.setup(OPSettingsDelegateImpl.getInstance(mContext));
+		if (mCacheDelegate == null) {
+			mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
+		}
+		OPCache.setup(mCacheDelegate);
+		if (mSettingsDelegate == null) {
+			mSettingsDelegate = OPSettingsDelegateImpl.getInstance(mContext);
+		}
+		OPSettings.setup(mSettingsDelegate);
 		OPSettings.applyDefaults();
 		OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
@@ -177,19 +209,8 @@ public class OPHelper {
 
 		OPSettings.apply(OPSdkConfig.getInstance().getAPPSettingsString());
 
-		stack.setup(null, null);
+		stack.setup(stackDelegate, mediaengineDelegate);
 
-		initialized = true;
-		if (initListener != null) {
-			initListener.onInitialized();
-		}
-	}
-
-	public static boolean initialized = false;
-	public InitListener initListener;
-
-	public interface InitListener {
-		public void onInitialized();
 	}
 
 	private String createHttpSettings() {
@@ -221,14 +242,13 @@ public class OPHelper {
 		}
 	}
 
+	/**
+	 * @ExcludeFromJavadoc
+	 * @param intent
+	 */
 	public void sendBroadcast(Intent intent) {
 		mContext.sendBroadcast(intent);
 	}
-
-	public static final int MODE_CONTACTS_BASED = 0;
-	public static final int MODE_GROUP_BASED = 1;
-
-	private boolean mAppInBackground;
 
 	public boolean isAppInBackground() {
 		return mAppInBackground;
@@ -240,6 +260,31 @@ public class OPHelper {
 
 	public void onEnteringBackground() {
 		mAppInBackground = true;
+	}
+
+	/**
+	 * Handle user signout. This function will shutdown and clean up core data asynchrously and send
+	 * {@link com.openpeer.sdk.app.IntentData#ACTION_SIGNOUT_DONE} when shutdown is done. Application must capture this intent and handle
+	 * properly
+	 */
+	public void onSignOut() {
+		isSigningOut = true;
+		OPDataManager.getInstance().onSignOut();
+	}
+
+	/**
+	 * @ExcludeFromJavadoc
+	 */
+	public void onAccountShutdown() {
+		Intent intent = new Intent();
+		if (isSigningOut) {
+			mCacheDelegate.clear(null);
+			intent.setAction(IntentData.ACTION_SIGNOUT_DONE);
+		} else {
+			intent.setAction(IntentData.ACTION_ACCOUNT_SHUTDOWN);
+		}
+		mContext.sendBroadcast(intent);
+		isSigningOut = false;
 	}
 
 }

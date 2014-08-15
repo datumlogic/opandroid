@@ -114,8 +114,13 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
 
 	@Override
 	public void clear(String cookieNamePath) {
-		String where = COLUMN_KEY + "=?";
-		String args[] = new String[] { cookieNamePath };
+		String where = null;
+		String args[] = null;
+		if (cookieNamePath != null) {
+			where = COLUMN_KEY + "=?";
+			args = new String[] { cookieNamePath };
+		}
+
 		mDBHelper.getWritableDB().delete(TABLE_CACHE, where, args);
 	}
 

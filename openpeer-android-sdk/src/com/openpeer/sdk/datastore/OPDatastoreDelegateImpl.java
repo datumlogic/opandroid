@@ -40,7 +40,6 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -64,7 +63,6 @@ import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.UserEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
-import com.openpeer.sdk.model.OPHomeUser;
 import com.openpeer.sdk.model.OPUser;
 
 /**
@@ -619,7 +617,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 	 * @see com.openpeer.sdk.datastore.OPDatastoreDelegate#shutdown()
 	 */
 	@Override
-	public void shutdown() {
+	public void onSignOut() {
 		OPContentProvider.clear();
 	}
 

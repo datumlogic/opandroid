@@ -37,6 +37,7 @@ import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.app.OPSdkConfig;
 
 /**
@@ -104,13 +105,15 @@ public class OPAccountDelegateImpl extends OPAccountDelegate {
 			break;
 		case AccountState_Shutdown:
 			OPDataManager.getInstance().setAccountReady(false);
-
-			mListener.onLoginError();
-			mListener = null;
+			if (mListener != null) {
+				mListener.onLoginError();
+				mListener = null;
+			}
 
 			if (LoginManager.isLogIn()) {
 				LoginManager.onAccountShutdown();
 			}
+			OPHelper.getInstance().onAccountShutdown();
 
 			break;
 		default:

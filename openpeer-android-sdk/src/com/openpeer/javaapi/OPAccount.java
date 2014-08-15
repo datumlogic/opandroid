@@ -144,7 +144,8 @@ public class OPAccount {
 	public native String getLocationID();
 
 	/**
-	 * This function should be called during logout
+	 * This function should be called during logout. This is Asynchronorous call, application should handle the SHUTDOWN state change
+	 * {@link com.openpeer.javaapi.OPAccountDeleget}
 	 */
 	public native void shutdown();
 

@@ -37,7 +37,6 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
-import com.openpeer.sdk.model.OPHomeUser;
 import com.openpeer.sdk.model.OPUser;
 
 public interface OPDatastoreDelegate {
@@ -115,7 +114,7 @@ public interface OPDatastoreDelegate {
 	/**
 	 * Perform data cleanup when signout
 	 */
-	public void shutdown();
+	public void onSignOut();
 
 	/**
 	 * 

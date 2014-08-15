@@ -62,6 +62,6 @@
             android:key="build"
             android:title="@string/label_build" />
     </PreferenceCategory>
-    <!--<Preference android:key="signout" android:title="@string/signout"/>-->
+   <Preference android:key="signout" android:title="@string/signout"/>
 
 </PreferenceScreen>

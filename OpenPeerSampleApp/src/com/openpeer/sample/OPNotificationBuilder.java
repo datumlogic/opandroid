@@ -138,4 +138,9 @@ public class OPNotificationBuilder {
 				Context.NOTIFICATION_SERVICE);
 		notificationManager.cancel(NOTIFICATION_ID_BASE_CALL + (int) call.getStableID());
 	}
+    public static void cancelAllUponSignout(){
+        NotificationManager notificationManager = (NotificationManager) OPApplication.getInstance().getSystemService(
+                Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+    }
 }

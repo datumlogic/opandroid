@@ -30,11 +30,9 @@
 package com.openpeer.sdk.app;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPAccount;
@@ -52,9 +50,7 @@ import com.openpeer.sdk.delegates.OPIdentityLookupDelegateImpl;
 import com.openpeer.sdk.model.OPUser;
 
 /**
- * Hold reference to objects that cannot be constructed from database, and manages contacts data change. This class is probably unneccessary
- * -- at the least I don't want it to be a simple wrapper of OPDatastoreDelegateImplementation. Might end up merging this with OPHelper, but
- * for now let's keep it so OPHelper doesn't grow weird.
+ * Hold reference to objects that cannot be constructed from database, and manages contacts data change.
  * 
  */
 public class OPDataManager {
@@ -68,8 +64,6 @@ public class OPDataManager {
 	private OPAccount mAccount;
 	private List<OPIdentity> mIdentities;
 	private List<OPIdentityContact> mSelfContacts;
-	private Hashtable<Long, String> downloadedIdentityContactVersions;
-	private String mReloginInfo;
 	Hashtable<String, OPIdentityLookup> mIdentityLookups = new Hashtable<String, OPIdentityLookup>();
 
 	private boolean mAccountReady;
@@ -83,7 +77,7 @@ public class OPDataManager {
 	}
 
 	public String getReloginInfo() {
-		return mReloginInfo;
+		return mDatastoreDelegate.getReloginInfo();
 	}
 
 	public static OPDataManager getInstance() {
@@ -96,9 +90,6 @@ public class OPDataManager {
 	public void init(OPDatastoreDelegate delegate) {
 		assert (delegate != null);
 		mDatastoreDelegate = delegate;
-		mReloginInfo = delegate.getReloginInfo();
-		Log.d("test", "LoginManager.init relogin info " + mReloginInfo);
-		downloadedIdentityContactVersions = new Hashtable<Long, String>();
 		// mContacts = new Hashtable<Long, List<OPRolodexContact>>();
 		// if (mReloginInfo != null) {
 		// // Read idenities contacts and contacts
@@ -141,8 +132,7 @@ public class OPDataManager {
 		OPDownloadedRolodexContacts downloaded = identity.getDownloadedRolodexContacts();
 		long identityId = identity.getStableID();
 		String contactsVersion = downloaded.getVersionDownloaded();
-		downloadedIdentityContactVersions.put(identityId, contactsVersion);
-		mDatastoreDelegate.setDownloadedContactsVersion(identityId, contactsVersion);
+
 		List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
 
 		for (OPRolodexContact contact : contacts) {
@@ -179,16 +169,13 @@ public class OPDataManager {
 	}
 
 	public String getContactsVersionForIdentity(long id) {
-		return downloadedIdentityContactVersions.get(id);
+		return mDatastoreDelegate.getDownloadedContactsVersion(id);
 	}
 
 	public void updateIdentityContacts(String identityUri, List<OPIdentityContact> iContacts) {
 
 		// Each IdentityContact represents a user. Update user info
 		mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
-	}
-
-	private void notifyContactsChanged() {
 	}
 
 	public void refreshContacts() {
@@ -256,10 +243,22 @@ public class OPDataManager {
 		return mDatastoreDelegate.getUserById(id);
 	}
 
-	public static void shutdown() {
-		instance.mAccount.shutdown();
-		instance.mDatastoreDelegate.shutdown();
-		instance = null;
+	public void onSignOut() {
+		List<OPIdentity> identities = instance.mAccount.getAssociatedIdentities();
+		if (mIdentityLookups != null && mIdentityLookups.size() > 0) {
+			for (OPIdentityLookup lookup : mIdentityLookups.values()) {
+				lookup.cancel();
+			}
+		}
+		for (OPIdentity identity : identities) {
+			identity.cancel();
+		}
+		mIdentities = null;
+		mSelfContacts = null;
+		mAccount.shutdown();
+		mAccount = null;
+		mDatastoreDelegate.onSignOut();
+
 	}
 
 }

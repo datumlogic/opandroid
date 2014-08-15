@@ -46,6 +46,9 @@ public class OPStack {
             OPMediaEngineDelegate mediaEngineDelegate
             );
 	
+	/**
+	 * 
+	 */
 	public native void shutdown();
 	
 	public static native String createAuthorizedApplicationID(

@@ -110,8 +110,7 @@ public class OPPushManager {
 
         tokens.put(peerUri, token);
     }
-    public static void shutdown(){
-        UAirship.land();
+    public static void onSignOut(){
         PushManager.disablePush();
 
     }

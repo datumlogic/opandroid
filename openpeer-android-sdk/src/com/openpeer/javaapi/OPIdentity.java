@@ -145,6 +145,9 @@ public class OPIdentity {
 	 */
 	public native OPDownloadedRolodexContacts getDownloadedRolodexContacts();
 
+	/**
+	 * This function needs to be called upon signout. This cancels the identity instance synchronouly
+	 */
 	public native void cancel();
 
 	private native void releaseCoreObjects();
