@@ -31,6 +31,7 @@ package com.openpeer.sdk.delegates;
 
 import java.util.Hashtable;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -38,8 +39,10 @@ import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
+import com.openpeer.sdk.app.IntentData;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.app.OPIdentityLoginWebview;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
@@ -128,6 +131,9 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 				mLoginView = null;
 
 			}
+			Intent intent = new Intent(IntentData.ACTION_IDENTITY_SHUTDOWN);
+			intent.putExtra(IntentData.PARAM_IDENTITY_URI, identity.getIdentityURI());
+			OPHelper.getInstance().sendBroadcast(intent);
 			break;
 		}
 	}

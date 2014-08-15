@@ -32,13 +32,15 @@ package com.openpeer.sdk.app;
  *
  */
 public class IntentData {
-	/**
-	 * Account shutdown unexpectedly
-	 */
-	public static final String ACTION_ACCOUNT_SHUTDOWN = "com.openpeer.sdk.account_shutdown";
-	public static final String ACTION_IDENTITY_SHUTDOWN = "com.openpeer.sdk.identity_shutdown";
-	/**
-	 * Signout is completed. Sent when account shutdown state received after logout initiated
-	 */
-	public static final String ACTION_SIGNOUT_DONE = "com.openpeer.sdk.signout_done";
+    /**
+     * Account shutdown unexpectedly
+     */
+    public static final String ACTION_ACCOUNT_SHUTDOWN = "com.openpeer.sdk.ACCOUNT_SHUTDOWN";
+    public static final String ACTION_IDENTITY_SHUTDOWN = "com.openpeer.sdk.IDENTITY_SHUTDOWN";
+    /**
+     * Signout is completed. Sent when account shutdown state received after logout initiated
+     */
+    public static final String ACTION_SIGNOUT_DONE = "com.openpeer.sdk.SIGNOUT_DONE";
+
+    public static final String PARAM_IDENTITY_URI = "identityUri";
 }
