@@ -189,7 +189,7 @@ public class OPSessionManager {
 			@Override
 			public void onConversationThreadMessageDeliveryStateChanged(OPConversationThread conversationThread, String messageID,
 					MessageDeliveryStates state) {
-
+//                OPDataManager.getDatastoreDelegate().updateMessageDeliveryStatus();
 			}
 
 			@Override

@@ -37,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.openpeer.javaapi.OPStack;
+import com.openpeer.sdk.model.GroupChatMode;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -212,6 +213,10 @@ public class OPSdkConfig {
 				Context.MODE_PRIVATE);
 		sp.edit().putString(KEY_GRANT_ID, grantId).apply();
 
+	}
+	
+	public GroupChatMode getGroupChatMode(){
+	    return GroupChatMode.ContactsBased;
 	}
 
 }
