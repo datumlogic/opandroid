@@ -5,5 +5,8 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry kind="lib" path="../libs/op/libs/ortc-lib/libs/build/android/webrtc/audio_device_module_java.jar"/>
+	<classpathentry kind="lib" path="../libs/op/libs/ortc-lib/libs/build/android/webrtc/video_capture_module_java.jar"/>
+	<classpathentry kind="lib" path="../libs/op/libs/ortc-lib/libs/build/android/webrtc/video_render_module_java.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
