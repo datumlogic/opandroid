@@ -193,7 +193,7 @@ public class OPHelper {
 		if (mCacheDelegate == null) {
 			mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
 		}
-		OPCache.setup(mCacheDelegate);
+//		OPCache.setup(mCacheDelegate);
 		if (mSettingsDelegate == null) {
 			mSettingsDelegate = OPSettingsDelegateImpl.getInstance(mContext);
 		}
