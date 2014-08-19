@@ -37,7 +37,10 @@ import android.media.Ringtone;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -435,6 +438,27 @@ public class CallFragment extends BaseFragment {
             mLocalSurface = SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
             mRemoteSurface = ViERenderer.CreateRenderer(getActivity(), true);
 
+            //start cropping
+            SurfaceHolder surfaceHolder=ViERenderer.GetLocalRenderer();//mLocalSurface.getHolder();
+            surfaceHolder.setFixedSize(540,960);
+//            surfaceHolder.addCallback(new SurfaceHolder.Callback() {
+//                @Override
+//                public void surfaceCreated(SurfaceHolder surfaceHolder) {
+//                    surfaceHolder.setFixedSize(1080,1920);
+//                    mVideoView.invalidate();
+//                }
+//
+//                @Override
+//                public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+//
+//                }
+//
+//                @Override
+//                public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+//
+//                }
+//            });
+            //end cropping
             setupVideoPreview();
             //This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
@@ -462,6 +486,12 @@ public class CallFragment extends BaseFragment {
         if (mVideoPreviewSwitched) {
             mVideoView.addView(mRemoteSurface, localvideoLayoutParam);
             mVideoView.addView(mLocalSurface, remotevideoLayoutParam);
+            mVideoView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mLocalSurface.getLayoutParams().height=600;
+                }
+            });
 //            mRemoteSurface.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
@@ -473,6 +503,17 @@ public class CallFragment extends BaseFragment {
         } else {
             mVideoView.addView(mLocalSurface, localvideoLayoutParam);
             mVideoView.addView(mRemoteSurface, remotevideoLayoutParam);
+            mVideoView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mLocalSurface.getLayoutParams().height=600;
+                    mLocalSurface.requestLayout();
+                }
+            });
+
+//            SurfaceHolder surfaceHolder=mLocalSurface.getHolder();
+//            surfaceHolder.setFixedSize(200,960);
+//            mVideoView.invalidate();
 //            mLocalSurface.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
