@@ -159,7 +159,7 @@ public class CallFragment extends BaseFragment {
         mCallView = view.findViewById(R.id.status);
         mVideoView = (RelativeLayout) view.findViewById(R.id.video);
         previewLayout = (FrameLayout) mVideoView.findViewById(R.id.localVideoView);
-        remoteView=(FrameLayout)mVideoView.findViewById(R.id.remoteVideoView);
+        remoteView = (FrameLayout) mVideoView.findViewById(R.id.remoteVideoView);
         mStatusOverlay = view.findViewById(R.id.controls);
 
         mPeerAvatarView = (ImageView) view.findViewById(R.id.peer_image);
@@ -460,28 +460,27 @@ public class CallFragment extends BaseFragment {
                 ViewGroup.LayoutParams.MATCH_PARENT);
         int widthInPixel = getActivity().getResources().getDimensionPixelSize(R.dimen.width_local_video);
         int heightInPixel = (int) (widthInPixel * ASPECT_RATIO);//* CameraUtil.getCameraAspectRatio());
-        FrameLayout.LayoutParams localvideoLayoutParam = new FrameLayout.LayoutParams(widthInPixel,
-                heightInPixel, Gravity.CENTER);
+        FrameLayout.LayoutParams localvideoLayoutParam = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
 //        localvideoLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-
         if (previewLayout.getChildCount() > 0) {
             previewLayout.removeAllViews();
             remoteView.removeAllViews();
         }
 
-        previewLayout.removeAllViews();
         if (mVideoPreviewSwitched) {
-            mLocalSurface.setZOrderOnTop(false);
-            mRemoteSurface.setZOrderOnTop(true);
-            remoteView.addView(mLocalSurface, localvideoLayoutParam);
-            previewLayout.addView(mRemoteSurface, remotevideoLayoutParam);
+            remoteView.addView(mLocalSurface, remotevideoLayoutParam);
+            previewLayout.addView(mRemoteSurface, localvideoLayoutParam);
+            mRemoteSurface.setZOrderMediaOverlay(true);
+            mLocalSurface.setZOrderMediaOverlay(false);
+            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
 
         } else {
-            mLocalSurface.setZOrderOnTop(true);
-            mRemoteSurface.setZOrderOnTop(false);
             previewLayout.addView(mLocalSurface, localvideoLayoutParam);
             remoteView.addView(mRemoteSurface, remotevideoLayoutParam);
-
+            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
+            mRemoteSurface.setZOrderMediaOverlay(false);
+            mLocalSurface.setZOrderMediaOverlay(true);
         }
     }
 
