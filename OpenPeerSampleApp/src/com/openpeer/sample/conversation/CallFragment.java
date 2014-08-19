@@ -36,11 +36,13 @@ import android.content.IntentFilter;
 import android.media.Ringtone;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -56,7 +58,6 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.CallUtil;
-import com.openpeer.sample.util.CameraUtil;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
@@ -78,8 +79,8 @@ public class CallFragment extends BaseFragment {
     private boolean mAudio, mVideo;
     private long[] userIDs;
     private String peerUri;
-    //    LinearLayout localViewLinearLayout;
-//    private LinearLayout remoteViewLinearLayout;
+    FrameLayout previewLayout;
+    private FrameLayout remoteView;
     private ImageView audioButton;
     private ImageView videoButton;
     private ImageView cameraSwitchButton;
@@ -157,6 +158,8 @@ public class CallFragment extends BaseFragment {
     private View setupView(View view) {
         mCallView = view.findViewById(R.id.status);
         mVideoView = (RelativeLayout) view.findViewById(R.id.video);
+        previewLayout = (FrameLayout) mVideoView.findViewById(R.id.localVideoView);
+        remoteView=(FrameLayout)mVideoView.findViewById(R.id.remoteVideoView);
         mStatusOverlay = view.findViewById(R.id.controls);
 
         mPeerAvatarView = (ImageView) view.findViewById(R.id.peer_image);
@@ -303,10 +306,6 @@ public class CallFragment extends BaseFragment {
         if (mCall != null) {
 
             updateCallView(mCall.getState());
-//            if (mVideo && localViewLinearLayout.getChildCount() == 0) {
-//                localViewLinearLayout.addView(mLocalSurface);
-//
-//            }
         }
 
     }
@@ -347,6 +346,7 @@ public class CallFragment extends BaseFragment {
 
         if (mVideo) {
             mVideoView.removeAllViews();
+            previewLayout.removeAllViews();
             OPMediaEngine.getInstance().setChannelRenderView(null);
         }
         getActivity().unregisterReceiver(receiver);
@@ -434,7 +434,13 @@ public class CallFragment extends BaseFragment {
                 OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
             mLocalSurface = SurfaceViewFactory.getLocalView(getActivity().getApplicationContext());
             mRemoteSurface = ViERenderer.CreateRenderer(getActivity(), true);
-
+            previewLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mVideoPreviewSwitched = !mVideoPreviewSwitched;
+                    setupVideoPreview();
+                }
+            });
             setupVideoPreview();
             //This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
@@ -454,33 +460,28 @@ public class CallFragment extends BaseFragment {
                 ViewGroup.LayoutParams.MATCH_PARENT);
         int widthInPixel = getActivity().getResources().getDimensionPixelSize(R.dimen.width_local_video);
         int heightInPixel = (int) (widthInPixel * ASPECT_RATIO);//* CameraUtil.getCameraAspectRatio());
-        RelativeLayout.LayoutParams localvideoLayoutParam = new RelativeLayout.LayoutParams(widthInPixel,
-                heightInPixel);
-        localvideoLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        FrameLayout.LayoutParams localvideoLayoutParam = new FrameLayout.LayoutParams(widthInPixel,
+                heightInPixel, Gravity.CENTER);
+//        localvideoLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
-        mVideoView.removeAllViews();
+        if (previewLayout.getChildCount() > 0) {
+            previewLayout.removeAllViews();
+            remoteView.removeAllViews();
+        }
+
+        previewLayout.removeAllViews();
         if (mVideoPreviewSwitched) {
-            mVideoView.addView(mRemoteSurface, localvideoLayoutParam);
-            mVideoView.addView(mLocalSurface, remotevideoLayoutParam);
-//            mRemoteSurface.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    mVideoPreviewSwitched = !mVideoPreviewSwitched;
-//                    setupVideoPreview();
-//                }
-//            });
-//            mLocalSurface.setOnClickListener(null);
+            mLocalSurface.setZOrderOnTop(false);
+            mRemoteSurface.setZOrderOnTop(true);
+            remoteView.addView(mLocalSurface, localvideoLayoutParam);
+            previewLayout.addView(mRemoteSurface, remotevideoLayoutParam);
+
         } else {
-            mVideoView.addView(mLocalSurface, localvideoLayoutParam);
-            mVideoView.addView(mRemoteSurface, remotevideoLayoutParam);
-//            mLocalSurface.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    mVideoPreviewSwitched = !mVideoPreviewSwitched;
-//                    setupVideoPreview();
-//                }
-//            });
-//            mRemoteSurface.setOnClickListener(null);
+            mLocalSurface.setZOrderOnTop(true);
+            mRemoteSurface.setZOrderOnTop(false);
+            previewLayout.addView(mLocalSurface, localvideoLayoutParam);
+            remoteView.addView(mRemoteSurface, remotevideoLayoutParam);
+
         }
     }
 

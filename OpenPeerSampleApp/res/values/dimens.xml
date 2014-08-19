@@ -7,6 +7,6 @@
     <dimen name="profile_image_size_in_list">64dp</dimen>
     <dimen name="profile_image_size_in_chat">64dp</dimen>
     <dimen name="badge_image_size_in_contact">16dp</dimen>
-    <dimen name="width_local_video">150dp</dimen>
+    <dimen name="width_local_video">180dp</dimen>
 
 </resources>
