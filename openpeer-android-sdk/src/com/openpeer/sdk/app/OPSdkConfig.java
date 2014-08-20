@@ -36,15 +36,14 @@ import java.util.Properties;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.openpeer.javaapi.OPStack;
-import com.openpeer.sdk.model.GroupChatMode;
-
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.provider.Settings.Secure;
 import android.text.format.Time;
-import android.util.Log;
+
+import com.openpeer.javaapi.OPSettings;
+import com.openpeer.javaapi.OPStack;
+import com.openpeer.sdk.model.GroupChatMode;
 
 /**
  * 
@@ -60,7 +59,7 @@ public class OPSdkConfig {
 
 	// TODO add configuration items in
 	private static final String PATH_CONFIG_FILE = "openpeersdk.properties";
-	private static final String KEY_GRANT_ID = "grantId";
+	private static final String KEY_GRANT_ID = "openpeer/calculated/grantId";
 
 	private static final String PREFIX_APP_COMMON_SETTING = "openpeer/common/";
 	private static final String PREFIX_APP_CALCULATED_SETTING = "openpeer/calculated/";
@@ -127,15 +126,15 @@ public class OPSdkConfig {
 		return mProperties.getProperty(KEY_LOCKBOX_SERVICE_DOMAIN);
 	}
 
-	public String getGrantId() {
-		String id = mContext.getSharedPreferences(PREF_NAME,
-				Context.MODE_PRIVATE).getString(KEY_GRANT_ID, null);
-		if (id == null) {
-			id = java.util.UUID.randomUUID().toString();
-			saveGrantId(id);
-		}
-		return id;
-	}
+    public String getGrantId() {
+        String id = OPHelper.getSettingsDelegate().getString(KEY_GRANT_ID);// mContext.getSharedPreferences(PREF_NAME,
+        // Context.MODE_PRIVATE).getString(KEY_GRANT_ID, null);
+        if (id == null) {
+            id = java.util.UUID.randomUUID().toString();
+            OPHelper.getSettingsDelegate().setString(KEY_GRANT_ID, id);
+        }
+        return id;
+    }
 
 	public String getAPPSettingsString() {
 		try {
@@ -191,8 +190,8 @@ public class OPSdkConfig {
 		InputStream inputStream;
 		try {
 			inputStream = assetManager.open(PATH_CONFIG_FILE);
+		          
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -207,14 +206,6 @@ public class OPSdkConfig {
 		}
 
 	}
-
-	private void saveGrantId(String grantId) {
-		SharedPreferences sp = mContext.getSharedPreferences(PREF_NAME,
-				Context.MODE_PRIVATE);
-		sp.edit().putString(KEY_GRANT_ID, grantId).apply();
-
-	}
-	
 	public GroupChatMode getGroupChatMode(){
 	    return GroupChatMode.ContactsBased;
 	}
