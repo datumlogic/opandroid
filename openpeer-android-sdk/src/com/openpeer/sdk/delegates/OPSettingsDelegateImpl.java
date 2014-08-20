@@ -248,7 +248,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
             values.put(OPCacheDelegateImpl.COLUMN_KEY, row[0]);
             values.put(OPCacheDelegateImpl.COLUMN_VALUE, row[1]);
             // values.put(COLUMN_TYPE, row[2]);
-            db.insert(TABLE_SETTINGS, null, values);
+            db.insertWithOnConflict(TABLE_SETTINGS, null, values,SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
 

@@ -42,7 +42,7 @@ import com.openpeer.sdk.BuildConfig;
  */
 public class OPCoreDBHelper extends SQLiteOpenHelper {
     private static OPCoreDBHelper instance;
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "opcore.db";
     SQLiteDatabase mDB;
 
@@ -95,7 +95,9 @@ public class OPCoreDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if(oldVersion<2){
+            OPSettingsDelegateImpl.loadDefaultSettings(db);
+        }
     }
 
     @Override
