@@ -253,7 +253,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     }
 
     static final String DEFAULT_VALUES[][] = {
-            { "outerFrameURL", "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&amp;amp;federated=false", "string" },
+            { "outerFrameURL", "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true", "string" },
             { "identityProviderDomain", "identity-v1-rel-lespaul-i.hcs.io", "string" },
             { "identityFederateBaseURI", "identity://identity-v1-rel-lespaul-i.hcs.io/", "string" },
             { "namespaceGrantServiceURL", "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", "string" },

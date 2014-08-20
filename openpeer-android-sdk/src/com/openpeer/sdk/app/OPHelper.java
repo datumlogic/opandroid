@@ -177,40 +177,34 @@ public class OPHelper {
 
         mContext = context;
 
-        if (datastoreDelegate != null) {
-            OPDataManager.getInstance().init(datastoreDelegate);
-        } else {
-            OPDataManager.getInstance().init(OPDatastoreDelegateImpl.getInstance().init(mContext));
-        }
+
         mStackMessageQueue = OPStackMessageQueue.singleton();
         mStackMessageQueue.interceptProcessing(OPStackMessageQueueDelegateImpl.getInstance());
-        OPMediaEngine.init(mContext);
-
-        OPStack stack = OPStack.singleton();
-
-        if (mCacheDelegate == null) {
-            mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
-        }
-        OPCache.setup(mCacheDelegate);
+        
         if (mSettingsDelegate == null) {
             mSettingsDelegate = OPSettingsDelegateImpl.getInstance(mContext);
         }
         OPSettings.setup(mSettingsDelegate);
         OPSdkConfig.getInstance().init(mContext);
+        if (mCacheDelegate == null) {
+            mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
+        }
+        OPCache.setup(mCacheDelegate);
+        
+        OPMediaEngine.init(mContext);
 
-        // OPSettings.applyDefaults();
+        OPStack stack = OPStack.singleton();
+
+       // OPSettings.applyDefaults();
         OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
-        String httpSettings = createHttpSettings();
-        // OPSettings.apply(httpSettings);
-
-        String forceDashSettings = createForceDashSetting();
-        // OPSettings.apply(forceDashSettings);
-
-        OPSettings.apply(OPSdkConfig.getInstance().getAPPSettingsString());
 
         stack.setup(stackDelegate, mediaengineDelegate);
-
+        if (datastoreDelegate != null) {
+            OPDataManager.getInstance().init(datastoreDelegate);
+        } else {
+            OPDataManager.getInstance().init(OPDatastoreDelegateImpl.getInstance().init(mContext));
+        }
     }
 
     private String createHttpSettings() {
