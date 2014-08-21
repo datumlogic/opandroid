@@ -81,9 +81,8 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
         Cursor cursor = mDBHelper.getReadableDatabase().query(TABLE_CACHE, new String[] { COLUMN_VALUE }, where, args, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
-            String value = cursor.getString(0);
+            defaultValue = cursor.getString(0);
             cursor.close();
-            return value;
         }
         Log.d(TAG, String.format("fetch key %s,string %s", key, defaultValue));
         return defaultValue;
@@ -113,18 +112,20 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
     public void store(String cookieNamePath, Time expires, String str) {
         // We use value 0 to indicate this cache is per app run session only.
         long timeInMillis = 0;
-        if (expires != null) {
-            timeInMillis = expires.toMillis(true);
+        if (expires != null && !(Time.isEpoch(expires))) {
+            timeInMillis = expires.toMillis(false);
         }
+
         ContentValues values = new ContentValues();
         values.put(COLUMN_KEY, cookieNamePath);
         values.put(COLUMN_EXPIRES, timeInMillis);
         values.put(COLUMN_VALUE, str);
         long rowid = mDBHelper.getWritableDatabase()
                 .insertWithOnConflict(TABLE_CACHE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        if (BuildConfig.DEBUG) {
-            // Log.d(TAG, String.format("store key %s,expires %d,string %s,result %d", cookieNamePath, expires.toMillis(true), str, rowid));
-        }
+        // if (BuildConfig.DEBUG) {
+//        Log.d(TAG, String.format("store key %s,expires %s,expires millis %d, string %s,result %d", cookieNamePath,
+//                expires.format3339(false), timeInMillis, str, rowid));
+        // }
     }
 
     @Override
