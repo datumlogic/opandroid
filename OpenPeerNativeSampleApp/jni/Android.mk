@@ -498,8 +498,9 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCall.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPContact.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPConversationThread.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPConversationThreadComposingStatus.cpp \
-		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPConversationThreadSystemMessage.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPComposingStatus.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPSystemMessage.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCallSystemMessage.cpp \
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a
