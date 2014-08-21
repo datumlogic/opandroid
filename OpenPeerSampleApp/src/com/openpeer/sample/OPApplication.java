@@ -33,6 +33,9 @@ import android.app.Application;
 import android.util.Log;
 import android.webkit.CookieManager;
 
+import com.openpeer.javaapi.OPBackgrounding;
+import com.openpeer.sample.delegates.BackgroundingCompletionDelegateImpl;
+import com.openpeer.sample.delegates.BackgroundingDelegateImpl;
 import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.OPPushNotificationBuilder;
 import com.openpeer.sample.push.PushIntentReceiver;
@@ -89,10 +92,17 @@ public class OPApplication extends Application {
 	public void onEnteringForeground() {
 		this.mInBackground = false;
 
+        OPBackgrounding.notifyReturningFromBackground();
+
 	}
 
 	public void onEnteringBackground() {
 		this.mInBackground = true;
+        if(OPSessionManager.getInstance().hasCalls()){
+
+        } else {
+            OPBackgrounding.notifyGoingToBackground( BackgroundingCompletionDelegateImpl.getInstance());
+        }
 	}
 
 	public static void signout() {
@@ -102,5 +112,4 @@ public class OPApplication extends Application {
 		CookieManager.getInstance().removeAllCookie();
         OPNotificationBuilder.cancelAllUponSignout();
 	}
-
 }

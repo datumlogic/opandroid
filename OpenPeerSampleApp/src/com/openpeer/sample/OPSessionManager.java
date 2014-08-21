@@ -280,6 +280,9 @@ public class OPSessionManager {
 		mCalls.remove(peerUri);
 		mCallStates.remove(peerUri);
 		OPNotificationBuilder.cancelNotificationForCall(mCall);
+        if(OPApplication.getInstance().isInBackground()){
+            OPApplication.getInstance().onEnteringBackground();
+        }
 	}
 
 	public void hangupCall(OPCall mCall, CallClosedReasons reason) {
