@@ -30,10 +30,15 @@
 package com.openpeer.sample;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.webkit.CookieManager;
 
 import com.openpeer.javaapi.OPBackgrounding;
+import com.openpeer.javaapi.OPStack;
 import com.openpeer.sample.delegates.BackgroundingCompletionDelegateImpl;
 import com.openpeer.sample.delegates.BackgroundingDelegateImpl;
 import com.openpeer.sample.push.OPPushManager;
@@ -47,8 +52,10 @@ import com.urbanairship.UAirship;
 import com.urbanairship.push.PushManager;
 
 public class OPApplication extends Application {
+    private static final String TAG=OPApplication.class.getSimpleName();
 	private static OPApplication instance;
 	private boolean mInBackground;
+    BroadcastReceiver mReceiver;
 
 	static {
 		try {
@@ -77,6 +84,17 @@ public class OPApplication extends Application {
 		// OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
 		OPSessionManager.getInstance().init();
 		SettingsHelper.getInstance().initLoggers();
+        mReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("OPApplication","shutdown received now shutdown");
+                OPStack.singleton().shutdown();
+                unregisterReceiver(mReceiver);
+            }
+        };
+        IntentFilter filter=new IntentFilter(Intent.ACTION_SHUTDOWN);
+        filter.addAction(Intent.ACTION_REBOOT);
+        registerReceiver(mReceiver,filter);
 	}
 
 	public static OPApplication getInstance() {
