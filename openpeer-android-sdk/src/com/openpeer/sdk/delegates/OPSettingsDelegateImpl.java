@@ -121,8 +121,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public long getUInt(String key) {
-        Log.d(TAG, "getUInt key " + key);
-        return Long.parseLong(simpleQueryForString(key, "0"));
+        long value = Long.parseLong(simpleQueryForString(key, "0"));
+        Log.d(TAG, "getUInt key " + key + " value " + value);
+        return value;
     }
 
     /*
@@ -132,8 +133,9 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public boolean getBool(String key) {
-        Log.d(TAG, "getBool key " + key);
-        return Boolean.parseBoolean(simpleQueryForString(key, "false"));
+        boolean value = Boolean.parseBoolean(simpleQueryForString(key, "false"));
+        Log.d(TAG, "getBool key " + key + " value " + value);
+        return value;
     }
 
     /*
@@ -241,14 +243,14 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
         String args[] = new String[] { key };
         mDBHelper.getWritableDB().delete(TABLE_SETTINGS, where, args);
     }
-    
+
     public static void loadDefaultSettings(SQLiteDatabase db) {
         for (String[] row : DEFAULT_VALUES) {
             ContentValues values = new ContentValues();
             values.put(OPCacheDelegateImpl.COLUMN_KEY, row[0]);
             values.put(OPCacheDelegateImpl.COLUMN_VALUE, row[1]);
             // values.put(COLUMN_TYPE, row[2]);
-            db.insertWithOnConflict(TABLE_SETTINGS, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+            db.insertWithOnConflict(TABLE_SETTINGS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
 
@@ -257,7 +259,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
             { "identityProviderDomain", "identity-v1-rel-lespaul-i.hcs.io", "string" },
             { "identityFederateBaseURI", "identity://identity-v1-rel-lespaul-i.hcs.io/", "string" },
             { "namespaceGrantServiceURL", "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", "string" },
-//            { "lockBoxServiceDomain", "lockbox-v1-rel-lespaul-i.hcs.io", "string" },
+            // { "lockBoxServiceDomain", "lockbox-v1-rel-lespaul-i.hcs.io", "string" },
             { "lockBoxServiceDomain", "identity-v1-rel-lespaul-i.hcs.io", "string" },
 
             { "defaultOutgoingTelnetServer", "log.opp.me:8115", "string" },

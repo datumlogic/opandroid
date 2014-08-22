@@ -53,10 +53,31 @@ public interface OPDatastoreDelegate {
      */
     public List<OPRolodexContact> getOPContacts(String identityId);
 
+    /**
+     * Save or update the account information in database
+     * 
+     * @param account
+     * @return
+     */
     public boolean saveOrUpdateAccount(OPAccount account);
 
+    /**
+     * Save or update the associated identities of account. Call this function after login or relogin
+     * 
+     * @param identies
+     * @param accountId
+     * @return
+     */
     public boolean saveOrUpdateIdentities(List<OPIdentity> identies, long accountId);
 
+    /**
+     * Save or update the Rolodex contacts related to identity. Call this fucntion after RolodexContacts download and identity lookup
+     * completion.
+     * 
+     * @param contacts
+     * @param identityId
+     * @return
+     */
     public boolean saveOrUpdateContacts(List<? extends OPRolodexContact> contacts, long identityId);
 
     public boolean saveOrUpdateIdentity(OPIdentity identy, long accountId);
@@ -67,17 +88,49 @@ public interface OPDatastoreDelegate {
 
     public boolean deleteContact(String identityUri);
 
+    /**
+     * Retrieve the saved contacts version.
+     * 
+     * @param identityId
+     * @return
+     */
     public String getDownloadedContactsVersion(long identityId);
 
+    /**
+     * Save the downloaded contacts version
+     * 
+     * @param identityId
+     * @param version
+     */
     public void setDownloadedContactsVersion(long identityId, String version);
 
-    boolean flushContactsForIdentity(long id);
+    /**
+     * Flush contacts associated with identity
+     * 
+     * @param id
+     * @return
+     */
+    public boolean flushContactsForIdentity(long id);
 
+    /**
+     * Save a new message received or sent
+     * 
+     * @param message
+     * @param sessionId
+     * @param threadId
+     * @return
+     */
     public Uri saveMessage(OPMessage message, long sessionId, String threadId);
 
     void saveWindow(long windowId, List<OPUser> userList);
 
-    public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long stableID);
+    /**
+     * Save or update identity contacts associated with an identity. Call this after identity lookup complete
+     * 
+     * @param iContacts
+     * @param identityId Associated Identity id.
+     */
+    public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long identityId);
 
     /**
      * Return user with updated userId
@@ -85,7 +138,7 @@ public interface OPDatastoreDelegate {
      * @param user
      * @return
      */
-    OPUser saveUser(OPUser user);
+    public OPUser saveUser(OPUser user);
 
     public List<OPAvatar> getAvatars(String identityUri);
 
@@ -97,9 +150,9 @@ public interface OPDatastoreDelegate {
      */
     public void markMessagesRead(long mCurrentWindowId);
 
-    List<OPUser> getUsers(long[] userIDs);
+    public List<OPUser> getUsers(long[] userIDs);
 
-    OPIdentityContact getIdentityContact(String identityContactId);
+    public OPIdentityContact getIdentityContact(String identityContactId);
 
     boolean updateMessageDeliveryStatus(String messageId, int deliveryStatus, long updateTime);
 
@@ -111,7 +164,7 @@ public interface OPDatastoreDelegate {
      * @param messageId
      * @return
      */
-    OPMessage getMessage(String messageId);
+    public OPMessage getMessage(String messageId);
 
     /**
      * @param id

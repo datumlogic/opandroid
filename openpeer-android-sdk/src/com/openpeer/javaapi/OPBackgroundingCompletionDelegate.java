@@ -29,6 +29,9 @@
  *******************************************************************************/
 package com.openpeer.javaapi;
 
+/**
+ * Implement this class to do post backgrounding processing in application
+ */
 public abstract class OPBackgroundingCompletionDelegate {
-	public abstract void onBackgroundingReady(OPBackgroundingQuery query);
+    public abstract void onBackgroundingReady(OPBackgroundingQuery query);
 }
