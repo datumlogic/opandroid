@@ -116,7 +116,7 @@ public class CallFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_call, null);
 
         setupView(view);
@@ -128,7 +128,7 @@ public class CallFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-//        obtainCameraRatios();
+        // obtainCameraRatios();
         peerUri = args.getString(IntentData.ARG_PEER_URI);
         userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
 
@@ -151,7 +151,6 @@ public class CallFragment extends BaseFragment {
         }
         mVideo = mVideo && AppConfig.FEATURE_CALL;
         getActivity().registerReceiver(receiver, new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
-
 
     }
 
@@ -227,7 +226,8 @@ public class CallFragment extends BaseFragment {
         }
         mCallControlView.bindCall(mCall);
         // mNameView.setText(mCall.getPeerUser().getName());
-        getActivity().getActionBar().setTitle(mCall.getPeerUser().getName());
+        String peerName = mCall.getPeerUser().getName();
+        getActivity().getActionBar().setTitle(peerName);
         String avatarUri = mCall.getPeerUser().getAvatarUri();
         if (avatarUri != null) {
             Picasso.with(getActivity())
@@ -323,13 +323,13 @@ public class CallFragment extends BaseFragment {
         if (mCall != null) {
             CallStates state = mCall.getState();
             switch (state) {
-                case CallState_Closing:
-                case CallState_Closed:
-                    break;
-                default:
-                    OPNotificationBuilder.showNotificationForCall(mCall);
-                    stopRingtone();
-                    break;
+            case CallState_Closing:
+            case CallState_Closed:
+                break;
+            default:
+                OPNotificationBuilder.showNotificationForCall(mCall);
+                stopRingtone();
+                break;
 
             }
         }
@@ -359,7 +359,6 @@ public class CallFragment extends BaseFragment {
         Log.d(TAG, "onDetach");
     }
 
-
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -382,36 +381,36 @@ public class CallFragment extends BaseFragment {
             public void run() {
                 updateCallView(state);
                 switch (state) {
-                    case CallState_Placed:
-                        if (!isDetached()) {
-                            // mNameView.setText("" + state);
-                        }
-                        break;
-                    case CallState_Incoming:
-                        playRingtone();
-                        break;
-                    case CallState_Early:
-                        break;
-                    case CallState_Ringing:
-                        playRingtone();
-                        break;
-                    case CallState_Ringback:
-                        playRingtone();
-                        break;
-                    case CallState_Open: // call is open
-                        onCallAnswered();
-                        break;
-                    case CallState_Active:
-                        break;
-                    case CallState_Inactive:
-                        break;
-                    case CallState_Hold:
-                        break;
-                    case CallState_Closing: // call is hanging up
-                        break;
-                    case CallState_Closed:
-                        onCallClosed();
-                        break;
+                case CallState_Placed:
+                    if (!isDetached()) {
+                        // mNameView.setText("" + state);
+                    }
+                    break;
+                case CallState_Incoming:
+                    playRingtone();
+                    break;
+                case CallState_Early:
+                    break;
+                case CallState_Ringing:
+                    playRingtone();
+                    break;
+                case CallState_Ringback:
+                    playRingtone();
+                    break;
+                case CallState_Open: // call is open
+                    onCallAnswered();
+                    break;
+                case CallState_Active:
+                    break;
+                case CallState_Inactive:
+                    break;
+                case CallState_Hold:
+                    break;
+                case CallState_Closing: // call is hanging up
+                    break;
+                case CallState_Closed:
+                    onCallClosed();
+                    break;
                 }
             }
         });
@@ -442,7 +441,7 @@ public class CallFragment extends BaseFragment {
                 }
             });
             setupVideoPreview();
-            //This makes sure the video capture is stopped after call is stopped.
+            // This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
             OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
@@ -459,10 +458,10 @@ public class CallFragment extends BaseFragment {
         RelativeLayout.LayoutParams remotevideoLayoutParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         int widthInPixel = getActivity().getResources().getDimensionPixelSize(R.dimen.width_local_video);
-        int heightInPixel = (int) (widthInPixel * ASPECT_RATIO);//* CameraUtil.getCameraAspectRatio());
+        int heightInPixel = (int) (widthInPixel * ASPECT_RATIO);// * CameraUtil.getCameraAspectRatio());
         FrameLayout.LayoutParams localvideoLayoutParam = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-//        localvideoLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        // localvideoLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         if (previewLayout.getChildCount() > 0) {
             previewLayout.removeAllViews();
             remoteView.removeAllViews();
