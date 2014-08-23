@@ -41,6 +41,7 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
@@ -214,7 +215,7 @@ public class SettingsActivity extends BaseActivity {
         }
 
         private void setupLoggerScreen() {
-            PreferenceScreen loggerScreen = (PreferenceScreen) findPreference("debug_settings");
+            PreferenceCategory loggerScreen = (PreferenceCategory) findPreference("logLevels");
             final String loggerKeys[] = getActivity().getResources().getStringArray(R.array.logKeys);
             final String loggerTitles[] = getActivity().getResources().getStringArray(R.array.logTitles);
             String loggerDefaults[] = getActivity().getResources().getStringArray(R.array.logLevelDefaults);
@@ -230,7 +231,8 @@ public class SettingsActivity extends BaseActivity {
                 String value = SettingsHelper.getString(key, loggerDefaults[i]);
                 pref.setValue(value);
                 int index = Integer.parseInt(value);
-                pref.setTitle(String.format(loggerTitles[i], entries[index]));
+                final String loggerTitle = loggerTitles[i];
+                pref.setTitle(String.format(loggerTitle, entries[index]));
 
                 pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -239,7 +241,7 @@ public class SettingsActivity extends BaseActivity {
                         int intValue = Integer.parseInt((String) newValue);
                         OPLogLevel level = OPLogLevel.values()[intValue];
                         int index = Integer.parseInt(newValue.toString());
-                        preference.setTitle(String.format(loggerTitles[index], entries[index]));
+                        preference.setTitle(String.format(loggerTitle, entries[index]));
                         if (SettingsHelper.isLogEnabled()) {
                             OPLogger.setLogLevel(level);
                         }
@@ -255,9 +257,9 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            finish();
-            return true;
+            case android.R.id.home:
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
