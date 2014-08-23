@@ -39,6 +39,8 @@ import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sdk.app.IntentData;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
@@ -114,11 +116,11 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 
 				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
 				if (TextUtils.isEmpty(version)) {
-					Log.d("login", "start download initial contacts");
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
 					identity.startRolodexDownload("");
 				} else {
 					// check for new contacts
-					Log.d("login", "start download  contacts since version " + version);
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
 					identity.startRolodexDownload(version);
 				}
 			}

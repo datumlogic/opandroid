@@ -93,29 +93,18 @@ public class OPHelper {
             if (TextUtils.isEmpty(url)) {
                 url = DEFAULT_LOG_SERVER;
             }
-            // OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
-            // OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+
             String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
             String instanceId = OPSdkConfig.getInstanceid();
             String telnetLogString = deviceId + "-" + instanceId + "\n";
             OPLogger.installOutgoingTelnetLogger(url, true, telnetLogString);
         } else {
-            // OPLogger.setLogLevel(OPLogLevel.LogLevel_None);
-            // OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
-            // OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_None);
+
             OPLogger.uninstallOutgoingTelnetLogger();
         }
     }
 
     public void toggleFileLogger(boolean enabled, String fileName) {
-        // OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-        // OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
-        // OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
-
-        // OPLogger.setLogLevel("openpeer_services_transport_stream",
-        // OPLogLevel.LogLevel_None);
-        // OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_None);
-        // OPLogger.installTelnetLogger(59999, 60, true);
         if (enabled) {
             if (TextUtils.isEmpty(fileName)) {
                 fileName = DEFAULT_LOG_FILE;

@@ -40,18 +40,18 @@ import com.openpeer.sdk.app.OPHelper;
 public class BaseActivity extends BaseFragmentActivity {
 
     private static int mStack = 0;
-    BroadcastReceiver mShutdownReceiver;
+    BroadcastReceiver mSignoutReceiver;
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mStack == 0) {
+        if (OPApplication.getInstance().isInBackground()) {
             OPHelper.getInstance().onEnteringForeground();
             OPApplication.getInstance().onEnteringForeground();
         }
         mStack++;
 
-        mShutdownReceiver = new BroadcastReceiver() {
+        mSignoutReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE.equals(intent.getAction())) {
@@ -60,7 +60,7 @@ public class BaseActivity extends BaseFragmentActivity {
             }
         };
         IntentFilter filter = new IntentFilter(com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE);
-        registerReceiver(mShutdownReceiver, filter);
+        registerReceiver(mSignoutReceiver, filter);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class BaseActivity extends BaseFragmentActivity {
             OPHelper.getInstance().onEnteringBackground();
             OPApplication.getInstance().onEnteringBackground();
         }
-        unregisterReceiver(mShutdownReceiver);
+        unregisterReceiver(mSignoutReceiver);
 
     }
 
