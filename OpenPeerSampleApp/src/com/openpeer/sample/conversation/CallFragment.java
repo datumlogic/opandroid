@@ -49,6 +49,8 @@ import android.widget.RelativeLayout;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.CameraTypes;
 import com.openpeer.javaapi.OPCall;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sample.AppConfig;
@@ -132,7 +134,7 @@ public class CallFragment extends BaseFragment {
         peerUri = args.getString(IntentData.ARG_PEER_URI);
         userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
 
-        Log.d("test", "CallFragment received peerUri" + peerUri);
+        Log.d("test", "CallFragment received peerUri " + peerUri + " userIds "+userIDs);
         if (peerUri != null) {
             mCall = OPSessionManager.getInstance().getOngoingCallForPeer(peerUri);
         } else if (userIDs != null) {
@@ -141,6 +143,8 @@ public class CallFragment extends BaseFragment {
                 peerUri = users.get(0).getPeerUri();
                 mCall = OPSessionManager.getInstance().getOngoingCallForPeer(peerUri);
             }
+        } else {
+            Log.e(TAG,"no peerUri nor userIDs");
         }
         if (mCall != null) {
             mVideo = mCall.hasVideo();

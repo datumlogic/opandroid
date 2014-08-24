@@ -48,6 +48,8 @@ import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
@@ -520,14 +522,18 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     @Override
     public OPUser getUserByPeerUri(String peerUri) {
-        String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + " in (select _id from " + UserEntry.TABLE_NAME + " where "
-                + COLUMN_NAME_PEER_URI + "=?)";
-        Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null,
-                selection, new String[] { peerUri }, null);
+        // String selection = ContactsViewEntry.COLUMN_NAME_USER_ID + " in (select _id from " + UserEntry.TABLE_NAME + " where "
+        // + COLUMN_NAME_PEER_URI + "=?)";
+        // Cursor cursor = mContext.getContentResolver().query(OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO), null,
+        // selection, new String[] { peerUri }, null);
+
+        String selection = COLUMN_NAME_PEER_URI + "=?";
+        Cursor cursor = query(ContactsViewEntry.TABLE_NAME, null, selection, new String[] { peerUri });
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             return OPUser.fromDetailCursor(cursor);
         } else {
+            OPLogger.debug(OPLogLevel.LogLevel_Detail, "No record found for peerUri " + peerUri);
             return null;
         }
     }
