@@ -19,6 +19,7 @@ extern "C" {
 #endif
 
 jobject g_glChannelSurface;
+jobject g_glCaptureSurface;
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
@@ -234,7 +235,20 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setVideoOrientati
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderView
 (JNIEnv *, jobject owner, jobject glSurface)
 {
+	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+	if (coreMediaEnginePtr)
+	{
+
+		g_glCaptureSurface = jni_env->NewGlobalRef(glSurface);
+		coreMediaEnginePtr->get()->setCaptureRenderView(g_glCaptureSurface);
+	}
 }
 
 /*
@@ -841,6 +855,16 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_releaseCoreObject
 		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (MediaEngineDelegateWrapperPtr*)delegatePointerValue;
+
+		if(g_glChannelSurface != NULL)
+		{
+			jni_env->DeleteGlobalRef(g_glChannelSurface);
+		}
+
+		if(g_glCaptureSurface != NULL)
+		{
+			jni_env->DeleteGlobalRef(g_glCaptureSurface);
+		}
 		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Media engine releaseCoreObjects Core object deleted.");
 
 	}
