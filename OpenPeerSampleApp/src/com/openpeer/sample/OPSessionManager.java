@@ -1,13 +1,42 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sample;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ContactStates;
@@ -17,15 +46,16 @@ import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.CallStatus;
-import com.openpeer.sample.push.PushRegistrationManager;
+import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.PushResult;
 import com.openpeer.sample.push.PushToken;
 import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 
@@ -37,6 +67,10 @@ public class OPSessionManager {
     static final String TAG = OPSessionManager.class.getSimpleName();
     List<OPSession> mSessions;
 
+    Hashtable<String, OPCall> mCalls;
+
+    private OPConversationThreadDelegate mThreadDelegate;
+    private OPCallDelegate mCallDelegate;
     private static OPSessionManager instance;
 
     public static OPSessionManager getInstance() {
@@ -54,7 +88,7 @@ public class OPSessionManager {
 
     /**
      * Look up existing session for thread. Uses thread id to look up
-     *
+     * 
      * @param thread
      * @return
      */
@@ -72,7 +106,7 @@ public class OPSessionManager {
 
     /**
      * Look up the session "for" users. This call use calculated window id to find the session.
-     *
+     * 
      * @param userIDs
      * @return
      */
@@ -87,40 +121,14 @@ public class OPSessionManager {
 
     /**
      * Find existing session "including" the users
-     *
-     * @param ids user ids
+     * 
+     * @param ids
+     *            user ids
      * @return
      */
     private OPSession getSessionWithUsers(long[] ids) {
         // TODO: implement proper look up
         return getSessionForUsers(ids);
-    }
-
-    OPCall mActiveCall;
-    // <callId,call>
-    Hashtable<String, OPCall> mCalls;
-
-    private OPCallDelegate mBackgroundCallHandler;
-
-    public void onEnteringBackground() {
-    }
-
-    public void onEnteringForeground() {
-    }
-
-    public void onCallStateChanged(OPCall call, CallStates state) {
-        if (OPHelper.getInstance().isAppInBackground()) {
-            mBackgroundCallHandler.onCallStateChanged(call, state);
-        }
-    }
-
-    /**
-     * Application should provide a background call handler to show an notification for incoming call, and all other fany stuff
-     *
-     * @param delegate
-     */
-    public void setBackgroundCallDelegate(OPCallDelegate delegate) {
-        mBackgroundCallHandler = delegate;
     }
 
     public OPCall placeCall(long[] userIDs, boolean audio, boolean video) {
@@ -143,7 +151,7 @@ public class OPSessionManager {
 
     void init() {
         mCalls = new Hashtable<String, OPCall>();
-        OPConversationThreadDelegate threadDelegate = new OPConversationThreadDelegate() {
+        mThreadDelegate = new OPConversationThreadDelegate() {
 
             @Override
             public void onConversationThreadNew(OPConversationThread conversationThread) {
@@ -159,20 +167,22 @@ public class OPSessionManager {
 
             @Override
             public void onConversationThreadContactStateChanged(OPConversationThread conversationThread, OPContact contact,
-                                                                ContactStates state) {
-                // TODO Auto-generated method stub
-
+                    ContactStates state) {
+                OPLogger.debug(OPLogLevel.LogLevel_Trace, "onConversationThreadContactStateChanged  " + contact.getPeerURI() + " state "
+                        + state);
             }
 
             @Override
             public void onConversationThreadMessage(OPConversationThread conversationThread, String messageID) {
-                OPMessage message = conversationThread.getMessage(messageID);
-                if (TextUtils.isEmpty(message.getMessageId())) {
-                    message.setMessageId(messageID);
-                }
+                OPMessage message = conversationThread.getMessageById(messageID);
+
                 if (message.getFrom().isSelf()) {
-                    Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
+                    // Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
+                    // + message.getMessageType());
+                    OPLogger.debug(OPLogLevel.LogLevel_Basic, "Weird! received message from myself!" + message.getMessageId() + " messageId "
+                            + messageID + " type "
                             + message.getMessageType());
+
                     return;
                 }
                 OPSession session = getSessionOfThread(conversationThread);
@@ -184,24 +194,22 @@ public class OPSessionManager {
 
             @Override
             public void onConversationThreadMessageDeliveryStateChanged(OPConversationThread conversationThread, String messageID,
-                                                                        MessageDeliveryStates state) {
+                    MessageDeliveryStates state) {
+                OPLogger.debug(OPLogLevel.LogLevel_Detail, "onConversationThreadMessageDeliveryStateChanged  " + messageID + " state "
+                        + state);
 
+                // OPDataManager.getDatastoreDelegate().updateMessageDeliveryStatus();
             }
 
             @Override
             public void onConversationThreadPushMessage(OPConversationThread conversationThread, String messageID, OPContact contact) {
-                final OPMessage message = conversationThread.getMessage(messageID);
+                final OPMessage message = conversationThread.getMessageById(messageID);
 
-                if (TextUtils.isEmpty(message.getMessageId())) {
-                    Log.e("test", "weird! message id is empty " + message);
-                    message.setMessageId(messageID);
-                }
-
-                PushRegistrationManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
+                OPPushManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
 
                     @Override
                     public void success(PushToken token, Response response) {
-                        Log.e("test", "onConversationThreadPushMessage push message " + message);
+                        OPLogger.debug(OPLogLevel.LogLevel_Detail, "onConversationThreadPushMessage push message " + message);
                         new UAPushProviderImpl().pushMessage(message, token, new Callback<PushResult>() {
                             @Override
                             public void success(PushResult pushResult, Response response) {
@@ -212,7 +220,7 @@ public class OPSessionManager {
                             public void failure(RetrofitError error) {
 
                                 if (error != null) {
-                                    Log.e(TAG, "eror pushing message " + error.getMessage());
+                                    OPLogger.debug(OPLogLevel.LogLevel_Basic, "eror pushing message " + error.getMessage());
                                 }
                             }
                         });
@@ -221,44 +229,55 @@ public class OPSessionManager {
                     @Override
                     public void failure(RetrofitError error) {
                         if (error != null) {
-                            Log.e(TAG, "eror retrieving device token " + error.getMessage());
+                            OPLogger.debug(OPLogLevel.LogLevel_Basic, "eror retrieving device token " + error.getMessage());
                         }
                     }
                 });
             }
         };
-        OPCallDelegate callDelegate = new OPCallDelegate() {
+        mCallDelegate = new OPCallDelegate() {
 
             @Override
             public void onCallStateChanged(OPCall call, CallStates state) {
+                Intent intent = new Intent();
+                intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
+                intent.putExtra(IntentData.ARG_CALL_STATE, state);
+                intent.putExtra(IntentData.ARG_CALL_ID, call.getCallID());
+
+                OPApplication.getInstance().sendBroadcast(intent);
                 switch (state) {
-                    case CallState_Incoming:
-                        OPContact caller = call.getCaller();
-                        Log.d("test",
-                                "OPSessionManager onCallStateChanged " + call.getNativeClsPtr() + " caller " + caller.getNativeClassPointer());
-                        OPCall currentCall = getOngoingCallForPeer(caller.getPeerURI());
-                        if (currentCall != null) {
-                            // TODO: auto answer and swap calls
-                            Log.d("test", "found existing call.");
-                            // return;
-                        }
+                case CallState_Incoming:
+                    OPContact caller = call.getCaller();
+                    OPCall currentCall = getOngoingCallForPeer(caller.getPeerURI());
+                    if (currentCall != null) {
+                        // TODO: auto answer and swap calls
+                        Log.d("test", "found existing call.");
+                        // return;
+                    }
 
-                        OPUser user = getPeerUserForCall(call);
-                        call.setPeerUser(user);
-                        Log.d("test", "found user for incoming call " + user);
+                    OPUser user = getPeerUserForCall(call);
+                    Log.d("test", "found user for incoming call " + user);
 
-                        mCalls.put(caller.getPeerURI(), call);
-                        CallActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
-                        break;
-                    case CallState_Closed:
-                        onCallEnd(call);
-                        break;
+                    mCalls.put(caller.getPeerURI(), call);
+                    CallActivity.launchForIncomingCall(OPApplication.getInstance(), caller.getPeerURI());
+                    break;
+                case CallState_Closing:
+                case CallState_Closed:
+                    onCallEnd(call);
+                    break;
 
                 }
             }
         };
-        CallbackHandler.getInstance().registerConversationThreadDelegate(threadDelegate);
-        CallbackHandler.getInstance().registerCallDelegate(null, callDelegate);
+
+    }
+
+    public OPConversationThreadDelegate getConversationThreadDelegate() {
+        return mThreadDelegate;
+    }
+
+    public OPCallDelegate getCallDelegate() {
+        return mCallDelegate;
     }
 
     public OPCall getOngoingCallForPeer(String peerUri) {
@@ -270,10 +289,13 @@ public class OPSessionManager {
         mCalls.remove(peerUri);
         mCallStates.remove(peerUri);
         OPNotificationBuilder.cancelNotificationForCall(mCall);
+        if (OPApplication.getInstance().isInBackground()) {
+            OPApplication.getInstance().onEnteringBackground();
+        }
     }
 
-    public void hangupCall(OPCall mCall, CallClosedReasons callclosedreasonUser) {
-        mCall.hangup(CallClosedReasons.CallClosedReason_User);
+    public void hangupCall(OPCall mCall, CallClosedReasons reason) {
+        mCall.hangup(reason);
         onCallEnd(mCall);
     }
 
@@ -301,5 +323,18 @@ public class OPSessionManager {
         }
         return state;
 
+    }
+
+    public boolean hasCalls() {
+        return mCalls != null && mCalls.size() > 0;
+    }
+
+    /**
+     * Clean up on signout
+     */
+    public void onSignOut() {
+        mCallStates = null;
+        mCalls.clear();
+        mSessions.clear();
     }
 }

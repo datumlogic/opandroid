@@ -12,7 +12,7 @@
             <item
                 android:id="@+id/menu_video"
                 android:title="@string/video"
-                android:visible="false"/>
+                android:visible="true"/>
         </menu>
     </item>
     <!--

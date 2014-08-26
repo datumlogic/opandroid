@@ -475,9 +475,23 @@ $(ANDROIDNDK_PATH)/platforms/android-9/arch-arm/usr/include \
 LOCAL_SRC_FILES := \
 		openpeer-android-sdk/jni/OpenPeerCoreManager.cpp \
 		openpeer-android-sdk/jni/globals.cpp \
-		openpeer-android-sdk/jni/EventManager.cpp \
+		openpeer-android-sdk/jni/BackgroundingDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/BackgroundingCompletionDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/StackDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/StackMessageQueueDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/LoggerDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/AccountDelegateWrapper.cpp \
 		openpeer-android-sdk/jni/CacheDelegateWrapper.cpp \
 		openpeer-android-sdk/jni/SettingsDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/CallDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/MediaEngineDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/IdentityDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/IdentityLookupDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/ConversationThreadDelegateWrapper.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPBackgrounding.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPBackgroundingQuery.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPBackgroundingSubscription.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPBackgroundingNotifier.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPStackMessageQueue.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPStack.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPAccount.cpp \

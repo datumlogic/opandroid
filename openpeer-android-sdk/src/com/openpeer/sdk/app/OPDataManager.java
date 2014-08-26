@@ -1,239 +1,271 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sdk.app;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-import android.content.Intent;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
-import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
-import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPIdentityLookup;
 import com.openpeer.javaapi.OPIdentityLookupInfo;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
+import com.openpeer.sdk.delegates.OPIdentityLookupDelegateImpl;
 import com.openpeer.sdk.model.OPUser;
 
 /**
- * Hold reference to objects that cannot be constructed from database, and
- * manages contacts data change. This class is probably unneccessary -- at the
- * least I don't want it to be a simple wrapper of
- * OPDatastoreDelegateImplementation. Might end up merging this with OPHelper,
- * but for now let's keep it so OPHelper doesn't grow weird.
+ * Hold reference to objects that cannot be constructed from database, and manages contacts data change.
  * 
  */
 public class OPDataManager {
-	public static String INTENT_CONTACTS_CHANGED = "com.openpeer.contacts_changed";
+    private static final String TAG = OPDataManager.class.getSimpleName();
 
-	private static OPDataManager instance;
-	private OPDatastoreDelegate mDatastoreDelegate;
+    public static String INTENT_CONTACTS_CHANGED = "com.openpeer.contacts_changed";
 
-	private OPAccount mAccount;
-	private List<OPIdentity> mIdentities;
-	private List<OPIdentityContact> mSelfContacts;
-	private Hashtable<Long, String> downloadedIdentityContactVersions;
-	private String mReloginInfo;
+    private static OPDataManager instance;
+    private OPDatastoreDelegate mDatastoreDelegate;
 
-	private boolean mAccountReady;
+    private OPAccount mAccount;
+    private List<OPIdentity> mIdentities;
+    private List<OPIdentityContact> mSelfContacts;
+    Hashtable<String, OPIdentityLookup> mIdentityLookups = new Hashtable<String, OPIdentityLookup>();
 
-	public static OPDatastoreDelegate getDatastoreDelegate() {
-		return getInstance().mDatastoreDelegate;
-	}
+    private boolean mAccountReady;
 
-	public List<OPIdentity> getIdentities() {
-		return mIdentities;
-	}
+    public static OPDatastoreDelegate getDatastoreDelegate() {
+        return getInstance().mDatastoreDelegate;
+    }
 
-	public String getReloginInfo() {
-		return mReloginInfo;
-	}
+    public List<OPIdentity> getIdentities() {
+        return mIdentities;
+    }
 
-	public static OPDataManager getInstance() {
-		if (instance == null) {
-			instance = new OPDataManager();
-		}
-		return instance;
-	}
+    public String getReloginInfo() {
+        return mDatastoreDelegate.getReloginInfo();
+    }
 
-	public void init(OPDatastoreDelegate delegate) {
-		assert (delegate != null);
-		mDatastoreDelegate = delegate;
-		mReloginInfo = delegate.getReloginInfo();
-		Log.d("test", "LoginManager.init relogin info " + mReloginInfo);
-		downloadedIdentityContactVersions = new Hashtable<Long, String>();
-		// mContacts = new Hashtable<Long, List<OPRolodexContact>>();
-		// if (mReloginInfo != null) {
-		// // Read idenities contacts and contacts
-		// mSelfContacts = mDatastoreDelegate.getSelfIdentityContacts();
-		// }
-	}
+    public static OPDataManager getInstance() {
+        if (instance == null) {
+            instance = new OPDataManager();
+        }
+        return instance;
+    }
 
-	/**
-	 * This function should only be called in AccountState_Ready from
-	 * OPAccountDelegate. This function update the database
-	 * 
-	 * @param account
-	 *            the logged in account
-	 */
-	public void setSharedAccount(OPAccount account) {
-		mAccount = account;
-	}
+    public void init(OPDatastoreDelegate delegate) {
+        assert (delegate != null);
+        mDatastoreDelegate = delegate;
+        // mContacts = new Hashtable<Long, List<OPRolodexContact>>();
+        // if (mReloginInfo != null) {
+        // // Read idenities contacts and contacts
+        // mSelfContacts = mDatastoreDelegate.getSelfIdentityContacts();
+        // }
+    }
 
-	public void saveAccount() {
-		mDatastoreDelegate.saveOrUpdateAccount(mAccount);
-	}
+    /**
+     * This function should only be called in AccountState_Ready from OPAccountDelegate. This function update the database
+     * 
+     * @param account
+     *            the logged in account
+     */
+    public void setSharedAccount(OPAccount account) {
+        mAccount = account;
+    }
 
-	public OPAccount getSharedAccount() {
-		return mAccount;
-	}
+    public void saveAccount() {
+        mDatastoreDelegate.saveOrUpdateAccount(mAccount);
+    }
 
-	public void setIdentities(List<OPIdentity> identities) {
-		mIdentities = identities;
-		mSelfContacts = new ArrayList<OPIdentityContact>();
-		for (OPIdentity identity : identities) {
-			mSelfContacts.add(identity.getSelfIdentityContact());
-		}
-		mDatastoreDelegate.saveOrUpdateIdentities(mIdentities,
-				mAccount.getStableID());
-	}
+    public OPAccount getSharedAccount() {
+        return mAccount;
+    }
 
-	public List<OPIdentityContact> getSelfContacts() {
-		return mSelfContacts;
-	}
+    public void setIdentities(List<OPIdentity> identities) {
+        mIdentities = identities;
+        mSelfContacts = new ArrayList<OPIdentityContact>();
+        for (OPIdentity identity : identities) {
+            mSelfContacts.add(identity.getSelfIdentityContact());
+        }
+        mDatastoreDelegate.saveOrUpdateIdentities(mIdentities, mAccount.getID());
+    }
 
-	public void onDownloadedRolodexContacts(OPIdentity identity) {
-		OPDownloadedRolodexContacts downloaded = identity
-				.getDownloadedRolodexContacts();
-		long identityId = identity.getStableID();
-		String contactsVersion = downloaded.getVersionDownloaded();
-		downloadedIdentityContactVersions.put(identityId, contactsVersion);
-		mDatastoreDelegate.setDownloadedContactsVersion(identityId,
-				contactsVersion);
-		List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
-		// if (downloaded.isFlushAllRolodexContacts()) {
-		// mDatastoreDelegate.flushContactsForIdentity(identityId);
-		// mDatastoreDelegate.saveOrUpdateContacts(contacts, identityId);
-		// // mContacts.put(identityId, contacts);
-		// } else {
-		for (OPRolodexContact contact : contacts) {
-			switch (contact.getDisposition()) {
-			case Disposition_Remove:
-				mDatastoreDelegate.deleteContact(contact.getIdentityURI());
-				break;
-			case Disposition_Update:
-				// break;
-			default:
-				mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
-			}
-		}
-		identityLookup(identity, contacts);
-		notifyContactsChanged();
-	}
+    public List<OPIdentityContact> getSelfContacts() {
+        return mSelfContacts;
+    }
 
-	public void identityLookup(OPIdentity identity,
-			List<OPRolodexContact> contacts) {
+    public void onDownloadedRolodexContacts(OPIdentity identity) {
+        OPDownloadedRolodexContacts downloaded = identity.getDownloadedRolodexContacts();
+        long identityId = identity.getStableID();
+        String contactsVersion = downloaded.getVersionDownloaded();
 
-		OPIdentityLookupDelegateImplementation mIdentityLookupDelegate = new OPIdentityLookupDelegateImplementation(
-				identity);
-		OPIdentityLookup mIdentityLookup = new OPIdentityLookup();
-		CallbackHandler.getInstance().registerIdentityLookupDelegate(
-				mIdentityLookup, mIdentityLookupDelegate);
+        List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
 
-		List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
+        for (OPRolodexContact contact : contacts) {
+            switch (contact.getDisposition()) {
+            case Disposition_Remove:
+                mDatastoreDelegate.deleteContact(contact.getIdentityURI());
+                break;
+            case Disposition_Update:
+                // break;
+            default:
+                mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
+            }
+        }
+        mDatastoreDelegate.notifyContactsChanged();
+        identityLookup(identity, contacts);
+    }
 
-		for (OPRolodexContact contact : contacts) {
-			Log.d("output", "contact " + contact.toString());
-			OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
-			ilInfo.initWithRolodexContact(contact);
-			inputLookupList.add(ilInfo);
-		}
+    public void identityLookup(OPIdentity identity, List<OPRolodexContact> contacts) {
 
-		mIdentityLookup = OPIdentityLookup.create(OPDataManager.getInstance()
-				.getSharedAccount(), mIdentityLookupDelegate, inputLookupList,
-				OPSdkConfig.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
-	}
+        OPIdentityLookupDelegateImpl mIdentityLookupDelegate = OPIdentityLookupDelegateImpl.getInstance(identity);
+        List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
 
-	public String getContactsVersionForIdentity(long id) {
-		return downloadedIdentityContactVersions.get(id);
-	}
+        for (OPRolodexContact contact : contacts) {
+            OPIdentityLookupInfo ilInfo = new OPIdentityLookupInfo();
+            ilInfo.initWithRolodexContact(contact);
+            inputLookupList.add(ilInfo);
+        }
 
-	public void updateIdentityContacts(OPIdentity mIdentity,
-			List<OPIdentityContact> iContacts) {
+        OPIdentityLookup identityLookup = OPIdentityLookup.create(OPDataManager.getInstance().getSharedAccount(), mIdentityLookupDelegate,
+                inputLookupList, OPSdkConfig.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
+        if (identityLookup != null) {
+            mIdentityLookups.put(identity.getIdentityURI(), identityLookup);
+        }
+    }
 
-		Log.d("TODO",
-				"OPDataManager updateIdentityContacts "
-						+ Arrays.deepToString(iContacts.toArray()));
-		// Each IdentityContact represents a user. Update user info
-		mDatastoreDelegate
-				.saveOrUpdateUsers(iContacts, mIdentity.getStableID());
+    public String getContactsVersionForIdentity(long id) {
+        return mDatastoreDelegate.getDownloadedContactsVersion(id);
+    }
 
-		notifyContactsChanged();
-	}
+    public void updateIdentityContacts(String identityUri, List<OPIdentityContact> iContacts) {
 
-	private void notifyContactsChanged() {
+        // Each IdentityContact represents a user. Update user info
+        mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
+    }
 
-		Intent intent = new Intent();
-		intent.setAction(INTENT_CONTACTS_CHANGED);
-		OPHelper.getInstance().sendBroadcast(intent);
-	}
+    public void refreshContacts() {
+        List<OPIdentity> identities = mAccount.getAssociatedIdentities();
+        for (OPIdentity identity : identities) {
 
-	public void refreshContacts() {
-		List<OPIdentity> identities = mAccount.getAssociatedIdentities();
-		for (OPIdentity identity : identities) {
-			CallbackHandler.getInstance().registerIdentityDelegate(identity,
-					new OPIdentityDelegate() {
+            identity.refreshRolodexContacts();
+        }
+    }
 
-						@Override
-						public void onIdentityStateChanged(OPIdentity identity,
-								IdentityStates state) {
-							// TODO Auto-generated method stub
+    public long getUserIdForContact(OPContact contact, OPIdentityContact iContact) {
+        // TODO implement proper userId querying and gereration
+        return contact.getPeerURI().hashCode();
+    }
 
-						}
+    public boolean isAccountReady() {
+        return mAccountReady;
+    }
 
-						@Override
-						public void onIdentityPendingMessageForInnerBrowserWindowFrame(
-								OPIdentity identity) {
-							// TODO Auto-generated method stub
+    public void setAccountReady(boolean value) {
+        mAccountReady = value;
+    }
 
-						}
+    public OPUser getUserByPeerUri(String uri) {
+        return mDatastoreDelegate.getUserByPeerUri(uri);
+    }
 
-						@Override
-						public void onIdentityRolodexContactsDownloaded(
-								OPIdentity identity) {
-							onDownloadedRolodexContacts(identity);
-							CallbackHandler.getInstance()
-									.unregisterIdentityDelegate(this);
-						}
+    public OPUser getPeerUserForCall(OPCall call) {
+        OPContact contact = call.getPeer();
+        OPUser user = mDatastoreDelegate.getUserByPeerUri(contact.getPeerURI());
+        if (user == null) {
+            List<OPIdentityContact> identityContacts = call.getIdentityContactList(contact);
+            if (identityContacts == null || identityContacts.isEmpty()) {
+                OPLogger.error(OPLogLevel.LogLevel_Basic,
+                        "getIdentityContactList returns empty in call for contact " + contact.getPeerURI());
+            }
+            user = new OPUser(contact, identityContacts);
+            user = mDatastoreDelegate.saveUser(user);
+        }
+        return user;
+    }
 
-					});
-			identity.refreshRolodexContacts();
-		}
-	}
+    /**
+     * @param url
+     * @param lookup
+     */
+    public void onIdentityLookupCompleted(String url, OPIdentityLookup lookup) {
+        List<OPIdentityContact> iContacts = lookup.getUpdatedIdentities();
+        if (iContacts != null) {
+            updateIdentityContacts(url, iContacts);
+        }
+        mIdentityLookups.remove(url);
+    }
 
-	public long getUserIdForContact(OPContact contact,
-			OPIdentityContact iContact) {
-		// TODO implement proper userId querying and gereration
-		return contact.getPeerURI().hashCode();
-	}
+    /**
+     * @param from
+     * @param opConversationThread
+     * @return
+     */
+    public OPUser getUserForMessage(OPContact from, OPConversationThread thread) {
+        OPUser user = getUserByPeerUri(from.getPeerURI());
+        if (user == null) {
+            user = new OPUser(from, thread.getIdentityContactList(from));
+            user = mDatastoreDelegate.saveUser(user);
+        }
+        return user;
+    }
 
-	public boolean isAccountReady() {
-		return mAccountReady;
-	}
+    public OPUser getUserById(long id) {
+        return mDatastoreDelegate.getUserById(id);
+    }
 
-	public void setAccountReady(boolean value) {
-		mAccountReady = value;
-	}
-	
-	public OPUser getUserByPeerUri(String uri){
-		return mDatastoreDelegate.getUserByPeerUri(uri);
-	}
+    public void onSignOut() {
+        List<OPIdentity> identities = instance.mAccount.getAssociatedIdentities();
+        if (mIdentityLookups != null && mIdentityLookups.size() > 0) {
+            for (OPIdentityLookup lookup : mIdentityLookups.values()) {
+                lookup.cancel();
+            }
+        }
+        for (OPIdentity identity : identities) {
+            identity.cancel();
+        }
+        mIdentities = null;
+        mSelfContacts = null;
+        mAccount.shutdown();
+        mAccount = null;
+        mDatastoreDelegate.onSignOut();
+
+    }
 
 }

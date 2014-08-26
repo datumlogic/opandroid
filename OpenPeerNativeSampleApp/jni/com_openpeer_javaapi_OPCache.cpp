@@ -1,5 +1,6 @@
 #include "openpeer/core/ICache.h"
 #include "openpeer/core/ILogger.h"
+#include <android/log.h>
 
 #include "globals.h"
 
@@ -16,6 +17,8 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_setup
 (JNIEnv *, jclass, jobject javaCacheDelegate)
 {
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCache native setup called");
+
 	cacheDelegatePtr = CacheDelegateWrapperPtr(new CacheDelegateWrapper(javaCacheDelegate));
 	ICache::setup(cacheDelegatePtr);
 }
@@ -30,6 +33,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCache_fetch
 {
 	jstring ret;
 	String cookieNamePathString;
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCache native fetch called");
+
 	cookieNamePathString = env->GetStringUTFChars(cookieNamePath, NULL);
 	if (cookieNamePathString == NULL) {
 		return ret;
@@ -51,6 +56,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_store
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCache native store called");
 
 	String cookieNamePathString;
 	cookieNamePathString = env->GetStringUTFChars(cookieNamePath, NULL);
@@ -87,6 +94,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCache_clear
 (JNIEnv *env, jobject, jstring cookieNamePath)
 {
 	String cookieNamePathString;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCache native clear called");
+
 	cookieNamePathString = env->GetStringUTFChars(cookieNamePath, NULL);
 	if (cookieNamePathString == NULL) {
 		return;

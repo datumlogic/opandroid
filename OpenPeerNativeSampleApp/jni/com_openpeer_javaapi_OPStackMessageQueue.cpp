@@ -21,6 +21,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_singleto
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStackMessageQueue native singleton called");
+
 	jni_env = getEnv();
 	if(jni_env)
 	{
@@ -44,6 +46,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_interceptPr
 
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStackMessageQueue native interceptProcessing called");
+
 	jni_env = getEnv();
 	jclass stackMessageQueueClass = findClass("com/openpeer/javaapi/OPStackMessageQueue");
 	jfieldID stackMessageQueueFid = jni_env->GetFieldID(stackMessageQueueClass, "nativeClassPointer", "J");
@@ -63,6 +67,22 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_interceptPr
 			jni_env->SetLongField(owner, delegateFid, delegate);
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPStackMessageQueue native interceptProcessing core pointer is NULL!!!");
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPStackMessageQueue
+ * Method:    notifyProcessMessageFromCustomThread
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_notifyProcessMessageFromCustomThread
+(JNIEnv *, jobject)
+{
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStackMessageQueue native notifyProcessMessageFromCustomThread called");
+	IStackMessageQueue::singleton()->notifyProcessMessageFromCustomThread();
 }
 
 /*
@@ -86,12 +106,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPStackMessageQueue_releaseCore
 		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (StackMessageQueueDelegateWrapperPtr*)delegatePointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPStackMessageQueue Core object deleted.");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPStackMessageQueue Core object not deleted - already NULL!");
 	}
 }
 #ifdef __cplusplus

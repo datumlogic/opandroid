@@ -39,6 +39,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native create called");
+
 	const char *identityServiceDomainStr;
 	identityServiceDomainStr = env->GetStringUTFChars(identityServiceDomain, NULL);
 	if (identityServiceDomainStr == NULL) {
@@ -87,7 +89,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 
 			if( identityLookupInfoObject != NULL )
 			{
-
 				// Call "getIdentityURI method to fetch contact from Identity lookup info
 				jstring identityURI = (jstring)jni_env->CallObjectMethod( identityLookupInfoObject, getIdentityURIMethodID );
 
@@ -104,8 +105,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 				jni_env->DeleteLocalRef(identityURI);
 
 				//Add last updated to IdentityLookupInfo structure
-
-
 				jlong longValue = jni_env->CallLongMethod(lastUpdated, timeMethodID, false);
 				jni_env->DeleteLocalRef(lastUpdated);
 				Time t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
@@ -113,18 +112,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 
 				//add core contacts to list for removal
 				identityLookupInfosForCore.push_front(identityLookupInfo);
-
-				//__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","String chars released");
-
-
-
-
 			}
 
 		}
-
-
-
 		jni_env->DeleteLocalRef(timeCls);
 		jni_env->DeleteLocalRef(identityLookupInfoClass);
 	}
@@ -166,6 +156,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_create
 
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native create called");
+	}
 	return object;
 }
 
@@ -180,6 +174,8 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
 	jlong pid = 0;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native getStableID called");
+
 	jni_env = getEnv();
 	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
 	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
@@ -190,7 +186,10 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getStableID
 	{
 		pid = coreIdentityLookupPtr->get()->getID();
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native getStableID called");
+	}
 	return pid;
 }
 
@@ -205,6 +204,8 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
 	jboolean ret = 0;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native isComplete called");
+
 	jni_env = getEnv();
 	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
 	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
@@ -216,7 +217,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_isComplete
 	{
 		ret = coreIdentityLookupPtr->get()->isComplete();
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native isComplete called");
+	}
 	return ret;
 }
 
@@ -233,6 +237,8 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
 	WORD ourCodeCore;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native wasSuccessful called");
+
 	jni_env = getEnv();
 	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
 	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
@@ -246,7 +252,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_wasSuccess
 		outErrorCode = ourCodeCore;
 		outErrorReason = jni_env->NewStringUTF(outReasonCore);
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native wasSuccessful called");
+	}
 	return ret;
 }
 
@@ -260,6 +269,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
 {
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native cancel called");
+
 	jni_env = getEnv();
 	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
 	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
@@ -269,6 +280,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_cancel
 	if (coreIdentityLookupPtr)
 	{
 		coreIdentityLookupPtr->get()->cancel();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native cancel called");
 	}
 }
 
@@ -286,6 +301,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 	jobject object;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native getUpdatedIdentities called");
+
 	jni_env = getEnv();
 	cls = findClass("com/openpeer/javaapi/OPIdentityLookup");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -298,6 +315,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 	if(identityLookupPtr)
 	{
 		coreContactList = identityLookupPtr->get()->getUpdatedIdentities();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native getUpdatedIdentities called");
 	}
 
 	if(jni_env)
@@ -413,7 +434,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUpdatedI
 
 			//OPAvatar class and methods fetch
 			jclass avatarClass = findClass("com/openpeer/javaapi/OPRolodexContact$OPAvatar");
-			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "(Lcom/openpeer/javaapi/OPRolodexContact;)V");
+			jmethodID avatarConstructorMethodID = jni_env->GetMethodID(avatarClass, "<init>", "()V");
 			jmethodID setAvatarNameMethodID = jni_env->GetMethodID(avatarClass, "setName", "(Ljava/lang/String;)V");
 			jmethodID setAvatarURLMethodID = jni_env->GetMethodID(avatarClass, "setURL", "(Ljava/lang/String;)V");
 			jmethodID setAvatarWidthMethodID = jni_env->GetMethodID(avatarClass, "setWidth", "(I)V");
@@ -501,6 +522,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
 	IIdentityLookup::IdentityLookupInfoListPtr coreIdentityLookupInfoList;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native getUnchangedIdentities called");
+
 	jni_env = getEnv();
 	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
 	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
@@ -512,6 +535,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getUnchange
 	if (coreIdentityLookupPtr)
 	{
 		coreIdentityLookupInfoList = coreIdentityLookupPtr->get()->getUnchangedIdentities();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native getUnchangedIdentities called");
 	}
 
 	if(jni_env)
@@ -579,6 +606,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidI
 	IIdentityLookup::IdentityLookupInfoListPtr coreIdentityLookupInfoList;
 	JNIEnv *jni_env = 0;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup native getInvalidIdentities called");
+
 	jni_env = getEnv();
 	jclass identityLookupClass = findClass("com/openpeer/javaapi/OPIdentityLookup");
 	jfieldID identityLookupFid = jni_env->GetFieldID(identityLookupClass, "nativeClassPointer", "J");
@@ -590,6 +619,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_getInvalidI
 	if (coreIdentityLookupPtr)
 	{
 		coreIdentityLookupInfoList = coreIdentityLookupPtr->get()->getInvalidIdentities();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPIdentityLookup native getInvalidIdentities called");
 	}
 
 	if(jni_env)
@@ -662,12 +695,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentityLookup_releaseCoreObj
 		jlong delegatePointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (IdentityLookupDelegateWrapperPtr*)delegatePointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Identity lookup releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentityLookup core object deleted.");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPIdentityLookup ore object not deleted - already NULL!");
 	}
 }
 

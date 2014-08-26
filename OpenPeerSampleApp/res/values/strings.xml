@@ -21,6 +21,7 @@
     <string name="audio">Audio</string>
     <string name="video">Video</string>
     <!-- Beginning of call state strings -->
+    <string name="CallState_Preparing">Preparing</string>
     <string name="CallState_Incoming">Incoming</string>
     <string name="CallState_Placed">Calling</string>
     <string name="CallState_Ringing">Ringing</string>
@@ -33,7 +34,7 @@
     <string name="CallState_Closed">Ended</string>
     <!-- End of call state strings -->
 
-    <string name="debug_settings">Debug Settings</string>
+    <string name="logger_settings">Logger Settings</string>
     <string name="out_telnet_logger">Outgoing telnet logger</string>
     <string name="local_telnet_logger">Local telnet logger</string>
     <string name="file_logger">File logger</string>
@@ -55,9 +56,10 @@
     <string name="ringtone_select">Select Ringtone</string>
     <string name="notification_sound_switch">Message notification</string>
     <string name="notification_sound_select">Select Notification Sound</string>
-
+    <string name="signout">Sign out</string>
     <!-- End of setting strings -->
     <string name="msg_failed_login">Failed to login, try again later.</string>
     <string name="msg_not_logged_in">You\'re not logged in. Please quit the app and relogin.</string>
+    <string name="msg_cannot_signout_with_call">You have active calls. Please hangup calls before signout</string>
 
 </resources>

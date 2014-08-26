@@ -1,3 +1,32 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sample.conversation;
 
 import java.text.DateFormat;
@@ -8,7 +37,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -22,17 +50,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseActivity;
@@ -43,10 +66,6 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
-import com.openpeer.sample.push.PushRegistrationManager;
-import com.openpeer.sample.push.PushResult;
-import com.openpeer.sample.push.PushToken;
-import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts;
@@ -55,11 +74,6 @@ import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
-import com.squareup.picasso.Picasso;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
@@ -213,28 +227,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
                 mComposeBox.setText("");
 
                 getSession().sendMessage(msg, false);
-//                OPContact contact = mSession.getParticipants().get(0).getOPContact();
-//                PushRegistrationManager.getInstance().getDeviceToken(contact.getPeerURI(), new Callback<PushToken>() {
-//                    @Override
-//                    public void success(PushToken token, Response response) {
-//                        new UAPushProviderImpl().pushMessage(msg, token, new Callback<PushResult>() {
-//                            @Override
-//                            public void success(PushResult pushResult, Response response) {
-//
-//                            }
-//
-//                            @Override
-//                            public void failure(RetrofitError error) {
-//
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void failure(RetrofitError error) {
-//
-//                    }
-//                });
+
             }
         });
         getLoaderManager().initLoader(URL_LOADER, null, this);

@@ -1,6 +1,37 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sdk.datastore;
 
 import java.util.List;
+
+import com.openpeer.javaapi.OPAccount;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -33,6 +64,7 @@ public class OPContentProvider extends ContentProvider {
 	UriMatcher mUriMatcher;
 	static String sAuthority = "";
 	static final String SCHEME = "content://";
+	private static OPContentProvider instance;
 
 	static enum MatcherInfo {
 		ACCOUNTS(AccountEntry.TABLE_NAME),
@@ -47,16 +79,16 @@ public class OPContentProvider extends ContentProvider {
 		MESSAGE_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW_ID),
 		MESSAGE_THREAD(MessageEntry.URI_PATH_INFO_THREAD_ID),
 		MESSAGE_GROUP(MessageEntry.URI_PATH_INFO_GROUP_ID),
-		
+
 		MESSAGES(MessageEntry.TABLE_NAME),
-		MESSAGE(MessageEntry.TABLE_NAME+"/#"),
+		MESSAGE(MessageEntry.TABLE_NAME + "/#"),
 
 		CONTACTS(DatabaseContracts.ContactsViewEntry.TABLE_NAME),
 		CONTACT(DatabaseContracts.ContactsViewEntry.TABLE_NAME + "/#"),
-		
+
 		CONVERSATION_WINDOWS(ConversationWindowEntry.URI_PATH_INFO),
 		CONVERSATION_WINDOW(ConversationWindowEntry.URI_PATH_INFO_ID),
-		
+
 		WINDOW_PARTICIPANTS(WindowParticipantEntry.URI_PATH_INFO),
 		WINDOW_PARTICIPANT(WindowParticipantEntry.URI_PATH_INFO_ID),
 
@@ -65,10 +97,10 @@ public class OPContentProvider extends ContentProvider {
 		HISTORY_GROUP(""),
 		USERS(UserEntry.TABLE_NAME),
 		USER(UserEntry.TABLE_NAME + "/#"),
-		
+
 		IDENTITY_CONTACTS(IdentityContactEntry.TABLE_NAME),
 		IDENTITY_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
-		
+
 		ROLODEX_CONTACTS(ContactEntry.TABLE_NAME),
 		ROLODEX_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
 
@@ -112,7 +144,6 @@ public class OPContentProvider extends ContentProvider {
 		String table = uri.getLastPathSegment();
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		int result = db.delete(table, selection, selectionArgs);
-		Log.d("test", "update uri for messages " + uri + " result " + result);
 		return result;
 	}
 
@@ -125,7 +156,6 @@ public class OPContentProvider extends ContentProvider {
 	@Override
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int result = super.bulkInsert(uri, values);
-		Log.d("test", "bulkinsert " + uri + " values" + values.length + " result " + result);
 		// test();
 		return result;
 	}
@@ -166,14 +196,12 @@ public class OPContentProvider extends ContentProvider {
 	private Uri insertWindow(Uri uri, ContentValues values) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		long rowId = db.insert(DatabaseContracts.ConversationWindowEntry.TABLE_NAME, null, values);
-		Log.d("test", "insert result " + rowId + " for uri " + uri);
 		return uri;
 	}
 
 	private Uri insertMessage(Uri uri, ContentValues values) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		long result = db.insert(DatabaseContracts.MessageEntry.TABLE_NAME, null, values);
-		Log.d("test", "result " + result + " inserting uri " + uri);
 		getContext().getContentResolver().notifyChange(ContentUris.withAppendedId(uri, result), null);
 		notifyChatGroupChange();
 		return uri;
@@ -206,6 +234,7 @@ public class OPContentProvider extends ContentProvider {
 				null, // uses the default SQLite cursor
 				OPDatabaseHelper.DATABASE_VERSION);
 		initMatcher();
+		instance = this;
 		return true;
 	}
 
@@ -264,7 +293,6 @@ public class OPContentProvider extends ContentProvider {
 					null, // don't filter by row groups
 					sortOrder // The sort order
 					);
-			Log.d("test", "query uri " + uri + " result " + cursor.getCount());
 			cursor.setNotificationUri(getContext().getContentResolver(), uri);
 			return cursor;
 		} else {
@@ -331,7 +359,6 @@ public class OPContentProvider extends ContentProvider {
 			String table = uri.getLastPathSegment();
 			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 			result = db.update(table, values, selection, selectionArgs);
-			Log.d("test", "update uri for messages " + uri + " result " + result);
 		}
 		return result;
 	}
@@ -454,5 +481,26 @@ public class OPContentProvider extends ContentProvider {
 
 	void notifyChatGroupChange() {
 		getContext().getContentResolver().notifyChange(getContentUri(WindowViewEntry.URI_PATH_INFO), null);
+	}
+
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		super.shutdown();
+		instance.mOpenHelper.close();
+
+	}
+
+	public static void clear() {
+		instance.shutdown();
+		instance.getContext().deleteDatabase(OPDatabaseHelper.DATABASE_NAME);
+	}
+
+	/**
+	 * @return
+	 */
+	public static OPContentProvider getInstance() {
+		// TODO Auto-generated method stub
+		return instance;
 	}
 }

@@ -1,3 +1,32 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.javaapi;
 
 import com.openpeer.sdk.datastore.DatabaseContracts.IdentityContactEntry;
@@ -19,6 +48,18 @@ public class OPIdentityContact extends OPRolodexContact {
 	private Time mLastUpdated;
 	private Time mExpires;
 
+	/**
+	 * @ExcludeFromJavadoc
+	 * @param mStableID
+	 * @param peerFileString
+	 * @param mIdentityProofBundleEl
+	 * @param mPriority
+	 * @param mWeight
+	 * @param lastUpdateTime
+	 * @param expireTime
+	 * @param id
+	 * @return
+	 */
 	public OPIdentityContact setIdentityParams(String mStableID,
 			String peerFileString, String mIdentityProofBundleEl,
 			int mPriority, int mWeight, long lastUpdateTime, long expireTime,
@@ -112,9 +153,8 @@ public class OPIdentityContact extends OPRolodexContact {
 	}
 
 	/**
-	 * A local ID used to identity a user, it's simply the "_ID" field in
-	 * database. A user is deemed the same if any of the follow meet: -- peerURI
-	 * -- stableID -- identityURI( TO BE DETERMINED)
+	 * A local ID used to identity a user, it's simply the "_ID" field in database. A user is deemed the same if any of the follow meet: --
+	 * peerURI -- stableID -- identityURI( TO BE DETERMINED)
 	 * 
 	 * @return
 	 */
@@ -127,6 +167,12 @@ public class OPIdentityContact extends OPRolodexContact {
 		this.userId = userId;
 	}
 
+	/**
+	 * Do not use this function if you wish to create your own datastore. This function is bound to the default implementation.
+	 * 
+	 * @param cursor
+	 * @return
+	 */
 	public static OPIdentityContact fromCursor(Cursor cursor) {
 		OPIdentityContact contact = new OPIdentityContact(OPRolodexContact.contactFromCursor(cursor));
 		return contact

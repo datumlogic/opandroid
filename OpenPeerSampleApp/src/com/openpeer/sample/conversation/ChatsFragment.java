@@ -1,3 +1,32 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sample.conversation;
 
 import java.util.ArrayList;
@@ -18,13 +47,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.openpeer.delegates.CallbackHandler;
-import com.openpeer.javaapi.ContactStates;
-import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPConversationThreadDelegate;
-import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.datastore.OPContentProvider;
@@ -37,7 +59,6 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	private List<OPSession> mSessions;
 	private ListView mMessagesList;
 
-	private ConversationThreadDelegate mConvThreadDelegate;
 
 	public static ChatsFragment newInstance() {
 		ChatsFragment fragment = new ChatsFragment();
@@ -78,8 +99,7 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		CallbackHandler.getInstance().unregisterConversationThreadDelegate(
-				mConvThreadDelegate);
+
 	}
 
 	View setupView(View view) {
@@ -129,76 +149,6 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 			// TODO Auto-generated method stub
 			return new ChatInfoItemView(arg2.getContext());
 		}
-	}
-
-	class ConversationThreadDelegate extends OPConversationThreadDelegate {
-
-		@Override
-		public void onConversationThreadNew(
-				OPConversationThread conversationThread) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onConversationThreadContactsChanged(
-				OPConversationThread conversationThread) {
-			Log.d("ChatFragment", "onConversationThreadContactsChanged"
-					+ conversationThread);
-		}
-
-		@Override
-		public void onConversationThreadContactStateChanged(
-				OPConversationThread conversationThread, OPContact contact,
-				ContactStates state) {
-			Log.d("ChatFragment", "onConversationThreadContactStateChanged = "
-					+ contact + " state " + state);
-		}
-
-		@Override
-		public void onConversationThreadMessage(
-				OPConversationThread conversationThread, String messageID) {
-			final OPMessage message = conversationThread.getMessage(messageID);
-			Log.d("ChatFragment", "onConversationThreadMessage = " + messageID
-					+ " full message " + message);
-			Log.d("ChatFragment", "onConversationThreadPushMessage = "
-					+ messageID + " thread " + conversationThread);
-			getActivity().runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-
-				}
-
-			});
-		}
-
-		@Override
-		public void onConversationThreadMessageDeliveryStateChanged(
-				OPConversationThread conversationThread, String messageID,
-				MessageDeliveryStates state) {
-			Log.d("ChatFragment",
-					"onConversationThreadMessageDeliveryStateChanged = "
-							+ messageID + " state " + state + " thread "
-							+ conversationThread);
-		}
-
-		@Override
-		public void onConversationThreadPushMessage(
-				OPConversationThread conversationThread, String messageID,
-				OPContact contact) {
-			Log.d("ChatFragment", "onConversationThreadPushMessage = "
-					+ messageID + " thread " + conversationThread);
-			// getActivity().runOnUiThread(new Runnable() {
-			//
-			// @Override
-			// public void run() {
-			// // TODO Auto-generated method stub
-			// mAdapter.notifyDataSetChanged();
-			// }
-			// });
-		}
-
 	}
 
 	@Override

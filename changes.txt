@@ -1,0 +1,8 @@
+opandroid SDK v0.5.2 changes
+- Video and Audio call support
+- Chat and chat history
+- Added data store 
+- Added login helper functions and default Account and identity delegates
+- Added default cache and settings delegate
+- javadoc added to sdk
+
