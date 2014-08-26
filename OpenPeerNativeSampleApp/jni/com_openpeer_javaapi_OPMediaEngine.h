@@ -82,6 +82,22 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderV
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    setCaptureCapability
+ * Signature: (Lcom/openpeer/javaapi/OPCaptureCapability;Lcom/openpeer/javaapi/CameraTypes;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureCapability
+  (JNIEnv *, jobject, jobject, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    getCaptureCapabilities
+ * Signature: (Lcom/openpeer/javaapi/CameraTypes;)Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCaptureCapabilities
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setEcEnabled
  * Signature: (Z)V
  */

@@ -2,6 +2,7 @@
 #include "OpenPeerCoreManager.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
+//#include "openpeer/core/IMediaEngine.h"
 #include "openpeer/core/internal/core_MediaEngine.h"
 #include "openpeer/core/test/TestMediaEngine.h"
 #include <android/log.h>
@@ -261,6 +262,114 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderV
 	}
 
 }
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    setCaptureCapability
+ * Signature: (Lcom/openpeer/javaapi/OPCaptureCapability;Lcom/openpeer/javaapi/CameraTypes;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureCapability
+(JNIEnv *, jobject owner, jobject capability, jobject cameraType)
+{
+	JNIEnv *jni_env = 0;
+	IMediaEngine::CaptureCapability coreCapability;
+
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+	if (coreMediaEnginePtr)
+	{
+
+		//Fetch OPCaptureCapability class
+		jclass capabilityClass = findClass("com/openpeer/javaapi/OPCaptureCapability");
+		//Fetch getter methods from OPCaptureCapability class
+		jmethodID getWidthID = jni_env->GetMethodID( capabilityClass, "getWidth", "()I" );
+		jmethodID getHeightID = jni_env->GetMethodID( capabilityClass, "getHeight", "()I" );
+		jmethodID getMaxFPSID = jni_env->GetMethodID( capabilityClass, "getMaxFPS", "()I" );
+
+		coreCapability.width = (int)jni_env->CallIntMethod(capability, getWidthID);
+		coreCapability.height = (int)jni_env->CallIntMethod(capability, getHeightID);
+		coreCapability.maxFPS = (int)jni_env->CallIntMethod(capability, getMaxFPSID);
+
+		coreMediaEnginePtr->get()->setCaptureCapability(coreCapability,
+				(IMediaEngine::CameraTypes)OpenPeerCoreManager::getIntValueFromEnumObject(cameraType, "com/openpeer/javaapi/OPCameraTypes"));
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    getCaptureCapabilities
+ * Signature: (Lcom/openpeer/javaapi/CameraTypes;)Ljava/util/List;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCaptureCapabilities
+(JNIEnv *, jobject owner, jobject cameraType)
+{
+	jclass cls;
+	jmethodID method;
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPMediaEngine native getCaptureCapabilities called");
+
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	//core capabilities
+	IMediaEngine::CaptureCapabilityList coreCapabilities;
+	if (coreMediaEnginePtr)
+	{
+		coreCapabilities = coreMediaEnginePtr->get()->getCaptureCapabilities((IMediaEngine::CameraTypes)OpenPeerCoreManager::getIntValueFromEnumObject(cameraType, "com/openpeer/javaapi/OPCameraTypes"));
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPMediaEngine native getCaptureCapabilities core pointer is NULL !!!");
+	}
+
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//Fetch OPCaptureCapability class
+		jclass capabilityClass = findClass("com/openpeer/javaapi/OPCaptureCapability");
+		jmethodID capabilityConstructorMethodID = jni_env->GetMethodID(capabilityClass, "<init>", "()V");
+		//Fetch getter methods from OPCaptureCapability class
+		jmethodID setWidthID = jni_env->GetMethodID( capabilityClass, "setWidth", "(I)V" );
+		jmethodID setHeightID = jni_env->GetMethodID( capabilityClass, "setHeight", "(I)V" );
+		jmethodID setMaxFPSID = jni_env->GetMethodID( capabilityClass, "setMaxFPS", "(I)V" );
+
+		//fill/update map
+		for(IMediaEngine::CaptureCapabilityList::iterator coreListIter = coreCapabilities.begin();
+				coreListIter != coreCapabilities.end(); coreListIter++)
+		{
+			jobject capabilityObject = jni_env->NewObject(capabilityClass, capabilityConstructorMethodID);
+
+			jni_env->CallVoidMethod(capabilityObject, setWidthID, (jint)coreListIter->width);
+			jni_env->CallVoidMethod(capabilityObject, setHeightID, (jint)coreListIter->height);
+			jni_env->CallVoidMethod(capabilityObject, setMaxFPSID, (jint)coreListIter->maxFPS);
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , capabilityObject);
+
+			jni_env->DeleteLocalRef(capabilityObject);
+		}
+
+	}
+	return returnListObject;
+}
+
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
