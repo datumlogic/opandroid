@@ -33,13 +33,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
-import com.openpeer.javaapi.ContactStates;
+import com.openpeer.javaapi.ContactConnectionStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
@@ -58,10 +60,6 @@ import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class OPSessionManager {
     static final String TAG = OPSessionManager.class.getSimpleName();
@@ -166,10 +164,8 @@ public class OPSessionManager {
             }
 
             @Override
-            public void onConversationThreadContactStateChanged(OPConversationThread conversationThread, OPContact contact,
-                    ContactStates state) {
-                OPLogger.debug(OPLogLevel.LogLevel_Trace, "onConversationThreadContactStateChanged  " + contact.getPeerURI() + " state "
-                        + state);
+            public void onConversationThreadContactStateChanged(OPConversationThread conversationThread, OPContact contact) {
+                OPLogger.debug(OPLogLevel.LogLevel_Trace, "onConversationThreadContactStateChanged  " + contact.getPeerURI() + " state ");
             }
 
             @Override
@@ -179,7 +175,8 @@ public class OPSessionManager {
                 if (message.getFrom().isSelf()) {
                     // Log.e("test", "Weird! received message from myself!" + message.getMessageId() + " messageId " + messageID + " type "
                     // + message.getMessageType());
-                    OPLogger.debug(OPLogLevel.LogLevel_Basic, "Weird! received message from myself!" + message.getMessageId() + " messageId "
+                    OPLogger.debug(OPLogLevel.LogLevel_Basic, "Weird! received message from myself!" + message.getMessageId()
+                            + " messageId "
                             + messageID + " type "
                             + message.getMessageType());
 
@@ -233,6 +230,12 @@ public class OPSessionManager {
                         }
                     }
                 });
+            }
+
+            @Override
+            public void onConversationThreadContactConnectionStateChanged(OPConversationThread conversationThread, OPContact contact,
+                    ContactConnectionStates state) {
+                Log.d(TAG, "onConversationThreadContactConnectionStateChanged " + state);
             }
         };
         mCallDelegate = new OPCallDelegate() {
