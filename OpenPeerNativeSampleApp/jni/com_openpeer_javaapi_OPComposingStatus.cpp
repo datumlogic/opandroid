@@ -2,6 +2,7 @@
 #include "openpeer/core/ComposingStatus.h"
 #include "openpeer/core/IHelper.h"
 #include <android/log.h>
+#include "OpenPeerCoreManager.h"
 
 #include "globals.h"
 
@@ -35,11 +36,56 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toComposin
 
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
+ * Method:    create
+ * Signature: (Lcom/openpeer/javaapi/ComposingStates;)Lcom/openpeer/javaapi/OPComposingStatus;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_create
+  (JNIEnv *, jclass, jobject state)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	ComposingStatusPtr composingStatusPtr;
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPComposingStatus native create called");
+
+	if (state == NULL)
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPComposingStatus native create - invalid parameters");
+		return object;
+	}
+
+	jni_env = getEnv();
+
+	composingStatusPtr = ComposingStatusPtr(
+					new ComposingStatus(
+							(ComposingStatus::ComposingStates)OpenPeerCoreManager::getIntValueFromEnumObject(state, "com/openpeer/javaapi/ComposingStates")));
+
+	if(composingStatusPtr)
+	{
+		ComposingStatusPtr* ptrToComposingStatus = new boost::shared_ptr<ComposingStatus>(composingStatusPtr);
+		cls = findClass("com/openpeer/javaapi/OPComposingStatus");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong composingStatus = (jlong) ptrToComposingStatus;
+		jni_env->SetLongField(object, fid, composingStatus);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPComposingStatus native create core pointer is NULL!!! ");
+	}
+	return object;
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    extract
- * Signature: (Ljava/lang/String;)Lcom/openpeer/javaapi/OPComposingStatus;
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)Lcom/openpeer/javaapi/OPComposingStatus;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_extract
-(JNIEnv *, jclass, jstring dataEl)
+(JNIEnv *, jclass, jobject dataEl)
 {
 	jclass cls;
 	jmethodID method;
@@ -49,14 +95,13 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_extract
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPComposingStatus native extract called");
 
 	jni_env = getEnv();
+	cls = findClass("com/openpeer/javaapi/OPElement");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(dataEl, fid);
 
-	const char *dataElStr;
-	dataElStr = jni_env->GetStringUTFChars(dataEl, NULL);
-	if (dataElStr == NULL) {
-		return object;
-	}
+	ElementPtr* coreElementPtr = (ElementPtr*)pointerValue;
 
-	ComposingStatusPtr statusPtr = ComposingStatus::extract(IHelper::createElement(dataElStr));
+	ComposingStatusPtr statusPtr = ComposingStatus::extract(*coreElementPtr);
 
 	if (statusPtr)
 	{
@@ -80,10 +125,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_extract
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    insert
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPComposingStatus_insert
-(JNIEnv *, jobject owner, jstring dataEl)
+(JNIEnv *, jobject owner, jobject dataEl)
 {
 	jclass cls;
 	jmethodID method;
@@ -94,11 +139,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPComposingStatus_insert
 
 	jni_env = getEnv();
 
-	const char *dataElStr;
-	dataElStr = jni_env->GetStringUTFChars(dataEl, NULL);
-	if (dataElStr == NULL) {
-		return;
-	}
+	jclass elementClass = findClass("com/openpeer/javaapi/OPElement");
+	jfieldID elementFID = jni_env->GetFieldID(elementClass, "nativeClassPointer", "J");
+	jlong elementPointerValue = jni_env->GetLongField(dataEl, elementFID);
+
+	ElementPtr* coreElementPtr = (ElementPtr*)elementPointerValue;
 
 	cls = findClass("com/openpeer/javaapi/OPComposingStatus");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -107,7 +152,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPComposingStatus_insert
 	ComposingStatusPtr* coreComposingStatusPtr = (ComposingStatusPtr*)pointerValue;
 	if (coreComposingStatusPtr)
 	{
-		coreComposingStatusPtr->get()->insert(IHelper::createElement(dataElStr));
+		coreComposingStatusPtr->get()->insert(*coreElementPtr);
 	}
 	else
 	{
@@ -153,17 +198,15 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPComposingStatus_hasData
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    toDebug
- * Signature: ()Ljava/lang/String;
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toDebug
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toDebug
 (JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	jstring ret;
-	String coreRetStr;
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPComposingStatus native toDebug called");
 
@@ -176,15 +219,22 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toDebug
 	ComposingStatusPtr* coreComposingStatusPtr = (ComposingStatusPtr*)pointerValue;
 	if (coreComposingStatusPtr)
 	{
-		coreRetStr = String(IHelper::convertToString(coreComposingStatusPtr->get()->toDebug()));
-		ret = jni_env->NewStringUTF(coreRetStr.c_str());
+		ElementPtr coreEl = coreComposingStatusPtr->get()->toDebug();
+		ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
+		cls = findClass("com/openpeer/javaapi/OPElement");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong element = (jlong) ptrToElement;
+		jni_env->SetLongField(object, fid, element);
 	}
 	else
 	{
 		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPComposingStatus native toDebug core pointer is NULL");
 	}
 
-	return ret;
+	return object;
 }
 
 /*

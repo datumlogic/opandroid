@@ -1002,17 +1002,44 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getContactStatus
- * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/lang/String;
+ * Method:    createEmptyStatus
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactStatus
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_createEmptyStatus
+  (JNIEnv *, jclass)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+
+	ElementPtr coreEl = IConversationThread::createEmptyStatus();
+	ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
+	cls = findClass("com/openpeer/javaapi/OPElement");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong element = (jlong) ptrToElement;
+	jni_env->SetLongField(object, fid, element);
+
+	return object;
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    getContactStatus
+ * Signature: (Lcom/openpeer/javaapi/OPContact;)Lcom/openpeer/javaapi/OPElement;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactStatus
 (JNIEnv *, jobject owner, jobject contact)
 {
 	jclass cls;
 	jmethodID method;
-	jstring status;
+	jobject object;
 	JNIEnv *jni_env = 0;
-	jint state = 0;
 
 	jni_env = getEnv();
 	cls = findClass("com/openpeer/javaapi/OPConversationThread");
@@ -1029,19 +1056,26 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 
 	if (coreConversationThreadPtr &&coreContactPtr)
 	{
-		ElementPtr statusElement = coreConversationThreadPtr->get()->getContactStatus(*coreContactPtr);
-		status =  jni_env->NewStringUTF(IHelper::convertToString(statusElement).c_str());
+		ElementPtr coreEl = coreConversationThreadPtr->get()->getContactStatus(*coreContactPtr);
+		ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
+		cls = findClass("com/openpeer/javaapi/OPElement");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong element = (jlong) ptrToElement;
+		jni_env->SetLongField(object, fid, element);
 	}
-	return status;
+	return object;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    setStatusInThread
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setStatusInThread
-(JNIEnv *, jobject owner, jstring status)
+(JNIEnv *, jobject owner, jobject status)
 {
 	jclass cls;
 	jmethodID method;
@@ -1049,25 +1083,22 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setStatusI
 
 	jni_env = getEnv();
 
-	const char *statusStr;
-	statusStr = jni_env->GetStringUTFChars(status, NULL);
-	if (statusStr == NULL) {
-		return;
-	}
+	jclass elementClass = findClass("com/openpeer/javaapi/OPElement");
+	jfieldID elementFID = jni_env->GetFieldID(elementClass, "nativeClassPointer", "J");
+	jlong elementPointerValue = jni_env->GetLongField(status, elementFID);
+
+	ElementPtr* coreElementPtr = (ElementPtr*)elementPointerValue;
 
 	cls = findClass("com/openpeer/javaapi/OPConversationThread");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
 	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
-	ElementPtr statusElement = IHelper::createElement(statusStr);
 
 	if (coreConversationThreadPtr) {
-		coreConversationThreadPtr->get()->setStatusInThread(statusElement);
+		coreConversationThreadPtr->get()->setStatusInThread(*coreElementPtr);
 	}
 }
-
-
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
