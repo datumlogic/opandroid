@@ -6,14 +6,16 @@ public class OPComposingStatus {
 	
 	private long nativeClassPointer; 
 
+	public static native OPComposingStatus create(ComposingStates state);
+	
     public static native String toString(ComposingStates state);
     public static native ComposingStates toComposingState(String state);
 
-    public static native  OPComposingStatus extract(String dataEl);
-    public native void insert(String dataEl);
+    public static native  OPComposingStatus extract(OPElement dataEl);
+    public native void insert(OPElement dataEl);
 
     public native boolean hasData();
-    public native String toDebug();
+    public native OPElement toDebug();
     
     private native void releaseCoreObjects(); 
     

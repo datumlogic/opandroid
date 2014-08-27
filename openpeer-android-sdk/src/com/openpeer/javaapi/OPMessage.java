@@ -73,7 +73,7 @@ public class OPMessage {
     private String mMessageId;
     private boolean mRead;// read time in millis
     private int mDeliveryStatus;
-    private String mReplacesMessageId;
+    private String mReplacesMessageId = "";
     private boolean mValidated;
 
     public String getReplacesMessageId() {

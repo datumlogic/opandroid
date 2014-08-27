@@ -1,32 +1,3 @@
-/*******************************************************************************
- *
- *  Copyright (c) 2014 , Hookflash Inc.
- *  All rights reserved.
- *  
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are met:
- *  
- *  1. Redistributions of source code must retain the above copyright notice, this
- *  list of conditions and the following disclaimer.
- *  2. Redistributions in binary form must reproduce the above copyright notice,
- *  this list of conditions and the following disclaimer in the documentation
- *  and/or other materials provided with the distribution.
- *  
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
- *  The views and conclusions contained in the software and documentation are those
- *  of the authors and should not be interpreted as representing official policies,
- *  either expressed or implied, of the FreeBSD Project.
- *******************************************************************************/
 #include "openpeer/core/IConversationThread.h"
 #include "openpeer/core/IContact.h"
 #include "openpeer/core/IHelper.h"
@@ -1031,17 +1002,44 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getContactStatus
- * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/lang/String;
+ * Method:    createEmptyStatus
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactStatus
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_createEmptyStatus
+  (JNIEnv *, jclass)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+
+	ElementPtr coreEl = IConversationThread::createEmptyStatus();
+	ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
+	cls = findClass("com/openpeer/javaapi/OPElement");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong element = (jlong) ptrToElement;
+	jni_env->SetLongField(object, fid, element);
+
+	return object;
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    getContactStatus
+ * Signature: (Lcom/openpeer/javaapi/OPContact;)Lcom/openpeer/javaapi/OPElement;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactStatus
 (JNIEnv *, jobject owner, jobject contact)
 {
 	jclass cls;
 	jmethodID method;
-	jstring status;
+	jobject object;
 	JNIEnv *jni_env = 0;
-	jint state = 0;
 
 	jni_env = getEnv();
 	cls = findClass("com/openpeer/javaapi/OPConversationThread");
@@ -1058,19 +1056,26 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 
 	if (coreConversationThreadPtr &&coreContactPtr)
 	{
-		ElementPtr statusElement = coreConversationThreadPtr->get()->getContactStatus(*coreContactPtr);
-		status =  jni_env->NewStringUTF(IHelper::convertToString(statusElement).c_str());
+		ElementPtr coreEl = coreConversationThreadPtr->get()->getContactStatus(*coreContactPtr);
+		ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
+		cls = findClass("com/openpeer/javaapi/OPElement");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong element = (jlong) ptrToElement;
+		jni_env->SetLongField(object, fid, element);
 	}
-	return status;
+	return object;
 }
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    setStatusInThread
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setStatusInThread
-(JNIEnv *, jobject owner, jstring status)
+(JNIEnv *, jobject owner, jobject status)
 {
 	jclass cls;
 	jmethodID method;
@@ -1078,25 +1083,22 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setStatusI
 
 	jni_env = getEnv();
 
-	const char *statusStr;
-	statusStr = jni_env->GetStringUTFChars(status, NULL);
-	if (statusStr == NULL) {
-		return;
-	}
+	jclass elementClass = findClass("com/openpeer/javaapi/OPElement");
+	jfieldID elementFID = jni_env->GetFieldID(elementClass, "nativeClassPointer", "J");
+	jlong elementPointerValue = jni_env->GetLongField(status, elementFID);
+
+	ElementPtr* coreElementPtr = (ElementPtr*)elementPointerValue;
 
 	cls = findClass("com/openpeer/javaapi/OPConversationThread");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 	jlong pointerValue = jni_env->GetLongField(owner, fid);
 
 	IConversationThreadPtr* coreConversationThreadPtr = (IConversationThreadPtr*)pointerValue;
-	ElementPtr statusElement = IHelper::createElement(statusStr);
 
 	if (coreConversationThreadPtr) {
-		coreConversationThreadPtr->get()->setStatusInThread(statusElement);
+		coreConversationThreadPtr->get()->setStatusInThread(*coreElementPtr);
 	}
 }
-
-
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread

@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
+ * Method:    create
+ * Signature: (Lcom/openpeer/javaapi/ComposingStates;)Lcom/openpeer/javaapi/OPComposingStatus;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_create
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    toString
  * Signature: (Lcom/openpeer/javaapi/ComposingStates;)Ljava/lang/String;
  */
@@ -26,18 +34,18 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toComposin
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    extract
- * Signature: (Ljava/lang/String;)Lcom/openpeer/javaapi/OPComposingStatus;
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)Lcom/openpeer/javaapi/OPComposingStatus;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_extract
-  (JNIEnv *, jclass, jstring);
+  (JNIEnv *, jclass, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    insert
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPComposingStatus_insert
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
@@ -50,9 +58,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPComposingStatus_hasData
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    toDebug
- * Signature: ()Ljava/lang/String;
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toDebug
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toDebug
   (JNIEnv *, jobject);
 
 /*

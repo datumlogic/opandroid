@@ -2,6 +2,7 @@
 #include "openpeer/core/ISystemMessage.h"
 #include "openpeer/core/IHelper.h"
 #include <android/log.h>
+#include "OpenPeerCoreManager.h"
 
 #include "globals.h"
 
@@ -35,11 +36,77 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_toCallSy
 
 /*
  * Class:     com_openpeer_javaapi_OPCallSystemMessage
+ * Method:    create
+ * Signature: (Lcom/openpeer/javaapi/CallSystemMessageTypes;Lcom/openpeer/javaapi/OPContact;I)Lcom/openpeer/javaapi/OPCallSystemMessage;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_create
+  (JNIEnv *, jclass, jobject type, jobject callee, jint errorCode)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+	CallSystemMessagePtr systemMessagePtr;
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCallSystemMessage native create called");
+
+	if (type == NULL || callee == NULL)
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCallSystemMessage native create - invalid parameters");
+		return object;
+	}
+
+	jni_env = getEnv();
+
+	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+	jlong contactPointerValue = jni_env->GetLongField(callee, contactfid);
+
+	IContactPtr* contactPtr = (IContactPtr*)contactPointerValue;
+
+	if(contactPtr)
+	{
+		if(errorCode == 0)
+		{
+		systemMessagePtr = CallSystemMessagePtr(
+				new CallSystemMessage(
+						(CallSystemMessage::CallSystemMessageTypes)OpenPeerCoreManager::getIntValueFromEnumObject(type, "com/openpeer/javaapi/CallSystemMessageTypes"),
+						*contactPtr));
+		}
+		else
+		{
+			systemMessagePtr = CallSystemMessagePtr(
+							new CallSystemMessage(
+									(CallSystemMessage::CallSystemMessageTypes)OpenPeerCoreManager::getIntValueFromEnumObject(type, "com/openpeer/javaapi/CallSystemMessageTypes"),
+									*contactPtr,
+									(int) errorCode));
+		}
+	}
+
+	if (systemMessagePtr)
+	{
+		CallSystemMessagePtr* ptrToSystemMessage = new boost::shared_ptr<CallSystemMessage>(systemMessagePtr);
+		cls = findClass("com/openpeer/javaapi/OPCallSystemMessage");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong systemMessage = (jlong) ptrToSystemMessage;
+		jni_env->SetLongField(object, fid, systemMessage);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPCallSystemMessage native create core pointer is NULL!!! ");
+	}
+	return object;
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPCallSystemMessage
  * Method:    extract
- * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/OPAccount;)Lcom/openpeer/javaapi/OPCallSystemMessage;
+ * Signature: (Lcom/openpeer/javaapi/OPElement;Lcom/openpeer/javaapi/OPAccount;)Lcom/openpeer/javaapi/OPCallSystemMessage;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_extract
-(JNIEnv *, jclass, jstring dataEl, jobject javaAccount)
+(JNIEnv *, jclass, jobject dataEl, jobject javaAccount)
 {
 	jclass cls;
 	jmethodID method;
@@ -51,11 +118,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_extract
 
 	jni_env = getEnv();
 
-	const char *dataElStr;
-	dataElStr = jni_env->GetStringUTFChars(dataEl, NULL);
-	if (dataElStr == NULL) {
-		return object;
-	}
+	jclass elementClass = findClass("com/openpeer/javaapi/OPElement");
+	jfieldID elementFID = jni_env->GetFieldID(elementClass, "nativeClassPointer", "J");
+	jlong elementPointerValue = jni_env->GetLongField(dataEl, elementFID);
+
+	ElementPtr* coreElementPtr = (ElementPtr*)elementPointerValue;
+
 	if (javaAccount != NULL)
 	{
 		jclass accountClass = findClass("com/openpeer/javaapi/OPAccount");
@@ -66,7 +134,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_extract
 
 		if(coreAccountPtr)
 		{
-			systemMessagePtr = CallSystemMessage::extract(IHelper::createElement(dataElStr), *coreAccountPtr);
+			systemMessagePtr = CallSystemMessage::extract(*coreElementPtr, *coreAccountPtr);
 		}
 	}
 
@@ -94,10 +162,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_extract
 /*
  * Class:     com_openpeer_javaapi_OPCallSystemMessage
  * Method:    insert
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_insert
-(JNIEnv *, jobject owner, jstring dataEl)
+(JNIEnv *, jobject owner, jobject dataEl)
 {
 	jclass cls;
 	jmethodID method;
@@ -108,11 +176,11 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_insert
 
 	jni_env = getEnv();
 
-	const char *dataElStr;
-	dataElStr = jni_env->GetStringUTFChars(dataEl, NULL);
-	if (dataElStr == NULL) {
-		return;
-	}
+	jclass elementClass = findClass("com/openpeer/javaapi/OPElement");
+	jfieldID elementFID = jni_env->GetFieldID(elementClass, "nativeClassPointer", "J");
+	jlong elementPointerValue = jni_env->GetLongField(dataEl, elementFID);
+
+	ElementPtr* coreElementPtr = (ElementPtr*)elementPointerValue;
 
 	cls = findClass("com/openpeer/javaapi/OPCallSystemMessage");
 	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
@@ -121,7 +189,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_insert
 	CallSystemMessagePtr* coreCallSystemMessagePtr = (CallSystemMessagePtr*)pointerValue;
 	if (coreCallSystemMessagePtr)
 	{
-		coreCallSystemMessagePtr->get()->insert(IHelper::createElement(dataElStr));
+		coreCallSystemMessagePtr->get()->insert(*coreElementPtr);
 	}
 	else
 	{
@@ -167,17 +235,15 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_hasData
 /*
  * Class:     com_openpeer_javaapi_OPCallSystemMessage
  * Method:    toDebug
- * Signature: ()Ljava/lang/String;
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_toDebug
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_toDebug
 (JNIEnv *, jobject owner)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
-	jstring ret;
-	String coreRetStr;
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCallSystemMessage native toDebug called");
 
@@ -190,15 +256,22 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_toDebug
 	CallSystemMessagePtr* coreCallSystemMessagePtr = (CallSystemMessagePtr*)pointerValue;
 	if (coreCallSystemMessagePtr)
 	{
-		coreRetStr = String(IHelper::convertToString(coreCallSystemMessagePtr->get()->toDebug()));
-		ret = jni_env->NewStringUTF(coreRetStr.c_str());
+		ElementPtr coreEl = coreCallSystemMessagePtr->get()->toDebug();
+		ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
+		cls = findClass("com/openpeer/javaapi/OPElement");
+		method = jni_env->GetMethodID(cls, "<init>", "()V");
+		object = jni_env->NewObject(cls, method);
+
+		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+		jlong element = (jlong) ptrToElement;
+		jni_env->SetLongField(object, fid, element);
 	}
 	else
 	{
 		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPCallSystemMessage native toDebug core pointer is NULL");
 	}
 
-	return ret;
+	return object;
 }
 
 /*

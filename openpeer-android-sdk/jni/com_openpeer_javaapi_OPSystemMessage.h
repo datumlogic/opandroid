@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     com_openpeer_javaapi_OPSystemMessage
  * Method:    createEmptySystemMessage
- * Signature: ()Ljava/lang/String;
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPSystemMessage_createEmptySystemMessage
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPSystemMessage_createEmptySystemMessage
   (JNIEnv *, jclass);
 
 /*

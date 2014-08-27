@@ -62,13 +62,17 @@ public class OPConversationThread {
 
     public static native String toString(ContactConnectionStates state);
 
-    public static native String toDebugString(OPConversationThread thread, boolean includeCommaPrefix);
+    public static native String toDebugString(OPConversationThread thread,
+            boolean includeCommaPrefix);
 
-    public static native OPConversationThread create(OPAccount account, List<OPIdentityContact> identityContactsOfSelf);
+    public static native OPConversationThread create(OPAccount account,
+            List<OPIdentityContact> identityContactsOfSelf);
 
-    public static native List<OPConversationThread> getConversationThreads(OPAccount account);
+    public static native List<OPConversationThread> getConversationThreads(
+            OPAccount account);
 
-    public static native OPConversationThread getConversationThreadByID(OPAccount account, String threadID);
+    public static native OPConversationThread getConversationThreadByID(
+            OPAccount account, String threadID);
 
     public native long getID();
 
@@ -80,11 +84,14 @@ public class OPConversationThread {
 
     public native List<OPContact> getContacts();
 
-    public native List<OPIdentityContact> getIdentityContactList(OPContact contact);
+    public native List<OPIdentityContact> getIdentityContactList(
+            OPContact contact);
 
-    public native ContactConnectionStates getContactConnectionState(OPContact contact);
+    public native ContactConnectionStates getContactConnectionState(
+            OPContact contact);
 
-    public native void addContacts(List<OPContactProfileInfo> contactProfileInfos);
+    public native void addContacts(
+            List<OPContactProfileInfo> contactProfileInfos);
 
     public native void removeContacts(List<OPContact> contacts);
 
@@ -92,19 +99,25 @@ public class OPConversationThread {
      * sending a message will cause the message to be delivered to all the contacts currently in the conversation
      * 
      * @param messageID
-     * @param replacesMessageID The existing messageId to be replaced
+     * @param replacesMessageID
+     *            The existing messageId to be replaced
      * @param messageType
      * @param message
      * @param signMessage
      *            whether or not to sign the message
      */
-    public native void sendMessage(String messageID, String replacesMessageID, String messageType, String message, boolean signMessage);
+    public native void sendMessage(String messageID, String replacesMessageID,
+            String messageType, String message, boolean signMessage);
 
     private native OPMessage getMessage(String messageID);
 
     public native MessageDeliveryStates getMessageDeliveryState(String messageID);
 
-    public native void setStatusInThread(String contactStatusInThreadOfSelf);
+    public static native OPElement createEmptyStatus();
+
+    public native OPElement getContactStatus(OPContact contact);
+
+    public native void setStatusInThread(OPElement contactStatusInThreadOfSelf);
 
     public native void markAllMessagesRead();
 
@@ -124,7 +137,8 @@ public class OPConversationThread {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof OPConversationThread && this.getID() == ((OPConversationThread) o).getID();
+        return o instanceof OPConversationThread
+                && this.getID() == ((OPConversationThread) o).getID();
     }
 
 }

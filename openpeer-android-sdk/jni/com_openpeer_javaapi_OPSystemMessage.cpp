@@ -15,22 +15,31 @@ extern "C" {
 /*
  * Class:     com_openpeer_javaapi_OPSystemMessage
  * Method:    createEmptySystemMessage
- * Signature: ()Ljava/lang/String;
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPSystemMessage_createEmptySystemMessage
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPSystemMessage_createEmptySystemMessage
   (JNIEnv *, jclass)
 {
 	JNIEnv *jni_env = 0;
-	jstring ret;
+	jclass cls;
+	jmethodID method;
+	jobject object;
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPSystemMessage native createEmptySystemMessage called");
 
 	jni_env = getEnv();
 
-	String coreRetStr = String(IHelper::convertToString(ISystemMessage::createEmptySystemMessage()));
-	ret = jni_env->NewStringUTF(coreRetStr.c_str());
+	ElementPtr coreEl = ISystemMessage::createEmptySystemMessage();
+	ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
+	cls = findClass("com/openpeer/javaapi/OPElement");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
 
-	return ret;
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong element = (jlong) ptrToElement;
+	jni_env->SetLongField(object, fid, element);
+
+	return object;
 }
 
 /*

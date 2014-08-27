@@ -25,19 +25,27 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_toCallSy
 
 /*
  * Class:     com_openpeer_javaapi_OPCallSystemMessage
+ * Method:    create
+ * Signature: (Lcom/openpeer/javaapi/CallSystemMessageTypes;Lcom/openpeer/javaapi/OPContact;I)Lcom/openpeer/javaapi/OPCallSystemMessage;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_create
+  (JNIEnv *, jclass, jobject, jobject, jint);
+
+/*
+ * Class:     com_openpeer_javaapi_OPCallSystemMessage
  * Method:    extract
- * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/OPAccount;)Lcom/openpeer/javaapi/OPCallSystemMessage;
+ * Signature: (Lcom/openpeer/javaapi/OPElement;Lcom/openpeer/javaapi/OPAccount;)Lcom/openpeer/javaapi/OPCallSystemMessage;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_extract
-  (JNIEnv *, jclass, jstring, jobject);
+  (JNIEnv *, jclass, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPCallSystemMessage
  * Method:    insert
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_insert
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPCallSystemMessage
@@ -50,9 +58,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_hasData
 /*
  * Class:     com_openpeer_javaapi_OPCallSystemMessage
  * Method:    toDebug
- * Signature: ()Ljava/lang/String;
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_toDebug
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPCallSystemMessage_toDebug
   (JNIEnv *, jobject);
 
 /*

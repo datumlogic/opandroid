@@ -4,7 +4,7 @@ public class OPSystemMessage {
 
     //-----------------------------------------------------------------------
     // PURPOSE: creates an empty system message that can be filled with data
-    public static native String createEmptySystemMessage();
+    public static native OPElement createEmptySystemMessage();
 
     //-----------------------------------------------------------------------
     // PURPOSE: get the "messageType" to pass into
