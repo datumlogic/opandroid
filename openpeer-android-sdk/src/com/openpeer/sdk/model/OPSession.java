@@ -37,6 +37,7 @@ import java.util.Observable;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.openpeer.javaapi.ComposingStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
@@ -72,6 +73,20 @@ public class OPSession extends Observable {
     long mCurrentWindowId;
     private boolean mWindowAttached;
 
+    private List<SessionListener> listeners = new ArrayList<SessionListener>();
+
+    public void registerListener(SessionListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    public void unregisterListener(SessionListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
+    }
+
     public boolean isWindowAttached() {
         return mWindowAttached;
     }
@@ -98,36 +113,17 @@ public class OPSession extends Observable {
 
     public OPMessage sendMessage(OPMessage message, boolean signMessage) {
         Log.d("test", "sending messge " + message);
-        getThread().sendMessage(message.getMessageId(), null,
+        getThread().sendMessage(message.getMessageId(),
+                message.getReplacesMessageId(),
                 message.getMessageType(), message.getMessage(), signMessage);
-        OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, getThread().getThreadID());
+        OPDataManager.getDatastoreDelegate().saveMessage(message,
+                mCurrentWindowId, getThread().getThreadID());
         return message;
     }
 
     public OPMessage addMessage(OPMessage message) {
         mMessages.add(message);
         return message;
-    }
-
-    public List<OPMessage> getUnreadMessages() {
-        if (mMessages == null || mMessages.size() == 0) {
-            return null;
-        }
-        if (lastReadMessageId == null)
-            return mMessages;
-        int lastReadMessageIndex = -1;
-        for (int i = mMessages.size() - 1; i > 0; i--) {
-            OPMessage message = mMessages.get(i);
-            if (lastReadMessageId.equals(message.getMessageId())) {
-                lastReadMessageIndex = i;
-            }
-        }
-        if (lastReadMessageIndex > -1
-                && lastReadMessageIndex < mMessages.size() - 1) {
-            return mMessages.subList(lastReadMessageIndex, mMessages.size());
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -175,7 +171,8 @@ public class OPSession extends Observable {
 
     public OPConversationThread getThread() {
         if (mConvThread == null) {
-            mConvThread = OPConversationThread.create(OPDataManager.getInstance()
+            mConvThread = OPConversationThread.create(OPDataManager
+                    .getInstance()
                     .getSharedAccount(), OPDataManager.getInstance()
                     .getSelfContacts());
             addContactToThread(mParticipants);
@@ -191,13 +188,15 @@ public class OPSession extends Observable {
                 continue;
             }
             // new contact
-            OPUser user = new OPUser(contact, mConvThread.getIdentityContactList(contact));
+            OPUser user = new OPUser(contact,
+                    mConvThread.getIdentityContactList(contact));
             user = OPDataManager.getDatastoreDelegate().saveUser(user);
             // This function will also set the userId so don't worry
             mParticipants.add(user);
         }
         mCurrentWindowId = OPModelUtils.getWindowId(mParticipants);
-        OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
+        OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId,
+                mParticipants);
     }
 
     public void getSessionId() {
@@ -212,7 +211,8 @@ public class OPSession extends Observable {
         // we can always get them through account
         mParticipants = users;
         mCurrentWindowId = OPModelUtils.getWindowId(mParticipants);
-        OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
+        OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId,
+                mParticipants);
     }
 
     private void addContactToThread(List<OPUser> users) {
@@ -220,9 +220,11 @@ public class OPSession extends Observable {
             List<OPContactProfileInfo> contactProfiles = new ArrayList<OPContactProfileInfo>();
             OPContactProfileInfo info = new OPContactProfileInfo();
 
-            OPContact newContact = OPContact.createFromPeerFilePublic(OPDataManager
-                    .getInstance().getSharedAccount(), user.getPreferredContact().getPeerFilePublic()
-                    .getPeerFileString());
+            OPContact newContact = OPContact.createFromPeerFilePublic(
+                    OPDataManager
+                            .getInstance().getSharedAccount(), user
+                            .getPreferredContact().getPeerFilePublic()
+                            .getPeerFileString());
 
             info.setIdentityContacts(user.getIdentityContacts());
             info.setContact(newContact);
@@ -267,7 +269,8 @@ public class OPSession extends Observable {
 
     }
 
-    public void onMessageDeliveryStateChanged(String MessageId, OPContact contact) {
+    public void onMessageDeliveryStateChanged(String MessageId,
+            OPContact contact) {
 
     }
 
@@ -305,9 +308,11 @@ public class OPSession extends Observable {
             if (!hasOPContact(contact)) {
                 contactsChanged = true;
                 // new contact
-                OPUser user = new OPUser(contact, mConvThread.getIdentityContactList(contact));
+                OPUser user = new OPUser(contact,
+                        mConvThread.getIdentityContactList(contact));
                 // This function will also set the userId so don't worry
-                mParticipants.add(OPDataManager.getDatastoreDelegate().saveUser(user));
+                mParticipants.add(OPDataManager.getDatastoreDelegate()
+                        .saveUser(user));
             }
         }
         if (contactsChanged) {
@@ -357,7 +362,8 @@ public class OPSession extends Observable {
         mParticipants.addAll(users);
         addContactToThread(users);
         mCurrentWindowId = OPModelUtils.getWindowId(mParticipants);
-        OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId, mParticipants);
+        OPDataManager.getDatastoreDelegate().saveWindow(mCurrentWindowId,
+                mParticipants);
     }
 
     public void onMessageReceived(OPMessage message) {
@@ -367,9 +373,12 @@ public class OPSession extends Observable {
             if (isWindowAttached()) {
                 message.setRead(true);
             }
-            OPDataManager.getDatastoreDelegate().saveMessage(message, mCurrentWindowId, getThread().getThreadID());
+            OPDataManager.getDatastoreDelegate().saveMessage(message,
+                    mCurrentWindowId, getThread().getThreadID());
         } else {
-            Log.d("test", "SessionManager onMessageReceived " + message.getMessageType());
+            Log.d("test",
+                    "SessionManager onMessageReceived "
+                            + message.getMessageType());
         }
     }
 
@@ -406,5 +415,13 @@ public class OPSession extends Observable {
             return true;
         }
         return false;
+    }
+
+    public void onContactComposingStateChanged(ComposingStates state) {
+        synchronized (listeners) {
+            for (SessionListener listener : listeners) {
+                listener.onContactComposingStateChanged(state);
+            }
+        }
     }
 }

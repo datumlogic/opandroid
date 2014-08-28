@@ -2,16 +2,16 @@
  *
  *  Copyright (c) 2014 , Hookflash Inc.
  *  All rights reserved.
- *  
+ *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *  
+ *
  *  1. Redistributions of source code must retain the above copyright notice, this
  *  list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *  this list of conditions and the following disclaimer in the documentation
  *  and/or other materials provided with the distribution.
- *  
+ *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -22,7 +22,7 @@
  *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  The views and conclusions contained in the software and documentation are those
  *  of the authors and should not be interpreted as representing official policies,
  *  either expressed or implied, of the FreeBSD Project.
@@ -42,6 +42,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,7 +57,9 @@ import android.widget.TextView;
 
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.CallStates;
+import com.openpeer.javaapi.ComposingStates;
 import com.openpeer.javaapi.OPCall;
+import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseActivity;
@@ -73,11 +77,11 @@ import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.OPModelUtils;
 
-public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
-    private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
+public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, SessionListener {
+
     private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
     private static final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
     private static final String TAG = ChatFragment.class.getSimpleName();
@@ -85,10 +89,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
     private TextView mComposeBox;
     private View mSendButton;
     private MessagesAdaptor mAdapter;
-    private List<OPMessage> mMessages;
 
-//    private OPIdentityContact mSelfContact;
-//    private OPConversationThread mConvThread;
     private long mWindowId;
     private OPSession mSession;
     long[] mUserIDs;
@@ -162,6 +163,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
     public void onResume() {
         super.onResume();
         mSession.setWindowAttached(true);
+        mSession.registerListener(this);
         OPDataManager.getDatastoreDelegate().markMessagesRead(mWindowId);
 
         // TODO: proper look up
@@ -184,6 +186,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
     public void onPause() {
         super.onPause();
         mSession.setWindowAttached(false);
+        mSession.unregisterListener(this);
         if (mCallInfoView.isShown()) {
             mCallInfoView.unbind();
         }
@@ -218,7 +221,7 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
                     return;
                 }
 
-                String messageId = java.util.UUID.randomUUID().toString().replace("-","");
+                String messageId = java.util.UUID.randomUUID().toString().replace("-", "");
                 // we use 0 for home user
                 final OPMessage msg = new OPMessage(0, OPMessageType.TYPE_TEXT, mComposeBox.getText().toString(), System.currentTimeMillis(),
                         messageId);
@@ -230,58 +233,136 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
 
             }
         });
+
+        mComposeBox.addTextChangedListener(new TextWatcher() {
+            boolean mTyping;
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                if (mTyping) {
+                    mTyping = false;
+//                    mSession.getThread().setStatusInThread("");
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!mTyping) {
+                    mTyping = true;
+//                    mSession.getThread().setStatusInThread("");
+                }
+            }
+
+        });
         getLoaderManager().initLoader(URL_LOADER, null, this);
 
         return view;
     }
 
-    private List<OPMessage> getMessages() {
-        if (mMessages == null) {
-            mMessages = new ArrayList<OPMessage>();
-            // TODO: do some setup
-        }
-        return mMessages;
-    }
 
     class MessagesAdaptor extends CursorAdapter {
+        private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
+        private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
+        private final static int VIEWTYPE_STATUS_VIEW = 2;
+        ComposingStates composingState;
+
+        private boolean isPeerTyping() {
+            return composingState == ComposingStates.ComposingState_Composing;
+        }
 
         public MessagesAdaptor(Context context, Cursor c) {
             super(context, c);
             // TODO Auto-generated constructor stub
         }
 
+        public void notifyDataSetChanged(ComposingStates state) {
+            composingState = state;
+            super.notifyDataSetChanged();
+        }
+
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
-            return super.getItem(position);
+            if (isPeerTyping() && position == getCount() - 1) {
+                return null;
+            } else {
+                return super.getItem(position);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            if (isPeerTyping() && position == getCount() - 1) {
+                return -1;
+            } else {
+                return super.getItemId(position);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return super.getCount() + (isPeerTyping() ? 1 : 0);
         }
 
         @Override
         public int getItemViewType(int position) {
+            if (isPeerTyping() && position == getCount() - 1) {
+                return VIEWTYPE_STATUS_VIEW;
+            }
+
             Cursor cursor = (Cursor) getItem(position);
             return getItemViewType(cursor);
-
         }
 
         public int getItemViewType(Cursor cursor) {
             long sender_id = cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
             if (sender_id == 0) {
-                return 0;
+                return VIEWTYPE_SELF_MESSAGE_VIEW;
             }
-            return 1;
+            return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
 
         }
 
         @Override
         public int getViewTypeCount() {
-            // TODO Auto-generated method stub
-            return 2;
+            return 3;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (isPeerTyping() && position == getCount() - 1) {
+                if (convertView == null) {
+                    convertView = View.inflate(getActivity(), R.layout.item_peer_status, null);
+                }
+                return convertView;
+
+            } else {
+                return super.getView(position, convertView, parent);
+            }
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            if (isPeerTyping() && position == getCount() - 1) {
+                if (convertView == null) {
+                    convertView = View.inflate(getActivity(), R.layout.item_peer_status, null);
+                }
+                return convertView;
+
+            } else {
+                return super.getDropDownView(position, convertView, parent);
+            }
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            OPMessage message = OPMessage.fromCursor(cursor);
-            ((ViewHolder) view.getTag()).update(message);
+            if (cursor != null) {
+                OPMessage message = OPMessage.fromCursor(cursor);
+                ((ViewHolder) view.getTag()).update(message);
+            }
         }
 
         @Override
@@ -294,66 +375,71 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
                     break;
                 case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
                     view = View.inflate(getActivity(), R.layout.item_message_peer, null);
-
+                    break;
+                case VIEWTYPE_STATUS_VIEW:
+                    view = View.inflate(getActivity(), R.layout.item_peer_status, null);
                     break;
             }
             ViewHolder viewHolder = new ViewHolder(view, viewType);
             view.setTag(viewHolder);
             return view;
         }
-    }
 
-    class ViewHolder {
-        ImageView avatarView;
-        TextView title;
+        class ViewHolder {
+            ImageView avatarView;
+            TextView title;
 
-        TextView time;
-        TextView text;
-        int viewType;
+            TextView time;
+            TextView text;
+            int viewType;
 
-        public ViewHolder(View view, int viewType) {
-            title = (TextView) view.findViewById(R.id.user);
-            avatarView = (ImageView) view.findViewById(R.id.avatar);
-            text = (TextView) view.findViewById(R.id.message);
-            time = (TextView) view.findViewById(R.id.time);
+            public ViewHolder(View view, int viewType) {
+                title = (TextView) view.findViewById(R.id.user);
+                avatarView = (ImageView) view.findViewById(R.id.avatar);
+                text = (TextView) view.findViewById(R.id.message);
+                time = (TextView) view.findViewById(R.id.time);
 
-            this.viewType = viewType;
-        }
-
-        void update(OPMessage data) {
-            switch (viewType) {
-                case VIEWTYPE_SELF_MESSAGE_VIEW:
-                    // Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
-                    break;
-                case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-                    OPUser sender = mSession.getUserBySenderId(data.getSenderId());
-                    // Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
-
-                    break;
+                this.viewType = viewType;
             }
 
-            String avatar = null;
-            if (data.getSenderId() == 0) {
-                // self
-                // avatar =
-                // OPDataManager.getInstance().getSelfContacts().get(0).getDefaultAvatarUrl();
-            } else {
-                OPUser user = mSession.getUserBySenderId(data.getSenderId());
-                if (user != null) {
-                    avatar = user.getAvatarUri();
-                    if (user.getName() != null) {
-                        title.setText(user.getName());
+            void update(OPMessage data) {
+                switch (viewType) {
+                    case VIEWTYPE_SELF_MESSAGE_VIEW:
+                        // Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
+                        break;
+                    case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
+                        OPUser sender = mSession.getUserBySenderId(data.getSenderId());
+                        // Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
+                        break;
+                    case VIEWTYPE_STATUS_VIEW:
+                        return;
+                }
+
+                String avatar = null;
+                if (data.getSenderId() == 0) {
+                    // self
+                    // avatar =
+                    // OPDataManager.getInstance().getSelfContacts().get(0).getDefaultAvatarUrl();
+                } else {
+                    OPUser user = mSession.getUserBySenderId(data.getSenderId());
+                    if (user != null) {
+                        avatar = user.getAvatarUri();
+                        if (user.getName() != null) {
+                            title.setText(user.getName());
+                        }
                     }
                 }
-            }
-            // if (avatar != null) {
-            // Picasso.with(getActivity()).load(avatar).into(avatarView);
-            // }
+                // if (avatar != null) {
+                // Picasso.with(getActivity()).load(avatar).into(avatarView);
+                // }
 
-            time.setText(DateFormatUtils.getSameDayTime(data.getTime().toMillis(true)));
-            text.setText(data.getMessage());
+                time.setText(DateFormatUtils.getSameDayTime(data.getTime().toMillis(true)));
+                text.setText(data.getMessage());
+            }
         }
+
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -485,4 +571,33 @@ public class ChatFragment extends BaseFragment implements LoaderManager.LoaderCa
         mAdapter.changeCursor(null);
     }
 
+    //Beginning of SessionListener implementation
+
+    @Override
+    public void onContactComposingStateChanged(ComposingStates composingStates) {
+        mAdapter.notifyDataSetChanged(composingStates);
+    }
+
+    @Override
+    public boolean onNewMessage(OPMessage message) {
+        return false;
+    }
+
+    @Override
+    public boolean onPushMessage(OPMessage message) {
+        return false;
+    }
+
+    @Override
+    public boolean onNewContactJoined(OPContact opContact) {
+        return false;
+    }
+
+    @Override
+    public boolean onContactQuit(OPContact opContact) {
+        return false;
+    }
+
+
+    //End of SessionListener implementation
 }
