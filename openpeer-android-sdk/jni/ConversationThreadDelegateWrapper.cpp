@@ -233,11 +233,22 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactStatusChanged
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onConversationThreadContactStatusChanged called");
 
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
-	{
-		return;
-	}
+    bool attached = false;
+    switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
+    {
+    case JNI_OK:
+        break;
+    case JNI_EDETACHED:
+        if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+        {
+            throw std::runtime_error("Could not attach current thread");
+        }
+        attached = true;
+        break;
+    case JNI_EVERSION:
+        throw std::runtime_error("Invalid java version");
+    }
+
 	if (javaDelegate != NULL){
 		jclass conversationThreadClass = findClass("com/openpeer/javaapi/OPConversationThread");
 		jmethodID ctmethod = jni_env->GetMethodID(conversationThreadClass, "<init>", "()V");
@@ -274,8 +285,10 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactStatusChanged
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
-
+    if(attached)
+    {
+        android_jvm->DetachCurrentThread();
+    }
 }
 
 void ConversationThreadDelegateWrapper::onConversationThreadMessage(
