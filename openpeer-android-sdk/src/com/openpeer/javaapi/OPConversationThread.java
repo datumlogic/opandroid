@@ -29,15 +29,12 @@
  *******************************************************************************/
 package com.openpeer.javaapi;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import android.util.Log;
 
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
-
-import android.text.format.Time;
-import android.util.Log;
 
 public class OPConversationThread {
 
@@ -55,9 +52,39 @@ public class OPConversationThread {
         return message;
     }
 
-    private long nativeClassPointer;
+    /**
+     * Call this method in {@link com.openpeer.jni.OPConversationThreadDelegate#onConversationThreadContactStateChanged} to retrieve the
+     * current user composing states
+     * 
+     * @param contact
+     * @return
+     */
+    public ComposingStates getContactComposingStatus(OPContact contact) {
+        OPElement element = getContactStatus(contact);
+        OPComposingStatus composingStatus = OPComposingStatus.extract(element);
+        ComposingStates state = composingStatus.getComposingState();
+        // TODO: remove debugging hard coded value
+//        if (state == null)
+            state = ComposingStates.ComposingState_Composing;
+        return state;
+    }
+
+    /**
+     * Call this function when user starts typing and stop typing, or any other user status of interest
+     * 
+     * @param composingState
+     */
+    public void setStatusInThread(ComposingStates composingState) {
+        OPElement element = createEmptyStatus();
+        OPComposingStatus status = OPComposingStatus.create(composingState);
+        status.insert(element);
+        setStatusInThread(element);
+
+    }
 
     // START OF JNI -- DON'T TOUCH THE SIGNATURES!!!
+    private long nativeClassPointer;
+
     public static native String toString(MessageDeliveryStates state);
 
     public static native String toString(ContactConnectionStates state);
@@ -113,11 +140,11 @@ public class OPConversationThread {
 
     public native MessageDeliveryStates getMessageDeliveryState(String messageID);
 
-    public static native OPElement createEmptyStatus();
+    private static native OPElement createEmptyStatus();
 
-    public native OPElement getContactStatus(OPContact contact);
+    private native OPElement getContactStatus(OPContact contact);
 
-    public native void setStatusInThread(OPElement contactStatusInThreadOfSelf);
+    private native void setStatusInThread(OPElement contactStatusInThreadOfSelf);
 
     public native void markAllMessagesRead();
 
