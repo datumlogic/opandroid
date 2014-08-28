@@ -41,7 +41,7 @@ public abstract class OPConversationThreadDelegate {
                ContactConnectionStates state
                );
 	   
-	public abstract void onConversationThreadContactStateChanged(
+	public abstract void onConversationThreadContactStatusChanged(
 			OPConversationThread conversationThread,
 			OPContact contact
 			);
