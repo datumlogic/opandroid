@@ -54,7 +54,8 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
     public static final String COLUMN_VALUE = "value";
 
     public static final String COLUMN_VALUE_TYPE = "valueType";
-    public static final String SQL_CREATE_CACHE = "create table if not exists " + TABLE_CACHE + " ("
+    public static final String SQL_CREATE_CACHE = "create table if not exists "
+            + TABLE_CACHE + " ("
             + COLUMN_KEY + " text primary key,"
             + COLUMN_EXPIRES + " integer default 0, "
             + COLUMN_VALUE + " text not null" + ")";
@@ -76,12 +77,17 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
     }
 
     private String simpleQueryForString(String key, String defaultValue) {
-        String where = COLUMN_KEY + "=? and (expires >" + System.currentTimeMillis() + " or expires=0)";
+        String where = COLUMN_KEY + "=? and (expires >"
+                + System.currentTimeMillis() + " or expires=0)";
         String args[] = new String[] { key };
-        Cursor cursor = mDBHelper.getReadableDatabase().query(TABLE_CACHE, new String[] { COLUMN_VALUE }, where, args, null, null, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            defaultValue = cursor.getString(0);
+        Cursor cursor = mDBHelper.getReadableDatabase().query(TABLE_CACHE,
+                new String[] { COLUMN_VALUE }, where, args, null, null, null);
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+
+                cursor.moveToFirst();
+                defaultValue = cursor.getString(0);
+            }
             cursor.close();
         }
         Log.d(TAG, String.format("fetch key %s,string %s", key, defaultValue));
@@ -121,10 +127,11 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
         values.put(COLUMN_EXPIRES, timeInMillis);
         values.put(COLUMN_VALUE, str);
         long rowid = mDBHelper.getWritableDatabase()
-                .insertWithOnConflict(TABLE_CACHE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                .insertWithOnConflict(TABLE_CACHE, null, values,
+                        SQLiteDatabase.CONFLICT_REPLACE);
         // if (BuildConfig.DEBUG) {
-//        Log.d(TAG, String.format("store key %s,expires %s,expires millis %d, string %s,result %d", cookieNamePath,
-//                expires.format3339(false), timeInMillis, str, rowid));
+        // Log.d(TAG, String.format("store key %s,expires %s,expires millis %d, string %s,result %d", cookieNamePath,
+        // expires.format3339(false), timeInMillis, str, rowid));
         // }
     }
 
@@ -144,15 +151,18 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
         String where = COLUMN_EXPIRES + "<" + System.currentTimeMillis();
         int count = mDBHelper.getWritableDB().delete(TABLE_CACHE, where, null);
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, String.format("clearExpiredEntriesOnStart deleted %d entries", count));
+            Log.d(TAG, String.format(
+                    "clearExpiredEntriesOnStart deleted %d entries", count));
         }
     }
 
     private void clearExpiredEntries() {
-        String where = COLUMN_EXPIRES + "<" + System.currentTimeMillis() + " and " + COLUMN_EXPIRES + "!=0";
+        String where = COLUMN_EXPIRES + "<" + System.currentTimeMillis()
+                + " and " + COLUMN_EXPIRES + "!=0";
         int count = mDBHelper.getWritableDB().delete(TABLE_CACHE, where, null);
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, String.format("clearExpiredEntries deleted %d entries", count));
+            Log.d(TAG, String.format("clearExpiredEntries deleted %d entries",
+                    count));
         }
     }
 

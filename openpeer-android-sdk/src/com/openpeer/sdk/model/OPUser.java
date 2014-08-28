@@ -158,7 +158,6 @@ public class OPUser {
 				cursor.moveToNext();
 			}
 			user.setIdentityContact(contacts);
-			cursor.close();
 			return user;
 		}
 		return null;

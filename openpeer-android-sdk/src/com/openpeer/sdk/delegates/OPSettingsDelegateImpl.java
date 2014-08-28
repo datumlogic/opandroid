@@ -42,7 +42,8 @@ import com.openpeer.javaapi.OPSettingsDelegate;
  * 
  */
 public class OPSettingsDelegateImpl extends OPSettingsDelegate {
-    private final static String TAG = OPSettingsDelegateImpl.class.getSimpleName();
+    private final static String TAG = OPSettingsDelegateImpl.class
+            .getSimpleName();
     private static final String PREF_CACHE_NAME = "core_setting";
     private Context mContext;
     private static OPSettingsDelegateImpl instance;
@@ -53,7 +54,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     private static final String COLUMN_KEY = "key";
     private static final String COLUMN_VALUE = "value";
 
-    public static final String SQL_CREATE_SETTINGS = "create table if not exists " + TABLE_SETTINGS + " ("
+    public static final String SQL_CREATE_SETTINGS = "create table if not exists "
+            + TABLE_SETTINGS + " ("
             + COLUMN_KEY + " text primary key,"
             + COLUMN_VALUE + " text not null)";
 
@@ -80,10 +82,14 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     private String simpleQueryForString(String key, String defaultValue) {
         String where = COLUMN_KEY + "=?";
         String args[] = new String[] { key };
-        Cursor cursor = mDBHelper.getReadableDatabase().query(TABLE_SETTINGS, new String[] { COLUMN_VALUE }, where, args, null, null, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            defaultValue = cursor.getString(0);
+        Cursor cursor = mDBHelper.getReadableDatabase().query(TABLE_SETTINGS,
+                new String[] { COLUMN_VALUE }, where, args, null, null, null);
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+
+                cursor.moveToFirst();
+                defaultValue = cursor.getString(0);
+            }
             cursor.close();
         }
         Log.d(TAG, "simpleQueryForString key " + key + " value " + defaultValue);
@@ -95,7 +101,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
         values.put(COLUMN_KEY, key);
         values.put(COLUMN_VALUE, value);
         return mDBHelper.getWritableDB()
-                .insertWithOnConflict(TABLE_SETTINGS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                .insertWithOnConflict(TABLE_SETTINGS, null, values,
+                        SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     @Override
@@ -133,7 +140,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public boolean getBool(String key) {
-        boolean value = Boolean.parseBoolean(simpleQueryForString(key, "false"));
+        boolean value = Boolean
+                .parseBoolean(simpleQueryForString(key, "false"));
         Log.d(TAG, "getBool key " + key + " value " + value);
         return value;
     }
@@ -250,60 +258,98 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
             values.put(OPCacheDelegateImpl.COLUMN_KEY, row[0]);
             values.put(OPCacheDelegateImpl.COLUMN_VALUE, row[1]);
             // values.put(COLUMN_TYPE, row[2]);
-            db.insertWithOnConflict(TABLE_SETTINGS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            db.insertWithOnConflict(TABLE_SETTINGS, null, values,
+                    SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
 
     static final String DEFAULT_VALUES[][] = {
-            { "outerFrameURL", "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true", "string" },
-            { "identityProviderDomain", "identity-v1-rel-lespaul-i.hcs.io", "string" },
-            { "identityFederateBaseURI", "identity://identity-v1-rel-lespaul-i.hcs.io/", "string" },
-            { "namespaceGrantServiceURL", "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html", "string" },
+            {
+                    "outerFrameURL",
+                    "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true",
+                    "string" },
+            { "identityProviderDomain", "identity-v1-rel-lespaul-i.hcs.io",
+                    "string" },
+            { "identityFederateBaseURI",
+                    "identity://identity-v1-rel-lespaul-i.hcs.io/", "string" },
+            { "namespaceGrantServiceURL",
+                    "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
+                    "string" },
             // { "lockBoxServiceDomain", "lockbox-v1-rel-lespaul-i.hcs.io", "string" },
-            { "lockBoxServiceDomain", "identity-v1-rel-lespaul-i.hcs.io", "string" },
+            { "lockBoxServiceDomain", "identity-v1-rel-lespaul-i.hcs.io",
+                    "string" },
 
             { "defaultOutgoingTelnetServer", "log.opp.me:8115", "string" },
             { "localTelnetLoggerPort", "59999", "string" },
             { "applicationSettingsBackgroundingPhaseRichPush", "4", "int" },
             { "openpeer/core/core-thread-priority", "normal", "string" },
             { "openpeer/core/media-thread-priority", "real-time", "string" },
-            { "openpeer/core/backgrounding-phase-conversation-thread", "1", "int" },
+            { "openpeer/core/backgrounding-phase-conversation-thread", "1",
+                    "int" },
             { "openpeer/core/backgrounding-phase-account", "1", "int" },
-            { "openpeer/core/authorized-application-id-split-char", "-", "string" },
-            { "openpeer/core/auto-find-peers-added-to-conversation-in-seconds", "600", "int" },
+            { "openpeer/core/authorized-application-id-split-char", "-",
+                    "string" },
+            { "openpeer/core/auto-find-peers-added-to-conversation-in-seconds",
+                    "600", "int" },
             { "openpeer/stack/stack-thread-priority", "normal", "string" },
             { "openpeer/stack/key-generation-thread-priority", "low", "string" },
             { "openpeer/stack/backgrounding-phase-account", "2", "int" },
-            { "openpeer/stack/bootstrapper-force-well-known-over-insecure-http", "true", "bool" },
-            { "openpeer/stack/bootstrapper-force-well-known-using-post", "true", "bool" },
-            { "openpeer/stack/finder-max-client-session-keep-alive-in-seconds", "300", "int" },
-            { "openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", "0", "int" },
-            { "openpeer/stack/move-publication-to-cache-time-in-seconds", "120", "int" },
-            { "openpeer/stack/debug/force-p2p-messages-over-finder-relay", "false", "bool" },
+            {
+                    "openpeer/stack/bootstrapper-force-well-known-over-insecure-http",
+                    "true", "bool" },
+            { "openpeer/stack/bootstrapper-force-well-known-using-post",
+                    "true", "bool" },
+            { "openpeer/stack/finder-max-client-session-keep-alive-in-seconds",
+                    "300", "int" },
+            {
+                    "openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds",
+                    "0", "int" },
+            { "openpeer/stack/move-publication-to-cache-time-in-seconds",
+                    "120", "int" },
+            { "openpeer/stack/debug/force-p2p-messages-over-finder-relay",
+                    "false", "bool" },
             { "openpeer/services/services-thread-priority", "high", "string" },
             { "openpeer/services/logger-thread-priority", "normal", "string" },
-            { "openpeer/services/socket-monitor-thread-priority", "real-time", "string" },
-            { "openpeer/services/timer-monitor-thread-priority", "normal", "string" },
+            { "openpeer/services/socket-monitor-thread-priority", "real-time",
+                    "string" },
+            { "openpeer/services/timer-monitor-thread-priority", "normal",
+                    "string" },
             { "openpeer/services/http-thread-priority", "normal", "string" },
-            { "openpeer/services/backgrounding-phase-ice-socket-session", "3", "int" },
+            { "openpeer/services/backgrounding-phase-ice-socket-session", "3",
+                    "int" },
             { "openpeer/services/backgrounding-phase-turn", "3", "int" },
             { "openpeer/services/backgrounding-phase-tcp-messaging", "3", "int" },
             { "openpeer/services/backgrounding-phase-telnet-logger", "5", "int" },
-            { "openpeer/services/backgrounding-phase-1-timeout-in-seconds", "8", "int" },
-            { "openpeer/services/backgrounding-phase-2-timeout-in-seconds", "0", "int" },
-            { "openpeer/services/backgrounding-phase-3-timeout-in-seconds", "0", "int" },
-            { "openpeer/services/backgrounding-phase-4-timeout-in-seconds", "0", "int" },
-            { "openpeer/services/backgrounding-phase-5-timeout-in-seconds", "0", "int" },
-            { "openpeer/services/process-application-message-queue-on-quit", "true", "bool" },
-            { "openpeer/services/turn-candidates-must-remain-alive-after-ice-wake-up-in-seconds", "600", "int" },
-            { "openpeer/services/interface-name-order", "lo;en;pdp_ip;stf;gif;bbptp;p2p", "string" },
+            { "openpeer/services/backgrounding-phase-1-timeout-in-seconds",
+                    "8", "int" },
+            { "openpeer/services/backgrounding-phase-2-timeout-in-seconds",
+                    "0", "int" },
+            { "openpeer/services/backgrounding-phase-3-timeout-in-seconds",
+                    "0", "int" },
+            { "openpeer/services/backgrounding-phase-4-timeout-in-seconds",
+                    "0", "int" },
+            { "openpeer/services/backgrounding-phase-5-timeout-in-seconds",
+                    "0", "int" },
+            { "openpeer/services/process-application-message-queue-on-quit",
+                    "true", "bool" },
+            {
+                    "openpeer/services/turn-candidates-must-remain-alive-after-ice-wake-up-in-seconds",
+                    "600", "int" },
+            { "openpeer/services/interface-name-order",
+                    "lo;en;pdp_ip;stf;gif;bbptp;p2p", "string" },
             { "openpeer/services/support-ipv6", "false", "bool" },
-            { "openpeer/services/max-ice-socket-rebind-attempt-duration-in-seconds", "60", "int" },
-            { "openpeer/services/debug/force-packets-over-turn", "false", "bool" },
+            {
+                    "openpeer/services/max-ice-socket-rebind-attempt-duration-in-seconds",
+                    "60", "int" },
+            { "openpeer/services/debug/force-packets-over-turn", "false",
+                    "bool" },
             { "openpeer/services/debug/force-turn-to-use-tcp", "false", "bool" },
             { "openpeer/services/debug/force-turn-to-use-udp", "false", "bool" },
-            { "openpeer/services/debug/only-allow-data-sent-to-specific-ips", "", "string" },
-            { "openpeer/services/debug/only-allow-turn-to-relay-data-sent-to-specific-ips", "", "string" }
+            { "openpeer/services/debug/only-allow-data-sent-to-specific-ips",
+                    "", "string" },
+            {
+                    "openpeer/services/debug/only-allow-turn-to-relay-data-sent-to-specific-ips",
+                    "", "string" }
     };
 
 }

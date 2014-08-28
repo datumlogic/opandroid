@@ -152,7 +152,7 @@ public interface OPDatastoreDelegate {
 
     public List<OPUser> getUsers(long[] userIDs);
 
-    public OPIdentityContact getIdentityContact(String identityContactId);
+//    public OPIdentityContact getIdentityContact(String identityContactId);
 
     boolean updateMessageDeliveryStatus(String messageId, int deliveryStatus, long updateTime);
 
