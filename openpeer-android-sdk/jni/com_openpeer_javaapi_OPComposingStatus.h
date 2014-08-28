@@ -71,6 +71,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_toDebug
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPComposingStatus_releaseCoreObjects
   (JNIEnv *, jobject);
 
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_getComposingState
+(JNIEnv *, jobject);
 #ifdef __cplusplus
 }
 #endif

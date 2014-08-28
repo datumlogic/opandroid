@@ -12,6 +12,7 @@ using namespace openpeer::core;
 extern "C" {
 #endif
 
+const char * CLASS_NAME = "com/openpeer/javaapi/OPComposingStatus";
 /*
  * Class:     com_openpeer_javaapi_OPComposingStatus
  * Method:    toString
@@ -262,6 +263,26 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPComposingStatus_releaseCoreOb
 	}
 }
 
+/*
+ * Class:     com_openpeer_javaapi_OPComposingStatus
+ * Method:    getComposingState
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)Lcom/openpeer/javaapi/OPComposingStatus;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPComposingStatus_getComposingState
+(JNIEnv *, jobject owner) {
+  JNIEnv *jni_env = getEnv();
+
+  jclass cls = findClass(CLASS_NAME);
+  jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+  jlong pointerValue = jni_env->GetLongField(owner, fid);
+
+  ComposingStatusPtr* coreComposingStatusPtr =
+      (ComposingStatusPtr*) pointerValue;
+  jint state = (jint) coreComposingStatusPtr->get()->mComposingStatus;
+  jobject object = OpenPeerCoreManager::getJavaEnumObject(
+      "com/openpeer/javaapi/ComposingStates", state);
+  return object;
+}
 #ifdef __cplusplus
 }
 #endif
