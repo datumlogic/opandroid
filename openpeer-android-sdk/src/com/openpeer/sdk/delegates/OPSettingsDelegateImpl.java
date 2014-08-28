@@ -92,7 +92,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
             }
             cursor.close();
         }
-        Log.d(TAG, "simpleQueryForString key " + key + " value " + defaultValue);
+//        Log.d(TAG, "simpleQueryForString key " + key + " value " + defaultValue);
         return defaultValue;
     }
 
@@ -117,7 +117,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public long getInt(String key) {
-        Log.d(TAG, "getInt key " + key);
         return Long.parseLong(simpleQueryForString(key, "0"));
     }
 
@@ -129,7 +128,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     @Override
     public long getUInt(String key) {
         long value = Long.parseLong(simpleQueryForString(key, "0"));
-        Log.d(TAG, "getUInt key " + key + " value " + value);
         return value;
     }
 
@@ -142,7 +140,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     public boolean getBool(String key) {
         boolean value = Boolean
                 .parseBoolean(simpleQueryForString(key, "false"));
-        Log.d(TAG, "getBool key " + key + " value " + value);
         return value;
     }
 
@@ -153,7 +150,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public float getFloat(String key) {
-        Log.d(TAG, "getFloat key " + key);
         return Float.parseFloat(simpleQueryForString(key, "0.0"));
     }
 
@@ -164,7 +160,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public double getDouble(String key) {
-        Log.d(TAG, "getDouble key " + key);
         return Float.parseFloat(simpleQueryForString(key, "0.0"));
     }
 
@@ -175,7 +170,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public void setString(String key, String value) {
-        Log.d(TAG, "setString key " + key + " value " + value);
         save(key, value);
 
     }
@@ -187,7 +181,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public void setInt(String key, long value) {
-        Log.d(TAG, "setInt key " + key + " value " + value);
         save(key, "" + value);
 
     }
@@ -199,7 +192,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public void setUInt(String key, long value) {
-        Log.d(TAG, "setUInt key " + key + " value " + value);
         save(key, "" + value);
 
     }
@@ -211,7 +203,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public void setBool(String key, boolean value) {
-        Log.d(TAG, "setBool key " + key + " value " + value);
         save(key, "" + value);
 
     }
@@ -223,7 +214,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public void setFloat(String key, float value) {
-        Log.d(TAG, "setFloat key " + key + " value " + value);
         save(key, "" + value);
 
     }
@@ -235,8 +225,6 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public void setDouble(String key, double value) {
-        Log.d(TAG, "setDouble key " + key + " value " + value);
-
         save(key, "" + value);
     }
 

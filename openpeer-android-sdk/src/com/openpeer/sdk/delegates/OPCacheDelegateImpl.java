@@ -90,7 +90,7 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
             }
             cursor.close();
         }
-        Log.d(TAG, String.format("fetch key %s,string %s", key, defaultValue));
+//        Log.d(TAG, String.format("fetch key %s,string %s", key, defaultValue));
         return defaultValue;
     }
 
