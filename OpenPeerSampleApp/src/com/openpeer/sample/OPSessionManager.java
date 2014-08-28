@@ -174,14 +174,21 @@ public class OPSessionManager {
             @Override
             public void onConversationThreadContactStatusChanged(
                     OPConversationThread conversationThread, OPContact contact) {
+                if (contact.isSelf()) {
+                    Log.e(TAG,
+                            "weird! onConversationThreadContactStatusChanged for self "
+                                    + contact.getPeerURI());
+                }
                 OPLogger.debug(
                         OPLogLevel.LogLevel_Trace,
                         "onConversationThreadContactStateChanged  "
-                                + contact.getPeerURI() + " state ");
+                                + contact.getPeerURI());
                 ComposingStates state = conversationThread
                         .getContactComposingStatus(contact);
-                OPSession session = getSessionOfThread(conversationThread);
-                session.onContactComposingStateChanged(state);
+                if (state != null) {
+                    OPSession session = getSessionOfThread(conversationThread);
+                    session.onContactComposingStateChanged(state);
+                }
             }
 
             @Override
