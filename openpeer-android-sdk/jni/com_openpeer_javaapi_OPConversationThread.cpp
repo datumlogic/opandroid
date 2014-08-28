@@ -1057,6 +1057,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 	if (coreConversationThreadPtr &&coreContactPtr)
 	{
 		ElementPtr coreEl = coreConversationThreadPtr->get()->getContactStatus(*coreContactPtr);
+		if(coreEl){
 		ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
 		cls = findClass("com/openpeer/javaapi/OPElement");
 		method = jni_env->GetMethodID(cls, "<init>", "()V");
@@ -1065,8 +1066,17 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getCont
 		jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
 		jlong element = (jlong) ptrToElement;
 		jni_env->SetLongField(object, fid, element);
+		return object;
+		} else {
+	        __android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPConversationThread getContactStatus ElementPtr null");
+
+		}
+	} else {
+    __android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+        "OPConversationThread getContactStatus exception thread %d contact %d",
+        (jlong) coreConversationThreadPtr, (jlong) coreContactPtr);
 	}
-	return object;
+	return jni_env->NewGlobalRef(NULL);
 }
 
 /*
@@ -1080,6 +1090,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setStatusI
 	jclass cls;
 	jmethodID method;
 	JNIEnv *jni_env = 0;
+    __android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPConversationThread setContactStatus");
 
 	jni_env = getEnv();
 
