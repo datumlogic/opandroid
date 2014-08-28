@@ -38,6 +38,9 @@ import com.openpeer.sdk.model.OPUser;
 
 public class OPConversationThread {
 
+    private static final String TAG = OPConversationThread.class
+            .getSimpleName();
+
     /**
      * Helper function to make sure required fields are populated.
      * 
@@ -60,13 +63,26 @@ public class OPConversationThread {
      * @return
      */
     public ComposingStates getContactComposingStatus(OPContact contact) {
+        Log.d(TAG,
+                "getContactComposingStatus for contact " + contact.getPeerURI());
         OPElement element = getContactStatus(contact);
-        OPComposingStatus composingStatus = OPComposingStatus.extract(element);
-        ComposingStates state = composingStatus.getComposingState();
-        // TODO: remove debugging hard coded value
-//        if (state == null)
-            state = ComposingStates.ComposingState_Composing;
-        return state;
+        if (element != null) {
+            Log.d(TAG,
+                    "getContactComposingStatus element " + element
+                            + " toString "
+                            + element.convertToString());
+            OPComposingStatus composingStatus = OPComposingStatus
+                    .extract(element);
+            ComposingStates state = composingStatus.getComposingState();
+            Log.d(TAG, "getContactComposingStatus state " + state);
+            // TODO: remove debugging hard coded value
+            // if (state == null)
+            // state = ComposingStates.ComposingState_Composing;
+            return state;
+        } else {
+            Log.d(TAG, "getContactComposingStatus received element null");
+            return null;
+        }
     }
 
     /**
@@ -78,6 +94,9 @@ public class OPConversationThread {
         OPElement element = createEmptyStatus();
         OPComposingStatus status = OPComposingStatus.create(composingState);
         status.insert(element);
+        Log.d(TAG, "Inserting status " + element.convertToString());
+
+        Log.d(TAG, "Inserting status " + status.getComposingState());
         setStatusInThread(element);
 
     }
