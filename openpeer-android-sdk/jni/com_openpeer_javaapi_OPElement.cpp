@@ -31,11 +31,18 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPElement_convertToString
 	if (coreElementPtr)
 	{
 		ret = jni_env->NewStringUTF(IHelper::convertToString(*coreElementPtr).c_str());
+//		if(ret){
+//        __android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPElement native convertToString %s",ret);
+//		} else {
+//
+//		}
+
 	}
 	else
 	{
 		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPElement native convertToString core pointer is NULL!!!");
 	}
+	return ret;
 }
 
 /*
