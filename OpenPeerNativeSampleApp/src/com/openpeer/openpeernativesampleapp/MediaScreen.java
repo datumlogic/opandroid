@@ -35,7 +35,7 @@ public class MediaScreen extends Activity {
 	SurfaceView myRemoteSurface = null;
 	int mediaEngineStatus = 0;
 	boolean speakerphoneEnabled = false;
-	boolean useFrontCamera = false;
+	boolean useFrontCamera = true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,9 +79,10 @@ public class MediaScreen extends Activity {
 				LinearLayout remoteViewLinearLayout;
 				switch (mediaEngineStatus) {
 				case 0:
-					myLocalSurface = ViERenderer.CreateLocalRenderer(screen);
+					myLocalSurface = ViERenderer.CreateRenderer(screen, true);
 					localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
 					localViewLinearLayout.addView(myLocalSurface);
+					OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
 					OPMediaEngine.getInstance().startVideoCapture();
 					mediaControlButton.setText("Start Media Channel");
 					mediaEngineStatus++;
