@@ -30,5 +30,8 @@
 package com.openpeer.javaapi;
 
 public enum OPLogSeverity {
-
+    Informational,
+    Warning,
+    Error,
+    Fatal
 }

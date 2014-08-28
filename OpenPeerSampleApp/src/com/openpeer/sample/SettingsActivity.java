@@ -41,7 +41,9 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import android.view.MenuItem;
@@ -56,14 +58,13 @@ public class SettingsActivity extends BaseActivity {
     static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
     static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
     static final String KEY_FILE_LOGGER = "file_logger";
-    static final String KEY_LOG_LEVEL = "log_level";
+    static final String KEY_LOG_SWITCH = "logSwitch";
     static final String KEY_OUT_LOG_SERVER = "log_server_url";
     static final String KEY_FILE_LOGGER_PATH = "log_file";
     static final String KEY_RINGTONE = "ringtone";
     static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
     static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
     static final String KEY_SIGNOUT = "signout";
-
 
     public static void launch(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
@@ -82,7 +83,7 @@ public class SettingsActivity extends BaseActivity {
 
     public static class SettingsFragment extends PreferenceFragment {
 
-        ListPreference logLevelPref;
+        SwitchPreference logSwitchlPref;
         EditTextPreference logServerPref;
         EditTextPreference logFilePref;
         RingtonePreference ringtonePref;
@@ -99,7 +100,7 @@ public class SettingsActivity extends BaseActivity {
             final SwitchPreference fileLogging = (SwitchPreference) findPreference(KEY_FILE_LOGGER);
             SwitchPreference notificationSoundSwitchPref = (SwitchPreference) findPreference(KEY_NOTIFICATION_SOUND_SWITCH);
 
-            logLevelPref = (ListPreference) findPreference(KEY_LOG_LEVEL);
+            logSwitchlPref = (SwitchPreference) findPreference(KEY_LOG_SWITCH);
             logServerPref = (EditTextPreference) findPreference(KEY_OUT_LOG_SERVER);
             logFilePref = (EditTextPreference) findPreference(KEY_FILE_LOGGER_PATH);
 
@@ -134,7 +135,7 @@ public class SettingsActivity extends BaseActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String fileName = logFilePref.getText();
-                    OPHelper.getInstance().toggleOutgoingTelnetLogging((Boolean) newValue, fileName);
+                    OPHelper.getInstance().toggleFileLogger((Boolean) newValue, fileName);
                     return true;
                 }
             });
@@ -145,14 +146,11 @@ public class SettingsActivity extends BaseActivity {
                     return true;
                 }
             });
-            logLevelPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            logSwitchlPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    int intValue = Integer.parseInt((String) newValue);
-                    OPLogLevel level = OPLogLevel.values()[intValue];
-                    OPLogger.setLogLevel(level);
-                    logLevelPref.setTitle("Log level       " + logLevelPref.getEntries()[Integer.parseInt(newValue.toString())]);
+                    SettingsHelper.toggleLogger((Boolean) newValue);
 
                     return true;
                 }
@@ -173,6 +171,7 @@ public class SettingsActivity extends BaseActivity {
             });
 
             setupAboutInfo();
+            setupLoggerScreen();
         }
 
         private static final String KEY_VERSION = "version";
@@ -196,7 +195,6 @@ public class SettingsActivity extends BaseActivity {
         }
 
         void setupSettingDisplays() {
-            logLevelPref.setTitle("Log level       " + logLevelPref.getEntry());
             logServerPref.setTitle("Log server:  " + logServerPref.getText());
             logFilePref.setTitle("Log file:  " + logFilePref.getText());
             Ringtone ringtone = SettingsHelper.getRingtone();
@@ -214,6 +212,45 @@ public class SettingsActivity extends BaseActivity {
             // TODO Auto-generated method stub
             super.onResume();
             setupSettingDisplays();
+        }
+
+        private void setupLoggerScreen() {
+            PreferenceCategory loggerScreen = (PreferenceCategory) findPreference("logLevels");
+            final String loggerKeys[] = getActivity().getResources().getStringArray(R.array.logKeys);
+            final String loggerTitles[] = getActivity().getResources().getStringArray(R.array.logTitles);
+            String loggerDefaults[] = getActivity().getResources().getStringArray(R.array.logLevelDefaults);
+            final String[] entries = getActivity().getResources().getStringArray(R.array.logLevel);
+            final String entryValues[] = getActivity().getResources().getStringArray(R.array.logLevelValues);
+            for (int i = 0; i < loggerKeys.length; i++) {
+                String key = loggerKeys[i];
+                ListPreference pref = new ListPreference(getActivity());
+                pref.setKey(key);
+                pref.setEntries(entries);
+                pref.setEntryValues(entryValues);
+
+                String value = SettingsHelper.getString(key, loggerDefaults[i]);
+                pref.setValue(value);
+                int index = Integer.parseInt(value);
+                final String loggerTitle = loggerTitles[i];
+                pref.setTitle(String.format(loggerTitle, entries[index]));
+
+                pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        int intValue = Integer.parseInt((String) newValue);
+                        OPLogLevel level = OPLogLevel.values()[intValue];
+                        int index = Integer.parseInt(newValue.toString());
+                        preference.setTitle(String.format(loggerTitle, entries[index]));
+                        if (SettingsHelper.isLogEnabled()) {
+                            OPLogger.setLogLevel(level);
+                        }
+
+                        return true;
+                    }
+                });
+                loggerScreen.addPreference(pref);
+            }
         }
     }
 

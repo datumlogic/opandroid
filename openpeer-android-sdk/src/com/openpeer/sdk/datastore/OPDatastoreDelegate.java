@@ -31,6 +31,8 @@ package com.openpeer.sdk.datastore;
 
 import java.util.List;
 
+import android.net.Uri;
+
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -40,85 +42,144 @@ import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.sdk.model.OPUser;
 
 public interface OPDatastoreDelegate {
-	public String getReloginInfo();
+    public String getReloginInfo();
 
-	/**
-	 * Retrieve stored OpenPeer contacts for identity
+    /**
+     * Retrieve stored OpenPeer contacts for identity
+     * 
+     * @param identityId
+     *            The stableId of the identity. If null, all contacts will be returned
+     * @return list of OpenPeer contacts for specific identity
+     */
+    public List<OPRolodexContact> getOPContacts(String identityId);
+
+    /**
+     * Save or update the account information in database
+     * 
+     * @param account
+     * @return
+     */
+    public boolean saveOrUpdateAccount(OPAccount account);
+
+    /**
+     * Save or update the associated identities of account. Call this function after login or relogin
+     * 
+     * @param identies
+     * @param accountId
+     * @return
+     */
+    public boolean saveOrUpdateIdentities(List<OPIdentity> identies, long accountId);
+
+    /**
+     * Save or update the Rolodex contacts related to identity. Call this fucntion after RolodexContacts download and identity lookup
+     * completion.
+     * 
+     * @param contacts
+     * @param identityId
+     * @return
+     */
+    public boolean saveOrUpdateContacts(List<? extends OPRolodexContact> contacts, long identityId);
+
+    public boolean saveOrUpdateIdentity(OPIdentity identy, long accountId);
+
+    public boolean saveOrUpdateContact(OPRolodexContact contact, long identityId);
+
+    public boolean deleteIdentity(long id);
+
+    public boolean deleteContact(String identityUri);
+
+    /**
+     * Retrieve the saved contacts version.
+     * 
+     * @param identityId
+     * @return
+     */
+    public String getDownloadedContactsVersion(long identityId);
+
+    /**
+     * Save the downloaded contacts version
+     * 
+     * @param identityId
+     * @param version
+     */
+    public void setDownloadedContactsVersion(long identityId, String version);
+
+    /**
+     * Flush contacts associated with identity
+     * 
+     * @param id
+     * @return
+     */
+    public boolean flushContactsForIdentity(long id);
+
+    /**
+     * Save a new message received or sent
+     * 
+     * @param message
+     * @param sessionId
+     * @param threadId
+     * @return
+     */
+    public Uri saveMessage(OPMessage message, long sessionId, String threadId);
+
+    void saveWindow(long windowId, List<OPUser> userList);
+
+    /**
+     * Save or update identity contacts associated with an identity. Call this after identity lookup complete
+     * 
+     * @param iContacts
+     * @param identityId Associated Identity id.
+     */
+    public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long identityId);
+
+    /**
+     * Return user with updated userId
+     * 
+     * @param user
+     * @return
+     */
+    public OPUser saveUser(OPUser user);
+
+    public List<OPAvatar> getAvatars(String identityUri);
+
+    /**
+     * In contacts based group chat mode, mark all messages belonging to to same group as read.
+     * 
+     * @param mCurrentWindowId
+     *            windowId calculated based particpants
+     */
+    public void markMessagesRead(long mCurrentWindowId);
+
+    public List<OPUser> getUsers(long[] userIDs);
+
+    public OPIdentityContact getIdentityContact(String identityContactId);
+
+    boolean updateMessageDeliveryStatus(String messageId, int deliveryStatus, long updateTime);
+
+    public OPUser getUserByPeerUri(String uri);
+
+    /**
+     * Query stored data and return message constructed from stored data
+     * 
+     * @param messageId
+     * @return
+     */
+    public OPMessage getMessage(String messageId);
+
+    /**
+     * @param id
+     * @return
+     */
+    public OPUser getUserById(long id);
+
+    /**
+     * Perform data cleanup when signout
+     */
+    public void onSignOut();
+
+    /**
 	 * 
-	 * @param identityId
-	 *            The stableId of the identity. If null, all contacts will be returned
-	 * @return list of OpenPeer contacts for specific identity
 	 */
-	public List<OPRolodexContact> getOPContacts(String identityId);
-
-	public boolean saveOrUpdateAccount(OPAccount account);
-
-	public boolean saveOrUpdateIdentities(List<OPIdentity> identies, long accountId);
-
-	public boolean saveOrUpdateContacts(List<? extends OPRolodexContact> contacts, long identityId);
-
-	public boolean saveOrUpdateIdentity(OPIdentity identy, long accountId);
-
-	public boolean saveOrUpdateContact(OPRolodexContact contact, long identityId);
-
-	public boolean deleteIdentity(long id);
-
-	public boolean deleteContact(String identityUri);
-
-	public String getDownloadedContactsVersion(long identityId);
-
-	public void setDownloadedContactsVersion(long identityId, String version);
-
-	boolean flushContactsForIdentity(long id);
-
-	public boolean saveMessage(OPMessage message, long sessionId, String threadId);
-
-	void saveWindow(long windowId, List<OPUser> userList);
-
-	public void saveOrUpdateUsers(List<OPIdentityContact> iContacts, long stableID);
-
-	/**
-	 * Return user with updated userId
-	 * 
-	 * @param user
-	 * @return
-	 */
-	OPUser saveUser(OPUser user);
-
-	public List<OPAvatar> getAvatars(String identityUri);
-
-	public void markMessagesRead(long mCurrentWindowId);
-
-	List<OPUser> getUsers(long[] userIDs);
-
-	OPIdentityContact getIdentityContact(String identityContactId);
-
-	boolean updateMessageDeliveryStatus(long windowId, String messageId, int deliveryStatus, long updateTime);
-
-	public OPUser getUserByPeerUri(String uri);
-
-	/**
-	 * Query stored data and return message constructed from stored data
-	 * 
-	 * @param messageId
-	 * @return
-	 */
-	OPMessage getMessage(String messageId);
-
-	/**
-	 * @param id
-	 * @return
-	 */
-	public OPUser getUserById(long id);
-
-	/**
-	 * Perform data cleanup when signout
-	 */
-	public void onSignOut();
-
-	/**
-	 * 
-	 */
-	public void notifyContactsChanged();
+    public void notifyContactsChanged();
 
 }

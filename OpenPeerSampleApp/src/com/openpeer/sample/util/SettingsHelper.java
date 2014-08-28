@@ -32,6 +32,7 @@ package com.openpeer.sample.util;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sample.OPApplication;
+import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPHelper;
 
 import android.content.SharedPreferences;
@@ -49,7 +50,7 @@ public class SettingsHelper {
     static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
     static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
     static final String KEY_FILE_LOGGER = "file_logger";
-    static final String KEY_LOG_LEVEL = "log_level";
+    static final String KEY_LOG_SWITCH = "logSwitch";
     static final String KEY_OUT_LOG_SERVER = "log_server_url";
     static final String KEY_FILE_LOGGER_PATH = "log_file";
     static final String KEY_TELENT_LOGGER = "local_telnet_logger";
@@ -95,34 +96,26 @@ public class SettingsHelper {
     }
 
     public void initLoggers() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
-        OPLogger.setLogLevel(getLogLevel());
-        if (isOutgoingLoggerOn()) {
-            OPHelper.getInstance().toggleOutgoingTelnetLogging(true, getLogServer());
-        }
-        if (isTelnetLoggerOn()) {
-            OPHelper.getInstance().toggleTelnetLogging(true, 59999);
-        }
-        if (isFileLoggerOn()) {
-            OPHelper.getInstance().toggleFileLogger(true, getLogFile());
+        if (isLogEnabled()) {
+            if (isOutgoingLoggerOn()) {
+                OPHelper.getInstance().toggleOutgoingTelnetLogging(true, getLogServer());
+            }
+            if (isTelnetLoggerOn()) {
+                OPHelper.getInstance().toggleTelnetLogging(true, 59999);
+            }
+            if (isFileLoggerOn()) {
+                OPHelper.getInstance().toggleFileLogger(true, getLogFile());
+            }
+            toggleLogger(true);
         }
     }
 
     /**
-     * <boolean name="local_telnet_logger" value="true" />
-     * <string name="log_file">/storage/emulated/0/oplog.txt</string>
-     * <boolean name="file_logger" value="true" />
-     * <string name="log_server_url">log.opp.me:8115</string>
-     * <boolean name="out_telnet_logger" value="true" />
-     * <string name="ringtone">content://settings/system/ringtone</string>
-     * <string name="log_level">1</string>
-     * <boolean name="notification_sound_switch" value="true" />
+     * 
      */
-    public OPLogLevel getLogLevel() {
+    public static boolean isLogEnabled() {
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
-        int intValue = Integer.parseInt(mPreferences.getString(KEY_LOG_LEVEL, "0"));
-        OPLogLevel level = OPLogLevel.values()[intValue];
-        return level;
+        return mPreferences.getBoolean(KEY_LOG_SWITCH, false);
     }
 
     public boolean isOutgoingLoggerOn() {
@@ -143,5 +136,31 @@ public class SettingsHelper {
 
     public String getLogFile() {
         return mPreferences.getString(KEY_FILE_LOGGER_PATH, null);
+    }
+
+    public static String getString(String key, String defaultValue) {
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        return mPreferences.getString(key, defaultValue);
+    }
+
+    /**
+     * @param newValue
+     */
+    public static void toggleLogger(Boolean newValue) {
+        final String loggerKeys[] = OPApplication.getInstance().getResources().getStringArray(R.array.logKeys);
+        String loggerDefaults[] = OPApplication.getInstance().getResources().getStringArray(R.array.logLevelDefaults);
+
+        if (newValue) {
+            for (int i = 0; i < loggerKeys.length; i++) {
+                String key = loggerKeys[i];
+                String value = getString(key, loggerDefaults[i]);
+                OPLogLevel level = OPLogLevel.values()[Integer.parseInt(value)];
+                OPLogger.setLogLevel(key, level);
+            }
+        } else {
+            for (String key : loggerKeys) {
+                OPLogger.setLogLevel(key, OPLogLevel.LogLevel_None);
+            }
+        }
     }
 }

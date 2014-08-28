@@ -38,6 +38,8 @@ import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sdk.delegates.OPAccountDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 
@@ -151,11 +153,11 @@ public class LoginManager {
 
 				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
 				if (TextUtils.isEmpty(version)) {
-					Log.d("login", "start download initial contacts");
+					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
 					identity.startRolodexDownload("");
 				} else {
 					// check for new contacts
-					Log.d("login", "start download  contacts since version " + version);
+					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
 					identity.startRolodexDownload(version);
 				}
 			}

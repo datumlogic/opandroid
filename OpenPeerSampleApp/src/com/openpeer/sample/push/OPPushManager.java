@@ -58,7 +58,7 @@ public class OPPushManager {
     private OPPushManager() {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(HackApiService.HCS_DOMAIN)
-//                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
         service = restAdapter.create(HackApiService.class);
         tokens = new Hashtable<String, PushToken>();

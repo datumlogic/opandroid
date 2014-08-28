@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="label_logsetting_app">Application:%s</string>
+    <string name="label_logsetting_core">Core:%s</string>
+    <string name="label_logsetting_messages">Messages:%s</string>
+    <string name="label_logsetting_media">Media:%s</string>
+    <string name="label_logsetting_webrtc">webRTC:%s</string>
+    <string name="label_logsetting_stack">Stack:%s</string>
+    <string name="label_logsetting_zslib">zsLib:%s</string>
+    <string name="label_logsetting_socket">zsLib sockets:%s</string>
+    <string name="label_logsetting_tcp">TCP Messaging:%s</string>
+    <string name="label_logsetting_services_packet">Services packet:%s</string>
+    <string name="label_logsetting_stun">STUN/ICE:%s</string>
+    <string name="label_logsetting_turn">TURN:%s</string>
+    <string name="label_logsetting_RUDP">HTTP:%s</string>
+    <string name="label_logsetting_http">MLS:%s</string>
+    <string name="label_logsetting_transport">Transport stream:%s</string>
+    <string name="label_logsetting_javascript">Javascipt:%s</string>
+
+</resources>
