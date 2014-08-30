@@ -1,9 +1,13 @@
 package com.openpeer.openpeernativesampleapp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.webrtc.videoengine.ViERenderer;
 
 import com.openpeer.openpeernativesampleapp.R;
 import com.openpeer.javaapi.CameraTypes;
+import com.openpeer.javaapi.OPCaptureCapability;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
 import com.openpeer.javaapi.OPStack;
@@ -35,11 +39,14 @@ public class MediaScreen extends Activity {
 	SurfaceView myRemoteSurface = null;
 	int mediaEngineStatus = 0;
 	boolean speakerphoneEnabled = false;
-	boolean useFrontCamera = true;
+	CameraTypes cameraType = CameraTypes.CameraType_Front;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_media_screen);
+		
+		List<String> list = new ArrayList<String>();
+		list.add("");
 		
 		EditText remoteIPAddressEditText = (EditText) findViewById(R.id.remoteIPAddressEditText);
 		remoteIPAddressEditText.setText("127.0.0.1");
@@ -47,10 +54,7 @@ public class MediaScreen extends Activity {
 		OPLogger.installTelnetLogger(59999, 60, true);
 		
 		OPMediaEngine.init(getApplicationContext());
-		if (useFrontCamera)
-			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Front);
-		else
-			OPMediaEngine.getInstance().setCameraType(CameraTypes.CameraType_Back);
+		OPMediaEngine.getInstance().setCameraType(cameraType);
 		OPMediaEngine.getInstance().setEcEnabled(true);
 		OPMediaEngine.getInstance().setAgcEnabled(true);
 		OPMediaEngine.getInstance().setNsEnabled(false);
@@ -82,6 +86,24 @@ public class MediaScreen extends Activity {
 					myLocalSurface = ViERenderer.CreateRenderer(screen, true);
 					localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
 					localViewLinearLayout.addView(myLocalSurface);
+					List<OPCaptureCapability> capabilities = 
+							OPMediaEngine.getInstance().getCaptureCapabilities(cameraType);
+					for (OPCaptureCapability capability : capabilities) {
+						String capabilityString = String.format("Capability - width: %d, height: %d, fps: %d", 
+								capability.getWidth(), capability.getHeight(), capability.getMaxFPS());
+						Log.d("JNI", capabilityString);
+					}
+					OPCaptureCapability captureCapability = new OPCaptureCapability();
+					if (cameraType == CameraTypes.CameraType_Front) {
+						captureCapability.setWidth(720);
+						captureCapability.setHeight(480);
+						captureCapability.setMaxFPS(15);
+					} else {
+						captureCapability.setWidth(720);
+						captureCapability.setHeight(480);
+						captureCapability.setMaxFPS(15);
+					}
+					OPMediaEngine.getInstance().setCaptureCapability(captureCapability, cameraType);
 					OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
 					OPMediaEngine.getInstance().startVideoCapture();
 					mediaControlButton.setText("Start Media Channel");

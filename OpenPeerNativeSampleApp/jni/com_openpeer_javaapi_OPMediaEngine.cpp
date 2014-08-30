@@ -309,7 +309,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureCapabil
 		coreCapability.maxFPS = (int)jni_env->CallIntMethod(capability, getMaxFPSID);
 
 		coreMediaEnginePtr->get()->setCaptureCapability(coreCapability,
-				(IMediaEngine::CameraTypes)OpenPeerCoreManager::getIntValueFromEnumObject(cameraType, "com/openpeer/javaapi/OPCameraTypes"));
+				(IMediaEngine::CameraTypes)OpenPeerCoreManager::getIntValueFromEnumObject(cameraType, "com/openpeer/javaapi/CameraTypes"));
 	}
 }
 
@@ -339,7 +339,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCaptureCapa
 	IMediaEngine::CaptureCapabilityList coreCapabilities;
 	if (coreMediaEnginePtr)
 	{
-		coreCapabilities = coreMediaEnginePtr->get()->getCaptureCapabilities((IMediaEngine::CameraTypes)OpenPeerCoreManager::getIntValueFromEnumObject(cameraType, "com/openpeer/javaapi/OPCameraTypes"));
+		coreCapabilities = coreMediaEnginePtr->get()->getCaptureCapabilities((IMediaEngine::CameraTypes)OpenPeerCoreManager::getIntValueFromEnumObject(cameraType, "com/openpeer/javaapi/CameraTypes"));
 	}
 	else
 	{
