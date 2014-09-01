@@ -251,21 +251,23 @@ public class ChatFragment extends BaseFragment implements
         });
 
         mComposeBox.addTextChangedListener(new TextWatcher() {
-            Timer pauseTimer = new Timer();
+            Timer pauseTimer;// = new Timer();
             long PAUSE_DELAY = 30 * 1000;
-            TimerTask task = new TimerTask() {
-
-                @Override
-                public void run() {
-                    mTyping = false;
-                    mSession.getThread().setStatusInThread(
-                            ComposingStates.ComposingState_Paused);
-                }
-
-            };
+            TimerTask task;
 
             @Override
             public void afterTextChanged(Editable arg0) {
+                pauseTimer = new Timer();
+                task = new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        mTyping = false;
+                        mSession.getThread().setStatusInThread(
+                                ComposingStates.ComposingState_Paused);
+                    }
+
+                };
                 pauseTimer.schedule(task, PAUSE_DELAY);
             }
 
@@ -278,7 +280,12 @@ public class ChatFragment extends BaseFragment implements
             @Override
             public void onTextChanged(CharSequence s, int start, int before,
                     int count) {
-                pauseTimer.cancel();
+                if (pauseTimer != null) {
+
+                    pauseTimer.cancel();
+                    pauseTimer = null;
+                    task = null;
+                }
                 if (!mTyping) {
                     mTyping = true;
 
