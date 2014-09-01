@@ -42,24 +42,30 @@ public class BaseActivity extends BaseFragmentActivity {
     private static int mStack = 0;
     BroadcastReceiver mSignoutReceiver;
 
+    public static boolean isAppInBackground() {
+        return mStack == 0;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        if (OPApplication.getInstance().isInBackground()) {
+        if (mStack == 0) {
             OPHelper.getInstance().onEnteringForeground();
-            OPApplication.getInstance().onEnteringForeground();
+            BackgroundingManager.onEnteringForeground();
         }
         mStack++;
 
         mSignoutReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE.equals(intent.getAction())) {
+                if (com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE
+                        .equals(intent.getAction())) {
                     onSignoutComplete();
                 }
             }
         };
-        IntentFilter filter = new IntentFilter(com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE);
+        IntentFilter filter = new IntentFilter(
+                com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE);
         registerReceiver(mSignoutReceiver, filter);
     }
 
@@ -69,14 +75,15 @@ public class BaseActivity extends BaseFragmentActivity {
         mStack--;
         if (mStack == 0) {
             OPHelper.getInstance().onEnteringBackground();
-            OPApplication.getInstance().onEnteringBackground();
+            BackgroundingManager.onEnteringBackground();
         }
         unregisterReceiver(mSignoutReceiver);
 
     }
 
     public static void showInvalidStateWarning(Context context) {
-        Toast.makeText(context, R.string.msg_not_logged_in, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, R.string.msg_not_logged_in, Toast.LENGTH_LONG)
+                .show();
     }
 
     protected void onSignoutComplete() {
