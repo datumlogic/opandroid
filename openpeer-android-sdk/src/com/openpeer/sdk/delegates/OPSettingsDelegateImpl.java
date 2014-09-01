@@ -92,7 +92,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
             }
             cursor.close();
         }
-//        Log.d(TAG, "simpleQueryForString key " + key + " value " + defaultValue);
+        // Log.d(TAG, "simpleQueryForString key " + key + " value " + defaultValue);
         return defaultValue;
     }
 
@@ -337,7 +337,20 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
                     "", "string" },
             {
                     "openpeer/services/debug/only-allow-turn-to-relay-data-sent-to-specific-ips",
-                    "", "string" }
+                    "", "string" },
+                    //TODO:test these settings
+            {
+                    "openpeer/core/conversation-thread-host-inactive-close-time-in-seconds",
+                    "600", "int" },
+            { "openpeer/stack/account-shutdown-on-ice-socket-failure",
+                    "false", "bool" },
+            { "openpeer/services/ice-socket-fail-when-no-local-ips"
+                    , "false", "bool" },
+            { "openpeer/core/move-message-to-cache-time-in-seconds",
+                    "120", "int" },
+            {
+                    "openpeer/core/conversation-thread-host-inactive-close-time-in-seconds"
+                    , "600", "int" }
     };
 
 }
