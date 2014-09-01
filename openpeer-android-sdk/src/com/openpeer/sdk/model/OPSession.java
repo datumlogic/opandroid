@@ -413,6 +413,9 @@ public class OPSession extends Observable {
         // TODO: create appropriate logic,e.g. based on windowId
         if (thread.getThreadID().equals(getThread().getThreadID())) {
             return true;
+        } else if (mCurrentWindowId == OPModelUtils
+                .getWindowIdForThread(thread)) {
+            return true;
         }
         return false;
     }

@@ -104,7 +104,9 @@ public class OPSessionManager {
             }
         }
         // No existing session for the thread
-        return new OPSession(thread);
+        OPSession session = new OPSession(thread);
+        addSession(session);
+        return session;
     }
 
     /**
@@ -212,7 +214,7 @@ public class OPSessionManager {
                 }
                 OPSession session = getSessionOfThread(conversationThread);
                 session.onMessageReceived(message);
-                if (OPApplication.getInstance().isInBackground()) {
+                if (BaseActivity.isAppInBackground()) {
                     OPNotificationBuilder.showNotificationForMessage(session,
                             message);
                 }
@@ -344,8 +346,8 @@ public class OPSessionManager {
         mCalls.remove(peerUri);
         mCallStates.remove(peerUri);
         OPNotificationBuilder.cancelNotificationForCall(mCall);
-        if (OPApplication.getInstance().isInBackground()) {
-            OPApplication.getInstance().onEnteringBackground();
+        if (BackgroundingManager.isBackgroundingPending()) {
+            BackgroundingManager.onEnteringBackground();
         }
     }
 
