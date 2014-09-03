@@ -172,6 +172,10 @@ public class ChatFragment extends BaseFragment implements
         mSession.setWindowAttached(true);
         mSession.registerListener(this);
         OPDataManager.getDatastoreDelegate().markMessagesRead(mWindowId);
+        if (!OPDataManager.getInstance().isAccountReady()) {
+            return;
+        }
+        // All following stuff can only be done if the account is in ready state
 
         // TODO: proper look up
         String peerUri = mSession.getParticipants().get(0).getPeerUri();
@@ -199,6 +203,9 @@ public class ChatFragment extends BaseFragment implements
         mSession.unregisterListener(this);
         if (mCallInfoView.isShown()) {
             mCallInfoView.unbind();
+        }
+        if (!OPDataManager.getInstance().isAccountReady()) {
+            return;
         }
         mSession.getThread().setStatusInThread(
                 ComposingStates.ComposingState_Inactive);
@@ -240,7 +247,8 @@ public class ChatFragment extends BaseFragment implements
                 final OPMessage msg = new OPMessage(0, OPMessageType.TYPE_TEXT,
                         mComposeBox.getText().toString(), System
                                 .currentTimeMillis(),
-                        messageId);
+                        messageId
+                        );
                 msg.setRead(true);
 
                 mComposeBox.setText("");
@@ -305,26 +313,29 @@ public class ChatFragment extends BaseFragment implements
         private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
         private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
         private final static int VIEWTYPE_STATUS_VIEW = 2;
-        ComposingStates composingState;
+        private List<OPUser> composingStates = new ArrayList<OPUser>();
 
-        private boolean isPeerTyping() {
-            return composingState == ComposingStates.ComposingState_Composing;
+        private boolean isStatus(int position) {
+            return position > super.getCount() - 1;
         }
 
         public MessagesAdaptor(Context context, Cursor c) {
             super(context, c);
-            // TODO Auto-generated constructor stub
         }
 
-        public void notifyDataSetChanged(ComposingStates state) {
-            composingState = state;
+        public void notifyDataSetChanged(ComposingStates state, OPUser contact) {
+            if (state == ComposingStates.ComposingState_Composing) {
+                composingStates.add(contact);
+            } else {
+                composingStates.remove(contact);
+            }
             super.notifyDataSetChanged();
         }
 
         @Override
         public Object getItem(int position) {
-            if (isPeerTyping() && position == getCount() - 1) {
-                return null;
+            if (isStatus(position)) {
+                return composingStates.get(position - super.getCount());
             } else {
                 return super.getItem(position);
             }
@@ -332,8 +343,8 @@ public class ChatFragment extends BaseFragment implements
 
         @Override
         public long getItemId(int position) {
-            if (isPeerTyping() && position == getCount() - 1) {
-                return -1;
+            if (isStatus(position)) {
+                return -position;
             } else {
                 return super.getItemId(position);
             }
@@ -341,12 +352,12 @@ public class ChatFragment extends BaseFragment implements
 
         @Override
         public int getCount() {
-            return super.getCount() + (isPeerTyping() ? 1 : 0);
+            return super.getCount() + composingStates.size();
         }
 
         @Override
         public int getItemViewType(int position) {
-            if (isPeerTyping() && position == getCount() - 1) {
+            if (isStatus(position)) {
                 return VIEWTYPE_STATUS_VIEW;
             }
 
@@ -370,11 +381,13 @@ public class ChatFragment extends BaseFragment implements
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (isPeerTyping() && position == getCount() - 1) {
+            if (isStatus(position)) {
                 if (convertView == null) {
-                    convertView = View.inflate(getActivity(),
-                            R.layout.item_peer_status, null);
+                    convertView = new ComposingStatusView(parent.getContext());
                 }
+                ((ComposingStatusView) convertView).update(
+                        (OPUser) getItem(position), null);
+
                 return convertView;
 
             } else {
@@ -385,11 +398,12 @@ public class ChatFragment extends BaseFragment implements
         @Override
         public View getDropDownView(int position, View convertView,
                 ViewGroup parent) {
-            if (isPeerTyping() && position == getCount() - 1) {
+            if (isStatus(position)) {
                 if (convertView == null) {
-                    convertView = View.inflate(getActivity(),
-                            R.layout.item_peer_status, null);
+                    convertView = new ComposingStatusView(parent.getContext());
                 }
+                ((ComposingStatusView) convertView).update(
+                        (OPUser) getItem(position), null);
                 return convertView;
 
             } else {
@@ -419,8 +433,7 @@ public class ChatFragment extends BaseFragment implements
                         null);
                 break;
             case VIEWTYPE_STATUS_VIEW:
-                view = View.inflate(getActivity(), R.layout.item_peer_status,
-                        null);
+                view = new ComposingStatusView(context);
                 break;
             }
             ViewHolder viewHolder = new ViewHolder(view, viewType);
@@ -628,8 +641,9 @@ public class ChatFragment extends BaseFragment implements
     // Beginning of SessionListener implementation
 
     @Override
-    public void onContactComposingStateChanged(ComposingStates composingStates) {
-        mAdapter.notifyDataSetChanged(composingStates);
+    public void onContactComposingStateChanged(ComposingStates composingStates,
+                                               OPUser contact) {
+        mAdapter.notifyDataSetChanged(composingStates, contact);
     }
 
     @Override

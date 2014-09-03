@@ -54,6 +54,7 @@ import com.openpeer.sdk.utils.OPModelUtils;
  * 
  */
 public class OPSession extends Observable {
+    private static final String TAG = OPSession.class.getSimpleName();
 
     // So if Alice and Bob, Eric in group chat, Alice then added Mike, a new
     // session is created but from Alice point of view,
@@ -420,10 +421,16 @@ public class OPSession extends Observable {
         return false;
     }
 
-    public void onContactComposingStateChanged(ComposingStates state) {
+    public void onContactComposingStateChanged(ComposingStates state,
+            OPContact contact) {
+        OPUser user = getUserByContact(contact);
+        if (user == null) {
+            Log.e(TAG, "onContactComposingStateChanged couldn't find user");
+            return;
+        }
         synchronized (listeners) {
             for (SessionListener listener : listeners) {
-                listener.onContactComposingStateChanged(state);
+                listener.onContactComposingStateChanged(state, user);
             }
         }
     }

@@ -189,7 +189,7 @@ public class OPSessionManager {
                         .getContactComposingStatus(contact);
                 if (state != null) {
                     OPSession session = getSessionOfThread(conversationThread);
-                    session.onContactComposingStateChanged(state);
+                    session.onContactComposingStateChanged(state, contact);
                 }
             }
 

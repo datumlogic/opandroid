@@ -98,13 +98,10 @@ public class OPAccountDelegateImpl extends OPAccountDelegate {
 			break;
 		case AccountState_Ready:
 			Log.w("login", "Account READY !!!!!!!!!!!!");
-			OPDataManager.getInstance().setAccountReady(true);
-
 			LoginManager.getInstance().onAccountStateReady(account);
 			mListener = null;
 			break;
 		case AccountState_Shutdown:
-			OPDataManager.getInstance().setAccountReady(false);
 			if (mListener != null) {
 				mListener.onLoginError();
 				mListener = null;

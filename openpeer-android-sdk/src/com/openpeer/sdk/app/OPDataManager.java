@@ -35,6 +35,7 @@ import java.util.List;
 
 import android.util.Log;
 
+import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
@@ -188,17 +189,15 @@ public class OPDataManager {
         }
     }
 
-    public long getUserIdForContact(OPContact contact, OPIdentityContact iContact) {
+    public long getUserIdForContact(OPContact contact,
+            OPIdentityContact iContact) {
         // TODO implement proper userId querying and gereration
         return contact.getPeerURI().hashCode();
     }
 
     public boolean isAccountReady() {
-        return mAccountReady;
-    }
-
-    public void setAccountReady(boolean value) {
-        mAccountReady = value;
+        return mAccount != null
+                && mAccount.getState() == AccountStates.AccountState_Ready;
     }
 
     public OPUser getUserByPeerUri(String uri) {
