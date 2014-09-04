@@ -182,4 +182,12 @@ public interface OPDatastoreDelegate {
 	 */
     public void notifyContactsChanged();
 
+    /**
+     * @param message
+     * @param windowId
+     * @param threadId
+     * @return
+     */
+    int updateMessage(OPMessage message, long windowId, String threadId);
+
 }

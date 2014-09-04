@@ -63,5 +63,6 @@
     <string name="msg_cannot_signout_with_call">You have active calls. Please hangup calls before signout</string>
     <string name="msg_typing">%s is typing…</string>
     <string name="msg_inactive">%s is contemplating navel…</string>
+    <string name="msg_deleted">This message has been deleted</string>
 
 </resources>

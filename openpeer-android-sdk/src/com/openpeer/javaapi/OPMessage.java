@@ -31,6 +31,7 @@ package com.openpeer.javaapi;
 
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.model.MessageState;
 import com.openpeer.sdk.model.OPUser;
 
 import android.database.Cursor;
@@ -44,6 +45,8 @@ public class OPMessage {
     public static class OPMessageType {
         public static final String TYPE_TEXT = "text/x-application-hookflash-message-text";
         public static final String TYPE_CONTROL = "text/x-application-hookflash-message-system";
+        public static final String TYPE_CALL_LOG = "text/x-application-hookflash-call-log";
+
         // Used to record/show call record
         // public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
         // public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
@@ -71,7 +74,7 @@ public class OPMessage {
     private Time mTime;
     private long mSenderId;
     private String mMessageId;
-    private boolean mRead;// read time in millis
+    private MessageState mState;// read time in millis
     private int mDeliveryStatus;
     private String mReplacesMessageId = "";
     private boolean mValidated;
@@ -92,12 +95,12 @@ public class OPMessage {
         this.mValidated = mValidated;
     }
 
-    public boolean isRead() {
-        return mRead;
+    public MessageState getState() {
+        return mState;
     }
 
-    public void setRead(boolean read) {
-        this.mRead = read;
+    public void setState(MessageState state) {
+        this.mState = state;
     }
 
     public String getMessageId() {
@@ -120,7 +123,8 @@ public class OPMessage {
     }
 
     public OPMessage(long senderId, String mMessageType, String message,
-            long sendTime, String messageId, boolean isRead, int deliveryStatus) {
+            long sendTime, String messageId, MessageState state,
+            int deliveryStatus) {
         super();
         this.mSenderId = senderId;
         this.mMessageType = mMessageType;
@@ -128,13 +132,14 @@ public class OPMessage {
         this.mTime = new Time();
         mTime.set(sendTime);
         this.mMessageId = messageId;
-        this.mRead = isRead;
+        this.mState = state;
         this.mDeliveryStatus = deliveryStatus;
     }
 
     public OPMessage(long senderId, String mMessageType, String message,
             long sendTime, String messageId) {
-        this(senderId, mMessageType, message, sendTime, messageId, true, 0);
+        this(senderId, mMessageType, message, sendTime, messageId,
+                MessageState.Read, 0);
     }
 
     public OPContact getFrom() {
@@ -178,18 +183,27 @@ public class OPMessage {
     }
 
     public static OPMessage fromCursor(Cursor cursor) {
-        return new OPMessage(cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
-                cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
-                cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
-                cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
-                cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
-                cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ)) == 1,
-                cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
+        return new OPMessage(
+                cursor.getLong(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
+                cursor.getLong(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
+                MessageState.values()[cursor.getInt(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ))],
+                cursor.getInt(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
     }
 
     public String toString() {
         return super.toString() + " from " + mFrom + " messageType "
-                + mMessageType + " message " + mMessage + " id " + mMessageId + " sender id " + mSenderId;
+                + mMessageType + " message " + mMessage + " id " + mMessageId
+                + " sender id " + mSenderId;
     }
 
     /**
@@ -199,6 +213,15 @@ public class OPMessage {
      */
     public OPUser getFromUser() {
         return OPDataManager.getInstance().getUserById(mSenderId);
+    }
+
+    /**
+     * Generate a unique messageId
+     * 
+     * @return
+     */
+    public static String generateUniqueId() {
+        return java.util.UUID.randomUUID().toString().replace("-", "");
     }
 
 }

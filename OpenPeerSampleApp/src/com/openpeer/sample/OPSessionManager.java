@@ -349,6 +349,8 @@ public class OPSessionManager {
         if (BackgroundingManager.isBackgroundingPending()) {
             BackgroundingManager.onEnteringBackground();
         }
+        //save call log
+//        OPDataManager.getInstance().saveCallRecord();
     }
 
     public void hangupCall(OPCall mCall, CallClosedReasons reason) {

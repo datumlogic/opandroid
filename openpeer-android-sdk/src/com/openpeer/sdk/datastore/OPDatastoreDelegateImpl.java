@@ -42,6 +42,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPAccount;
@@ -65,6 +66,7 @@ import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.UserEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
+import com.openpeer.sdk.model.MessageState;
 import com.openpeer.sdk.model.OPUser;
 
 /**
@@ -463,28 +465,63 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     }
 
     @Override
-    public Uri saveMessage(OPMessage message, long windowId, String threadId) {
-        Log.d("TODO",
-                "OPDatastoreDelegate saveMessage " + message.getMessage()
-                        + " sessionId " + windowId + " messageId "
-                        + message.getMessageId());
+    public int updateMessage(OPMessage message, long windowId, String threadId) {
+        if (TextUtils.isEmpty(message.getMessage())) {
+            message.setState(MessageState.Deleted);
+        } else {
+            // this is an edit. put in the edited flag and new message text
+            message.setState(MessageState.Edited);
+        }
+        String where = MessageEntry.COLUMN_NAME_MESSAGE_ID + "=?";
+        String args[] = new String[] { message.getReplacesMessageId() };
+        String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
+                + windowId;
+
         ContentValues values = new ContentValues();
         values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, message.getMessageId());
         values.put(MessageEntry.COLUMN_NAME_MESSAGE_TEXT, message.getMessage());
-        values.put(MessageEntry.COLUMN_NAME_MESSAGE_TIME, message.getTime()
-                .toMillis(true));
 
         values.put(MessageEntry.COLUMN_NAME_MESSAGE_TYPE,
                 message.getMessageType());
         values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
         values.put(COLUMN_NAME_WINDOW_ID, windowId);
-        values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.isRead() ? 1
-                : 0);
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.getState()
+                .ordinal());
 
+        int count = mContext.getContentResolver().update(
+                OPContentProvider.getContentUri(url), values, where, args);
+        if (count == 0) {
+            Log.e(TAG, "updating message failed " + message.getMessageId());
+        }
+        return count;
+    }
+
+    @Override
+    public Uri saveMessage(OPMessage message, long windowId, String threadId) {
+        Log.d("TODO",
+                "OPDatastoreDelegate saveMessage " + message.getMessage()
+                        + " sessionId " + windowId + " messageId "
+                        + message.getMessageId());
+
+        ContentValues values = new ContentValues();
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, message.getMessageId());
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_TEXT, message.getMessage());
+
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_TYPE,
+                message.getMessageType());
+        values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
+        values.put(COLUMN_NAME_WINDOW_ID, windowId);
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.getState()
+                .ordinal());
+
+        // we set the time here because we don't want to update the message time for edit/delete
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_TIME, message.getTime()
+                .toMillis(true));
         String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
                 + windowId;
         Uri uri = mContext.getContentResolver().insert(
                 OPContentProvider.getContentUri(url), values);
+
         // if (uri != null) {
         // Log.d("test", "now notify change for " + url);
         // mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null);

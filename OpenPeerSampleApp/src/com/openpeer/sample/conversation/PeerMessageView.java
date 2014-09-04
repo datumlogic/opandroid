@@ -38,21 +38,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 
-public class SelfMessageView extends RelativeLayout {
+public class PeerMessageView extends RelativeLayout {
     OPMessage mMessage;
     OPSession mSession;
     ImageView avatarView;
     TextView title;
+    View editedIndicator;
 
     TextView time;
     TextView text;
-    View editedIndicator;
     int viewType;
 
     public void setup() {
@@ -63,22 +62,30 @@ public class SelfMessageView extends RelativeLayout {
         editedIndicator = findViewById(R.id.edit);
     }
 
-    public SelfMessageView(Context context) {
+    public PeerMessageView(Context context) {
         this(context, null, 0);
     }
 
-    public SelfMessageView(Context context, AttributeSet attrs, int defStyle) {
+    public PeerMessageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        LayoutInflater.from(context).inflate(R.layout.item_message_self, this);
+        LayoutInflater.from(context).inflate(R.layout.item_message_peer, this);
         setup();
     }
 
-    public SelfMessageView(Context context, AttributeSet attrs) {
+    public PeerMessageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
     public void update(OPMessage data) {
         mMessage = data;
+
+        OPUser user = mSession
+                .getUserBySenderId(data.getSenderId());
+        if (user != null) {
+            if (user.getName() != null) {
+                title.setText(user.getName());
+            }
+        }
 
         time.setText(DateFormatUtils.getSameDayTime(data.getTime()
                 .toMillis(true)));
@@ -87,6 +94,7 @@ public class SelfMessageView extends RelativeLayout {
             text.setText(R.string.msg_deleted);
             text.setEnabled(false);
             editedIndicator.setVisibility(View.GONE);
+
             break;
         case Edited:
             text.setText(data.getMessage());
@@ -98,6 +106,7 @@ public class SelfMessageView extends RelativeLayout {
             text.setText(data.getMessage());
             text.setEnabled(true);
             editedIndicator.setVisibility(View.GONE);
+
         }
     }
 
@@ -107,19 +116,4 @@ public class SelfMessageView extends RelativeLayout {
     public void setSession(OPSession session) {
         mSession = session;
     }
-
-    public OPMessage getMessage() {
-        return mMessage;
-    }
-
-    public void onDeleteSelected() {
-        OPMessage message = new OPMessage(0,
-                OPMessageType.TYPE_TEXT,
-                "",
-                System.currentTimeMillis(),
-                OPMessage.generateUniqueId());
-        message.setReplacesMessageId(mMessage.getMessageId());
-        mSession.sendMessage(message, false);
-    }
-
 }

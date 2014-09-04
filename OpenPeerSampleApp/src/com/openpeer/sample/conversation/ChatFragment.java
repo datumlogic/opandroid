@@ -47,12 +47,16 @@ import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -77,6 +81,7 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
+import com.openpeer.sdk.model.MessageState;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.SessionListener;
@@ -100,6 +105,7 @@ public class ChatFragment extends BaseFragment implements
     List<OPUser> participants;
     private CallInfoView mCallInfoView;
     boolean mTyping;
+    private OPMessage mEditingMessage;
 
     public static ChatFragment newInstance(long[] userIdList) {
         ChatFragment fragment = new ChatFragment();
@@ -220,6 +226,25 @@ public class ChatFragment extends BaseFragment implements
         View emptyView = view.findViewById(R.id.empty_view);
         mMessagesList = (ListView) view.findViewById(R.id.listview);
         mMessagesList.setEmptyView(emptyView);
+
+        registerForContextMenu(mMessagesList);
+        mMessagesList
+                .setOnItemClickListener(new AdapterView.OnItemClickListener()
+                {
+                    @Override
+                    public void onItemClick(AdapterView<?> arg0, View arg1,
+                            int arg2,
+                            long arg3) {
+                        if (arg1 instanceof SelfMessageView
+                                && ((SelfMessageView) arg1).getMessage()
+                                        .getState() != MessageState.Deleted) {
+                            mEditingMessage = ((SelfMessageView) arg1)
+                                    .getMessage();
+
+                            mComposeBox.setText(mEditingMessage.getMessage());
+                        }
+                    }
+                });
         mAdapter = new MessagesAdaptor(getActivity(), null);
         mMessagesList.setAdapter(mAdapter);
         View layout = view.findViewById(R.id.layout_compose);
@@ -240,17 +265,18 @@ public class ChatFragment extends BaseFragment implements
                         || mComposeBox.getText().length() == 0) {
                     return;
                 }
-
-                String messageId = java.util.UUID.randomUUID().toString()
-                        .replace("-", "");
+                OPMessage msg = null;
                 // we use 0 for home user
-                final OPMessage msg = new OPMessage(0, OPMessageType.TYPE_TEXT,
-                        mComposeBox.getText().toString(), System
-                                .currentTimeMillis(),
-                        messageId
-                        );
-                msg.setRead(true);
+                msg = new OPMessage(0,
+                        OPMessageType.TYPE_TEXT,
+                        mComposeBox.getText().toString(),
+                        System.currentTimeMillis(),
+                        OPMessage.generateUniqueId());
 
+                if (mEditingMessage != null) {
+                    msg.setReplacesMessageId(mEditingMessage.getMessageId());
+                    mEditingMessage = null;
+                }
                 mComposeBox.setText("");
 
                 getSession().sendMessage(msg, false);
@@ -411,11 +437,16 @@ public class ChatFragment extends BaseFragment implements
             }
         }
 
+        // this function will not be called for status view
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             if (cursor != null) {
                 OPMessage message = OPMessage.fromCursor(cursor);
-                ((ViewHolder) view.getTag()).update(message);
+                if (view instanceof SelfMessageView) {
+                    ((SelfMessageView) view).update(message);
+                } else if (view instanceof PeerMessageView) {
+                    ((PeerMessageView) view).update(message);
+                }
             }
         }
 
@@ -425,78 +456,104 @@ public class ChatFragment extends BaseFragment implements
             View view = null;
             switch (viewType) {
             case VIEWTYPE_SELF_MESSAGE_VIEW:
-                view = View.inflate(getActivity(), R.layout.item_message_self,
-                        null);
+                view = new SelfMessageView(context);
+                ((SelfMessageView) view).setSession(mSession);
                 break;
             case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-                view = View.inflate(getActivity(), R.layout.item_message_peer,
-                        null);
+                view = new PeerMessageView(context);
+                ((PeerMessageView) view).setSession(mSession);
+
                 break;
             case VIEWTYPE_STATUS_VIEW:
                 view = new ComposingStatusView(context);
                 break;
             }
-            ViewHolder viewHolder = new ViewHolder(view, viewType);
-            view.setTag(viewHolder);
+
             return view;
         }
 
-        class ViewHolder {
-            ImageView avatarView;
-            TextView title;
-
-            TextView time;
-            TextView text;
-            int viewType;
-
-            public ViewHolder(View view, int viewType) {
-                title = (TextView) view.findViewById(R.id.user);
-                avatarView = (ImageView) view.findViewById(R.id.avatar);
-                text = (TextView) view.findViewById(R.id.message);
-                time = (TextView) view.findViewById(R.id.time);
-
-                this.viewType = viewType;
-            }
-
-            void update(OPMessage data) {
-                switch (viewType) {
-                case VIEWTYPE_SELF_MESSAGE_VIEW:
-                    // Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
-                    break;
-                case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-                    OPUser sender = mSession.getUserBySenderId(data
-                            .getSenderId());
-                    // Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
-                    break;
-                case VIEWTYPE_STATUS_VIEW:
-                    return;
-                }
-
-                String avatar = null;
-                if (data.getSenderId() == 0) {
-                    // self
-                    // avatar =
-                    // OPDataManager.getInstance().getSelfContacts().get(0).getDefaultAvatarUrl();
-                } else {
-                    OPUser user = mSession
-                            .getUserBySenderId(data.getSenderId());
-                    if (user != null) {
-                        avatar = user.getAvatarUri();
-                        if (user.getName() != null) {
-                            title.setText(user.getName());
-                        }
-                    }
-                }
-                // if (avatar != null) {
-                // Picasso.with(getActivity()).load(avatar).into(avatarView);
-                // }
-
-                time.setText(DateFormatUtils.getSameDayTime(data.getTime()
-                        .toMillis(true)));
-                text.setText(data.getMessage());
-            }
-        }
-
+        // class ViewHolder {
+        // ImageView avatarView;
+        // TextView title;
+        //
+        // TextView time;
+        // TextView text;
+        // int viewType;
+        //
+        // public ViewHolder(View view, int viewType) {
+        // title = (TextView) view.findViewById(R.id.user);
+        // avatarView = (ImageView) view.findViewById(R.id.avatar);
+        // text = (TextView) view.findViewById(R.id.message);
+        // time = (TextView) view.findViewById(R.id.time);
+        //
+        // this.viewType = viewType;
+        // }
+        //
+        // /**
+        // *
+        // */
+        // public void onLongClick() {
+        // Log.d(TAG, "onItemLongClick");
+        // switch (viewType) {
+        // case VIEWTYPE_SELF_MESSAGE_VIEW:
+        //
+        // break;
+        // case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
+        //
+        // // Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
+        // break;
+        // }
+        // }
+        //
+        // void update(OPMessage data) {
+        // switch (viewType) {
+        // case VIEWTYPE_SELF_MESSAGE_VIEW:
+        // // Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
+        //
+        // break;
+        // case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
+        // OPUser sender = mSession.getUserBySenderId(data
+        // .getSenderId());
+        // // Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
+        // break;
+        // }
+        //
+        // String avatar = null;
+        // if (data.getSenderId() == 0) {
+        // // self
+        // // avatar =
+        // // OPDataManager.getInstance().getSelfContacts().get(0).getDefaultAvatarUrl();
+        // } else {
+        // OPUser user = mSession
+        // .getUserBySenderId(data.getSenderId());
+        // if (user != null) {
+        // avatar = user.getAvatarUri();
+        // if (user.getName() != null) {
+        // title.setText(user.getName());
+        // }
+        // }
+        // }
+        // // if (avatar != null) {
+        // // Picasso.with(getActivity()).load(avatar).into(avatarView);
+        // // }
+        //
+        // time.setText(DateFormatUtils.getSameDayTime(data.getTime()
+        // .toMillis(true)));
+        // switch (data.getState()) {
+        // case Deleted:
+        // text.setText(R.string.msg_deleted);
+        // text.setEnabled(false);
+        // break;
+        // case Edited:
+        // text.setText(data.getMessage());
+        // text.setEnabled(true);
+        // break;
+        // default:
+        // text.setText(data.getMessage());
+        // text.setEnabled(true);
+        // }
+        // }
+        // }
     }
 
     @Override
@@ -639,10 +696,36 @@ public class ChatFragment extends BaseFragment implements
     }
 
     // Beginning of SessionListener implementation
+    static final int MENUID_DELETE_MESSAGE = 10000;
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+            ContextMenuInfo menuInfo) {
+        if (v == mMessagesList) {
+            AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) menuInfo;
+
+            if (acmi.targetView instanceof SelfMessageView) {
+                menu.add(0, MENUID_DELETE_MESSAGE, Menu.NONE, "delete");
+            }
+        }
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENUID_DELETE_MESSAGE:
+            AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item
+                    .getMenuInfo();
+            ((SelfMessageView) acmi.targetView).onDeleteSelected();
+            break;
+        }
+        return super.onContextItemSelected(item);
+    }
 
     @Override
     public void onContactComposingStateChanged(ComposingStates composingStates,
-                                               OPUser contact) {
+            OPUser contact) {
         mAdapter.notifyDataSetChanged(composingStates, contact);
     }
 

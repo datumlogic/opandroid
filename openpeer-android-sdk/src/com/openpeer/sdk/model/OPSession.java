@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Observable;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.openpeer.javaapi.ComposingStates;
@@ -46,7 +47,9 @@ import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.utils.OPModelUtils;
+import com.openpeer.sdk.model.MessageState;
 
 /**
  * A session represents extact state of a conversation thread.
@@ -117,8 +120,13 @@ public class OPSession extends Observable {
         getThread().sendMessage(message.getMessageId(),
                 message.getReplacesMessageId(),
                 message.getMessageType(), message.getMessage(), signMessage);
-        OPDataManager.getDatastoreDelegate().saveMessage(message,
-                mCurrentWindowId, getThread().getThreadID());
+        if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
+            OPDataManager.getDatastoreDelegate().updateMessage(message,
+                    mCurrentWindowId, getThread().getThreadID());
+        } else {
+            OPDataManager.getDatastoreDelegate().saveMessage(message,
+                    mCurrentWindowId, getThread().getThreadID());
+        }
         return message;
     }
 
@@ -371,11 +379,15 @@ public class OPSession extends Observable {
         if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
             OPUser user = getUserByContact(message.getFrom());
             message.setSenderId(user.getUserId());
-            if (isWindowAttached()) {
-                message.setRead(true);
+            if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
+                OPDataManager.getDatastoreDelegate().updateMessage(message,
+                        mCurrentWindowId, getThread().getThreadID());
+            } else if (isWindowAttached()) {
+                message.setState(MessageState.Read);
+
+                OPDataManager.getDatastoreDelegate().saveMessage(message,
+                        mCurrentWindowId, getThread().getThreadID());
             }
-            OPDataManager.getDatastoreDelegate().saveMessage(message,
-                    mCurrentWindowId, getThread().getThreadID());
         } else {
             Log.d("test",
                     "SessionManager onMessageReceived "
