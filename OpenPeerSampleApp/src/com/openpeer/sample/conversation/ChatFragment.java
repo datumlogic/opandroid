@@ -85,6 +85,7 @@ import com.openpeer.sdk.model.MessageState;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.SessionListener;
+import com.openpeer.sdk.utils.NoDuplicateArrayList;
 import com.openpeer.sdk.utils.OPModelUtils;
 
 public class ChatFragment extends BaseFragment implements
@@ -151,7 +152,7 @@ public class ChatFragment extends BaseFragment implements
 
     /**
      * Lazy creating session. Call this when user sends message
-     * 
+     *
      * @return
      */
     private OPSession getSession() {
@@ -229,15 +230,13 @@ public class ChatFragment extends BaseFragment implements
 
         registerForContextMenu(mMessagesList);
         mMessagesList
-                .setOnItemClickListener(new AdapterView.OnItemClickListener()
-                {
+                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> arg0, View arg1,
-                            int arg2,
-                            long arg3) {
+                                            int arg2,
+                                            long arg3) {
                         if (arg1 instanceof SelfMessageView
-                                && ((SelfMessageView) arg1).getMessage()
-                                        .getState() != MessageState.Deleted) {
+                                && ((SelfMessageView) arg1).canEditMessage()) {
                             mEditingMessage = ((SelfMessageView) arg1)
                                     .getMessage();
 
@@ -339,7 +338,7 @@ public class ChatFragment extends BaseFragment implements
         private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
         private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
         private final static int VIEWTYPE_STATUS_VIEW = 2;
-        private List<OPUser> composingStates = new ArrayList<OPUser>();
+        private NoDuplicateArrayList<OPUser> composingStates = new NoDuplicateArrayList<OPUser>();
 
         private boolean isStatus(int position) {
             return position > super.getCount() - 1;
@@ -471,89 +470,6 @@ public class ChatFragment extends BaseFragment implements
 
             return view;
         }
-
-        // class ViewHolder {
-        // ImageView avatarView;
-        // TextView title;
-        //
-        // TextView time;
-        // TextView text;
-        // int viewType;
-        //
-        // public ViewHolder(View view, int viewType) {
-        // title = (TextView) view.findViewById(R.id.user);
-        // avatarView = (ImageView) view.findViewById(R.id.avatar);
-        // text = (TextView) view.findViewById(R.id.message);
-        // time = (TextView) view.findViewById(R.id.time);
-        //
-        // this.viewType = viewType;
-        // }
-        //
-        // /**
-        // *
-        // */
-        // public void onLongClick() {
-        // Log.d(TAG, "onItemLongClick");
-        // switch (viewType) {
-        // case VIEWTYPE_SELF_MESSAGE_VIEW:
-        //
-        // break;
-        // case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-        //
-        // // Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
-        // break;
-        // }
-        // }
-        //
-        // void update(OPMessage data) {
-        // switch (viewType) {
-        // case VIEWTYPE_SELF_MESSAGE_VIEW:
-        // // Picasso.with(getActivity()).load(mSelfContact.getDefaultAvatarUrl()).into(avatarView);
-        //
-        // break;
-        // case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
-        // OPUser sender = mSession.getUserBySenderId(data
-        // .getSenderId());
-        // // Picasso.with(getActivity()).load(sender.getAvatarUri()).into(avatarView);
-        // break;
-        // }
-        //
-        // String avatar = null;
-        // if (data.getSenderId() == 0) {
-        // // self
-        // // avatar =
-        // // OPDataManager.getInstance().getSelfContacts().get(0).getDefaultAvatarUrl();
-        // } else {
-        // OPUser user = mSession
-        // .getUserBySenderId(data.getSenderId());
-        // if (user != null) {
-        // avatar = user.getAvatarUri();
-        // if (user.getName() != null) {
-        // title.setText(user.getName());
-        // }
-        // }
-        // }
-        // // if (avatar != null) {
-        // // Picasso.with(getActivity()).load(avatar).into(avatarView);
-        // // }
-        //
-        // time.setText(DateFormatUtils.getSameDayTime(data.getTime()
-        // .toMillis(true)));
-        // switch (data.getState()) {
-        // case Deleted:
-        // text.setText(R.string.msg_deleted);
-        // text.setEnabled(false);
-        // break;
-        // case Edited:
-        // text.setText(data.getMessage());
-        // text.setEnabled(true);
-        // break;
-        // default:
-        // text.setText(data.getMessage());
-        // text.setEnabled(true);
-        // }
-        // }
-        // }
     }
 
     @Override
@@ -657,12 +573,6 @@ public class ChatFragment extends BaseFragment implements
     // Begin: CursorCallback implementation
     private static final int URL_LOADER = 0;
 
-    // static final String LIST_PROJECTION[] = { BaseColumns._ID,
-    // MessageEntry.COLUMN_NAME_MESSAGE_ID,
-    // MessageEntry.COLUMN_NAME_MESSAGE_TEXT,
-    // MessageEntry.COLUMN_NAME_SENDER_ID,
-    // MessageEntry.COLUMN_NAME_WINDOW_ID };
-
     @Override
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
         switch (loaderID) {
@@ -704,7 +614,8 @@ public class ChatFragment extends BaseFragment implements
         if (v == mMessagesList) {
             AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) menuInfo;
 
-            if (acmi.targetView instanceof SelfMessageView) {
+            if (acmi.targetView instanceof SelfMessageView
+                    && ((SelfMessageView) acmi.targetView).canEditMessage()) {
                 menu.add(0, MENUID_DELETE_MESSAGE, Menu.NONE, "delete");
             }
         }

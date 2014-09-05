@@ -41,10 +41,12 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
+import com.openpeer.sdk.model.MessageState;
 import com.openpeer.sdk.model.OPSession;
 import com.openpeer.sdk.model.OPUser;
 
 public class SelfMessageView extends RelativeLayout {
+    private static final long FREEZING_PERIOD = 60 * 60 * 1000l;
     OPMessage mMessage;
     OPSession mSession;
     ImageView avatarView;
@@ -120,6 +122,11 @@ public class SelfMessageView extends RelativeLayout {
                 OPMessage.generateUniqueId());
         message.setReplacesMessageId(mMessage.getMessageId());
         mSession.sendMessage(message, false);
+    }
+
+    public boolean canEditMessage() {
+        return mMessage.getTime().toMillis(false) > System.currentTimeMillis() - FREEZING_PERIOD
+                && mMessage.getState() != MessageState.Deleted;
     }
 
 }
