@@ -184,7 +184,7 @@ public class OPHelper {
 
         OPStack stack = OPStack.singleton();
 
-        OPSettings.applyDefaults();
+//        OPSettings.applyDefaults();
         OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
 

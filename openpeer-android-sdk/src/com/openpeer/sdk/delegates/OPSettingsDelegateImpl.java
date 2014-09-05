@@ -241,7 +241,14 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     }
 
     public static void loadDefaultSettings(SQLiteDatabase db) {
-        for (String[] row : DEFAULT_VALUES) {
+        loadSettings(db, DEFAULT_VALUES);
+
+        loadSettings(db, V3_SETTINGS);
+    }
+
+    private static void loadSettings(SQLiteDatabase db, String[][] defaultValues) {
+
+        for (String[] row : defaultValues) {
             ContentValues values = new ContentValues();
             values.put(OPCacheDelegateImpl.COLUMN_KEY, row[0]);
             values.put(OPCacheDelegateImpl.COLUMN_VALUE, row[1]);
@@ -250,6 +257,30 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
                     SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
+
+    public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 2) {
+            loadSettings(db, DEFAULT_VALUES);
+        }
+
+        if (oldVersion < 3) {
+            loadSettings(db, V3_SETTINGS);
+        }
+    }
+
+    static final String V3_SETTINGS[][] = {
+            {
+                    "openpeer/core/conversation-thread-host-inactive-close-time-in-seconds",
+                    "600", "int" },
+            { "openpeer/stack/account-shutdown-on-ice-socket-failure",
+                    "false", "bool" },
+            { "openpeer/services/ice-socket-fail-when-no-local-ips"
+                    , "false", "bool" },
+            { "openpeer/core/move-message-to-cache-time-in-seconds",
+                    "120", "int" },
+            {
+                    "openpeer/core/conversation-thread-host-inactive-close-time-in-seconds"
+                    , "600", "int" } };
 
     static final String DEFAULT_VALUES[][] = {
             {
@@ -337,20 +368,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
                     "", "string" },
             {
                     "openpeer/services/debug/only-allow-turn-to-relay-data-sent-to-specific-ips",
-                    "", "string" },
-                    //TODO:test these settings
-            {
-                    "openpeer/core/conversation-thread-host-inactive-close-time-in-seconds",
-                    "600", "int" },
-            { "openpeer/stack/account-shutdown-on-ice-socket-failure",
-                    "false", "bool" },
-            { "openpeer/services/ice-socket-fail-when-no-local-ips"
-                    , "false", "bool" },
-            { "openpeer/core/move-message-to-cache-time-in-seconds",
-                    "120", "int" },
-            {
-                    "openpeer/core/conversation-thread-host-inactive-close-time-in-seconds"
-                    , "600", "int" }
+                    "", "string" }
     };
 
 }

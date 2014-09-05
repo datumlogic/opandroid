@@ -279,6 +279,9 @@ public class ChatFragment extends BaseFragment implements
                 mComposeBox.setText("");
 
                 getSession().sendMessage(msg, false);
+                mTyping = false;
+                mSession.getThread().setStatusInThread(
+                        ComposingStates.ComposingState_Paused);
 
             }
         });
@@ -355,6 +358,7 @@ public class ChatFragment extends BaseFragment implements
                 composingStates.remove(contact);
             }
             super.notifyDataSetChanged();
+            mMessagesList.setSelection(mMessagesList.getCount() - 1);
         }
 
         @Override
