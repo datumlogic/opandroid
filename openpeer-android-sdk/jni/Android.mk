@@ -475,6 +475,7 @@ $(ANDROIDNDK_PATH)/platforms/android-9/arch-arm/usr/include \
 LOCAL_SRC_FILES := \
 		openpeer-android-sdk/jni/OpenPeerCoreManager.cpp \
 		openpeer-android-sdk/jni/globals.cpp \
+		openpeer-android-sdk/jni/JniUtils.cpp \
 		openpeer-android-sdk/jni/BackgroundingDelegateWrapper.cpp \
 		openpeer-android-sdk/jni/BackgroundingCompletionDelegateWrapper.cpp \
 		openpeer-android-sdk/jni/StackDelegateWrapper.cpp \

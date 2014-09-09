@@ -25,6 +25,7 @@ static jmethodID gFindClassMethod;
 static jclass gCallbackClass;
 static jobject globalAccount;
 
+
 extern IMediaEnginePtr mediaEnginePtr;
 extern SettingsDelegateWrapperPtr settingsDelegatePtr;
 extern CacheDelegateWrapperPtr cacheDelegatePtr;
