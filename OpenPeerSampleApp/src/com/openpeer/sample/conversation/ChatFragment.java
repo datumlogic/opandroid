@@ -179,9 +179,7 @@ public class ChatFragment extends BaseFragment implements
         mSession.setWindowAttached(true);
         mSession.registerListener(this);
         OPDataManager.getDatastoreDelegate().markMessagesRead(mWindowId);
-        if (!OPDataManager.getInstance().isAccountReady()) {
-            return;
-        }
+
         // All following stuff can only be done if the account is in ready state
 
         // TODO: proper look up
@@ -197,6 +195,10 @@ public class ChatFragment extends BaseFragment implements
 
         } else {
             mCallInfoView.setVisibility(View.GONE);
+        }
+        
+        if (!OPDataManager.getInstance().isAccountReady()) {
+            return;
         }
         mSession.getThread().setStatusInThread(
                 ComposingStates.ComposingState_Active);
