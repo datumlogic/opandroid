@@ -659,8 +659,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         long userID = -1;
         ContentValues values = new ContentValues();
         if (user.getLockboxStableId() == null) {
-            Log.d("test", "user doesn't have a stableId");
-            return getUserByPeerUri(user.getPeerUri());
+            Log.e(TAG, "user doesn't have a stableId");
         }
         if (user.getAvatarUri() != null) {
             values.put(DatabaseContracts.COLUMN_NAME_AVATAR_URI,

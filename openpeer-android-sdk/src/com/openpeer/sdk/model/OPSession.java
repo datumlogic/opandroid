@@ -77,17 +77,17 @@ public class OPSession extends Observable {
     long mCurrentWindowId;
     private boolean mWindowAttached;
 
-    private List<SessionListener> listeners = new ArrayList<SessionListener>();
+    private List<SessionListener> mSessionListeners = new ArrayList<SessionListener>();
 
     public void registerListener(SessionListener listener) {
-        synchronized (listeners) {
-            listeners.add(listener);
+        synchronized (mSessionListeners) {
+            mSessionListeners.add(listener);
         }
     }
 
     public void unregisterListener(SessionListener listener) {
-        synchronized (listeners) {
-            listeners.remove(listener);
+        synchronized (mSessionListeners) {
+            mSessionListeners.remove(listener);
         }
     }
 
@@ -382,11 +382,14 @@ public class OPSession extends Observable {
             if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
                 OPDataManager.getDatastoreDelegate().updateMessage(message,
                         mCurrentWindowId, getThread().getThreadID());
-            } else if (isWindowAttached()) {
-                message.setState(MessageState.Read);
+            } else {
+                if (isWindowAttached()) {
+                    message.setState(MessageState.Read);
+                }
 
                 OPDataManager.getDatastoreDelegate().saveMessage(message,
                         mCurrentWindowId, getThread().getThreadID());
+
             }
         } else {
             Log.d("test",
@@ -440,8 +443,8 @@ public class OPSession extends Observable {
             Log.e(TAG, "onContactComposingStateChanged couldn't find user");
             return;
         }
-        synchronized (listeners) {
-            for (SessionListener listener : listeners) {
+        synchronized (mSessionListeners) {
+            for (SessionListener listener : mSessionListeners) {
                 listener.onContactComposingStateChanged(state, user);
             }
         }
