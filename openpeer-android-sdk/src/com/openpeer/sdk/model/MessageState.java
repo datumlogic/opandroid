@@ -32,7 +32,7 @@ package com.openpeer.sdk.model;
  *
  */
 public enum MessageState {
-    NoteRead,
+    NotRead,
     Read,
     Deleted,
     Edited

@@ -116,7 +116,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
                     intent.getStringExtra(PushManager.EXTRA_ALERT),
                     Long.parseLong(intent.getStringExtra(KEY_SEND_TIME)) * 1000,
                     messageId,
-                    MessageState.NoteRead,
+                    MessageState.NotRead,
                     MessageDeliveryStates.MessageDeliveryState_Delivered
                             .ordinal()
             );
@@ -222,7 +222,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
                 alert,
                 Long.parseLong(extras.get(KEY_SEND_TIME)),
                 messageId,
-                MessageState.NoteRead,
+                MessageState.NotRead,
                 MessageDeliveryStates.MessageDeliveryState_Delivered.ordinal());
 
         return OPNotificationBuilder.buildNotificationForMessage(

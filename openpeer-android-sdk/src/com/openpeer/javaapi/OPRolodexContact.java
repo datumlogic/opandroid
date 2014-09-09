@@ -155,9 +155,12 @@ public class OPRolodexContact {
 
 	}
 
-	public Dispositions getDisposition() {
-		return mDisposition;
-	}
+    public Dispositions getDisposition() {
+        if (mDisposition == null) {
+            mDisposition = Dispositions.Disposition_NA;
+        }
+        return mDisposition;
+    }
 
 	public void setDisposition(Dispositions mDisposition) {
 		this.mDisposition = mDisposition;

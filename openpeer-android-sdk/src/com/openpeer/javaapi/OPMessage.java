@@ -96,6 +96,9 @@ public class OPMessage {
     }
 
     public MessageState getState() {
+        if (mState == null) {
+            mState = MessageState.NotRead;
+        }
         return mState;
     }
 
