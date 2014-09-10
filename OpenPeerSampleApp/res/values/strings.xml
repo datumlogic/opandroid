@@ -64,5 +64,8 @@
     <string name="msg_typing">%s is typing…</string>
     <string name="msg_inactive">%s is contemplating navel…</string>
     <string name="msg_deleted">This message has been deleted</string>
+    <string name="label_read">Read</string>
+    <string name="label_delivered">Delivered</string>
+    <string name="label_sent">Sent</string>
 
 </resources>

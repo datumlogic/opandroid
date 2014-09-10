@@ -73,7 +73,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
     // A set of actions that launch activities when a push is opened. Update
     // with any custom actions that also start activities when a push is opened.
-    private static String[] ACTIVITY_ACTIONS = new String[]{
+    private static String[] ACTIVITY_ACTIONS = new String[] {
             DeepLinkAction.DEFAULT_REGISTRY_NAME,
             OpenExternalUrlAction.DEFAULT_REGISTRY_NAME,
             LandingPageAction.DEFAULT_REGISTRY_NAME
@@ -101,12 +101,14 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
             String senderUri = intent.getStringExtra(KEY_PEER_URI);
             String messageId = intent.getStringExtra(KEY_MESSAGE_ID);
-            String replacesMessageId = intent.getStringExtra(KEY_REPLACES_MESSAGE_ID);
+            String replacesMessageId = intent
+                    .getStringExtra(KEY_REPLACES_MESSAGE_ID);
 
             OPUser sender = OPDataManager.getDatastoreDelegate()
                     .getUserByPeerUri(senderUri);
             if (sender == null) {
-                Log.e(logTag, "onReceive Couldn't find user for peer " + senderUri);
+                Log.e(logTag, "onReceive Couldn't find user for peer "
+                        + senderUri);
                 return;
             }
 
@@ -116,15 +118,15 @@ public class PushIntentReceiver extends BroadcastReceiver {
                     intent.getStringExtra(PushManager.EXTRA_ALERT),
                     Long.parseLong(intent.getStringExtra(KEY_SEND_TIME)) * 1000,
                     messageId,
-                    MessageState.NotRead,
+                    MessageState.Normal,
                     MessageDeliveryStates.MessageDeliveryState_Delivered
                             .ordinal()
-            );
+                    );
             if (replacesMessageId != null) {
                 opMessage.setReplacesMessageId(replacesMessageId);
             }
-            long windowId = OPModelUtils.getWindowId(new long[]{sender
-                    .getUserId()});
+            long windowId = OPModelUtils.getWindowId(new long[] { sender
+                    .getUserId() });
 
             OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
                     windowId, "");
@@ -136,14 +138,14 @@ public class PushIntentReceiver extends BroadcastReceiver {
                     "The GCM service deleted "
                             + intent.getStringExtra(GCMMessageHandler.EXTRA_GCM_TOTAL_DELETED)
                             + " messages."
-            );
+                    );
         } else if (action.equals(PushManager.ACTION_REGISTRATION_FINISHED)) {
             String apid = intent.getStringExtra(PushManager.EXTRA_APID);
             Log.i(logTag, "Push registration finished " + apid);
             if (apid != null
                     && OPDataManager.getInstance().getSharedAccount() != null
                     && OPDataManager.getInstance().getSharedAccount()
-                    .getState() == AccountStates.AccountState_Ready) {
+                            .getState() == AccountStates.AccountState_Ready) {
                 OPPushManager.getInstance().associateDeviceToken(
                         OPDataManager.getInstance().getSharedAccount()
                                 .getPeerUri(),
@@ -161,7 +163,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
                             }
                         }
-                );
+                        );
             }
         }
 
@@ -173,8 +175,9 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
     /**
      * Log the values sent in the payload's "extra" dictionary.
-     *
-     * @param intent A PushManager.ACTION_NOTIFICATION_OPENED or ACTION_PUSH_RECEIVED intent.
+     * 
+     * @param intent
+     *            A PushManager.ACTION_NOTIFICATION_OPENED or ACTION_PUSH_RECEIVED intent.
      */
     private void logPushExtras(Intent intent) {
         Set<String> keys = intent.getExtras().keySet();
@@ -193,16 +196,18 @@ public class PushIntentReceiver extends BroadcastReceiver {
             Log.i(logTag,
                     "Push Notification Extra: [" + key + " : "
                             + intent.getStringExtra(key) + "]"
-            );
+                    );
         }
     }
 
     public Notification buildNotification(String alert,
-                                          Map<String, String> extras) {
+            Map<String, String> extras) {
 
         String replacesMessageId = extras.get(KEY_REPLACES_MESSAGE_ID);
         if (!TextUtils.isEmpty(replacesMessageId)) {
-            Log.d(logTag, "buildNotification don't notify for replacesMessageId " + replacesMessageId);
+            Log.d(logTag,
+                    "buildNotification don't notify for replacesMessageId "
+                            + replacesMessageId);
             return null;
         }
 
@@ -222,11 +227,11 @@ public class PushIntentReceiver extends BroadcastReceiver {
                 alert,
                 Long.parseLong(extras.get(KEY_SEND_TIME)),
                 messageId,
-                MessageState.NotRead,
+                MessageState.Normal,
                 MessageDeliveryStates.MessageDeliveryState_Delivered.ordinal());
 
         return OPNotificationBuilder.buildNotificationForMessage(
-                new long[]{message.getSenderId()}, message);
+                new long[] { message.getSenderId() }, message);
     }
 
     public int getNextId(String alert, Map<String, String> extras) {
