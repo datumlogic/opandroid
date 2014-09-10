@@ -385,7 +385,7 @@ public class OPSession extends Observable {
                         mCurrentWindowId, getThread().getThreadID());
             } else {
                 if (isWindowAttached()) {
-                    message.setDeliveryStatus(MessageDeliveryStates.MessageDeliveryState_Read);
+                    message.setRead(true);
                     thread.markAllMessagesRead();
                 }
 
