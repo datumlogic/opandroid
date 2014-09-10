@@ -74,8 +74,9 @@ public class OPMessage {
     private Time mTime;
     private long mSenderId;
     private String mMessageId;
+    private boolean mRead;
     private MessageState mState;// read time in millis
-    private int mDeliveryStatus;
+    private MessageDeliveryStates mDeliveryStatus;
     private String mReplacesMessageId = "";
     private boolean mValidated;
 
@@ -95,9 +96,17 @@ public class OPMessage {
         this.mValidated = mValidated;
     }
 
+    public boolean isRead() {
+        return mRead;
+    }
+
+    public void setRead(boolean read) {
+        this.mRead = read;
+    }
+
     public MessageState getState() {
         if (mState == null) {
-            mState = MessageState.NotRead;
+            mState = MessageState.Normal;
         }
         return mState;
     }
@@ -136,13 +145,13 @@ public class OPMessage {
         mTime.set(sendTime);
         this.mMessageId = messageId;
         this.mState = state;
-        this.mDeliveryStatus = deliveryStatus;
+        this.mDeliveryStatus = MessageDeliveryStates.values()[deliveryStatus];
     }
 
     public OPMessage(long senderId, String mMessageType, String message,
             long sendTime, String messageId) {
         this(senderId, mMessageType, message, sendTime, messageId,
-                MessageState.Read, 0);
+                MessageState.Normal, 0);
     }
 
     public OPContact getFrom() {
@@ -177,11 +186,11 @@ public class OPMessage {
         this.mTime = mTime;
     }
 
-    public int getDeliveryStatus() {
+    public MessageDeliveryStates getDeliveryStatus() {
         return mDeliveryStatus;
     }
 
-    public void setDeliveryStatus(int status) {
+    public void setDeliveryStatus(MessageDeliveryStates status) {
         mDeliveryStatus = status;
     }
 
@@ -198,7 +207,7 @@ public class OPMessage {
                 cursor.getString(cursor
                         .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
                 MessageState.values()[cursor.getInt(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ))],
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_STATUS))],
                 cursor.getInt(cursor
                         .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
     }

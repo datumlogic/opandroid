@@ -209,11 +209,13 @@ public class DatabaseContracts {
         public static final String COLUMN_NAME_MESSAGE_READ = "read";
 
         public static final String COLUMN_NAME_MESSAGE_DELIVERY_STATUS = "delivery_status";
+        public static final String COLUMN_NAME_MESSAGE_STATUS = "messageStatus";
         public String[] PROJECTIONS = { COLUMN_NAME_MESSAGE_ID,
                 COLUMN_NAME_WINDOW_ID, COLUMN_NAME_MESSAGE_TYPE,
                 COLUMN_NAME_SENDER_ID,
                 COLUMN_NAME_MESSAGE_TEXT, COLUMN_NAME_MESSAGE_TIME,
-                COLUMN_NAME_MESSAGE_READ, COLUMN_NAME_MESSAGE_DELIVERY_STATUS };
+                COLUMN_NAME_MESSAGE_READ, COLUMN_NAME_MESSAGE_DELIVERY_STATUS,
+                COLUMN_NAME_MESSAGE_STATUS};
     }
 
     public static abstract class CallEntry implements BaseColumns {
@@ -590,6 +592,9 @@ public class DatabaseContracts {
             + MessageEntry.COLUMN_NAME_MESSAGE_READ + INTEGER_TYPE
             + " default 0" + COMMA_SEP
             + MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE
+            + " default 0"
+            + COMMA_SEP
+            + MessageEntry.COLUMN_NAME_MESSAGE_STATUS + INTEGER_TYPE
             + " )";
     public static final String SQL_CREATE_INDEX_MESSAGES_WINDOW = "create index if not exists "
             + COLUMN_NAME_WINDOW_ID + ON

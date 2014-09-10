@@ -38,7 +38,7 @@ import android.util.Log;
  * 
  */
 public class OPDatabaseHelper extends SQLiteOpenHelper {
-	public static final int DATABASE_VERSION = 1;
+	public static final int DATABASE_VERSION = 2;
 	public static final String DATABASE_NAME = "OpenPeer.db";
 
 	public OPDatabaseHelper(Context context, String name,
@@ -56,7 +56,9 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+	    if(oldVersion<2){
+	        
+	    }
 	}
 
 	@Override

@@ -64,8 +64,10 @@ import android.widget.TextView;
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ComposingStates;
+import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseActivity;
@@ -152,7 +154,7 @@ public class ChatFragment extends BaseFragment implements
 
     /**
      * Lazy creating session. Call this when user sends message
-     *
+     * 
      * @return
      */
     private OPSession getSession() {
@@ -196,12 +198,16 @@ public class ChatFragment extends BaseFragment implements
         } else {
             mCallInfoView.setVisibility(View.GONE);
         }
-        
+
         if (!OPDataManager.getInstance().isAccountReady()) {
             return;
         }
-        mSession.getThread().setStatusInThread(
-                ComposingStates.ComposingState_Active);
+        OPConversationThread thread = mSession.getThread();
+        if (thread != null) {
+            thread.setStatusInThread(
+                    ComposingStates.ComposingState_Active);
+            thread.markAllMessagesRead();
+        }
 
     }
 
@@ -235,8 +241,8 @@ public class ChatFragment extends BaseFragment implements
                 .setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> arg0, View arg1,
-                                            int arg2,
-                                            long arg3) {
+                            int arg2,
+                            long arg3) {
                         if (arg1 instanceof SelfMessageView
                                 && ((SelfMessageView) arg1).canEditMessage()) {
                             mEditingMessage = ((SelfMessageView) arg1)
@@ -343,6 +349,10 @@ public class ChatFragment extends BaseFragment implements
         private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
         private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
         private final static int VIEWTYPE_STATUS_VIEW = 2;
+        
+
+        int myLastReadMessagePosition = -1;
+        int myLastDeliveredMessagePosition = -1;
         private NoDuplicateArrayList<OPUser> composingStates = new NoDuplicateArrayList<OPUser>();
 
         private boolean isStatus(int position) {
@@ -359,8 +369,16 @@ public class ChatFragment extends BaseFragment implements
             } else {
                 composingStates.remove(contact);
             }
+            notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            // TODO Auto-generated method stub
             super.notifyDataSetChanged();
             mMessagesList.setSelection(mMessagesList.getCount() - 1);
+
         }
 
         @Override
@@ -393,7 +411,14 @@ public class ChatFragment extends BaseFragment implements
             }
 
             Cursor cursor = (Cursor) getItem(position);
-            return getItemViewType(cursor);
+            long sender_id = cursor.getLong(cursor
+                    .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
+            if (sender_id == 0) {
+
+                return VIEWTYPE_SELF_MESSAGE_VIEW;
+            } else {
+                return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
+            }
         }
 
         public int getItemViewType(Cursor cursor) {
@@ -422,37 +447,67 @@ public class ChatFragment extends BaseFragment implements
                 return convertView;
 
             } else {
-                return super.getView(position, convertView, parent);
+                Cursor cursor = (Cursor) getItem(position);
+                if (cursor != null) {
+                    OPMessage message = OPMessage.fromCursor(cursor);
+                    if (convertView == null) {
+                        convertView = newView(mContext, cursor, parent);
+                    }
+                    if (convertView instanceof SelfMessageView) {
+                        if (position == myLastReadMessagePosition
+                                || position == myLastDeliveredMessagePosition) {
+                            ((SelfMessageView) convertView).update(message,
+                                    true);
+                        } else {
+                            ((SelfMessageView) convertView).update(message,
+                                    false);
+                        }
+                    } else if (convertView instanceof PeerMessageView) {
+                        ((PeerMessageView) convertView).update(message);
+                    }
+                }
+                return convertView;
             }
         }
 
         @Override
-        public View getDropDownView(int position, View convertView,
-                ViewGroup parent) {
-            if (isStatus(position)) {
-                if (convertView == null) {
-                    convertView = new ComposingStatusView(parent.getContext());
-                }
-                ((ComposingStatusView) convertView).update(
-                        (OPUser) getItem(position), null);
-                return convertView;
+        protected void onContentChanged() {
+            myLastReadMessagePosition = -1;
+            myLastDeliveredMessagePosition = -1;
+            Cursor cursor = mCursor;
+            if (cursor != null && cursor.getCount() > 0) {
+                int position = cursor.getCount() - 1;
+                cursor.moveToLast();
+                while (!cursor.isBeforeFirst()) {
+                    int status = cursor
+                            .getInt(cursor
+                                    .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS));
+                    MessageDeliveryStates messageState = MessageDeliveryStates
+                            .values()[status];
+                    if (messageState == MessageDeliveryStates.MessageDeliveryState_Read) {
+                        // if we found the first read message then break out of the loop
+                        myLastReadMessagePosition = position;
 
-            } else {
-                return super.getDropDownView(position, convertView, parent);
+                        break;
+                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
+                            && myLastReadMessagePosition == -1
+                            && myLastDeliveredMessagePosition == -1) {
+                        // if this is the first delivered state we've encountered before we see a read message, remember it
+                        // and keep looking for the first read message
+                        myLastDeliveredMessagePosition = position;
+
+                    }
+                    cursor.moveToPrevious();
+                    position--;
+                }
+                // cursor.moveToFirst();
             }
+            super.onContentChanged();
         }
 
         // this function will not be called for status view
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            if (cursor != null) {
-                OPMessage message = OPMessage.fromCursor(cursor);
-                if (view instanceof SelfMessageView) {
-                    ((SelfMessageView) view).update(message);
-                } else if (view instanceof PeerMessageView) {
-                    ((PeerMessageView) view).update(message);
-                }
-            }
         }
 
         @Override
@@ -461,7 +516,8 @@ public class ChatFragment extends BaseFragment implements
             View view = null;
             switch (viewType) {
             case VIEWTYPE_SELF_MESSAGE_VIEW:
-                view = new SelfMessageView(context);
+                view = (SelfMessageView) LayoutInflater.from(context).inflate(
+                        R.layout.item_message_self, null);
                 ((SelfMessageView) view).setSession(mSession);
                 break;
             case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
@@ -476,6 +532,7 @@ public class ChatFragment extends BaseFragment implements
 
             return view;
         }
+
     }
 
     @Override
@@ -604,6 +661,7 @@ public class ChatFragment extends BaseFragment implements
         Log.d("test", "ChatFragment onLoadFinished" + cursor);
         mAdapter.changeCursor(cursor);
         mMessagesList.setSelection(mMessagesList.getCount() - 1);
+
     }
 
     @Override
@@ -665,6 +723,12 @@ public class ChatFragment extends BaseFragment implements
     public boolean onContactQuit(OPContact opContact) {
         return false;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.support.v4.widget.CursorAdapter#bindView(android.view.View, android.content.Context, android.database.Cursor)
+     */
 
     // End of SessionListener implementation
 }

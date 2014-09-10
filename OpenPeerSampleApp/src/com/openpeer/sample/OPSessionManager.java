@@ -213,7 +213,7 @@ public class OPSessionManager {
                     return;
                 }
                 OPSession session = getSessionOfThread(conversationThread);
-                session.onMessageReceived(message);
+                session.onMessageReceived(conversationThread,message);
                 if (BaseActivity.isAppInBackground()) {
                     OPNotificationBuilder.showNotificationForMessage(session,
                             message);
@@ -229,7 +229,8 @@ public class OPSessionManager {
                                 + messageID + " state "
                                 + state);
 
-                // OPDataManager.getDatastoreDelegate().updateMessageDeliveryStatus();
+                OPDataManager.getDatastoreDelegate()
+                        .updateMessageDeliveryStatus(messageID, state, System.currentTimeMillis());
             }
 
             @Override
