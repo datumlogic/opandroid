@@ -289,7 +289,7 @@ public class ChatFragment extends BaseFragment implements
                 getSession().sendMessage(msg, false);
                 mTyping = false;
                 mSession.getThread().setStatusInThread(
-                        ComposingStates.ComposingState_Paused);
+                        ComposingStates.ComposingState_Active);
 
             }
         });
