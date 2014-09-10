@@ -29,6 +29,7 @@
  *******************************************************************************/
 package com.openpeer.sdk.datastore;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
 /**
@@ -209,11 +210,13 @@ public class DatabaseContracts {
         public static final String COLUMN_NAME_MESSAGE_READ = "read";
 
         public static final String COLUMN_NAME_MESSAGE_DELIVERY_STATUS = "delivery_status";
+        public static final String COLUMN_NAME_MESSAGE_STATUS = "messageStatus";
         public String[] PROJECTIONS = { COLUMN_NAME_MESSAGE_ID,
                 COLUMN_NAME_WINDOW_ID, COLUMN_NAME_MESSAGE_TYPE,
                 COLUMN_NAME_SENDER_ID,
                 COLUMN_NAME_MESSAGE_TEXT, COLUMN_NAME_MESSAGE_TIME,
-                COLUMN_NAME_MESSAGE_READ, COLUMN_NAME_MESSAGE_DELIVERY_STATUS };
+                COLUMN_NAME_MESSAGE_READ, COLUMN_NAME_MESSAGE_DELIVERY_STATUS,
+                COLUMN_NAME_MESSAGE_STATUS };
     }
 
     public static abstract class CallEntry implements BaseColumns {
@@ -590,6 +593,9 @@ public class DatabaseContracts {
             + MessageEntry.COLUMN_NAME_MESSAGE_READ + INTEGER_TYPE
             + " default 0" + COMMA_SEP
             + MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE
+            + " default 0"
+            + COMMA_SEP
+            + MessageEntry.COLUMN_NAME_MESSAGE_STATUS + INTEGER_TYPE
             + " )";
     public static final String SQL_CREATE_INDEX_MESSAGES_WINDOW = "create index if not exists "
             + COLUMN_NAME_WINDOW_ID + ON
@@ -620,6 +626,11 @@ public class DatabaseContracts {
             // Note: always keep view creation at end
             DatabaseContracts.SQL_CREATE_VIEW_CONTACT,
             DatabaseContracts.SQL_CREATE_VIEW_WINDOW };
-    // END of create statement
 
+    // END of create statement
+    public static void upgradeToV2(SQLiteDatabase db) {
+        String sql = "alter table " + MessageEntry.TABLE_NAME + " add column "
+                + MessageEntry.COLUMN_NAME_MESSAGE_STATUS + " integer default 0";
+        db.execSQL(sql);
+    }
 }

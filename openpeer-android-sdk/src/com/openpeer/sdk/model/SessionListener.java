@@ -29,7 +29,9 @@
 package com.openpeer.sdk.model;
 
 import com.openpeer.javaapi.ComposingStates;
+import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPMessage;
 
 /**

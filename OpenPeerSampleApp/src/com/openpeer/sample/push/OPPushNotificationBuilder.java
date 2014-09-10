@@ -77,7 +77,7 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
                 alert,
                 Long.parseLong(extras.get(KEY_SEND_TIME)),
                 messageId,
-                MessageState.NotRead,
+                MessageState.Normal,
                 MessageDeliveryStates.MessageDeliveryState_Delivered.ordinal());
         return OPNotificationBuilder.buildNotificationForMessage(
                 new long[] { sender.getUserId() }, message);

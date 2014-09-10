@@ -33,7 +33,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -43,26 +42,26 @@ import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.model.MessageState;
 import com.openpeer.sdk.model.OPSession;
-import com.openpeer.sdk.model.OPUser;
 
 public class SelfMessageView extends RelativeLayout {
     private static final long FREEZING_PERIOD = 60 * 60 * 1000l;
     OPMessage mMessage;
     OPSession mSession;
-    ImageView avatarView;
     TextView title;
 
     TextView time;
     TextView text;
     View editedIndicator;
+    TextView deliveryStatusView;
     int viewType;
 
     public void setup() {
         title = (TextView) findViewById(R.id.user);
-        avatarView = (ImageView) findViewById(R.id.avatar);
         text = (TextView) findViewById(R.id.message);
         time = (TextView) findViewById(R.id.time);
         editedIndicator = findViewById(R.id.edit);
+        deliveryStatusView = (TextView) findViewById(R.id.status);
+
     }
 
     public SelfMessageView(Context context) {
@@ -71,7 +70,7 @@ public class SelfMessageView extends RelativeLayout {
 
     public SelfMessageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        LayoutInflater.from(context).inflate(R.layout.item_message_self, this);
+        LayoutInflater.from(context).inflate(R.layout.layout_message_self, this);
         setup();
     }
 
@@ -79,11 +78,12 @@ public class SelfMessageView extends RelativeLayout {
         this(context, attrs, 0);
     }
 
-    public void update(OPMessage data) {
+    public void update(OPMessage data,boolean showDeliveryState) {
         mMessage = data;
 
         time.setText(DateFormatUtils.getSameDayTime(data.getTime()
                 .toMillis(true)));
+
         switch (data.getState()) {
         case Deleted:
             text.setText(R.string.msg_deleted);
@@ -100,6 +100,27 @@ public class SelfMessageView extends RelativeLayout {
             text.setText(data.getMessage());
             text.setEnabled(true);
             editedIndicator.setVisibility(View.GONE);
+        }
+        if(showDeliveryState){
+            showStatusOfMyLastMessage();
+        } else {
+            deliveryStatusView.setVisibility(View.GONE);
+        }
+    }
+
+    private void showStatusOfMyLastMessage() {
+        switch (mMessage.getDeliveryStatus()) {
+        case MessageDeliveryState_Delivered:
+            deliveryStatusView.setText(R.string.label_delivered);
+            deliveryStatusView.setVisibility(View.VISIBLE);
+            break;
+        case MessageDeliveryState_Read:
+            deliveryStatusView.setText(R.string.label_read);
+            deliveryStatusView.setVisibility(View.VISIBLE);
+            break;
+        default:
+            break;
+
         }
     }
 
@@ -125,7 +146,8 @@ public class SelfMessageView extends RelativeLayout {
     }
 
     public boolean canEditMessage() {
-        return mMessage.getTime().toMillis(false) > System.currentTimeMillis() - FREEZING_PERIOD
+        return mMessage.getTime().toMillis(false) > System.currentTimeMillis()
+                - FREEZING_PERIOD
                 && mMessage.getState() != MessageState.Deleted;
     }
 
