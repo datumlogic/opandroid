@@ -45,6 +45,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
@@ -485,7 +486,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 message.getMessageType());
         values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
         values.put(COLUMN_NAME_WINDOW_ID, windowId);
-        values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.getState()
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.isRead());
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_STATUS, message.getState()
                 .ordinal());
 
         int count = mContext.getContentResolver().update(
@@ -511,7 +513,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 message.getMessageType());
         values.put(MessageEntry.COLUMN_NAME_SENDER_ID, message.getSenderId());
         values.put(COLUMN_NAME_WINDOW_ID, windowId);
-        values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.getState()
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_READ, message.isRead());
+        values.put(MessageEntry.COLUMN_NAME_MESSAGE_STATUS, message.getState()
                 .ordinal());
 
         // we set the time here because we don't want to update the message time for edit/delete
@@ -532,12 +535,12 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     @Override
     public boolean updateMessageDeliveryStatus(String messageId,
-            int deliveryStatus, long updateTime) {
+            MessageDeliveryStates deliveryStatus, long updateTime) {
         ContentValues values = new ContentValues();
         values.put(MessageEntry.COLUMN_NAME_MESSAGE_ID, messageId);
         values.put(MessageEntry.COLUMN_NAME_MESSAGE_TIME, updateTime);
         values.put(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS,
-                deliveryStatus);
+                deliveryStatus.ordinal());
         String selection = MessageEntry.COLUMN_NAME_MESSAGE_ID + "=?";
         String args[] = new String[] { messageId };
         int count = update(MessageEntry.TABLE_NAME, values, selection, args);

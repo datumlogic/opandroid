@@ -117,6 +117,7 @@ public class OPSession extends Observable {
 
     public OPMessage sendMessage(OPMessage message, boolean signMessage) {
         Log.d("test", "sending messge " + message);
+        message.setRead(true);
         getThread().sendMessage(message.getMessageId(),
                 message.getReplacesMessageId(),
                 message.getMessageType(), message.getMessage(), signMessage);
@@ -375,7 +376,7 @@ public class OPSession extends Observable {
                 mParticipants);
     }
 
-    public void onMessageReceived(OPMessage message) {
+    public void onMessageReceived(OPConversationThread thread, OPMessage message) {
         if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
             OPUser user = getUserByContact(message.getFrom());
             message.setSenderId(user.getUserId());
@@ -384,7 +385,8 @@ public class OPSession extends Observable {
                         mCurrentWindowId, getThread().getThreadID());
             } else {
                 if (isWindowAttached()) {
-                    message.setState(MessageState.Read);
+                    message.setDeliveryStatus(MessageDeliveryStates.MessageDeliveryState_Read);
+                    thread.markAllMessagesRead();
                 }
 
                 OPDataManager.getDatastoreDelegate().saveMessage(message,

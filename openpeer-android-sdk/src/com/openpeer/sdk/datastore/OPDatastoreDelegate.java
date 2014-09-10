@@ -33,6 +33,7 @@ import java.util.List;
 
 import android.net.Uri;
 
+import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -154,7 +155,7 @@ public interface OPDatastoreDelegate {
 
 //    public OPIdentityContact getIdentityContact(String identityContactId);
 
-    boolean updateMessageDeliveryStatus(String messageId, int deliveryStatus, long updateTime);
+    boolean updateMessageDeliveryStatus(String messageId, MessageDeliveryStates deliveryStatus, long updateTime);
 
     public OPUser getUserByPeerUri(String uri);
 
