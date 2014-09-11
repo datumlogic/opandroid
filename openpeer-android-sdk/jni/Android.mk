@@ -475,6 +475,7 @@ $(ANDROIDNDK_PATH)/platforms/android-9/arch-arm/usr/include \
 LOCAL_SRC_FILES := \
 		openpeer-android-sdk/jni/OpenPeerCoreManager.cpp \
 		openpeer-android-sdk/jni/globals.cpp \
+		openpeer-android-sdk/jni/JniUtils.cpp \
 		openpeer-android-sdk/jni/BackgroundingDelegateWrapper.cpp \
 		openpeer-android-sdk/jni/BackgroundingCompletionDelegateWrapper.cpp \
 		openpeer-android-sdk/jni/StackDelegateWrapper.cpp \
@@ -504,7 +505,10 @@ LOCAL_SRC_FILES := \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPCall.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPContact.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPConversationThread.cpp \
-
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPComposingStatus.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPSystemMessage.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPCallSystemMessage.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPElement.cpp \
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a
 LOCAL_LDLIBS += -llog -lGLESv2 -lOpenSLES \

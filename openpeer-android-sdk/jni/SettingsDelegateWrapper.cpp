@@ -156,7 +156,6 @@ ULONG SettingsDelegateWrapper::getUInt(const char *key) const
 	jstring keyStr;
 	long fetchedUInt;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Settings delegate getUInt");
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -183,6 +182,8 @@ ULONG SettingsDelegateWrapper::getUInt(const char *key) const
 		jclass callbackClass = findClass(className.c_str());
 		method = jni_env->GetMethodID(callbackClass, "getUInt", "(Ljava/lang/String;)J");
 		fetchedUInt = jni_env->CallLongMethod(javaDelegate, method, keyStr);
+	    __android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Settings delegate getUInt %s value %d",key,fetchedUInt);
+
 	}
 	else
 	{
@@ -475,7 +476,7 @@ void SettingsDelegateWrapper::setUInt(
 	JNIEnv *jni_env = 0;
 	jstring keyStr;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Settings delegate setUInt");
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Settings delegate setUInt %s value %d",key,value);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))

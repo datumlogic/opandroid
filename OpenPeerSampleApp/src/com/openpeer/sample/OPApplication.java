@@ -34,13 +34,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.StrictMode;
 import android.util.Log;
 import android.webkit.CookieManager;
 
-import com.openpeer.javaapi.OPBackgrounding;
 import com.openpeer.javaapi.OPStack;
-import com.openpeer.sample.delegates.BackgroundingCompletionDelegateImpl;
-import com.openpeer.sample.delegates.BackgroundingDelegateImpl;
 import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.OPPushNotificationBuilder;
 import com.openpeer.sample.push.PushIntentReceiver;
@@ -52,82 +50,77 @@ import com.urbanairship.UAirship;
 import com.urbanairship.push.PushManager;
 
 public class OPApplication extends Application {
-    private static final String TAG=OPApplication.class.getSimpleName();
-	private static OPApplication instance;
-	private boolean mInBackground;
+    private static final String TAG = OPApplication.class.getSimpleName();
+    private static OPApplication instance;
     BroadcastReceiver mReceiver;
+    boolean DEVELOPER_MODE = false;
 
-	static {
-		try {
-			System.loadLibrary("z_shared");
-			System.loadLibrary("openpeer");
+    static {
+        try {
+            System.loadLibrary("z_shared");
+            System.loadLibrary("openpeer");
 
-		} catch (UnsatisfiedLinkError use) {
-			use.printStackTrace();
-		}
-	}
+        } catch (UnsatisfiedLinkError use) {
+            use.printStackTrace();
+        }
+    }
 
-	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-		super.onCreate();
-		instance = this;
+    @Override
+    public void onCreate() {
+        // TODO Auto-generated method stub
+        super.onCreate();
+        instance = this;
+        if (DEVELOPER_MODE) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork() // or .detectAll() for all detectable problems
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build());
+        }
 
-		AirshipConfigOptions options = AirshipConfigOptions.loadDefaultOptions(this);
-		UAirship.takeOff(this, options);
-		Logger.logLevel = Log.VERBOSE;
+        AirshipConfigOptions options = AirshipConfigOptions
+                .loadDefaultOptions(this);
+        UAirship.takeOff(this, options);
+        Logger.logLevel = Log.VERBOSE;
 
-		PushManager.shared().setNotificationBuilder(new OPPushNotificationBuilder());
-		PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
+        PushManager.shared().setNotificationBuilder(
+                new OPPushNotificationBuilder());
+        PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
 
-		OPHelper.getInstance().init(this, null);
-		// OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
-		OPSessionManager.getInstance().init();
-		SettingsHelper.getInstance().initLoggers();
-        mReceiver=new BroadcastReceiver() {
+        OPHelper.getInstance().init(this, null);
+        // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
+        OPSessionManager.getInstance().init();
+        SettingsHelper.getInstance().initLoggers();
+        mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d("OPApplication","shutdown received now shutdown");
+                Log.d("OPApplication", "shutdown received now shutdown");
                 OPStack.singleton().shutdown();
                 unregisterReceiver(mReceiver);
             }
         };
-        IntentFilter filter=new IntentFilter(Intent.ACTION_SHUTDOWN);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
         filter.addAction(Intent.ACTION_REBOOT);
-        registerReceiver(mReceiver,filter);
-	}
+        registerReceiver(mReceiver, filter);
+    }
 
-	public static OPApplication getInstance() {
-		// TODO Auto-generated method stub
-		return instance;
-	}
+    public static OPApplication getInstance() {
+        // TODO Auto-generated method stub
+        return instance;
+    }
 
-	public boolean isInBackground() {
-		// TODO Auto-generated method stub
-		return mInBackground;
-	}
-
-	public void onEnteringForeground() {
-		this.mInBackground = false;
-
-        OPBackgrounding.notifyReturningFromBackground();
-
-	}
-
-	public void onEnteringBackground() {
-		this.mInBackground = true;
-        if(OPSessionManager.getInstance().hasCalls()){
-
-        } else {
-            OPBackgrounding.notifyGoingToBackground( BackgroundingCompletionDelegateImpl.getInstance());
-        }
-	}
-
-	public static void signout() {
-		OPSessionManager.getInstance().onSignOut();
-		OPPushManager.onSignOut();
-		OPHelper.getInstance().onSignOut();
-		CookieManager.getInstance().removeAllCookie();
+    public static void signout() {
+        OPSessionManager.getInstance().onSignOut();
+        OPPushManager.onSignOut();
+        OPHelper.getInstance().onSignOut();
+        CookieManager.getInstance().removeAllCookie();
         OPNotificationBuilder.cancelAllUponSignout();
-	}
+    }
 }

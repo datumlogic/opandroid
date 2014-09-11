@@ -33,6 +33,8 @@ package com.openpeer.sdk.datastore;
 import android.database.Cursor;
 
 import com.openpeer.javaapi.OPMessage;
+import com.openpeer.sdk.model.MessageState;
+
 import static com.openpeer.sdk.datastore.DatabaseContracts.*;
 
 /**
@@ -43,15 +45,23 @@ import static com.openpeer.sdk.datastore.DatabaseContracts.*;
  */
 public class OPModelCursorHelper {
 
-	public static OPMessage messageFromCursor(Cursor cursor) {
-		OPMessage message = new OPMessage(cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
-				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
-				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
-				cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
-				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
-				cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ)) == 1,
-				cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
+    public static OPMessage messageFromCursor(Cursor cursor) {
+        OPMessage message = new OPMessage(
+                cursor.getLong(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
+                cursor.getLong(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
+                MessageState.values()[cursor.getInt(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ))],
+                cursor.getInt(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
 
-		return message;
-	}
+        return message;
+    }
 }

@@ -2,16 +2,16 @@
  *
  *  Copyright (c) 2014 , Hookflash Inc.
  *  All rights reserved.
- *  
+ *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *  
+ *
  *  1. Redistributions of source code must retain the above copyright notice, this
  *  list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *  this list of conditions and the following disclaimer in the documentation
  *  and/or other materials provided with the distribution.
- *  
+ *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -22,7 +22,7 @@
  *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  The views and conclusions contained in the software and documentation are those
  *  of the authors and should not be interpreted as representing official policies,
  *  either expressed or implied, of the FreeBSD Project.
@@ -35,10 +35,9 @@ import com.google.gson.annotations.SerializedName;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sdk.app.OPDataManager;
 
-
 public class PushMessage {
-    //"{\"audience\" : {\"device_token\" : \"%@\"}, \"device_types\" : [ \"ios\" ], \"notification\" : {\"ios\" : {\"sound\":\"message-received\",\"alert\": \"%@\",\"content-available\": true,\"priority\": 10}}, \"message\" : {\"title\" : \"%@\", \"body\" : \"%@\", \"content_type\" : \"text/html\"} }"
-    final static String extraFormatStr = "{\"peerURI\":\"%s\",\"messageId\":\"%s\",\"message\":\"%s\",\"location\":\"%s\",\"date\":\"%d\"}";
+    // "{\"audience\" : {\"device_token\" : \"%@\"}, \"device_types\" : [ \"ios\" ], \"notification\" : {\"ios\" : {\"sound\":\"message-received\",\"alert\": \"%@\",\"content-available\": true,\"priority\": 10}}, \"message\" : {\"title\" : \"%@\", \"body\" : \"%@\", \"content_type\" : \"text/html\"} }"
+    final static String extraFormatStr = "{\"peerURI\":\"%s\",\"messageId\":\"%s\",\"replacesMessageId\":\"%s\",\"message\":\"%s\",\"location\":\"%s\",\"date\":\"%d\"}";
     Object audience;
     Notification notification;
     RichMessage message;
@@ -52,10 +51,12 @@ public class PushMessage {
             AndroidNotification notification = new AndroidNotification();
             notification.alert = opMessage.getMessage();
             notification.android = new AndroidOverride();
-            notification.android.extra = new AndroidExtra(OPDataManager.getInstance().getSharedAccount().getPeerUri(),
+            notification.android.extra = new AndroidExtra(
+                    OPDataManager.getInstance().getSharedAccount().getPeerUri(),
                     opMessage.getMessageId(),
+                    opMessage.getReplacesMessageId(),
                     OPDataManager.getInstance().getSharedAccount().getLocationID(),
-                    opMessage.getTime().toMillis(false)/1000 + "");
+                    opMessage.getTime().toMillis(false) / 1000 + "");
             pushMessage.notification = notification;
 
         } else {
@@ -65,12 +66,14 @@ public class PushMessage {
 
             RichMessage msg = new RichMessage();
             msg.title = "";
-            msg.body = String.format(extraFormatStr,
-                    OPDataManager.getInstance().getSharedAccount().getPeerUri(),
-                    opMessage.getMessageId(),
-                    opMessage.getMessage(),
-                    OPDataManager.getInstance().getSharedAccount().getLocationID(),
-                    opMessage.getTime().toMillis(false)/1000);
+            msg.body = String
+                    .format(extraFormatStr,
+                            OPDataManager.getInstance().getSharedAccount().getPeerUri(),
+                            opMessage.getMessageId(),
+                            opMessage.getReplacesMessageId(),
+                            opMessage.getMessage(),
+                            OPDataManager.getInstance().getSharedAccount().getLocationID(),
+                            opMessage.getTime().toMillis(false) / 1000);
 
             msg.content_type = RichMessage.DEFAULT_CONTENT_TYPE;
             pushMessage.setMessage(msg);
@@ -158,18 +161,20 @@ public class PushMessage {
 
     static class AndroidExtra {
         String peerURI;
-        //        String avatar;
         String location;
         String messageId;
+        String replacesMessageId;
         String date;
 
+        //empty constructor is required for GSON
         AndroidExtra() {
         }
 
-        AndroidExtra(String peerUri, String messageId, String location, String timeInMillis) {
+        AndroidExtra(String peerUri, String messageId,
+                     String replacesMessageId, String location, String timeInMillis) {
             this.peerURI = peerUri;
-//            this.avatar = senderAvatar;
             this.messageId = messageId;
+            this.replacesMessageId = replacesMessageId;
             this.date = timeInMillis;
             this.location = location;
         }

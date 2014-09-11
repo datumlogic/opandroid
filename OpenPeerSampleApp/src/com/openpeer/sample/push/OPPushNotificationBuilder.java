@@ -38,6 +38,7 @@ import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.MessageState;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
 import com.urbanairship.push.PushNotificationBuilder;
@@ -53,36 +54,43 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
     static final String KEY_SEND_TIME = "date";
 
     @Override
-    public Notification buildNotification(String alert, Map<String, String> extras) {
+    public Notification buildNotification(String alert,
+            Map<String, String> extras) {
         Log.d("test", "build push notification for " + alert);
 
         String senderUri = extras.get(KEY_PEER_URI);
         String messageId = extras.get(KEY_MESSAGE_ID);
-        //If message is already received, ignore notification
+        // If message is already received, ignore notification
         if (null != OPDataManager.getDatastoreDelegate().getMessage(messageId)) {
-            Log.e(TAG, "received push for message that is already received " + messageId);
+            Log.e(TAG, "received push for message that is already received "
+                    + messageId);
             return null;
         }
-        OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(senderUri);
+        OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(
+                senderUri);
         if (sender == null) {
             Log.e("test", "Couldn't find user for peer " + senderUri);
             return null;
         }
-        OPMessage message = new OPMessage(sender.getUserId(), OPMessage.OPMessageType.TYPE_TEXT,
+        OPMessage message = new OPMessage(sender.getUserId(),
+                OPMessage.OPMessageType.TYPE_TEXT,
                 alert,
                 Long.parseLong(extras.get(KEY_SEND_TIME)),
                 messageId,
-                false,
+                MessageState.Normal,
                 MessageDeliveryStates.MessageDeliveryState_Delivered.ordinal());
-        return OPNotificationBuilder.buildNotificationForMessage(new long[]{sender.getUserId()}, message);
+        return OPNotificationBuilder.buildNotificationForMessage(
+                new long[] { sender.getUserId() }, message);
     }
 
     @Override
     public int getNextId(String alert, Map<String, String> extras) {
         String senderUri = extras.get(KEY_PEER_URI);
-        OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(senderUri);
+        OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(
+                senderUri);
         if (sender != null) {
-            return (int) OPModelUtils.getWindowId(new long[]{sender.getUserId()});
+            return (int) OPModelUtils.getWindowId(new long[] { sender
+                    .getUserId() });
         }
         return 0;
     }

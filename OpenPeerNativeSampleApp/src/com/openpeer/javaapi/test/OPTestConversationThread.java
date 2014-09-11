@@ -83,7 +83,7 @@ public class OPTestConversationThread {
 
 			if(!isCall)
 			{
-				LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "text/x-application-hookflash-message-text", message, false);
+				LoginManager.mConvThread.sendMessage(java.util.UUID.randomUUID().toString(), "", "text/x-application-hookflash-message-text", message, false);
 				contacts = LoginManager.mConvThread.getContacts();
 
 				Log.d("output", "AFTER ADD contacts size = " + contacts.size());

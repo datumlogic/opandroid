@@ -46,11 +46,15 @@ public:
 	//IConversationThreadDelegate implementation
 	virtual void onConversationThreadNew(IConversationThreadPtr conversationThread);
 	virtual void onConversationThreadContactsChanged(IConversationThreadPtr conversationThread);
-	virtual void onConversationThreadContactStateChanged(
+	virtual void onConversationThreadContactConnectionStateChanged(
 			IConversationThreadPtr conversationThread,
 			IContactPtr contact,
-			IConversationThread::ContactStates state
+			IConversationThread::ContactConnectionStates state
 	);
+    virtual void onConversationThreadContactStatusChanged(
+                                                          IConversationThreadPtr conversationThread,
+                                                          IContactPtr contact
+                                                          );
 	virtual void onConversationThreadMessage(
 			IConversationThreadPtr conversationThread,
 			const char *messageID

@@ -35,6 +35,7 @@ import java.util.List;
 
 import android.util.Log;
 
+import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
@@ -123,7 +124,8 @@ public class OPDataManager {
         for (OPIdentity identity : identities) {
             mSelfContacts.add(identity.getSelfIdentityContact());
         }
-        mDatastoreDelegate.saveOrUpdateIdentities(mIdentities, mAccount.getID());
+        mDatastoreDelegate
+                .saveOrUpdateIdentities(mIdentities, mAccount.getID());
     }
 
     public List<OPIdentityContact> getSelfContacts() {
@@ -131,7 +133,8 @@ public class OPDataManager {
     }
 
     public void onDownloadedRolodexContacts(OPIdentity identity) {
-        OPDownloadedRolodexContacts downloaded = identity.getDownloadedRolodexContacts();
+        OPDownloadedRolodexContacts downloaded = identity
+                .getDownloadedRolodexContacts();
         long identityId = identity.getStableID();
         String contactsVersion = downloaded.getVersionDownloaded();
 
@@ -152,9 +155,11 @@ public class OPDataManager {
         identityLookup(identity, contacts);
     }
 
-    public void identityLookup(OPIdentity identity, List<OPRolodexContact> contacts) {
+    public void identityLookup(OPIdentity identity,
+            List<OPRolodexContact> contacts) {
 
-        OPIdentityLookupDelegateImpl mIdentityLookupDelegate = OPIdentityLookupDelegateImpl.getInstance(identity);
+        OPIdentityLookupDelegateImpl mIdentityLookupDelegate = OPIdentityLookupDelegateImpl
+                .getInstance(identity);
         List<OPIdentityLookupInfo> inputLookupList = new ArrayList<OPIdentityLookupInfo>();
 
         for (OPRolodexContact contact : contacts) {
@@ -163,8 +168,10 @@ public class OPDataManager {
             inputLookupList.add(ilInfo);
         }
 
-        OPIdentityLookup identityLookup = OPIdentityLookup.create(OPDataManager.getInstance().getSharedAccount(), mIdentityLookupDelegate,
-                inputLookupList, OPSdkConfig.getInstance().getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
+        OPIdentityLookup identityLookup = OPIdentityLookup.create(OPDataManager
+                .getInstance().getSharedAccount(), mIdentityLookupDelegate,
+                inputLookupList, OPSdkConfig.getInstance()
+                        .getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
         if (identityLookup != null) {
             mIdentityLookups.put(identity.getIdentityURI(), identityLookup);
         }
@@ -174,7 +181,8 @@ public class OPDataManager {
         return mDatastoreDelegate.getDownloadedContactsVersion(id);
     }
 
-    public void updateIdentityContacts(String identityUri, List<OPIdentityContact> iContacts) {
+    public void updateIdentityContacts(String identityUri,
+            List<OPIdentityContact> iContacts) {
 
         // Each IdentityContact represents a user. Update user info
         mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
@@ -188,17 +196,15 @@ public class OPDataManager {
         }
     }
 
-    public long getUserIdForContact(OPContact contact, OPIdentityContact iContact) {
+    public long getUserIdForContact(OPContact contact,
+            OPIdentityContact iContact) {
         // TODO implement proper userId querying and gereration
         return contact.getPeerURI().hashCode();
     }
 
     public boolean isAccountReady() {
-        return mAccountReady;
-    }
-
-    public void setAccountReady(boolean value) {
-        mAccountReady = value;
+        return mAccount != null
+                && mAccount.getState() == AccountStates.AccountState_Ready;
     }
 
     public OPUser getUserByPeerUri(String uri) {
@@ -209,10 +215,12 @@ public class OPDataManager {
         OPContact contact = call.getPeer();
         OPUser user = mDatastoreDelegate.getUserByPeerUri(contact.getPeerURI());
         if (user == null) {
-            List<OPIdentityContact> identityContacts = call.getIdentityContactList(contact);
+            List<OPIdentityContact> identityContacts = call
+                    .getIdentityContactList(contact);
             if (identityContacts == null || identityContacts.isEmpty()) {
                 OPLogger.error(OPLogLevel.LogLevel_Basic,
-                        "getIdentityContactList returns empty in call for contact " + contact.getPeerURI());
+                        "getIdentityContactList returns empty in call for contact "
+                                + contact.getPeerURI());
             }
             user = new OPUser(contact, identityContacts);
             user = mDatastoreDelegate.saveUser(user);
@@ -240,7 +248,16 @@ public class OPDataManager {
     public OPUser getUserForMessage(OPContact from, OPConversationThread thread) {
         OPUser user = getUserByPeerUri(from.getPeerURI());
         if (user == null) {
-            user = new OPUser(from, thread.getIdentityContactList(from));
+            Log.d(TAG,
+                    "getUserForMessage User not found for " + from.getPeerURI());
+            List<OPIdentityContact> contacts = thread
+                    .getIdentityContactList(from);
+            if (contacts == null) {
+                Log.e(TAG,
+                        "getUserForMessage no identity contacts for "
+                                + from.getPeerURI());
+            }
+            user = new OPUser(from, contacts);
             user = mDatastoreDelegate.saveUser(user);
         }
         return user;
@@ -251,7 +268,8 @@ public class OPDataManager {
     }
 
     public void onSignOut() {
-        List<OPIdentity> identities = instance.mAccount.getAssociatedIdentities();
+        List<OPIdentity> identities = instance.mAccount
+                .getAssociatedIdentities();
         if (mIdentityLookups != null && mIdentityLookups.size() > 0) {
             for (OPIdentityLookup lookup : mIdentityLookups.values()) {
                 lookup.cancel();

@@ -1,7 +1,7 @@
 package com.openpeer.javaapi;
 
 
-public enum ContactStates {
+public enum ContactConnectionStates {
 
 	ContactState_NotApplicable,
 	ContactState_Finding,

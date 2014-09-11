@@ -29,6 +29,7 @@
  *******************************************************************************/
 package com.openpeer.sdk.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,39 +37,63 @@ import android.util.Log;
 
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
 
 public class OPModelUtils {
 
-	/**
-	 * Calculate a unique window id for contacts based group chat mode
-	 * @param userIds local User ids array of the conversation participants
-	 * @return
-	 */
-	public static long getWindowId(long userIds[]) {
-		Arrays.sort(userIds);
-		String arr[] = new String[userIds.length];
-		for (int i = 0; i < userIds.length; i++) {
-			arr[i] = "" + userIds[i];
-		}
-		long code = Arrays.deepHashCode(arr);
-		Log.d("test", " hash code " + code + " array " + Arrays.deepToString(arr));
-		return code;
-	}
+    /**
+     * Calculate a unique window id for contacts based group chat mode
+     * 
+     * @param userIds
+     *            local User ids array of the conversation participants
+     * @return
+     */
+    public static long getWindowId(long userIds[]) {
+        Arrays.sort(userIds);
+        String arr[] = new String[userIds.length];
+        for (int i = 0; i < userIds.length; i++) {
+            arr[i] = "" + userIds[i];
+        }
+        long code = Arrays.deepHashCode(arr);
+        Log.d("test",
+                " hash code " + code + " array " + Arrays.deepToString(arr));
+        return code;
+    }
 
-	/**
-	 * Calculate a unique window id for contacts based group chat mode
-	 * @param users List of participants
-	 * @return
-	 */
-	public static long getWindowId(List<OPUser> users) {
-		long userIds[] = new long[users.size()];
-		for (int i = 0; i < userIds.length; i++) {
-			OPUser user = users.get(i);
-			userIds[i] = user.getUserId();
-		}
-		// TODO Auto-generated method stub
-		return getWindowId(userIds);
-	}
+    /**
+     * Calculate a unique window id for contacts based group chat mode
+     * 
+     * @param users
+     *            List of participants
+     * @return
+     */
+    public static long getWindowId(List<OPUser> users) {
+        long userIds[] = new long[users.size()];
+        for (int i = 0; i < userIds.length; i++) {
+            OPUser user = users.get(i);
+            userIds[i] = user.getUserId();
+        }
+        // TODO Auto-generated method stub
+        return getWindowId(userIds);
+    }
 
+    public static long getWindowIdForThread(OPConversationThread mConvThread) {
+
+        List<OPContact> contacts = mConvThread.getContacts();
+        List<OPUser> users = new ArrayList<OPUser>();
+        for (OPContact contact : contacts) {
+            if (contact.isSelf()) {
+                continue;
+            }
+            // new contact
+            OPUser user = new OPUser(contact,
+                    mConvThread.getIdentityContactList(contact));
+            user = OPDataManager.getDatastoreDelegate().saveUser(user);
+            // This function will also set the userId so don't worry
+            users.add(user);
+        }
+        return getWindowId(users);
+    }
 }

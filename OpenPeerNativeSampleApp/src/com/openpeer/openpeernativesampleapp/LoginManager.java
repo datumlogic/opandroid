@@ -62,6 +62,7 @@ public class LoginManager {
 		
 		Log.d("output", "instance ID = " + mInstanceId);
 		//TODO: Add delegate when implement mechanism to post events to the android GUI thread
+
 		stackMessageQueueDelegate = new OPStackMessageQueueDelegateImplementation();
 		stackMessageQueue = OPStackMessageQueue.singleton();
 		stackMessageQueue.interceptProcessing(stackMessageQueueDelegate);
