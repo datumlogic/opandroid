@@ -474,43 +474,14 @@ public class ChatFragment extends BaseFragment implements
 
         @Override
         protected void onContentChanged() {
-            myLastReadMessagePosition = -1;
-            myLastDeliveredMessagePosition = -1;
-            myLastSentMessagePosition = -1;
-            Cursor cursor = mCursor;
-            if (cursor != null && cursor.getCount() > 0) {
-                int position = cursor.getCount() - 1;
-                cursor.moveToLast();
-                while (!cursor.isBeforeFirst()) {
-                    int status = cursor
-                            .getInt(cursor
-                                    .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS));
-                    MessageDeliveryStates messageState = MessageDeliveryStates
-                            .values()[status];
-                    if (messageState == MessageDeliveryStates.MessageDeliveryState_Read) {
-                        // if we found the first read message then break out of the loop
-                        myLastReadMessagePosition = position;
-
-                        break;
-                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
-                            && myLastReadMessagePosition == -1
-                            && myLastDeliveredMessagePosition == -1
-                            && myLastSentMessagePosition == -1){
-                        myLastSentMessagePosition = position;
-                    }else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
-                            && myLastReadMessagePosition == -1
-                            && myLastDeliveredMessagePosition == -1) {
-                        // if this is the first delivered state we've encountered before we see a read message, remember it
-                        // and keep looking for the first read message
-                        myLastDeliveredMessagePosition = position;
-
-                    }
-                    cursor.moveToPrevious();
-                    position--;
-                }
-                // cursor.moveToFirst();
-            }
+            setupDelvieryStatuses(mCursor);
             super.onContentChanged();
+        }
+
+        @Override
+        public void changeCursor(Cursor cursor) {
+            setupDelvieryStatuses(cursor);
+            super.changeCursor(cursor);
         }
 
         // this function will not be called for status view
@@ -539,6 +510,45 @@ public class ChatFragment extends BaseFragment implements
             }
 
             return view;
+        }
+
+        private void setupDelvieryStatuses(Cursor cursor) {
+            myLastReadMessagePosition = -1;
+            myLastDeliveredMessagePosition = -1;
+            myLastSentMessagePosition = -1;
+            if (cursor != null && cursor.getCount() > 0) {
+                int position = cursor.getCount() - 1;
+                cursor.moveToLast();
+                while (!cursor.isBeforeFirst()) {
+                    int status = cursor
+                        .getInt(cursor
+                                    .getColumnIndex(MessageEntry
+                                                        .COLUMN_NAME_MESSAGE_DELIVERY_STATUS));
+                    MessageDeliveryStates messageState = MessageDeliveryStates
+                        .values()[status];
+                    if (messageState == MessageDeliveryStates.MessageDeliveryState_Read) {
+                        // if we found the first read message then break out of the loop
+                        myLastReadMessagePosition = position;
+
+                        break;
+                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Sent
+                        && myLastReadMessagePosition == -1
+                        && myLastDeliveredMessagePosition == -1
+                        && myLastSentMessagePosition == -1) {
+                        myLastSentMessagePosition = position;
+                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
+                        && myLastReadMessagePosition == -1
+                        && myLastDeliveredMessagePosition == -1) {
+                        // if this is the first delivered state we've encountered before we see a
+                        // read message, remember it
+                        // and keep looking for the first read message
+                        myLastDeliveredMessagePosition = position;
+
+                    }
+                    cursor.moveToPrevious();
+                    position--;
+                }
+            }
         }
 
     }
@@ -668,7 +678,6 @@ public class ChatFragment extends BaseFragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.d("test", "ChatFragment onLoadFinished" + cursor);
         mAdapter.changeCursor(cursor);
-        mMessagesList.setSelection(mMessagesList.getCount() - 1);
 
     }
 
