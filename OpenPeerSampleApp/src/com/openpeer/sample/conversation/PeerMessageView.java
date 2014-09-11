@@ -52,7 +52,6 @@ public class PeerMessageView extends RelativeLayout {
 
     TextView time;
     TextView text;
-    int viewType;
 
     public void setup() {
         title = (TextView) findViewById(R.id.user);

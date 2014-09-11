@@ -118,6 +118,10 @@ public class SelfMessageView extends RelativeLayout {
             deliveryStatusView.setText(R.string.label_read);
             deliveryStatusView.setVisibility(View.VISIBLE);
             break;
+        case MessageDeliveryState_Sent:
+            deliveryStatusView.setText(R.string.label_sent);
+            deliveryStatusView.setVisibility(View.VISIBLE);
+            break;
         default:
             break;
 

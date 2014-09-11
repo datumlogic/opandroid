@@ -235,7 +235,7 @@ public class OPSessionManager {
 
             @Override
             public void onConversationThreadPushMessage(
-                    OPConversationThread conversationThread, String messageID,
+                    OPConversationThread conversationThread, final String messageID,
                     OPContact contact) {
                 final OPMessage message = conversationThread
                         .getMessageById(messageID);
@@ -245,7 +245,7 @@ public class OPSessionManager {
 
                             @Override
                             public void success(PushToken token,
-                                    Response response) {
+                                                Response response) {
                                 OPLogger.debug(OPLogLevel.LogLevel_Detail,
                                         "onConversationThreadPushMessage push message "
                                                 + message);
@@ -255,6 +255,9 @@ public class OPSessionManager {
                                             public void success(
                                                     PushResult pushResult,
                                                     Response response) {
+                                                OPDataManager.getDatastoreDelegate()
+                                                    .updateMessageDeliveryStatus(messageID,
+                                                                                 MessageDeliveryStates.MessageDeliveryState_Sent, System.currentTimeMillis());
 
                                             }
 

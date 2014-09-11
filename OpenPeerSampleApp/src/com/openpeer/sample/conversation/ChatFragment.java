@@ -353,6 +353,7 @@ public class ChatFragment extends BaseFragment implements
 
         int myLastReadMessagePosition = -1;
         int myLastDeliveredMessagePosition = -1;
+        int myLastSentMessagePosition = -1;
         private NoDuplicateArrayList<OPUser> composingStates = new NoDuplicateArrayList<OPUser>();
 
         private boolean isStatus(int position) {
@@ -455,7 +456,8 @@ public class ChatFragment extends BaseFragment implements
                     }
                     if (convertView instanceof SelfMessageView) {
                         if (position == myLastReadMessagePosition
-                                || position == myLastDeliveredMessagePosition) {
+                                || position == myLastDeliveredMessagePosition
+                                || position == myLastSentMessagePosition) {
                             ((SelfMessageView) convertView).update(message,
                                     true);
                         } else {
@@ -474,6 +476,7 @@ public class ChatFragment extends BaseFragment implements
         protected void onContentChanged() {
             myLastReadMessagePosition = -1;
             myLastDeliveredMessagePosition = -1;
+            myLastSentMessagePosition = -1;
             Cursor cursor = mCursor;
             if (cursor != null && cursor.getCount() > 0) {
                 int position = cursor.getCount() - 1;
@@ -490,6 +493,11 @@ public class ChatFragment extends BaseFragment implements
 
                         break;
                     } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
+                            && myLastReadMessagePosition == -1
+                            && myLastDeliveredMessagePosition == -1
+                            && myLastSentMessagePosition == -1){
+                        myLastSentMessagePosition = position;
+                    }else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
                             && myLastReadMessagePosition == -1
                             && myLastDeliveredMessagePosition == -1) {
                         // if this is the first delivered state we've encountered before we see a read message, remember it
