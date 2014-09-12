@@ -98,6 +98,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCaptureCapa
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    setCaptureRenderViewCropping
+ * Signature: (FFFF)V
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderViewCropping
+  (JNIEnv *, jobject, jfloat, jfloat, jfloat, jfloat);
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    setChannelRenderViewCropping
+ * Signature: (FFFF)V
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderViewCropping
+  (JNIEnv *, jobject, jfloat, jfloat, jfloat, jfloat);
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
  * Method:    setEcEnabled
  * Signature: (Z)V
  */

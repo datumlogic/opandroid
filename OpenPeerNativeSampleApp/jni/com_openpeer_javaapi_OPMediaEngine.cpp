@@ -384,6 +384,53 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_getCaptureCapa
 	return returnListObject;
 }
 
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    setCaptureRenderViewCropping
+ * Signature: (FFFF)V
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setCaptureRenderViewCropping
+  (JNIEnv *, jobject owner, jfloat left, jfloat top, jfloat right, jfloat bottom)
+{
+	jclass cls;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setCaptureRenderViewCropping(left, top, right, bottom);
+	}
+}
+
+/*
+ * Class:     com_openpeer_javaapi_OPMediaEngine
+ * Method:    setChannelRenderViewCropping
+ * Signature: (FFFF)V
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPMediaEngine_setChannelRenderViewCropping
+  (JNIEnv *, jobject owner, jfloat left, jfloat top, jfloat right, jfloat bottom)
+{
+	jclass cls;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+	jclass mediaEngineClass = findClass("com/openpeer/javaapi/OPMediaEngine");
+	jfieldID mediaEngineFid = jni_env->GetFieldID(mediaEngineClass, "nativeClassPointer", "J");
+	jlong pointerValue = jni_env->GetLongField(owner, mediaEngineFid);
+
+	IMediaEnginePtr* coreMediaEnginePtr = (IMediaEnginePtr*)pointerValue;
+
+	if (coreMediaEnginePtr)
+	{
+		coreMediaEnginePtr->get()->setChannelRenderViewCropping(left, top, right, bottom);
+	}
+}
 
 /*
  * Class:     com_openpeer_javaapi_OPMediaEngine
