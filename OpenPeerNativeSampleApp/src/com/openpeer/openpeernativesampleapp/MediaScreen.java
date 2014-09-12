@@ -45,8 +45,8 @@ public class MediaScreen extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_media_screen);
 		
+		@SuppressWarnings("unused")
 		List<String> list = new ArrayList<String>();
-		list.add("");
 		
 		EditText remoteIPAddressEditText = (EditText) findViewById(R.id.remoteIPAddressEditText);
 		remoteIPAddressEditText.setText("127.0.0.1");
@@ -55,6 +55,8 @@ public class MediaScreen extends Activity {
 		
 		OPMediaEngine.init(getApplicationContext());
 		OPMediaEngine.getInstance().setCameraType(cameraType);
+		OPMediaEngine.getInstance().setCaptureRenderViewCropping(0.0F, 0.0F, 1.0F, 1.0F);
+		OPMediaEngine.getInstance().setChannelRenderViewCropping(0.0F, 0.0F, 1.0F, 1.0F);
 		OPMediaEngine.getInstance().setEcEnabled(true);
 		OPMediaEngine.getInstance().setAgcEnabled(true);
 		OPMediaEngine.getInstance().setNsEnabled(false);
