@@ -17,6 +17,69 @@
         <item name="4">4</item>
         <item name="5">5</item>
     </string-array>
+    <string-array name="logKeys">
+        <item>openpeer_application</item>
+        <item>openpeer_sdk</item>
+        <item>openpeer_media</item>
+        <item>openpeer_webrtc</item>
+        <item>openpeer_core</item>
+        <item>openpeer_stack_message</item>
+        <item>openpeer_stack</item>
+        <item>openpeer_services</item>
+        <item>openpeer_services_wire</item>
+        <item>openpeer_services_ice</item>
+        <item>openpeer_services_turn</item>
+        <item>openpeer_services_rudp</item>
+        <item>openpeer_services_http</item>
+        <item>openpeer_services_mls</item>
+        <item>openpeer_services_tcp_messaging</item>
+        <item>openpeer_services_transport_stream</item>
+        <item>zsLib</item>
+        <item>zsLib_socket</item>
+        <item>openpeer_javascript</item>
+    </string-array>
+    <string-array name="logLevelDefaults">
+        <item>5</item>
+        <item>4</item>
+        <item>2</item>
+        <item>2</item>
+        <item>4</item>
+        <item>4</item>
+        <item>4</item>
+        <item>4</item>
+        <item>3</item>
+        <item>4</item>
+        <item>4</item>
+        <item>3</item>
+        <item>3</item>
+        <item>4</item>
+        <item>4</item>
+        <item>3</item>
+        <item>4</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="logTitles">
+        <item>Application: %s</item>
+        <item>SDK:%s</item>
+        <item>Media: %s</item>
+        <item>webRTC: %s</item>
+        <item>Core: %s</item>
+        <item>Messages: %s</item>
+        <item>Stack: %s</item>
+        <item>Services: %s</item>
+        <item>Services wire: %s</item>
+        <item>Services ICE: %s</item>
+        <item>Service TURN: %s</item>
+        <item>Service RUDP: %s</item>
+        <item>Service HTTP: %s</item>
+        <item>Service MLS: %s</item>
+        <item>Services TCP messaging: %s</item>
+        <item>Services Transport: %s</item>
+        <item>zsLib: %s</item>
+        <item>zsLib_socket: %s</item>
+        <item>javascript: %s</item>
+    </string-array>
     <string-array name="tabs">
         <item>@string/label_chats</item>
         <item>@string/label_contacts</item>

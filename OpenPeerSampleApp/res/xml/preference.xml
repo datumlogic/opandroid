@@ -1,66 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <SwitchPreference
         android:defaultValue="true"
         android:key="notification_sound_switch"
-        android:title="@string/notification_sound_switch" />
+        android:title="@string/notification_sound_switch"/>
+
     <RingtonePreference
         android:key="notification_sound_select"
         android:ringtoneType="notification"
         android:showDefault="true"
         android:showSilent="true"
-        android:title="@string/notification_sound_select" />
-
+        android:title="@string/notification_sound_select"/>
     <RingtonePreference
         android:key="ringtone"
         android:ringtoneType="ringtone"
         android:showDefault="true"
         android:showSilent="true"
-        android:title="@string/ringtone_select" />
+        android:title="@string/ringtone_select"/>
 
-    <PreferenceCategory
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="logSwitch"
+        android:title="Enable Log"/>
+
+    <PreferenceScreen
         android:key="debug_settings"
-        android:title="@string/debug_settings" >
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/logLevel"
-            android:entryValues="@array/logLevelValues"
-            android:key="log_level"
-            android:title="Log level" />
-
+        android:title="@string/logger_settings">
         <SwitchPreference
             android:defaultValue="false"
             android:key="out_telnet_logger"
-            android:title="@string/out_telnet_logger" />
+            android:title="@string/out_telnet_logger"/>
 
         <EditTextPreference
             android:defaultValue="log.opp.me:8115"
             android:key="log_server_url"
-            android:title="Server url" />
+            android:title="Server url"/>
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="local_telnet_logger"
-            android:title="@string/local_telnet_logger" />
+            android:title="@string/local_telnet_logger"/>
         <SwitchPreference
             android:defaultValue="false"
             android:key="file_logger"
-            android:title="@string/file_logger" />
+            android:title="@string/file_logger"/>
 
         <EditTextPreference
             android:defaultValue="/storage/emulated/0/oplog.txt"
             android:key="log_file"
-            android:title="Log file" />
-    </PreferenceCategory>
+            android:title="Log file"/>
+        <PreferenceCategory
+            android:key="logLevels"
+            android:title="Log Levels"/>
+        <!--
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="appLogLevel"
+            android:title="Application:" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="messagesLogLevel"
+            android:title="messages" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="coreLogLevel"
+            android:title="Core:" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="stackLogLevel"
+            android:title="stack" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="mediaLogLevel"
+            android:title="Media" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="webrtcLogLevel"
+            android:title="webRTC" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="zslibLogLevel"
+            android:title="SDK(zsLib):" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="zslibsocketLogLevel"
+            android:title="zslib socket" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="tcpmessagingLogLevel"
+            android:title="tcp mesage" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="servicespacketLogLevel"
+            android:title="services packet" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="stunLogLevel"
+            android:title="stun ice" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="turnLogLevel"
+            android:title="turn" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="httpLogLevel"
+            android:title="http" />
+                <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/logLevel"
+            android:entryValues="@array/logLevelValues"
+            android:key="mlsLogLevel"
+            android:title="MLS" />
+        -->
+    </PreferenceScreen>
+
     <PreferenceCategory
         android:key="about"
-        android:title="@string/label_about" >
+        android:title="@string/label_about">
         <Preference
             android:key="version"
-            android:title="@string/label_version" />
+            android:title="@string/label_version"/>
         <Preference
             android:key="build"
-            android:title="@string/label_build" />
+            android:title="@string/label_build"/>
     </PreferenceCategory>
+
+    <Preference
+        android:key="signout"
+        android:title="@string/signout"/>
 
 </PreferenceScreen>

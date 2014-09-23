@@ -1,83 +1,170 @@
-/*
-
- Copyright (c) 2013, SMB Phone Inc. / Hookflash Inc.
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
-
- 1. Redistributions of source code must retain the above copyright notice, this
- list of conditions and the following disclaimer.
- 2. Redistributions in binary form must reproduce the above copyright notice,
- this list of conditions and the following disclaimer in the documentation
- and/or other materials provided with the distribution.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- The views and conclusions contained in the software and documentation are those
- of the authors and should not be interpreted as representing official policies,
- either expressed or implied, of the FreeBSD Project.
- 
- */
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 
 package com.openpeer.javaapi;
 
 import java.util.List;
 
-public class OPAccount {
+import com.openpeer.sdk.app.OPSdkConfig;
 
+public class OPAccount {
+	/**
+	 * 
+	 * @return Current account state
+	 */
+	public AccountStates getState() {
+		return getState(0, "");
+	}
+
+	/**
+	 * Get the primary identity,e.g. the identity used to login
+	 * 
+	 * @return
+	 */
+	public OPIdentity getPrimaryIdentity() {
+		List<OPIdentity> identities = getAssociatedIdentities();
+
+		// TODO: proper logic to define primary identity
+		return identities.get(0);
+	}
+
+	/**
+	 * Convenience method to get the peerURI of the account
+	 * 
+	 * @return
+	 */
+	public String getPeerUri() {
+		return OPContact.getForSelf(this).getPeerURI();
+	}
+
+	/**
+	 * Log in and return a valid OPAccount instance
+	 * 
+	 * @param accountDelegate
+	 *            Account delegate instance. This instance need to be kept valid throughout the app lifecycle.
+	 * @param conversationThreadDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
+	 * @param callDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
+	 * @return
+	 */
+	public static OPAccount login(OPAccountDelegate accountDelegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate) {
+		return login(accountDelegate,
+				conversationThreadDelegate,
+				callDelegate,
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+				OPSdkConfig.getInstance().getGrantId(),
+				OPSdkConfig.getInstance().getLockboxServiceDomain(),
+				false);
+	}
+
+	/**
+	 * Relogin and return a valid OPAccount instance
+	 * 
+	 * @param accountDelegate
+	 *            Account delegate instance. This instance need to be kept valid throughout the app lifecycel.
+	 * @param conversationThreadDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
+	 * @param callDelegate
+	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
+	 * @param reloginInformation
+	 *            valid relogin string cached from last session
+	 * @return
+	 */
+	public static OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate, String reloginInformation) {
+		return relogin(delegate,
+				conversationThreadDelegate,
+				callDelegate,
+				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(), reloginInformation);
+
+	}
+
+	// Beginning of JNI -- BE CAREFUL WITH ANY SIGNATUR CHANGES!!!!
 	private long nativeClassPointer;
+	private long nativeDelegatePointer;
 
 	public static native String toString(AccountStates state);
 
 	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
 
-	public static native OPAccount login(
-			OPAccountDelegate delegate,
-			OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate,
-			String namespaceGrantOuterFrameURLUponReload,
-			String grantID,
-			String lockboxServiceDomain,
-			boolean forceCreateNewLockboxAccount
-			);
+	private static native OPAccount login(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String grantID, String lockboxServiceDomain,
+			boolean forceCreateNewLockboxAccount);
 
-	public static native OPAccount relogin(
-			OPAccountDelegate delegate,
-			OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate,
-			String namespaceGrantOuterFrameURLUponReload,
-			String reloginInformation
-			);
+	private static native OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
+			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String reloginInformation);
 
-	public native long getStableID();
+	/**
+	 * Get the core object PUID
+	 * 
+	 * @return object PUID
+	 */
+	public native long getID();
 
-	public native AccountStates getState(
-			int outErrorCode,
-			String outErrorReason
-			);
+	/**
+	 * Get account's lockbox key
+	 * 
+	 * @return
+	 */
+	public native String getStableID();
+
+	public native AccountStates getState(int outErrorCode, String outErrorReason);
 
 	public native String getReloginInformation(); // NOTE: will return ElementPtr() is relogin information is not available yet
 
 	public native String getLocationID();
 
+	/**
+	 * This function should be called during logout. This is Asynchronorous call, application should handle the SHUTDOWN state change
+	 * {@link com.openpeer.javaapi.OPAccountDeleget}
+	 */
 	public native void shutdown();
 
-	public native String getPeerFilePrivate();
+	private native String getPeerFilePrivate();
 
-	public native byte[] getPeerFilePrivateSecret();
+	private native byte[] getPeerFilePrivateSecret();
+
+	/**
+	 * 
+	 * @return Identity list associated with this account
+	 */
 
 	public native List<OPIdentity> getAssociatedIdentities();
 
+	/**
+	 * TODO Clarify its usage
+	 * 
+	 * @param identitiesToRemove
+	 */
 	public native void removeIdentities(List<OPIdentity> identitiesToRemove);
 
 	public native String getInnerBrowserWindowFrameURL();
@@ -90,14 +177,15 @@ public class OPAccount {
 
 	public native void handleMessageFromInnerBrowserWindowFrame(String unparsedMessage);
 
-	public OPIdentity getPrimaryIdentity() {
-		List<OPIdentity> identities = getAssociatedIdentities();
+	private native void releaseCoreObjects();
 
-		// TODO: proper logic to define primary identity
-		return identities.get(0);
-	}
+	protected void finalize() throws Throwable {
 
-	public String getPeerUri() {
-		return OPContact.getForSelf(this).getPeerURI();
+		if (nativeClassPointer != 0 || nativeDelegatePointer != 0) {
+			releaseCoreObjects();
+		}
+
+		super.finalize();
 	}
+	// END of JNI
 }

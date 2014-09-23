@@ -1,145 +1,239 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.javaapi;
 
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.model.MessageState;
+import com.openpeer.sdk.model.OPUser;
 
 import android.database.Cursor;
 import android.text.format.Time;
 
-//Important: Don't remove the empty constructor since it's being used in jni
-// Don't change any existing functions signature without making sure it doesn't break jni!
 public class OPMessage {
-	public static final int DS_DISCOVERING = 0;
-	public static final int DS_USER_NOT_AVAILABLE = 1;
-	public static final int DS_DELIVERED = 2;
+    public static final int DS_DISCOVERING = 0;
+    public static final int DS_USER_NOT_AVAILABLE = 1;
+    public static final int DS_DELIVERED = 2;
 
-	public static class OPMessageType {
-		public static final String TYPE_TEXT = "text/x-application-hookflash-message-text";
-		public static final String TYPE_CONTROL = "text/x-application-hookflash-message-system";
-		// Used to record/show call record
-		// public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
-		// public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
+    public static class OPMessageType {
+        public static final String TYPE_TEXT = "text/x-application-hookflash-message-text";
+        public static final String TYPE_CONTROL = "text/x-application-hookflash-message-system";
+        public static final String TYPE_CALL_LOG = "text/x-application-hookflash-call-log";
 
-	}
+        // Used to record/show call record
+        // public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
+        // public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
 
-	public static class SystemMessageType {
-		public static final int SystemMessage_EstablishSessionBetweenTwoPeers = 0;
-		public static final int SystemMessage_IsContactAvailable = 1;
-		public static final int SystemMessage_IsContactAvailable_Response = 2;
-		public static final int SystemMessage_CallAgain = 3;
-		public static final int SystemMessage_CheckAvailability = 4;
-		public static final int SystemMessage_APNS_Request = 5;
-		public static final int SystemMessage_APNS_Response = 6;
+    }
 
-		public static final int SystemMessage_None = 111;
-	}
+    /**
+     * @ExcludeFromJavadoc
+     */
+    public static class SystemMessageType {
+        public static final int SystemMessage_EstablishSessionBetweenTwoPeers = 0;
+        public static final int SystemMessage_IsContactAvailable = 1;
+        public static final int SystemMessage_IsContactAvailable_Response = 2;
+        public static final int SystemMessage_CallAgain = 3;
+        public static final int SystemMessage_CheckAvailability = 4;
+        public static final int SystemMessage_APNS_Request = 5;
+        public static final int SystemMessage_APNS_Response = 6;
 
-	private OPContact mFrom;
-	private String mMessageType;
-	private String mMessage;
-	private Time mTime;
-	private long mSenderId;
-	private String mMessageId;
-	private boolean mRead;// read time in millis
-	private int mDeliveryStatus;
+        public static final int SystemMessage_None = 111;
+    }
 
-	public boolean isRead() {
-		return mRead;
-	}
+    private OPContact mFrom;
+    private String mMessageType;
+    private String mMessage;
+    private Time mTime;
+    private long mSenderId;
+    private String mMessageId;
+    private boolean mRead;
+    private MessageState mState;// read time in millis
+    private MessageDeliveryStates mDeliveryStatus;
+    private String mReplacesMessageId = "";
+    private boolean mValidated;
 
-	public void setRead(boolean read) {
-		this.mRead = read;
-	}
+    public String getReplacesMessageId() {
+        return mReplacesMessageId;
+    }
 
-	public String getMessageId() {
-		return mMessageId;
-	}
+    public void setReplacesMessageId(String mReplacesMessageId) {
+        this.mReplacesMessageId = mReplacesMessageId;
+    }
 
-	public void setMessageId(String messageId) {
-		this.mMessageId = messageId;
-	}
+    public boolean isValidated() {
+        return mValidated;
+    }
 
-	public long getSenderId() {
-		return mSenderId;
-	}
+    public void setValidated(boolean mValidated) {
+        this.mValidated = mValidated;
+    }
 
-	public void setSenderId(long mSenderId) {
-		this.mSenderId = mSenderId;
-	}
+    public boolean isRead() {
+        return mRead;
+    }
 
-	public OPMessage() {
-	}
+    public void setRead(boolean read) {
+        this.mRead = read;
+    }
 
-	public OPMessage(long senderId, String mMessageType, String message,
-			long sendTime, String messageId, boolean isRead, int deliveryStatus) {
-		super();
-		this.mSenderId = senderId;
-		this.mMessageType = mMessageType;
-		this.mMessage = message;
-		this.mTime = new Time();
-		mTime.set(sendTime);
-		this.mMessageId = messageId;
-		this.mRead = isRead;
-		this.mDeliveryStatus = deliveryStatus;
-	}
+    public MessageState getState() {
+        if (mState == null) {
+            mState = MessageState.Normal;
+        }
+        return mState;
+    }
 
-	public OPMessage(long senderId, String mMessageType, String message,
-			long sendTime, String messageId) {
-		this(senderId, mMessageType, message, sendTime, messageId, true, 0);
-	}
+    public void setState(MessageState state) {
+        this.mState = state;
+    }
 
-	public OPContact getFrom() {
-		return mFrom;
-	}
+    public String getMessageId() {
+        return mMessageId;
+    }
 
-	public void setFrom(OPContact mFrom) {
-		this.mFrom = mFrom;
-	}
+    public void setMessageId(String messageId) {
+        this.mMessageId = messageId;
+    }
 
-	public String getMessageType() {
-		return mMessageType;
-	}
+    public long getSenderId() {
+        return mSenderId;
+    }
 
-	public void setMessageType(String mMessageType) {
-		this.mMessageType = mMessageType;
-	}
+    public void setSenderId(long mSenderId) {
+        this.mSenderId = mSenderId;
+    }
 
-	public String getMessage() {
-		return mMessage;
-	}
+    public OPMessage() {
+    }
 
-	public void setMessage(String mMessage) {
-		this.mMessage = mMessage;
-	}
+    public OPMessage(long senderId, String mMessageType, String message,
+            long sendTime, String messageId, MessageState state,
+            int deliveryStatus) {
+        super();
+        this.mSenderId = senderId;
+        this.mMessageType = mMessageType;
+        this.mMessage = message;
+        this.mTime = new Time();
+        mTime.set(sendTime);
+        this.mMessageId = messageId;
+        this.mState = state;
+        this.mDeliveryStatus = MessageDeliveryStates.values()[deliveryStatus];
+    }
 
-	public Time getTime() {
-		return mTime;
-	}
+    public OPMessage(long senderId, String mMessageType, String message,
+            long sendTime, String messageId) {
+        this(senderId, mMessageType, message, sendTime, messageId,
+                MessageState.Normal, 0);
+    }
 
-	public void setTime(Time mTime) {
-		this.mTime = mTime;
-	}
+    public OPContact getFrom() {
+        return mFrom;
+    }
 
-	public int getDeliveryStatus() {
-		return mDeliveryStatus;
-	}
+    public void setFrom(OPContact mFrom) {
+        this.mFrom = mFrom;
+    }
 
-	public void setDeliveryStatus(int status) {
-		mDeliveryStatus = status;
-	}
+    public String getMessageType() {
+        return mMessageType;
+    }
 
-	public static OPMessage fromCursor(Cursor cursor) {
-		return new OPMessage(cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
-				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
-				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
-				cursor.getLong(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
-				cursor.getString(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
-				cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ)) == 1,
-				cursor.getInt(cursor.getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
-	}
+    public void setMessageType(String mMessageType) {
+        this.mMessageType = mMessageType;
+    }
 
-	public String toString() {
-		return super.toString() + " from " + mFrom + " messageType "
-				+ mMessageType + " message " + mMessage + " id " + mMessageId + " sender id " + mSenderId;
-	}
+    public String getMessage() {
+        return mMessage;
+    }
+
+    public void setMessage(String mMessage) {
+        this.mMessage = mMessage;
+    }
+
+    public Time getTime() {
+        return mTime;
+    }
+
+    public void setTime(Time mTime) {
+        this.mTime = mTime;
+    }
+
+    public MessageDeliveryStates getDeliveryStatus() {
+        return mDeliveryStatus;
+    }
+
+    public void setDeliveryStatus(MessageDeliveryStates status) {
+        mDeliveryStatus = status;
+    }
+
+    public static OPMessage fromCursor(Cursor cursor) {
+        return new OPMessage(
+                cursor.getLong(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
+                cursor.getLong(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
+                cursor.getString(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
+                MessageState.values()[cursor.getInt(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_STATUS))],
+                cursor.getInt(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
+    }
+
+    public String toString() {
+        return super.toString() + " from " + mFrom + " messageType "
+                + mMessageType + " message " + mMessage + " id " + mMessageId
+                + " sender id " + mSenderId;
+    }
+
+    /**
+     * Helper function. Get from user of received message. Don't call this function for your own message.
+     * 
+     * @return
+     */
+    public OPUser getFromUser() {
+        return OPDataManager.getInstance().getUserById(mSenderId);
+    }
+
+    /**
+     * Generate a unique messageId
+     * 
+     * @return
+     */
+    public static String generateUniqueId() {
+        return java.util.UUID.randomUUID().toString().replace("-", "");
+    }
 
 }

@@ -9,6 +9,8 @@ CallDelegateWrapperPtr callDelegatePtr;
 ConversationThreadDelegateWrapperPtr conversationThreadDelegatePtr;
 LoggerDelegateWrapperPtr loggerDelegatePtr;
 MediaEngineDelegateWrapperPtr mediaEngineDelegatePtr;
+BackgroundingDelegateWrapperPtr backgroundingDelegatePtr;
+BackgroundingCompletionDelegateWrapperPtr backgroundingCompletionDelegatePtr;
 
 IMediaEnginePtr mediaEnginePtr;
 

@@ -39,13 +39,16 @@ public class OPConversationThread {
 	
 	public native ContactConnectionStates getContactConnectionState(OPContact contact);
 
+
 	public native void addContacts(List<OPContactProfileInfo> contactProfileInfos);
 	
 	public native void removeContacts(List<OPContact> contacts);
 	
-	public native String getContactStatus(OPContact contact);
+	public static native OPElement createEmptyStatus();
 	
-	public native void setStatusInThread(String contactStatusInThreadOfSelf);
+	public native OPElement getContactStatus(OPContact contact);
+	
+	public native void setStatusInThread(OPElement contactStatusInThreadOfSelf);
 
     // sending a message will cause the message to be delivered to all the contacts currently in the conversation
 	public native void sendMessage(

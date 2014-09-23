@@ -20,7 +20,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toStrin
  * Method:    toString
  * Signature: (Lcom/openpeer/javaapi/ContactConnectionStates;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toString__Lcom_openpeer_javaapi_ContactStates_2
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toString__Lcom_openpeer_javaapi_ContactConnectionStates_2
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -57,7 +57,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getStableID
+ * Method:    getID
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPConversationThread_getID
@@ -129,19 +129,27 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getContactStatus
- * Signature: (Lcom/openpeer/javaapi/OPContact;)Ljava/lang/String;
+ * Method:    createEmptyStatus
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactStatus
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_createEmptyStatus
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    getContactStatus
+ * Signature: (Lcom/openpeer/javaapi/OPContact;)Lcom/openpeer/javaapi/OPElement;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactStatus
   (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    setStatusInThread
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setStatusInThread
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread

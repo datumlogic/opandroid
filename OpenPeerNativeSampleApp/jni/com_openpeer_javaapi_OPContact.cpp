@@ -39,6 +39,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFile
 	JNIEnv *jni_env = 0;
 	IContactPtr contactPtr;
 
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native createFromPeerFilePublic called");
+
 	jni_env = getEnv();
 
 	const char *peerFilePublicStr;
@@ -77,6 +79,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_createFromPeerFile
 
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native createFromPeerFilePublic core pointer is NULL!!!");
+	}
 	return object;
 }
 
@@ -90,9 +96,11 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 {
 	jclass cls;
 	jmethodID method;
-	jobject object;
+	jobject object = NULL;
 	JNIEnv *jni_env = 0;
 	IContactPtr contactPtr;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native getForSelf called");
 
 	jni_env = getEnv();
 
@@ -105,6 +113,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 	if(coreAccountPtr)
 	{
 		contactPtr = IContact::getForSelf(*coreAccountPtr);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native getForSelf core account pointer is NULL!!!");
 	}
 
 	if(contactPtr)
@@ -125,6 +137,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getForSelf
 
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native getForSelf core pointer is NULL!!!");
+	}
 	return object;
 }
 
@@ -138,6 +154,9 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPContact_getStableID
 {
 	jlong ret = 0;
 	JNIEnv * jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native getStableID called");
+
 	jni_env = getEnv();
 	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
 	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
@@ -147,6 +166,10 @@ JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPContact_getStableID
 	if (contactPtr)
 	{
 		ret = contactPtr->get()->getID();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native getStableID core pointer is NULL!!!");
 	}
 	return ret;
 }
@@ -162,6 +185,9 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPContact_isSelf
 	jboolean ret;
 	JNIEnv * jni_env = 0;
 	jni_env = getEnv();
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native isSelf called");
+
 	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
 	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
 	jlong contactPointerValue = jni_env->GetLongField(owner, contactfid);
@@ -170,6 +196,10 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPContact_isSelf
 	if (contactPtr)
 	{
 		ret = contactPtr->get()->isSelf();
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native isSelf core pointer is NULL!!!");
 	}
 	return ret;
 }
@@ -185,6 +215,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerURI
 	jstring ret;
 	JNIEnv * jni_env = 0;
 	jni_env = getEnv();
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native getPeerURI called");
+
 	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
 	jfieldID contactfid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
 	jlong contactPointerValue = jni_env->GetLongField(owner, contactfid);
@@ -193,6 +226,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerURI
 	if (contactPtr)
 	{
 		ret = jni_env->NewStringUTF(contactPtr->get()->getPeerURI().c_str());
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native getPeerURI core pointer is NULL!!!");
 	}
 	return ret;
 }
@@ -210,6 +247,8 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerFilePublic
 	jobject object;
 	jstring ret;
 	JNIEnv * jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native getPeerFilePublic called");
 
 	jni_env = getEnv();
 	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
@@ -230,6 +269,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPContact_getPeerFilePublic
 			jobject peerFileObject = jni_env->NewObject(peerFileCls, peerFileMethodID);
 		}
 	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native getPeerFilePublic core pointer is NULL!!!");
+	}
 	return ret;
 }
 
@@ -243,6 +286,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getAssociatedAccou
 {
 	jobject accountObject;
 	JNIEnv * jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native getAssociatedAccount called");
 
 	jni_env = getEnv();
 	jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
@@ -265,7 +310,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPContact_getAssociatedAccou
 			jni_env->SetLongField(accountObject, fid, acc);
 		}
 	}
-
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native getAssociatedAccount core pointer is NULL!!!");
+	}
 	return accountObject;
 }
 
@@ -278,6 +326,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPContact_hintAboutLocation
 (JNIEnv *, jobject owner, jstring locationId)
 {
 	JNIEnv * jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact native hintAboutLocation called");
 
 	jni_env = getEnv();
 	const char *locationIdStr;
@@ -294,6 +344,10 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPContact_hintAboutLocation
 	if (contactPtr)
 	{
 		contactPtr->get()->hintAboutLocation(locationIdStr);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "OPContact native hinstAboutLocation core pointer is NULL!!!");
 	}
 }
 
@@ -313,12 +367,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPContact_releaseCoreObjects
 		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (IContactPtr*)pointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPContact core object deleted.");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPContact core object not deleted - already NULL!");
 	}
 }
 

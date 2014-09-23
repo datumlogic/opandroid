@@ -1,3 +1,32 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sdk.app;
 
 import org.json.JSONException;
@@ -10,25 +39,22 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.openpeer.delegates.CallbackHandler;
 import com.openpeer.javaapi.OPCache;
 import com.openpeer.javaapi.OPCacheDelegate;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
-import com.openpeer.javaapi.OPMessage;
+import com.openpeer.javaapi.OPMediaEngineDelegate;
 import com.openpeer.javaapi.OPSettings;
+import com.openpeer.javaapi.OPSettingsDelegate;
 import com.openpeer.javaapi.OPStack;
+import com.openpeer.javaapi.OPStackDelegate;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
-import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
-import com.openpeer.sdk.delegates.ContactsBasedMessageDispatcher;
-import com.openpeer.sdk.delegates.GroupBasedMessageDispatcher;
-import com.openpeer.sdk.delegates.MessageDispatcher;
-import com.openpeer.sdk.delegates.MessageReceiver;
-import com.openpeer.sdk.delegates.OPCacheDelegateImplementation;
+import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
+import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
+import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
+import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
 
 /**
  * 
@@ -36,212 +62,216 @@ import com.openpeer.sdk.delegates.OPCacheDelegateImplementation;
  *
  */
 public class OPHelper {
-	private static final String TAG = OPHelper.class.getSimpleName();
-	private static OPHelper instance;
-	Context mContext;
+    private static final String TAG = OPHelper.class.getSimpleName();
+    private static final String DEFAULT_LOG_SERVER = "LOG.OPP.ME:8115";
+    private static final String DEFAULT_LOG_FILE = "/storage/emulated/0/hflog";
+    public static final int MODE_CONTACTS_BASED = 0;
+    public static final int MODE_GROUP_BASED = 1;
 
-	public Context getApplicationContext() {
-		return mContext;
-	}
+    private boolean mAppInBackground;
+    private boolean isSigningOut;
 
-	public static OPHelper getInstance() {
-		if (instance == null) {
-			instance = new OPHelper();
-		}
-		return instance;
-	}
+    private static OPHelper instance;
+    Context mContext;
+    private OPStackMessageQueue mStackMessageQueue;
+    private OPCacheDelegate mCacheDelegate;
+    private OPSettingsDelegate mSettingsDelegate;
 
-	public void toggleOutgoingTelnetLogging(boolean enable, String url) {
-		if (enable && !TextUtils.isEmpty(url)) {
-			OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-			// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_Basic);
-			// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
-			String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
-			String instanceId = OPSdkConfig.getInstanceid();
-			String telnetLogString = deviceId + "-" + instanceId + "\n";
-			Log.d("output", "Bruce Outgoing log string = " + telnetLogString);
-			OPLogger.installOutgoingTelnetLogger(url, true, telnetLogString);
-		} else {
-			// OPLogger.setLogLevel(OPLogLevel.LogLevel_None);
-			// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
-			// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_None);
-			OPLogger.uninstallOutgoingTelnetLogger();
-		}
-	}
+    public Context getApplicationContext() {
+        return mContext;
+    }
 
-	public void toggleFileLogger(boolean enabled, String fileName) {
-		// OPLogger.setLogLevel(OPLogLevel.LogLevel_Trace);
-		// OPLogger.setLogLevel("openpeer_webrtc", OPLogLevel.LogLevel_None);
-		// OPLogger.setLogLevel("zsLib_socket", OPLogLevel.LogLevel_Insane);
+    public static OPHelper getInstance() {
+        if (instance == null) {
+            instance = new OPHelper();
+        }
+        return instance;
+    }
 
-		// OPLogger.setLogLevel("openpeer_services_transport_stream",
-		// OPLogLevel.LogLevel_None);
-		// OPLogger.setLogLevel("openpeer_stack", OPLogLevel.LogLevel_None);
-		// OPLogger.installTelnetLogger(59999, 60, true);
-		if (enabled && !TextUtils.isEmpty(fileName)) {
-			OPLogger.installFileLogger(fileName, true);
-		} else {
-			OPLogger.uninstallDebuggerLogger();
-		}
-	}
+    public void toggleOutgoingTelnetLogging(boolean enable, String url) {
+        if (enable) {
+            if (TextUtils.isEmpty(url)) {
+                url = DEFAULT_LOG_SERVER;
+            }
 
-	public void toggleTelnetLogging(boolean enable, int port) {
-		if (enable) {
-			
-			OPLogger.installTelnetLogger(port, 60, true);
-		} else {
-			OPLogger.uninstallTelnetLogger();
-		}
-	}
+            String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
+            String instanceId = OPSdkConfig.getInstanceid();
+            String telnetLogString = deviceId + "-" + instanceId + "\n";
+            OPLogger.installOutgoingTelnetLogger(url, true, telnetLogString);
+        } else {
 
-	private void initMediaEngine() {
-		long start = SystemClock.uptimeMillis();
-		OPMediaEngine.getInstance().setEcEnabled(true);
-		OPMediaEngine.getInstance().setAgcEnabled(true);
-		OPMediaEngine.getInstance().setNsEnabled(false);
-		OPMediaEngine.getInstance().setMuteEnabled(false);
-		OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
-		OPMediaEngine.getInstance().setContinuousVideoCapture(true);
-		OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
-		OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
-		OPMediaEngine.getInstance().setFaceDetection(false);
+            OPLogger.uninstallOutgoingTelnetLogger();
+        }
+    }
 
-		Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
-		// OPMediaEngine.init(mContext);
-	}
+    public void toggleFileLogger(boolean enabled, String fileName) {
+        if (enabled) {
+            if (TextUtils.isEmpty(fileName)) {
+                fileName = DEFAULT_LOG_FILE;
+            }
+            OPLogger.installFileLogger(fileName, true);
+        } else {
+            OPLogger.uninstallDebuggerLogger();
+        }
+    }
 
-	public void init1() {
-		Thread thread = new Thread(new Runnable() {
+    public void toggleTelnetLogging(boolean enable, int port) {
+        if (enable) {
+            OPLogger.installTelnetLogger(port, 60, true);
+        } else {
+            OPLogger.uninstallTelnetLogger();
+        }
+    }
 
-			@Override
-			public void run() {
-				OPMediaEngine.init(mContext);
+    private void initMediaEngine() {
+        long start = SystemClock.uptimeMillis();
+        OPMediaEngine.getInstance().setEcEnabled(true);
+        OPMediaEngine.getInstance().setAgcEnabled(true);
+        OPMediaEngine.getInstance().setNsEnabled(false);
+        OPMediaEngine.getInstance().setMuteEnabled(false);
+        OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
+        OPMediaEngine.getInstance().setContinuousVideoCapture(true);
+        OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
+        OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
+        OPMediaEngine.getInstance().setFaceDetection(false);
 
-				OPStackMessageQueue stackMessageQueue = OPStackMessageQueue.singleton();
-				// stackMessageQueue = new OPStackMessageQueue();
-				// stackMessageQueue.interceptProcessing(null);
-				OPStack stack = OPStack.singleton();
-				OPSdkConfig.getInstance().init(mContext);
+        Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
+    }
 
-				//
-				OPCacheDelegate cacheDelegate = OPCacheDelegateImplementation.getInstance(mContext);
-				CallbackHandler.getInstance().registerCacheDelegate(cacheDelegate);
-				OPCache.setup(cacheDelegate);
+    /**
+     * Intilialize the SDK. All the delegates will get default implementation if received null parameter
+     * 
+     * @param datastoreDelegate
+     *            passing in null will use default implementation
+     */
+    public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
+        init(context, datastoreDelegate, null, null, null, null);
+    }
 
-				OPSettings.applyDefaults();
+    /**
+     * Intilialize the SDK. All the delegates will get default implementation if received null parameter
+     * 
+     * @param context
+     * @param datastoreDelegate
+     * @param cacheDelegate
+     * @param settingsDelegate
+     * @param stackDelegate
+     * @param mediaengineDelegate
+     */
+    public void init(Context context, OPDatastoreDelegate datastoreDelegate, OPCacheDelegate cacheDelegate,
+            OPSettingsDelegate settingsDelegate, OPStackDelegate stackDelegate, OPMediaEngineDelegate mediaengineDelegate) {
+        mCacheDelegate = cacheDelegate;
+        mSettingsDelegate = settingsDelegate;
+        long start = SystemClock.uptimeMillis();
 
-				String httpSettings = createHttpSettings();
-				OPSettings.apply(httpSettings);
+        mContext = context;
 
-				String forceDashSettings = createForceDashSetting();
-				OPSettings.apply(forceDashSettings);
 
-				OPSettings.apply(OPSdkConfig.getInstance().getAPPSettingsString());
+        mStackMessageQueue = OPStackMessageQueue.singleton();
+        mStackMessageQueue.interceptProcessing(OPStackMessageQueueDelegateImpl.getInstance());
+        
+        if (mSettingsDelegate == null) {
+            mSettingsDelegate = OPSettingsDelegateImpl.getInstance(mContext);
+        }
+        OPSettings.setup(mSettingsDelegate);
+        OPSdkConfig.getInstance().init(mContext);
+        if (mCacheDelegate == null) {
+            mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
+        }
+        OPCache.setup(mCacheDelegate);
+        
+        OPMediaEngine.init(mContext);
 
-				stack.setup(null, null);
+        OPStack stack = OPStack.singleton();
 
-				initialized = true;
-				if (initListener != null) {
-					initListener.onInitialized();
-				}
-			}
+//        OPSettings.applyDefaults();
+        OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
 
-		});
-		thread.run();
-	}
 
-	public static boolean initialized = false;
-	public InitListener initListener;
+        stack.setup(stackDelegate, mediaengineDelegate);
+        if (datastoreDelegate != null) {
+            OPDataManager.getInstance().init(datastoreDelegate);
+        } else {
+            OPDataManager.getInstance().init(OPDatastoreDelegateImpl.getInstance().init(mContext));
+        }
+    }
 
-	public interface InitListener {
-		public void onInitialized();
-	}
+    private String createHttpSettings() {
+        try {
+            JSONObject parent = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
 
-	public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
-		long start = SystemClock.uptimeMillis();
+            jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", true);
+            jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", true);
+            parent.put("root", jsonObject);
+            return parent.toString(2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
-		mContext = context;
-		// enableTelnetLogging();
-		// initMediaEngine();
-		if (datastoreDelegate != null) {
-			OPDataManager.getInstance().init(datastoreDelegate);
-		} else {
-			OPDataManager.getInstance().init(OPDatastoreDelegateImplementation.getInstance().init(mContext));
-		}
-		// TODO: Add delegate when implement mechanism to post events to the
-		// android GUI thread
-		init1();
+    private String createForceDashSetting() {
+        try {
+            JSONObject parent = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
 
-	}
+            jsonObject.put("openpeer/core/authorized-application-id-split-char", "-");
+            parent.put("root", jsonObject);
+            return parent.toString(2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
-	private String createHttpSettings() {
-		try {
-			JSONObject parent = new JSONObject();
-			JSONObject jsonObject = new JSONObject();
+    /**
+     * @ExcludeFromJavadoc
+     * @param intent
+     */
+    public void sendBroadcast(Intent intent) {
+        mContext.sendBroadcast(intent);
+    }
 
-			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", "true");
-			jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", "true");
-			parent.put("root", jsonObject);
-			Log.d("output", parent.toString(2));
-			return parent.toString(2);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return "";
-		}
-	}
+    public boolean isAppInBackground() {
+        return mAppInBackground;
+    }
 
-	private String createForceDashSetting() {
-		try {
-			JSONObject parent = new JSONObject();
-			JSONObject jsonObject = new JSONObject();
+    public void onEnteringForeground() {
+        mAppInBackground = false;
+    }
 
-			jsonObject.put("openpeer/core/authorized-application-id-split-char", "-");
-			parent.put("root", jsonObject);
-			Log.d("output", parent.toString(2));
-			return parent.toString(2);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return "";
-		}
-	}
+    public void onEnteringBackground() {
+        mAppInBackground = true;
+    }
 
-	public void sendBroadcast(Intent intent) {
-		mContext.sendBroadcast(intent);
-	}
+    /**
+     * Handle user signout. This function will shutdown and clean up core data asynchrously and send
+     * {@link com.openpeer.sdk.app.IntentData#ACTION_SIGNOUT_DONE} when shutdown is done. Application must capture this intent and handle
+     * properly
+     */
+    public void onSignOut() {
+        isSigningOut = true;
+        OPDataManager.getInstance().onSignOut();
+    }
 
-	public static final int MODE_CONTACTS_BASED = 0;
-	public static final int MODE_GROUP_BASED = 1;
+    /**
+     * @ExcludeFromJavadoc
+     */
+    public void onAccountShutdown() {
+        Intent intent = new Intent();
+        if (isSigningOut) {
+            mCacheDelegate.clear(null);
+            intent.setAction(IntentData.ACTION_SIGNOUT_DONE);
+        } else {
+            intent.setAction(IntentData.ACTION_ACCOUNT_SHUTDOWN);
+        }
+        mContext.sendBroadcast(intent);
+        isSigningOut = false;
+    }
 
-	public void setChatGroupMode(int mode) {
-		if (mode == MODE_CONTACTS_BASED) {
-			mDispatcher = new ContactsBasedMessageDispatcher();
-		} else {
-			mDispatcher = new GroupBasedMessageDispatcher();
-
-		}
-	}
-
-	private MessageDispatcher mDispatcher;
-	private boolean mAppInBackground;
-
-	public boolean isAppInBackground() {
-		return mAppInBackground;
-	}
-
-	public void dispatchMessage(OPConversationThread thread, OPMessage message) {
-		mDispatcher.dispatch(thread, message);
-	}
-
-	public void registerMessageReceiver(MessageReceiver receiver) {
-
-	}
-
-	public void onEnteringForeground() {
-		mAppInBackground = false;
-	}
-
-	public void onEnteringBackground() {
-		mAppInBackground = true;
-	}
+    public static OPSettingsDelegate getSettingsDelegate() {
+        return instance.mSettingsDelegate;
+    }
 
 }

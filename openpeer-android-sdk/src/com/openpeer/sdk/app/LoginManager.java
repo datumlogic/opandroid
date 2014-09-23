@@ -1,26 +1,50 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sdk.app;
 
 import java.util.List;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.WebView;
 
-import com.openpeer.delegates.CallbackHandler;
-import com.openpeer.javaapi.AccountStates;
-import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPAccountDelegate;
 import com.openpeer.javaapi.OPCallDelegate;
+import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPIdentity;
-import com.openpeer.javaapi.OPIdentityDelegate;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
+import com.openpeer.sdk.delegates.OPAccountDelegateImpl;
+import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 
 public class LoginManager {
-	// private static LoginManager instance;
-	private LoginUIListener mListener;
-	private WebView mAccountLoginWebView;
-	private WebView mIdentityLoginWebView;
-	private OPCallDelegate mCallDelegate;
+	private static LoginUIListener mListener;
 
 	private static LoginManager instance;
 
@@ -31,378 +55,135 @@ public class LoginManager {
 		return instance;
 	}
 
-	public LoginManager setup(LoginUIListener mListener,
-			WebView mAccountLoginWebView, WebView mIdentityLoginWebView, OPCallDelegate callDelegate) {
-		this.mListener = mListener;
-		this.mAccountLoginWebView = mAccountLoginWebView;
-		this.mIdentityLoginWebView = mIdentityLoginWebView;
-		this.mCallDelegate = callDelegate;
-		return this;
-	}
-
 	private LoginManager() {
-		// TODO Auto-generated constructor stub
 	}
 
-	public boolean isLoginInProgress() {
+	/**
+	 * 
+	 * @param listener
+	 *            Application need to pass the UI listener to handle state changes.
+	 * @param callDelegate
+	 *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 * @param conversationThreadDelegate
+	 *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 */
+	public void login(LoginUIListener listener,
+			OPCallDelegate callDelegate,
+			OPConversationThreadDelegate conversationThreadDelegate) {
+		mListener = listener;
+
+		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
+		accountDelegate.bind(mListener);
+		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, callDelegate);
+		OPDataManager.getInstance().setSharedAccount(account);
+		startIdentityLogin();
+	}
+
+	/**
+	 * 
+	 * @param listener
+	 *            Application need to pass the UI listener to handle state changes.
+	 * @param callDelegate
+	 *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 * @param conversationThreadDelegate
+	 *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+	 * 
+	 * @param reloginInfo
+	 *            relogin jason blob stored from last login session
+	 */
+	public void relogin(LoginUIListener listener,
+			OPCallDelegate callDelegate,
+			OPConversationThreadDelegate conversationThreadDelegate,
+			String reloginInfo) {
+		mListener = listener;
+		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
+		accountDelegate.bind(mListener);
+		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, callDelegate, reloginInfo);
+
+		OPDataManager.getInstance().setSharedAccount(account);
+	}
+
+	private void startIdentityLogin() {
+		OPAccount account = OPDataManager.getInstance().getSharedAccount();
+
+		OPIdentity identity = new OPIdentity();
+		OPIdentityLoginWebview mIdentityLoginWebView = mListener.getIdentityWebview(null);
+
+		OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(null);
+		identityDelegate.bindListener(mListener);
+		identityDelegate.setWebview(mIdentityLoginWebView);
+
+		identity = OPIdentity.login(account, identityDelegate);
+		mIdentityLoginWebView.getClient().setIdentity(identity);
+	}
+
+	/**
+	 * Handle account state ready. If this is a login, it means the primary identity login has completed, so start downloading contacts. If
+	 * this is a relogin, attach Identity delegates to associated identities and start logging in identities
+	 * 
+	 * @param account
+	 */
+	public void onAccountStateReady(OPAccount account) {
+
+		OPDataManager.getInstance().saveAccount();
+
+		List<OPIdentity> identities = account.getAssociatedIdentities();
+		if (identities.size() == 0) {
+			Log.d("TODO", "Account test FAILED identities emppty ");
+
+			return;
+		}
+
+		for (OPIdentity identity : identities) {
+			if (!identity.isDelegateAttached()) {
+				OPIdentityLoginWebview webview = mListener.getIdentityWebview(identity);
+				webview.getClient().setIdentity(identity);
+
+				OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(identity);// new
+																										// OPIdentityDelegateImplementation(mIdentityLoginWebView,
+																										// identity);
+				identityDelegate.bindListener(mListener);
+				identityDelegate.setWebview(webview);
+				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getOuterFrameUrl());
+
+			} else {
+				OPDataManager.getInstance().setIdentities(identities);
+
+				// mListener.onLoginComplete();
+
+				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
+				if (TextUtils.isEmpty(version)) {
+					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
+					identity.startRolodexDownload("");
+				} else {
+					// check for new contacts
+					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
+					identity.startRolodexDownload(version);
+				}
+			}
+		}
+
+	}
+
+	public static void onLoginComplete() {
+		instance = null;
+	}
+
+	/**
+	 * If login in progress
+	 * 
+	 * @return
+	 */
+	public static boolean isLogIn() {
+		// TODO Auto-generated method stub
 		return instance != null;
 	}
 
 	/**
-	 * this function should be called after logging to release resources
+	 * Handle account shutdown state change.
 	 */
-	static void destroy() {
+	public static void onAccountShutdown() {
+		// release resources
 		instance = null;
-	}
-
-	public void login() {
-
-		// if (OPDatastoreDelegateImplementation.getInstance().getReloginInfo()
-		// == null) {
-		OPAccount account = new OPAccount();
-		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
-				account);
-		mAccountLoginWebView.post(new Runnable() {
-			public void run() {
-				mAccountLoginWebView.setWebViewClient(client);
-			}
-		});
-
-		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
-				mAccountLoginWebView, account);
-
-		CallbackHandler.getInstance().registerAccountDelegate(account,
-				accountDelegate);
-
-		account = OPAccount.login(null, null, null,
-				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
-				OPSdkConfig.getInstance().getGrantId(),
-				OPSdkConfig.getInstance().getLockboxServiceDomain(),
-				false);
-		OPDataManager.getInstance().setSharedAccount(account);
-		client.mAccount = account;
-		accountDelegate.mAccount = account;
-		startIdentityLogin();
-	}
-
-	public void relogin(String reloginInfo) {
-		OPAccount account;
-		if (OPDataManager.getInstance().getSharedAccount() != null) {
-			account = OPDataManager.getInstance().getSharedAccount();
-		} else {
-			account = new OPAccount();
-		}
-		final OPAccountLoginWebViewClient client = new OPAccountLoginWebViewClient(
-				account);
-		mAccountLoginWebView.post(new Runnable() {
-			public void run() {
-				mAccountLoginWebView.setWebViewClient(client);
-			}
-		});
-
-		account = OPAccount.relogin(null, null, null,
-				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
-				reloginInfo);
-		OPAccountDelegateImplementation accountDelegate = new OPAccountDelegateImplementation(
-				mAccountLoginWebView, account);
-		CallbackHandler.getInstance().registerAccountDelegate(account,
-				accountDelegate);
-		OPDataManager.getInstance().setSharedAccount(account);
-		client.mAccount = account;
-		accountDelegate.mAccount = account;
-	}
-
-	public void startIdentityLogin() {
-		// TODO Auto-generated method stub
-		OPAccount account = OPDataManager.getInstance().getSharedAccount();
-
-		OPIdentity identity = new OPIdentity();
-		OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
-				identity);
-		mIdentityLoginWebView.setWebViewClient(client);
-
-		OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
-				mIdentityLoginWebView, identity);
-		CallbackHandler.getInstance().registerIdentityDelegate(identity,
-				identityDelegate);
-
-		OPSdkConfig config = OPSdkConfig.getInstance();
-		Log.d("login", "identity initial " + identity);
-		identity = identity.login(account, null,
-				config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
-				config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
-				config.getOuterFrameUrl());// "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true");
-		client.setIdentity(identity);
-		identityDelegate.setmIdentity(identity);
-
-	}
-
-	// public static LoginManager getInstance(){
-	// if(instance == null){
-	// instance = new LoginManager();
-	// }
-	// return instance;
-	// }
-	public class OPIdentityDelegateImplementation extends OPIdentityDelegate {
-		WebView mLoginView;
-
-		// OPIdentity mIdentity;// somehow the identity passed in the callback
-		// function
-		// isn't same as the one created.
-
-		public void setmIdentity(OPIdentity mIdentity) {
-			// this.mIdentity = mIdentity;
-		}
-
-		public OPIdentityDelegateImplementation(WebView loginView,
-				OPIdentity identity) {
-			this.mLoginView = loginView;
-			// mIdentity = identity;
-		}
-
-		@Override
-		public void onIdentityStateChanged(OPIdentity identity,
-				IdentityStates state) {
-			// TODO Auto-generated method stub
-			Log.d("state", "identity state " + state);
-
-			switch (state) {
-			case IdentityState_WaitingForBrowserWindowToBeLoaded:
-				// LoginManager.loadOuterFrame();//load identity.html
-				mLoginView.post(new Runnable() {
-					public void run() {
-						Log.d("login", "loading identity webview");
-						mListener.onStartIdentityLogin();
-						mLoginView
-								.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
-					}
-				});
-				break;
-			case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
-				mLoginView.post(new Runnable() {
-					public void run() {
-						mListener.onIdentityLoginWebViewMadeVisible();
-					}
-				});
-				identity.notifyBrowserWindowVisible();
-				break;
-			case IdentityState_WaitingForBrowserWindowToClose:
-				mLoginView.post(new Runnable() {
-					public void run() {
-						mListener.onIdentityLoginWebViewClose();
-					}
-				});
-				identity.notifyBrowserWindowClosed();
-				break;
-			case IdentityState_Ready:
-				// LoginManager.mIdentity.;
-				if (OPDataManager.getInstance().getSharedAccount()
-						.getState(0, "") == AccountStates.AccountState_Ready) {
-					OPDataManager.getInstance().setIdentities(
-							OPDataManager.getInstance().getSharedAccount()
-									.getAssociatedIdentities());
-
-//					mListener.onLoginComplete();
-
-					String version = OPDataManager.getDatastoreDelegate()
-							.getDownloadedContactsVersion(
-									identity.getStableID());
-					if (TextUtils.isEmpty(version)) {
-						Log.d("login", "start download initial contacts");
-						identity.startRolodexDownload("");
-					} else {
-						// check for new contacts
-						Log.d("login",
-								"start download  contacts since version "
-										+ version);
-						identity.startRolodexDownload(version);
-					}
-
-				}
-				break;
-			case IdentityState_Shutdown:
-				// Temporary defensive code. Proper logic will be put in place soon.
-				if (mListener != null) {
-					mLoginView.post(new Runnable() {
-						public void run() {
-							mListener.onLoginError();
-							mLoginView = null;
-						}
-					});
-				}
-				break;
-			}
-		}
-
-		@Override
-		public void onIdentityPendingMessageForInnerBrowserWindowFrame(
-				OPIdentity identity) {
-			// TODO Auto-generated method stub
-			String msg = identity.getNextMessageForInnerBrowerWindowFrame();
-			Log.d("login", "identity pendingMessageForInnerFrame " + msg);
-
-			passMessageToJS(msg);
-		}
-
-		@Override
-		public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
-			OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
-			CallbackHandler.getInstance().unregisterIdentityDelegate(this);
-			mListener.onLoginComplete();
-			// destroy();
-		}
-
-		public void passMessageToJS(final String msg) {
-			mLoginView.post(new Runnable() {
-				public void run() {
-					String cmd = String.format(
-							"javascript:sendBundleToJS(\'%s\')", msg);
-					Log.w("login", "Identity webview Pass to JS: " + cmd);
-					mLoginView.loadUrl(cmd);
-				}
-			});
-		}
-	}
-
-	public class OPAccountDelegateImplementation extends OPAccountDelegate {
-		WebView mLoginView;
-		OPAccount mAccount;// somehow the orignal account created is different
-							// from
-							// the account passed in the callback.
-
-		public OPAccountDelegateImplementation(WebView mLoginView,
-				OPAccount mAccount) {
-			super();
-			this.mLoginView = mLoginView;
-			this.mAccount = mAccount;
-		}
-
-		@Override
-		public void onAccountStateChanged(OPAccount account, AccountStates state) {
-			Log.d("state", "Account state " + state);
-			switch (state) {
-			case AccountState_WaitingForAssociationToIdentity:
-				break;
-			case AccountState_WaitingForBrowserWindowToBeLoaded:
-				mLoginView.post(new Runnable() {
-					public void run() {
-						mLoginView.loadUrl(OPSdkConfig.getInstance()
-								.getNamespaceGrantServiceUrl());
-					}
-				});
-				break;
-			case AccountState_WaitingForBrowserWindowToBeMadeVisible:
-				mLoginView.post(new Runnable() {
-					public void run() {
-						mListener.onAccountLoginWebViewMadeVisible();
-					}
-				});
-				mAccount.notifyBrowserWindowVisible();
-				break;
-			case AccountState_WaitingForBrowserWindowToClose:
-				mLoginView.post(new Runnable() {
-					public void run() {
-						mListener.onAccountLoginWebViewMadeClose();
-					}
-				});
-				mAccount.notifyBrowserWindowClosed();
-				break;
-			case AccountState_Ready:
-				Log.w("login", "Account READY !!!!!!!!!!!!");
-				OPDataManager.getInstance().setAccountReady(true);
-
-				onAccountStateReady(account);
-				break;
-			case AccountState_Shutdown:
-				OPDataManager.getInstance().setAccountReady(false);
-				if (mListener != null) {
-					mLoginView.post(new Runnable() {
-						public void run() {
-							mListener.onLoginError();
-						}
-					});
-				}
-				break;
-			}
-		}
-
-		public void onAccountStateReady(OPAccount account) {
-
-			OPDataManager.getInstance().setSharedAccount(mAccount);
-			OPDataManager.getInstance().saveAccount();
-
-			List<OPIdentity> identities = mAccount.getAssociatedIdentities();
-			if (identities.size() == 0) {
-				Log.d("TODO", "Account test FAILED identities emppty ");
-
-				return;
-			}
-
-			for (OPIdentity identity : identities) {
-				if (!identity.isDelegateAttached()) {
-					final OPIdentityLoginWebViewClient client = new OPIdentityLoginWebViewClient(
-							identity);
-					mIdentityLoginWebView.post(new Runnable() {
-						public void run() {
-							mIdentityLoginWebView.setWebViewClient(client);
-
-						}
-					});
-					OPIdentityDelegateImplementation identityDelegate = new OPIdentityDelegateImplementation(
-							mIdentityLoginWebView, identity);
-					CallbackHandler.getInstance().registerIdentityDelegate(
-							identity, identityDelegate);
-					identity.attachDelegate(identityDelegate,
-							OPSdkConfig.getInstance().getOuterFrameUrl());
-
-				} else {
-					OPDataManager.getInstance().setIdentities(identities);
-
-//					mListener.onLoginComplete();
-
-					String version = OPDataManager.getDatastoreDelegate()
-							.getDownloadedContactsVersion(
-									identity.getStableID());
-					if (TextUtils.isEmpty(version)) {
-						Log.d("login", "start download initial contacts");
-						identity.startRolodexDownload("");
-					} else {
-						// check for new contacts
-						Log.d("login",
-								"start download  contacts since version "
-										+ version);
-						identity.startRolodexDownload(version);
-					}
-				}
-			}
-
-		}
-
-		@Override
-		public void onAccountAssociatedIdentitiesChanged(OPAccount account) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onAccountPendingMessageForInnerBrowserWindowFrame(
-				OPAccount account) {
-			// TODO Auto-generated method stub
-			// LoginManager.pendingMessageForNamespaceGrantInnerFrame();
-			String msg = mAccount.getNextMessageForInnerBrowerWindowFrame();
-			Log.d("output", "pendingMessageForNamespaceGrantInnerFrame " + msg);
-			passMessageToJS(msg);
-		}
-
-		void passMessageToJS(final String msg) {
-			mLoginView.post(new Runnable() {
-				public void run() {
-					String cmd = String.format(
-							"javascript:sendBundleToJS(\'%s\')", msg);
-					Log.w("JNI", "Pass to JS: " + cmd);
-					mLoginView.loadUrl(cmd);
-				}
-			});
-		}
 	}
 }

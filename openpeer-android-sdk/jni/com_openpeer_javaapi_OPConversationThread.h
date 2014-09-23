@@ -18,9 +18,9 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toStrin
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    toString
- * Signature: (Lcom/openpeer/javaapi/ContactStates;)Ljava/lang/String;
+ * Signature: (Lcom/openpeer/javaapi/ContactConnectionStates;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toString__Lcom_openpeer_javaapi_ContactStates_2
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toString__Lcom_openpeer_javaapi_ContactConnectionStates_2
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -57,10 +57,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getConv
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getStableID
+ * Method:    getID
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPConversationThread_getStableID
+JNIEXPORT jlong JNICALL Java_com_openpeer_javaapi_OPConversationThread_getID
   (JNIEnv *, jobject);
 
 /*
@@ -105,10 +105,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getIden
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
- * Method:    getContactState
- * Signature: (Lcom/openpeer/javaapi/OPContact;)Lcom/openpeer/javaapi/ContactStates;
+ * Method:    getContactConnectionState
+ * Signature: (Lcom/openpeer/javaapi/OPContact;)Lcom/openpeer/javaapi/ContactConnectionStates;
  */
-JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactState
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactConnectionState
   (JNIEnv *, jobject, jobject);
 
 /*
@@ -129,11 +129,35 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_removeCont
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    createEmptyStatus
+ * Signature: ()Lcom/openpeer/javaapi/OPElement;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_createEmptyStatus
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    getContactStatus
+ * Signature: (Lcom/openpeer/javaapi/OPContact;)Lcom/openpeer/javaapi/OPElement;
+ */
+JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getContactStatus
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    setStatusInThread
+ * Signature: (Lcom/openpeer/javaapi/OPElement;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setStatusInThread
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    sendMessage
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_sendMessage
-  (JNIEnv *, jobject, jstring, jstring, jstring, jboolean);
+  (JNIEnv *, jobject, jstring, jstring, jstring, jstring, jboolean);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -150,6 +174,22 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    markAllMessagesRead
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_markAllMessagesRead
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    releaseCoreObjects
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_releaseCoreObjects
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

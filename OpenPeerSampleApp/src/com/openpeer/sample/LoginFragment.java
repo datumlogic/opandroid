@@ -1,9 +1,36 @@
+/*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
 package com.openpeer.sample;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +38,15 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.sample.push.HackApiService;
-import com.openpeer.sample.push.PushRegistrationManager;
+import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
+import com.openpeer.sdk.app.OPAccountLoginWebViewClient;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPHelper;
-import com.openpeer.sdk.datastore.OPDatastoreDelegateImplementation;
-import com.openpeer.sample.contacts.ContactsFragment;
-import com.openpeer.sample.delegates.OPCallDelegateImplementation;
+import com.openpeer.sdk.app.OPIdentityLoginWebViewClient;
+import com.openpeer.sdk.app.OPIdentityLoginWebview;
 import com.urbanairship.push.PushManager;
 
 import retrofit.Callback;
@@ -29,19 +56,11 @@ import retrofit.client.Response;
 public class LoginFragment extends BaseFragment implements LoginUIListener {
     WebView mAccountLoginWebView;
 
-    WebView mIdentityLoginWebView;
+    OPIdentityLoginWebview mIdentityLoginWebView;
     View progressView;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
-    }
-
-    public WebView getmAccountLoginWebView() {
-        return mAccountLoginWebView;
-    }
-
-    public WebView getmIdentityLoginWebView() {
-        return mIdentityLoginWebView;
     }
 
     @Override
@@ -49,75 +68,31 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         View view = inflater.inflate(R.layout.fragment_login, null);
         progressView = view.findViewById(R.id.progress);
         mAccountLoginWebView = (WebView) view.findViewById(R.id.webview_account_login);
-        mIdentityLoginWebView = (WebView) view.findViewById(R.id.webview_identity_login);
-        setupWebView(mAccountLoginWebView);
+        mAccountLoginWebView.setWebViewClient(new OPAccountLoginWebViewClient());
+        //TODO: Dynamic generate and attach webview
+        mIdentityLoginWebView = (OPIdentityLoginWebview) view.findViewById(R.id.webview_identity_login);
+        mIdentityLoginWebView.setClient(new OPIdentityLoginWebViewClient(null));
 
+        setupWebView(mAccountLoginWebView);
         setupWebView(mIdentityLoginWebView);
-        // view.setOnClickListener(new View.OnClickListener() {
-        //
-        // @Override
-        // public void onClick(View arg0) {
+
         startLogin();
-        // }
-        // });
         return view;
     }
 
     void startLogin() {
-        if (loginTask == null) {
-            loginTask = new AccountLogin();
-        }
-        loginTask.execute();
-        // String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-        // if (reloginInfo == null || reloginInfo.length() == 0) {
-        // Log.d("login", "LoginFragment startLogin() logging in");
-        // LoginManager.getInstance().setup(this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation()).login();
-        // } else {
-        // Log.d("login", "LoginFragment startLogin() relogging in");
-        //
-        // LoginManager.getInstance().setup(this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation())
-        // .relogin(OPDataManager.getInstance().getReloginInfo());
-        // }
-
-    }
-
-    AccountLogin loginTask = null;
-
-    private class AccountLogin extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-//			OPHelper.getInstance().init(getActivity(), null);
-            String reloginInfo = OPDataManager.getInstance().getReloginInfo();
-            if (reloginInfo == null || reloginInfo.length() == 0) {
-                Log.d("login", "LoginFragment startLogin() logging in");
-                LoginManager.getInstance()
-                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation()).login();
-            } else {
-                Log.d("login", "LoginFragment startLogin() relogging in");
-
-                LoginManager.getInstance()
-                        .setup(LoginFragment.this, mAccountLoginWebView, mIdentityLoginWebView, new OPCallDelegateImplementation())
-                        .relogin(OPDataManager.getInstance().getReloginInfo());
-            }
-
-            // TextView txt = (TextView) findViewById(R.id.output);
-            // txt.setText("Executed");
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            loginTask = null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
+        String reloginInfo = OPDataManager.getInstance().getReloginInfo();
+        if (reloginInfo == null || reloginInfo.length() == 0) {
+            LoginManager.getInstance()
+                    .login(LoginFragment.this,
+                            OPSessionManager.getInstance().getCallDelegate(),
+                            OPSessionManager.getInstance().getConversationThreadDelegate());
+        } else {
+            LoginManager.getInstance()
+                    .relogin(LoginFragment.this,
+                            OPSessionManager.getInstance().getCallDelegate(),
+                            OPSessionManager.getInstance().getConversationThreadDelegate(),
+                            reloginInfo);
         }
     }
 
@@ -147,13 +122,12 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
                 }
             }
         });
-
         PushManager.enablePush();
 
         //TODO: move it to proper place after login refactoring.
         String apid = PushManager.shared().getAPID();
         if (!TextUtils.isEmpty(apid)) {
-            PushRegistrationManager.getInstance().associateDeviceToken(OPDataManager.getInstance().getSharedAccount().getPeerUri(),
+            OPPushManager.getInstance().associateDeviceToken(OPDataManager.getInstance().getSharedAccount().getPeerUri(),
                     PushManager.shared().getAPID(),
                     new Callback<HackApiService.HackAssociateResult>() {
                         @Override
@@ -173,6 +147,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
     public void onLoginError() {
         if (!isDetached()) {
             Toast.makeText(getActivity(), R.string.msg_failed_login, Toast.LENGTH_LONG).show();
+
             ((BaseFragmentActivity) getActivity()).hideLoginFragment();
         }
     }
@@ -199,6 +174,16 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
     public void onAccountLoginWebViewMadeClose() {
         mAccountLoginWebView.setVisibility(View.GONE);
     }
+
+    @Override
+    public WebView getAccountWebview() {
+        return mAccountLoginWebView;
+    }
+
+	@Override
+	public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity) {
+		return mIdentityLoginWebView;
+	}
     /* END implementation of LoginUIListener */
 
 }

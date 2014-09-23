@@ -2,6 +2,7 @@
 #include "CacheDelegateWrapper.h"
 #include <android/log.h>
 #include "OpenPeerCoreManager.h"
+#include "openpeer/services/IHelper.h"
 
 //ICacheDelegate implementation
 CacheDelegateWrapper::CacheDelegateWrapper(jobject delegate)
@@ -18,7 +19,7 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	jstring cookieJavaString;
 	const char *fetchedStr;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache fetch called - cookieNamePath = %s", cookieNamePath);
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Cache fetch called - cookieNamePath = %s", cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -57,7 +58,7 @@ zsLib::String CacheDelegateWrapper::fetch(const char *cookieNamePath)
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache fetch Java delegate is NULL !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Cache fetch Java delegate is NULL !!!");
 	}
 
 	if (jni_env->ExceptionCheck()) {
@@ -81,7 +82,9 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	jstring cookieJavaString;
 	jstring storeStr;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache store called - cookieNamePath = %s, str = %s", cookieNamePath, str);
+	String expStr = openpeer::services::IHelper::timeToString(expires);
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Cache store called - cookieNamePath = %s",cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -102,17 +105,20 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	cookieJavaString =  jni_env->NewStringUTF(cookieNamePath);
 	storeStr =  jni_env->NewStringUTF(str);
 
-	//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
-	Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+
 	jclass timeCls = findClass("android/text/format/Time");
 	jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
-	jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
-
-	//calculate and set Expires Time
-	zsLib::Duration closedTimeDuration = expires - time_t_epoch;
 	object = jni_env->NewObject(timeCls, timeMethodID);
-	jni_env->CallVoidMethod(object, timeSetMillisMethodID, closedTimeDuration.total_milliseconds());
+	if (Time() != expires)
+	{
+		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
 
+		//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+		Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+		//calculate and set Expires Time
+		zsLib::Duration closedTimeDuration = expires - time_t_epoch;
+		jni_env->CallVoidMethod(object, timeSetMillisMethodID, closedTimeDuration.total_milliseconds());
+	}
 	if (javaDelegate != NULL)
 	{
 
@@ -125,7 +131,7 @@ void CacheDelegateWrapper::store(const char *cookieNamePath,
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache store Java delegate is NULL !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Cache store Java delegate is NULL !!!");
 	}
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -144,7 +150,7 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	JNIEnv *jni_env = 0;
 	jstring cookieJavaString;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "cache clear called - cookieNamePath = %s", cookieNamePath);
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "Cache clear called - cookieNamePath = %s", cookieNamePath);
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -175,7 +181,7 @@ void CacheDelegateWrapper::clear(const char *cookieNamePath)
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "cache clear Java delegate is NULL !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "Cache clear Java delegate is NULL !!!");
 	}
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();

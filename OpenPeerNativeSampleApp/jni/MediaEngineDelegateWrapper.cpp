@@ -20,10 +20,20 @@ void MediaEngineDelegateWrapper::onMediaEngineAudioRouteChanged(openpeer::core::
 
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onMediaEngineAudioRouteChanged");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 
 	if (javaDelegate != NULL)
@@ -44,7 +54,10 @@ void MediaEngineDelegateWrapper::onMediaEngineAudioRouteChanged(openpeer::core::
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 
 }
 void MediaEngineDelegateWrapper::onMediaEngineAudioSessionInterruptionBegan()
@@ -56,10 +69,20 @@ void MediaEngineDelegateWrapper::onMediaEngineAudioSessionInterruptionBegan()
 
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onMediaEngineAudioSessionInterruptionBegan");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 	if (javaDelegate != NULL)
 	{
@@ -79,7 +102,10 @@ void MediaEngineDelegateWrapper::onMediaEngineAudioSessionInterruptionBegan()
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 void MediaEngineDelegateWrapper::onMediaEngineAudioSessionInterruptionEnded()
 {
@@ -90,10 +116,20 @@ void MediaEngineDelegateWrapper::onMediaEngineAudioSessionInterruptionEnded()
 
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onMediaEngineAudioSessionInterruptionEnded");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 
 	if (javaDelegate != NULL)
@@ -114,7 +150,10 @@ void MediaEngineDelegateWrapper::onMediaEngineAudioSessionInterruptionEnded()
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 
 void MediaEngineDelegateWrapper::onMediaEngineFaceDetected()
@@ -127,10 +166,20 @@ void MediaEngineDelegateWrapper::onMediaEngineFaceDetected()
 
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onMediaEngineFaceDetected");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 
 	if (javaDelegate != NULL)
@@ -151,7 +200,10 @@ void MediaEngineDelegateWrapper::onMediaEngineFaceDetected()
 		jni_env->ExceptionDescribe();
 	}
 
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 void MediaEngineDelegateWrapper::onMediaEngineVideoCaptureRecordStopped()
 {
@@ -163,10 +215,20 @@ void MediaEngineDelegateWrapper::onMediaEngineVideoCaptureRecordStopped()
 
 	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onMediaEngineVideoCaptureRecordStopped");
 
-	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
-	if (attach_result < 0 || jni_env == 0)
+	bool attached = false;
+	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
 	{
-		return;
+	case JNI_OK:
+		break;
+	case JNI_EDETACHED:
+		if (android_jvm->AttachCurrentThread(&jni_env, NULL)!=0)
+		{
+			throw std::runtime_error("Could not attach current thread");
+		}
+		attached = true;
+		break;
+	case JNI_EVERSION:
+		throw std::runtime_error("Invalid java version");
 	}
 	if (javaDelegate != NULL)
 	{
@@ -185,8 +247,10 @@ void MediaEngineDelegateWrapper::onMediaEngineVideoCaptureRecordStopped()
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
 	}
-
-	android_jvm->DetachCurrentThread();
+	if(attached)
+	{
+		android_jvm->DetachCurrentThread();
+	}
 }
 
 
