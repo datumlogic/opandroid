@@ -403,6 +403,14 @@ LOCAL_SRC_FILES := \
     $(BOOST_LIBS_PATH)/libboost_thread-gcc-mt-1_53.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+#punycode
+include $(CLEAR_VARS)
+PUNYCODE_LIBS_PATH := libs/op/libs/ortc-lib/libs/build/android/punycode
+LOCAL_MODULE := libpunycode_android
+LOCAL_SRC_FILES := \
+    $(PUNYCODE_LIBS_PATH)/libpunycode_android.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 #hfsservices
 include $(CLEAR_VARS)
 SERVICES_LIBS_PATH := libs/op/libs/ortc-lib/libs/build/android/op-services-cpp
@@ -458,6 +466,7 @@ LOCAL_C_INCLUDES:= $(LOCAL_PATH)/libs/op/libs/ortc-lib/libs \
 $(LOCAL_PATH)/libs/op/libs/op-stack-cpp/ \
 $(LOCAL_PATH)/libs/op/libs/op-core-cpp/ \
 $(LOCAL_PATH)/libs/op/libs/ortc-lib/libs/op-services-cpp \
+$(LOCAL_PATH)/libs/op/libs/ortc-lib/libs/punycode \
 $(LOCAL_PATH)/libs/op/libs/ortc-lib/libs/build/android/curl/include \
 $(LOCAL_PATH)/libs/op/libs/ortc-lib/libs/build/android/boost/include/boost-1_53 \
 $(LOCAL_PATH)/libs/op/libs/ortc-lib/libs/zsLib \
@@ -578,6 +587,7 @@ libcurl \
 libssl \
 libcrypto \
 libzslib_android \
+libpunycode_android \
 libhfservices_android \
 libhfstack_android \
 libhfcore_android \ 

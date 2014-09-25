@@ -79,31 +79,37 @@ cd libs/op/libs/ortc-lib/libs/zsLib/projects/android
 ./build_zsLib_android.sh $Input
 popd
 
-#op-services-cpp build -- 7
+#punycode build -- 7
+pushd `pwd`
+cd libs/op/libs/ortc-lib/libs/punycode/projects/android
+./build_punycode_android.sh $Input
+popd
+
+#op-services-cpp build -- 8
 pushd `pwd`
 cd libs/op/libs/ortc-lib/libs/op-services-cpp/projects/android
 ./build_op-services-cpp_android.sh $Input
 popd
 
-#webrtc build -- 8
+#webrtc build -- 9
 pushd `pwd`
 cd libs/op/libs/ortc-lib/libs/webrtc/projects/android
 ./build_webrtc_android.sh $Input
 popd
 
-#op-stack-cpp build -- 9
+#op-stack-cpp build -- 10
 pushd `pwd`
 cd libs/op/libs/op-stack-cpp/projects/android
 ./build_op-stack-cpp_android.sh $Input
 popd
 
-#op-core-cpp build - 10
+#op-core-cpp build - 11
 pushd `pwd`
 cd libs/op/libs/op-core-cpp/projects/android
 ./build_op-core-cpp_android.sh $Input
 popd
 
-#openpeer-android-sdk shared build - 11
+#openpeer-android-sdk shared build - 12
 pushd `pwd`
 cd openpeer-android-sdk
 ./build_openpeer_android_sdk_android.sh $Input
