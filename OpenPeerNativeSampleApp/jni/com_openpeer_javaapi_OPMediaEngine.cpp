@@ -4,7 +4,7 @@
 #include "openpeer/core/ILogger.h"
 //#include "openpeer/core/IMediaEngine.h"
 #include "openpeer/core/internal/core_MediaEngine.h"
-#include "openpeer/core/test/TestMediaEngine.h"
+
 #include <android/log.h>
 #include <voe_base.h>
 #include <vie_base.h>
@@ -12,6 +12,10 @@
 #include "globals.h"
 
 //#define TEST_MEDIA_ENGINE
+
+#ifdef TEST_MEDIA_ENGINE
+#include "openpeer/core/test/TestMediaEngine.h"
+#endif
 
 using namespace openpeer::core;
 
@@ -1049,7 +1053,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVoi
 
 	if (coreMediaEnginePtr)
 	{
+#ifdef TEST_MEDIA_ENGINE
 		((internal::IMediaEngineForCallTransport*)(test::TestMediaEngine*)coreMediaEnginePtr->get())->startVoice();
+#endif
 	}
 }
 
@@ -1072,7 +1078,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVoic
 
 	if (coreMediaEnginePtr)
 	{
+#ifdef TEST_MEDIA_ENGINE
 		((internal::IMediaEngineForCallTransport*)(test::TestMediaEngine*)coreMediaEnginePtr->get())->stopVoice();
+#endif
 	}
 }
 
@@ -1095,7 +1103,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_startVid
 
 	if (coreMediaEnginePtr)
 	{
+#ifdef TEST_MEDIA_ENGINE
 		((internal::IMediaEngineForCallTransport*)(test::TestMediaEngine*)coreMediaEnginePtr->get())->startVideoChannel();
+#endif
 	}
 }
 
@@ -1118,7 +1128,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_stopVide
 
 	if (coreMediaEnginePtr)
 	{
+#ifdef TEST_MEDIA_ENGINE
 		((internal::IMediaEngineForCallTransport*)(test::TestMediaEngine*)coreMediaEnginePtr->get())->stopVideoChannel();
+#endif
 	}
 }
 
@@ -1148,7 +1160,9 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_setRecei
 
 	if (coreMediaEnginePtr)
 	{
+#ifdef TEST_MEDIA_ENGINE
 		((test::TestMediaEngine*)coreMediaEnginePtr->get())->setReceiverAddress(addressString);
+#endif
 	}
 }
 
@@ -1172,8 +1186,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_test_OPTestMediaEngine_getRe
 
 	if (coreMediaEnginePtr)
 	{
+#ifdef TEST_MEDIA_ENGINE
 		String address = ((test::TestMediaEngine*)coreMediaEnginePtr->get())->getReceiverAddress();
 		ret = jni_env->NewStringUTF(address.c_str());
+#endif
 	}
 	return ret;
 }
