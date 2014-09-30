@@ -506,6 +506,7 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPAccount.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPIdentity.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPDecryptor.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPEncryptor.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPIdentityLookup.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPMediaEngine.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPLogger.cpp \
