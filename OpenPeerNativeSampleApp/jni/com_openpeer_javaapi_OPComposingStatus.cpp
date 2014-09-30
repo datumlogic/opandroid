@@ -174,7 +174,7 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPComposingStatus_hasData
 	JNIEnv *jni_env = 0;
 	jboolean ret;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPComposingStatus native insert called");
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPComposingStatus native hasData called");
 
 	jni_env = getEnv();
 
