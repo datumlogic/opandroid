@@ -28,25 +28,82 @@
  */
 package com.openpeer.sdk.model;
 
-import com.openpeer.javaapi.ComposingStates;
-import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPMessage;
-
 /**
- * UI listener of session state changes
+ *
  */
-public interface SessionListener {
-    public void onContactComposingStateChanged(ComposingStates state,
-            OPUser user);
+public class OPConversationEvent {
+    /**
+     * @param event
+     * @param description
+     * @param participants
+     * @param conversation_id
+     * @param contextId
+     */
+    public OPConversationEvent(EventTypes event, String description,
+            long participants, long conversation_id, String contextId) {
+        super();
+        this.event = event;
+        this.description = description;
+        this.participants = participants;
+        this.conversationId = conversation_id;
+        this.contextId = contextId;
+    }
 
-    public boolean onNewMessage(OPMessage message);
+    EventTypes event;
+    String description;
+    long participants;
+    long conversationId;
+    String contextId;
+    private long mId;
 
-    public boolean onPushMessage(OPMessage message);
+    public void setId(long id) {
+        this.mId = id;
+    }
 
-    public boolean onNewContactJoined(OPContact contact);
+    public enum EventTypes {
+        NewConversation,
+        ContactAdded,
+        ContactDeleted,
+    }
 
-    public boolean onContactsChanged();
+    public EventTypes getEvent() {
+        return event;
+    }
+
+    public void setEvent(EventTypes event) {
+        this.event = event;
+    }
+
+    public String getContent() {
+        return description;
+    }
+
+    public void setContent(String content) {
+        this.description = content;
+    }
+
+    public long getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(long participants) {
+        this.participants = participants;
+    }
+
+    public long getConversation_id() {
+        return conversationId;
+    }
+
+    public void setConversationId(long id) {
+        this.conversationId = id;
+    }
+
+    /**
+     * @return
+     */
+    public long getId() {
+        // TODO Auto-generated method stub
+        return mId;
+    }
 
 }

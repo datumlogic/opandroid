@@ -31,7 +31,7 @@ package com.openpeer.sdk.model;
 /**
  *
  */
-public enum MessageState {
+public enum MessageEditState {
     Normal,
     Deleted,
     Edited

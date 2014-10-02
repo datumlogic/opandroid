@@ -31,55 +31,62 @@ package com.openpeer.javaapi;
 
 public class OPContact {
 
-	private long nativeClassPointer;
+    private long nativeClassPointer;
 
-	/**
-	 * @ExcludeFromJavadoc
-	 * @param contact
-	 * @param includeCommaPrefix
-	 * @return
-	 */
-	public static native String toDebugString(OPContact contact, boolean includeCommaPrefix);
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof OPContact
+                && getStableID() == ((OPContact) o).getStableID();
+    }
 
-	public static native OPContact createFromPeerFilePublic(
-			OPAccount account,
-			String peerFilePublicEl
-			);
+    /**
+     * @ExcludeFromJavadoc
+     * @param contact
+     * @param includeCommaPrefix
+     * @return
+     */
+    public static native String toDebugString(OPContact contact,
+            boolean includeCommaPrefix);
 
-	/**
-	 * Construct OPContact instance for the account
-	 * 
-	 * @param account
-	 * @return
-	 */
-	public static native OPContact getForSelf(OPAccount account);
+    public static native OPContact createFromPeerFilePublic(
+            OPAccount account,
+            String peerFilePublicEl
+            );
 
-	public native long getStableID();
+    /**
+     * Construct OPContact instance for the account
+     * 
+     * @param account
+     * @return
+     */
+    public static native OPContact getForSelf(OPAccount account);
 
-	/**
-	 * If the contact is the logged in user self.
-	 * 
-	 * @return
-	 */
-	public native boolean isSelf();
+    public native long getStableID();
 
-	public native String getPeerURI();
+    /**
+     * If the contact is the logged in user self.
+     * 
+     * @return
+     */
+    public native boolean isSelf();
 
-	public native String getPeerFilePublic();
+    public native String getPeerURI();
 
-	public native OPAccount getAssociatedAccount();
+    public native String getPeerFilePublic();
 
-	public native void hintAboutLocation(String contactsLocationID);
+    public native OPAccount getAssociatedAccount();
 
-	private native void releaseCoreObjects();
+    public native void hintAboutLocation(String contactsLocationID);
 
-	protected void finalize() throws Throwable {
+    private native void releaseCoreObjects();
 
-		if (nativeClassPointer != 0)
-		{
-			releaseCoreObjects();
-		}
+    protected void finalize() throws Throwable {
 
-		super.finalize();
-	}
+        if (nativeClassPointer != 0)
+        {
+            releaseCoreObjects();
+        }
+
+        super.finalize();
+    }
 }

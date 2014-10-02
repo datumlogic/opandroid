@@ -62,10 +62,14 @@ public class OPSdkConfig {
     private static final String PREFIX_APP_COMMON_SETTING = "openpeer/common/";
     private static final String PREFIX_APP_CALCULATED_SETTING = "openpeer/calculated/";
 
-    private static final String KEY_APP_NAME = PREFIX_APP_COMMON_SETTING + "application-name";
-    private static final String KEY_APP_IMAGE_URL = PREFIX_APP_COMMON_SETTING + "application-image-url";
-    private static final String KEY_APP_APPLICATION_URL = PREFIX_APP_COMMON_SETTING + "application-url";
-    private static final Object KEY_USER_AGENT = PREFIX_APP_COMMON_SETTING + "user-agent";
+    private static final String KEY_APP_NAME = PREFIX_APP_COMMON_SETTING
+            + "application-name";
+    private static final String KEY_APP_IMAGE_URL = PREFIX_APP_COMMON_SETTING
+            + "application-image-url";
+    private static final String KEY_APP_APPLICATION_URL = PREFIX_APP_COMMON_SETTING
+            + "application-url";
+    private static final Object KEY_USER_AGENT = PREFIX_APP_COMMON_SETTING
+            + "user-agent";
 
     private static final String KEY_OUTER_FRAME_URL = "outerFrameURL";
     private static final String KEY_IDENTITY_PROVIDE_DOMAIN = "identityProviderDomain";
@@ -74,6 +78,7 @@ public class OPSdkConfig {
     private static final String KEY_LOCKBOX_SERVICE_DOMAIN = "lockBoxServiceDomain";
     private static final String KEY_APP_ID = "appId";
     private static final String KEY_APP_APPKEY = "appKey";
+    private static final String KEY_CHAT_MODE = "application/chatMode";
 
     private static final long DURATION_ONE_MONTH_IN_MILLIS = 30 * 24 * 60 * 60
             * 1000;
@@ -109,7 +114,8 @@ public class OPSdkConfig {
     }
 
     public String getIdentityProviderDomain() {
-        return OPHelper.getSettingsDelegate().getString(KEY_IDENTITY_PROVIDE_DOMAIN);
+        return OPHelper.getSettingsDelegate().getString(
+                KEY_IDENTITY_PROVIDE_DOMAIN);
     }
 
     public String getIdentityBaseUri() {
@@ -117,11 +123,13 @@ public class OPSdkConfig {
     }
 
     public String getNamespaceGrantServiceUrl() {
-        return OPHelper.getSettingsDelegate().getString(KEY_NAMESPACE_GRANT_SERVICE_URL);
+        return OPHelper.getSettingsDelegate().getString(
+                KEY_NAMESPACE_GRANT_SERVICE_URL);
     }
 
     public String getLockboxServiceDomain() {
-        return OPHelper.getSettingsDelegate().getString(KEY_LOCKBOX_SERVICE_DOMAIN);
+        return OPHelper.getSettingsDelegate().getString(
+                KEY_LOCKBOX_SERVICE_DOMAIN);
     }
 
     public String getGrantId() {
@@ -203,11 +211,10 @@ public class OPSdkConfig {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     public GroupChatMode getGroupChatMode() {
-        return GroupChatMode.ContactsBased;
+        return GroupChatMode.valueOf(mProperties.getProperty(KEY_CHAT_MODE));
     }
 
 }

@@ -133,9 +133,11 @@ public class LoginManager {
 
 			return;
 		}
+		//TODO: test if calling OPIdentity methods work before identity reaches ready state
+//        OPDataManager.getInstance().setIdentities(identities);
 
 		for (OPIdentity identity : identities) {
-			if (!identity.isDelegateAttached()) {
+			if (!identity.isDelegateAttached()) {//This is relogin
 				OPIdentityLoginWebview webview = mListener.getIdentityWebview(identity);
 				webview.getClient().setIdentity(identity);
 
@@ -147,11 +149,8 @@ public class LoginManager {
 				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getOuterFrameUrl());
 
 			} else {
-				OPDataManager.getInstance().setIdentities(identities);
 
-				// mListener.onLoginComplete();
-
-				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
+				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getIdentityURI());
 				if (TextUtils.isEmpty(version)) {
 					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
 					identity.startRolodexDownload("");

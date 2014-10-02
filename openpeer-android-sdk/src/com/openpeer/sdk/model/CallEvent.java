@@ -28,25 +28,43 @@
  */
 package com.openpeer.sdk.model;
 
-import com.openpeer.javaapi.ComposingStates;
+import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPMessage;
 
 /**
- * UI listener of session state changes
+ *
  */
-public interface SessionListener {
-    public void onContactComposingStateChanged(ComposingStates state,
-            OPUser user);
+public class CallEvent {
+    /**
+     * @param callId
+     * @param state
+     * @param time
+     */
+    public CallEvent(String callId, CallStates state, long time) {
+        super();
+        this.callId = callId;
+        this.state = state;
+        this.time = time;
+    }
 
-    public boolean onNewMessage(OPMessage message);
+    String callId;
+    CallStates state;
+    long time;
 
-    public boolean onPushMessage(OPMessage message);
+    public CallStates getState() {
+        return state;
+    }
 
-    public boolean onNewContactJoined(OPContact contact);
+    public void setState(CallStates state) {
+        this.state = state;
+    }
 
-    public boolean onContactsChanged();
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
 
 }

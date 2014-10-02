@@ -48,122 +48,129 @@ import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.app.OPIdentityLoginWebview;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
-	OPIdentityLoginWebview mLoginView;
-	LoginUIListener mListener;
+    OPIdentityLoginWebview mLoginView;
+    LoginUIListener mListener;
 
-	private static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
+    private static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
 
-	public static OPIdentityDelegateImpl getInstance(OPIdentity identity) {
-		Long id = 0L;
-		if (identity != null) {
-			id = identity.getID();
-		}
-		OPIdentityDelegateImpl instance = instances.get(id);
-		if (instance == null) {
-			instance = new OPIdentityDelegateImpl();
-			instances.put(id, instance);
-		}
-		return instance;
-	}
+    public static OPIdentityDelegateImpl getInstance(OPIdentity identity) {
+        Long id = 0L;
+        if (identity != null) {
+            id = identity.getID();
+        }
+        OPIdentityDelegateImpl instance = instances.get(id);
+        if (instance == null) {
+            instance = new OPIdentityDelegateImpl();
+            instances.put(id, instance);
+        }
+        return instance;
+    }
 
-	public void bindListener(LoginUIListener listener) {
-		mListener = listener;
-	}
+    public void bindListener(LoginUIListener listener) {
+        mListener = listener;
+    }
 
-	public void associateIdentity(OPIdentity identity) {
-		instances.remove(0L);
-		instances.put(identity.getID(), this);
-	}
+    public void associateIdentity(OPIdentity identity) {
+        instances.remove(0L);
+        instances.put(identity.getID(), this);
+    }
 
-	public void setWebview(OPIdentityLoginWebview webview) {
-		this.mLoginView = webview;
+    public void setWebview(OPIdentityLoginWebview webview) {
+        this.mLoginView = webview;
 
-	}
+    }
 
-	private OPIdentityDelegateImpl() {
-	}
+    private OPIdentityDelegateImpl() {
+    }
 
-	@Override
-	public void onIdentityStateChanged(OPIdentity identity, IdentityStates state) {
-		// TODO Auto-generated method stub
-		Log.d("state", "identity state " + state);
-		// why isn' this working? Weird!!
-		// mLoginView = mListener.getIdentityWebview(identity);
-		// mLoginView.getClient().setIdentity(identity);
-		switch (state) {
-		case IdentityState_WaitingForBrowserWindowToBeLoaded:
+    @Override
+    public void onIdentityStateChanged(OPIdentity identity, IdentityStates state) {
+        // TODO Auto-generated method stub
+        Log.d("state", "identity state " + state);
+        // why isn' this working? Weird!!
+        // mLoginView = mListener.getIdentityWebview(identity);
+        // mLoginView.getClient().setIdentity(identity);
+        switch (state) {
+        case IdentityState_WaitingForBrowserWindowToBeLoaded:
 
-			Log.d("login", "loading identity webview");
-			mListener.onStartIdentityLogin();
-			mLoginView.loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
+            Log.d("login", "loading identity webview");
+            mListener.onStartIdentityLogin();
+            mLoginView
+                    .loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
 
-			break;
-		case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
+            break;
+        case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
 
-			mListener.onIdentityLoginWebViewMadeVisible();
+            mListener.onIdentityLoginWebViewMadeVisible();
 
-			identity.notifyBrowserWindowVisible();
-			break;
-		case IdentityState_WaitingForBrowserWindowToClose:
+            identity.notifyBrowserWindowVisible();
+            break;
+        case IdentityState_WaitingForBrowserWindowToClose:
 
-			mListener.onIdentityLoginWebViewClose();
+            mListener.onIdentityLoginWebViewClose();
 
-			identity.notifyBrowserWindowClosed();
-			break;
-		case IdentityState_Ready:
-			if (OPDataManager.getInstance().getSharedAccount().getState(0, "") == AccountStates.AccountState_Ready) {
-				OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
+            identity.notifyBrowserWindowClosed();
+            break;
+        case IdentityState_Ready:
+            if (OPDataManager.getInstance().getSharedAccount().getState() == AccountStates.AccountState_Ready) {
+                // OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
 
-				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getStableID());
-				if (TextUtils.isEmpty(version)) {
-                    OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
-					identity.startRolodexDownload("");
-				} else {
-					// check for new contacts
-                    OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
-					identity.startRolodexDownload(version);
-				}
-			}
-			break;
-		case IdentityState_Shutdown:
-			// Temporary defensive code. Proper logic will be put in place soon.
-			if (mListener != null) {
-				mListener.onLoginError();
-				mListener = null;
-				mLoginView = null;
+                String version = OPDataManager
+                        .getDatastoreDelegate()
+                        .getDownloadedContactsVersion(identity.getIdentityURI());
+                if (TextUtils.isEmpty(version)) {
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                            "start download initial contacts");
+                    identity.startRolodexDownload("");
+                } else {
+                    // check for new contacts
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                            "start download initial contacts");
+                    identity.startRolodexDownload(version);
+                }
+            }
+            break;
+        case IdentityState_Shutdown:
+            // Temporary defensive code. Proper logic will be put in place soon.
+            if (mListener != null) {
+                mListener.onLoginError();
+                mListener = null;
+                mLoginView = null;
 
-			}
-			Intent intent = new Intent(IntentData.ACTION_IDENTITY_SHUTDOWN);
-			intent.putExtra(IntentData.PARAM_IDENTITY_URI, identity.getIdentityURI());
-			OPHelper.getInstance().sendBroadcast(intent);
-			break;
-		}
-	}
+            }
+            Intent intent = new Intent(IntentData.ACTION_IDENTITY_SHUTDOWN);
+            intent.putExtra(IntentData.PARAM_IDENTITY_URI,
+                    identity.getIdentityURI());
+            OPHelper.getInstance().sendBroadcast(intent);
+            break;
+        }
+    }
 
-	@Override
-	public void onIdentityPendingMessageForInnerBrowserWindowFrame(OPIdentity identity) {
-		// TODO Auto-generated method stub
-		String msg = identity.getNextMessageForInnerBrowerWindowFrame();
-		Log.d("login", "identity pendingMessageForInnerFrame " + msg);
+    @Override
+    public void onIdentityPendingMessageForInnerBrowserWindowFrame(
+            OPIdentity identity) {
+        // TODO Auto-generated method stub
+        String msg = identity.getNextMessageForInnerBrowerWindowFrame();
+        Log.d("login", "identity pendingMessageForInnerFrame " + msg);
 
-		passMessageToJS(msg);
-	}
+        passMessageToJS(msg);
+    }
 
-	@Override
-	public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
-		OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
-		if (mListener != null) {
-			mListener.onLoginComplete();
-			mListener = null;
-			mLoginView = null;
-		}
-	}
+    @Override
+    public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
+        OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
+        if (mListener != null) {
+            mListener.onLoginComplete();
+            mListener = null;
+            mLoginView = null;
+        }
+    }
 
-	public void passMessageToJS(final String msg) {
+    public void passMessageToJS(final String msg) {
 
-		String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
-		Log.w("login", "Identity webview Pass to JS: " + cmd);
-		mLoginView.loadUrl(cmd);
+        String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
+        Log.w("login", "Identity webview Pass to JS: " + cmd);
+        mLoginView.loadUrl(cmd);
 
-	}
+    }
 }

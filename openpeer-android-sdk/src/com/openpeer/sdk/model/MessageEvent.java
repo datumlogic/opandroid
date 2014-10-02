@@ -28,25 +28,44 @@
  */
 package com.openpeer.sdk.model;
 
-import com.openpeer.javaapi.ComposingStates;
-import com.openpeer.javaapi.MessageDeliveryStates;
-import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
-import com.openpeer.javaapi.OPMessage;
 
 /**
- * UI listener of session state changes
+ *
  */
-public interface SessionListener {
-    public void onContactComposingStateChanged(ComposingStates state,
-            OPUser user);
+public class MessageEvent {
+    public enum EventType {
+        DeliveryStateChange,
+        Edit,
+        Delete
+        // Favorite --?
+    }
 
-    public boolean onNewMessage(OPMessage message);
+    long messageId;
+    EventType mType;
+    String description;
+    long time;
 
-    public boolean onPushMessage(OPMessage message);
+    /**
+     * @return
+     */
+    public EventType getEvent() {
+        // TODO Auto-generated method stub
+        return mType;
+    }
 
-    public boolean onNewContactJoined(OPContact contact);
+    /**
+     * @return
+     */
+    public String getDescription() {
+        // TODO Auto-generated method stub
+        return description;
+    }
 
-    public boolean onContactsChanged();
-
+    /**
+     * @return
+     */
+    public long getTime() {
+        // TODO Auto-generated method stub
+        return time;
+    }
 }
