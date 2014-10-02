@@ -39,4 +39,6 @@ jclass findClass(const char* name);
 
 JNIEnv* getEnv();
 
+ZS_DECLARE_TYPEDEF_PTR(IIdentity::Token, UseToken)
+
 #endif

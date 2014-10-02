@@ -125,7 +125,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    loginWithIdentityPreauthorized
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Lcom/openpeer/javaapi/OPIdentity;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Lcom/openpeer/javaapi/OPToken;)Lcom/openpeer/javaapi/OPIdentity;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentityPreauthorized
 (JNIEnv *env, jclass,
@@ -133,9 +133,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 		jobject javaIdentityDelegate,
 		jstring identityProviderDomain,
 		jstring identityURI,
-		jstring identityAccessToken,
-		jstring identityAccessSecret,
-		jobject identityAccessSecretExpires)
+		jobject javaIdentityToken)
 {
 	jclass cls;
 	jmethodID method;
@@ -156,30 +154,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 		return object;
 	}
 
-	const char *identityAccessTokenStr;
-	identityAccessTokenStr = env->GetStringUTFChars(identityAccessToken, NULL);
-	if (identityAccessTokenStr == NULL) {
-		return object;
-	}
-
-	const char *identityAccessSecretStr;
-	identityAccessSecretStr = env->GetStringUTFChars(identityAccessSecret, NULL);
-	if (identityAccessSecretStr == NULL) {
-		return object;
-	}
-
-	//todo fix time
-	Time t;
-	jni_env = getEnv();
-
-	cls = findClass("android/text/format/Time");
-	if(jni_env->IsInstanceOf(identityAccessSecretExpires, cls) == JNI_TRUE)
-	{
-		jmethodID timeMethodID   = jni_env->GetMethodID(cls, "toMillis", "(Z)J");
-		jlong longValue = jni_env->CallLongMethod(identityAccessSecretExpires, timeMethodID, false);
-		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
-	}
-
 	if (javaIdentityDelegate == NULL)
 	{
 		return object;
@@ -191,6 +165,12 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 
 	IAccountPtr* coreAccountPtr = (IAccountPtr*)pointerValue;
 
+	cls = findClass("com/openpeer/javaapi/OPToken");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong tokenPointerValue = jni_env->GetLongField(javaIdentityToken, fid);
+
+	UseTokenPtr* coreTokenPtr = (UseTokenPtr*)tokenPointerValue;
+
 	//set java delegate to identity delegate wrapper and init shared pointer for wrappers
 	IdentityDelegateWrapperPtr identityDelegatePtr = IdentityDelegateWrapperPtr(new IdentityDelegateWrapper(javaIdentityDelegate));
 
@@ -198,9 +178,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentity
 			identityDelegatePtr,
 			(char const *)identityProviderDomainStr,
 			(char const *)identityURIStr,
-			(char const *)identityAccessTokenStr,
-			(char const *)identityAccessSecretStr,
-			t);
+			*(coreTokenPtr->get()));
 
 	if(identityPtr)
 	{
@@ -391,14 +369,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    attachDelegateAndPreauthorizedLogin
- * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)V
+ * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Lcom/openpeer/javaapi/OPToken;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPreauthorizedLogin
 (JNIEnv *env, jobject owner,
 		jobject javaIdentityDelegate,
-		jstring identityAccessToken,
-		jstring identityAccessSecret,
-		jobject identityAccessSecretExpires)
+		jobject javaIdentityToken)
 {
 	jclass cls;
 	jmethodID method;
@@ -407,34 +383,16 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPre
 
 	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native attachDelegateAndPreauthorizedLogin called");
 
-	const char *identityAccessTokenStr;
-	identityAccessTokenStr = env->GetStringUTFChars(identityAccessToken, NULL);
-	if (identityAccessTokenStr == NULL) {
-		return;
-	}
-
-	const char *identityAccessSecretStr;
-	identityAccessSecretStr = env->GetStringUTFChars(identityAccessSecret, NULL);
-	if (identityAccessSecretStr == NULL) {
-		return;
-	}
-
-	//todo fix time
-	Time t;
-	jni_env = getEnv();
-
-	cls = findClass("android/text/format/Time");
-	if(jni_env->IsInstanceOf(identityAccessSecretExpires, cls) == JNI_TRUE)
-	{
-		jmethodID timeMethodID   = jni_env->GetMethodID(cls, "toMillis", "(Z)J");
-		jlong longValue = jni_env->CallLongMethod(identityAccessSecretExpires, timeMethodID, false);
-		t = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
-	}
-
 	if (javaIdentityDelegate == NULL)
 	{
 		return;
 	}
+
+	cls = findClass("com/openpeer/javaapi/OPToken");
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong tokenPointerValue = jni_env->GetLongField(javaIdentityToken, fid);
+
+	UseTokenPtr* coreTokenPtr = (UseTokenPtr*)tokenPointerValue;
 
 	jclass identityClass = findClass("com/openpeer/javaapi/OPIdentity");
 	jfieldID identityFid = jni_env->GetFieldID(identityClass, "nativeClassPointer", "J");
@@ -449,9 +407,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPre
 	{
 		coreIdentityPtr->get()->attachDelegateAndPreauthorizedLogin(
 				identityDelegatePtr,
-				(char const *)identityAccessTokenStr,
-				(char const *)identityAccessSecretStr,
-				t);
+				*(coreTokenPtr->get()));
+
 		if (identityDelegatePtr != NULL)
 		{
 			IdentityDelegateWrapperPtr* ptrToIdentityDelegateWrapperPtr= new boost::shared_ptr<IdentityDelegateWrapper>(identityDelegatePtr);

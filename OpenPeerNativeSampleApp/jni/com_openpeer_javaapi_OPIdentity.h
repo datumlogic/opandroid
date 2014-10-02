@@ -34,10 +34,15 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_login
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    loginWithIdentityPreauthorized
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)Lcom/openpeer/javaapi/OPIdentity;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Lcom/openpeer/javaapi/OPToken;)Lcom/openpeer/javaapi/OPIdentity;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPIdentity_loginWithIdentityPreauthorized
-  (JNIEnv *, jclass, jobject, jobject, jstring, jstring, jstring, jstring, jobject);
+(JNIEnv *env, jclass,
+		jobject javaAccount,
+		jobject javaIdentityDelegate,
+		jstring identityProviderDomain,
+		jstring identityURI,
+		jobject javaIdentityToken);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
@@ -74,10 +79,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegate
 /*
  * Class:     com_openpeer_javaapi_OPIdentity
  * Method:    attachDelegateAndPreauthorizedLogin
- * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Ljava/lang/String;Ljava/lang/String;Landroid/text/format/Time;)V
+ * Signature: (Lcom/openpeer/javaapi/OPIdentityDelegate;Lcom/openpeer/javaapi/OPToken;)V
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPIdentity_attachDelegateAndPreauthorizedLogin
-  (JNIEnv *, jobject, jobject, jstring, jstring, jobject);
+(JNIEnv *env, jobject owner,
+		jobject javaIdentityDelegate,
+		jobject javaIdentityToken);
 
 /*
  * Class:     com_openpeer_javaapi_OPIdentity

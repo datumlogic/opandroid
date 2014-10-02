@@ -23,6 +23,8 @@ public:
 
 	static String getObjectClassName (jobject delegate);
 
+	static void fillJavaTokenFromCoreObject(jobject javaToken, IIdentity::Token coreToken);
+
 public:
 	static IStackMessageQueuePtr queuePtr;
 	static ISettingsPtr settingsPtr;

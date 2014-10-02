@@ -518,6 +518,7 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPComposingStatus.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPSystemMessage.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCallSystemMessage.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPToken.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPElement.cpp \
 
 
