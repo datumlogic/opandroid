@@ -29,7 +29,6 @@
  *******************************************************************************/
 package com.openpeer.sdk.datastore;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
 /**
@@ -51,13 +50,13 @@ public class DatabaseContracts {
     public static final String AUTHORITY = "com.openpeer.sample.provider";
     static final String SCHEME = "content://";
     public static final String URI_PREFIX = SCHEME + AUTHORITY;
-    public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
-    public static final String COLUMN_NAME_AVATAR_URI = "avatar_uri";
-    public static final String COLUMN_NAME_WINDOW_ID = "window_id";
-    public static final String COLUMN_NAME_THREAD_ID = "thread_id";
-    public static final String COLUMN_NAME_GROUP_ID = "group_id";
-    public static final String COLUMN_NAME_STABLE_ID = "stable_id";
-    public static final String COLUMN_NAME_PEER_URI = "peer_uri";
+    public static final String COLUMN_IDENTITY_URI = "identity_uri";
+    public static final String COLUMN_THREAD_ID = "thread_id";
+    public static final String COLUMN_GROUP_ID = "group_id";
+    public static final String COLUMN_STABLE_ID = "stable_id";
+    public static final String COLUMN_PEER_URI = "peer_uri";
+    public static final String COLUMN_CBC_ID = "cbc_id";
+    public static final String COLUMN_OPENPEER_CONTACT_ID = "openpeer_contact_id";
 
     static String getCompositePrimaryKey(String[] columnNames) {
         StringBuilder stringBuilder = new StringBuilder("PRIMARY KEY (");
@@ -86,551 +85,275 @@ public class DatabaseContracts {
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
-        public static final String COLUMN_NAME_LOGGED_IN = "is_logged_in";
-        public static final String COLUMN_NAME_RELOGIN_INFO = "relogin_info";
-
+        public static final String COLUMN_LOGGED_IN = "logged_in";
+        public static final String COLUMN_RELOGIN_INFO = "relogin_info";
+        public static final String COLUMN_STABLE_ID = DatabaseContracts.COLUMN_STABLE_ID;
+        public static final String COLUMN_PEER_URI = DatabaseContracts.COLUMN_PEER_URI;
     }
 
-    /**
-     * To store OPRolodexContact
-     * 
-     */
-    public static abstract class ContactEntry implements BaseColumns {
-        public static final String TABLE_NAME = "contact";
+    public static abstract class RolodexContactEntry implements BaseColumns {
+        public static final String TABLE_NAME = "rolodex_contact";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
-        public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
-        public static final String COLUMN_NAME_IDENTITY_PROVIDER = "identity_provider";
-        public static final String COLUMN_NAME_CONTACT_NAME = "name";
-        public static final String COLUMN_NAME_URL = "profile_url";
-        public static final String COLUMN_NAME_VPROFILE_URL = "vprofile_url";
+        public static final String COLUMN_ASSOCIATED_IDENTITY_ID = "associated_identity_id";
+        public static final String COLUMN_IDENTITY_PROVIDER = "domain";
+        public static final String COLUMN_IDENTITY_PROVIDER_ID = "identity_provider_id";
+
+        public static final String COLUMN_IDENTITY_URI = "identity_uri";
+        public static final String COLUMN_OPENPEER_CONTACT_ID = DatabaseContracts.COLUMN_OPENPEER_CONTACT_ID;
+        public static final String COLUMN_IDENTITY_CONTACT_ID = "identity_contact_id";
+
+        public static final String COLUMN_CONTACT_NAME = "name";
+        public static final String COLUMN_PROFILE_URL = "profile_url";
+        public static final String COLUMN_VPROFILE_URL = "vprofile_url";
     }
 
     public static abstract class IdentityContactEntry implements BaseColumns {
-        public static final String TABLE_NAME = "identity_contacts";
+        public static final String TABLE_NAME = "identity_contact";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
-        public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
-        public static final String COLUMN_NAME_USER_ID = "user_id";
-        public static final String COLUMN_NAME_STABLE_ID = "stable_id";
+        public static final String COLUMN_ASSOCIATED_IDENTITY_ID = "associated_identity_id";
         // This is acutally hash of identityUri of OPRolodexContact, kinda redundant but keeping it for now
-        public static final String COLUMN_NAME_PEERFILE_PUBLIC = "peerfile_public";
-        public static final String COLUMN_NAME_IDENTITY_PROOF_BUNDLE = "identity_proof_bundle";
-        public static final String COLUMN_NAME_PRORITY = "priority";
-        public static final String COLUMN_NAME_WEIGHT = "weight";
-        public static final String COLUMN_NAME_LAST_UPDATE_TIME = "last_update_time";
-        public static final String COLUMN_NAME_EXPIRE = "expire";
+        public static final String COLUMN_PEERFILE_PUBLIC_ID = "peerfile_public_id";
+        public static final String COLUMN_IDENTITY_PROOF_BUNDLE = "identity_proof_bundle";
+        public static final String COLUMN_PRORITY = "priority";
+        public static final String COLUMN_WEIGHT = "weight";
+        public static final String COLUMN_LAST_UPDATE_TIME = "last_update_time";
+        public static final String COLUMN_EXPIRE = "expire";
     }
 
-    public static abstract class IdentityEntry implements BaseColumns {
-        public static final String TABLE_NAME = "identities";
+    public static abstract class AssociatedIdentityEntry implements BaseColumns {
+        public static final String TABLE_NAME = "associated_identity";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
-        public static final String COLUMN_NAME_IDENTITY_ID = "stable_id";
-        public static final String COLUMN_NAME_IDENTITY_PROVIDER = "provider";
+        public static final String COLUMN_IDENTITY_PROVIDER_ID = "identity_provider_id";
+        public static final String COLUMN_ACCOUNT_ID = "account_id";
+        public static final String COLUMN_IDENTITY_URI = DatabaseContracts.COLUMN_IDENTITY_URI;
         // The "selfContact" of the identity
-        public static final String COLUMN_NAME_IDENTITY_CONTACT_ID = "contact_id";
-        public static final String COLUMN_NAME_IDENTITY_CONTACTS_VERSION = "contacts_version";
+        public static final String COLUMN_SELF_CONTACT_ID = "self_contact_id";
+        public static final String COLUMN_IDENTITY_CONTACTS_VERSION = "downloaded_contacts_version";
     }
 
     public static abstract class AvatarEntry implements BaseColumns {
-        public static final String TABLE_NAME = "avatars";
+        public static final String TABLE_NAME = "avatar";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
-
-        public static final String COLUMN_NAME_AVATAR_NAME = "name";
-        public static final String COLUMN_NAME_WIDTH = "width";
-        public static final String COLUMN_NAME_HEIGHT = "height";
+        public static final String COLUMN_AVATAR_URI = "avatar_uri";
+        public static final String COLUMN_AVATAR_NAME = "name";
+        public static final String COLUMN_WIDTH = "width";
+        public static final String COLUMN_HEIGHT = "height";
+        public static final String COLUMN_ROLODEX_ID = "rolodex_id";
 
     }
 
-    public static abstract class UserEntry implements BaseColumns {
-        public static final String TABLE_NAME = "users";
+    public static abstract class OpenpeerContactEntry implements BaseColumns {
+        public static final String TABLE_NAME = "openpeer_contact";
 
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+        // use this URI to retrieve full info of openpeer contact from all three tables(openpeer_contact,rolodex_contact,identity_contact0
+        public static final String URI_PATH_INFO_DETAIL = "/" + TABLE_NAME
+                + "/detail";
+        public static final String URI_PATH_INFO_DETAIL_ID = "/" + TABLE_NAME
+                + "/detail/#";
+
+        public static final String COLUMN_PEERURI = "peer_uri";
+        public static final String COLUMN_PEERFILE_PUBLIC = "peerfile_public";
+
+        public static final String COLUMN_STABLE_ID = "stable_id";
     }
 
-    public static abstract class GroupEntry implements BaseColumns {
-        public static final String TABLE_NAME = "group";
-        // Group id -- not used now
-        public static final String COLUMN_NAME_GROUP_ID = "group_id";
-        public static final String COLUMN_NAME_GROUP_NAME = "group_name";
-    }
-
-    public static abstract class ConversationWindowEntry implements BaseColumns {
-        static final String TABLE_NAME = "conversation_window";
+    public static abstract class ConversationEntry implements BaseColumns {
+        static final String TABLE_NAME = "conversation";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
-        // Group id -- not used now
-        public static final String COLUMN_NAME_GROUP_ID = "group_id";
-        // This is window id based on participants
-        // public static final String COLUMN_NAME_LAST_READ_MSG_ID = "lrm_id";
-        // Am I host of group chat, not used now
-        public static final String COLUMN_NAME_THREAD_HOST = "is_host";
-        public static final String COLUMN_NAME_START_TIME = "start_time";
-        public static final String COLUMN_NAME_END_TIME = "end_time";
+        public static final String COLUMN_TYPE = "type";
+        public static final String COLUMN_ACCOUNT_ID = "account_id";
+        public static final String COLUMN_START_TIME = "start_time";
+        public static final String COLUMN_PARTICIPANTS = "participants";
+        public static final String COLUMN_CONTEXT_ID = "context_id";
+    }
 
+    public static abstract class ConversationEventEntry implements BaseColumns {
+        static final String TABLE_NAME = "conversation_event";
+        public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+        public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+        public static final String COLUMN_EVENT = "event";
+        public static final String COLUMN = "name";
+        public static final String COLUMN_CONVERSATION_ID = "conversation_id";
+        public static final String COLUMN_TIME = "time";
+        public static final String COLUMN_PARTICIPANTS = "participants";
+        public static final String COLUMN_CONTENT = "content";
+    }
+
+    public static abstract class ThreadEntry implements BaseColumns {
+        static final String TABLE_NAME = "thread";
+        public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+        public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
+        public static final String COLUMN_THREAD_ID = "trhead_id";
+        public static final String COLUMN_TIME = "start_time";
+        public static final String COLUMN_PARTICIPANTS = "participants";
+        public static final String COLUMN_CONVERSATION_ID = "conversation_id";
     }
 
     public static abstract class MessageEntry implements BaseColumns {
         public static final String TABLE_NAME = "message";
         public static final String URI_PATH_INFO_WINDOW = "/" + TABLE_NAME
                 + "/window/#";
-        public static final String URI_PATH_INFO_THREAD = "/" + TABLE_NAME
-                + "/thread/#";
-        public static final String URI_PATH_INFO_GROUP = "/" + TABLE_NAME
-                + "/group/#";
+        public static final String URI_PATH_INFO_CONTEXT = "/" + TABLE_NAME
+                + "/context/*";
 
         public static final String URI_PATH_INFO_WINDOW_ID = "/" + TABLE_NAME
                 + "/window/#/#";
-        public static final String URI_PATH_INFO_THREAD_ID = "/" + TABLE_NAME
-                + "/thread/*/#";
-        public static final String URI_PATH_INFO_GROUP_ID = "/" + TABLE_NAME
-                + "/group/#/#";
+        public static final String URI_PATH_INFO_CONTEXT_ID = "/" + TABLE_NAME
+                + "/context/*/#";
+
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 
         public static final String URI_PATH_WINDOW_ID_URI_BASE = "/"
                 + TABLE_NAME + "/window/";
 
         // for content provider insert() call
-        public static final String COLUMN_NAME_MESSAGE_ID = "message_id";
-        // for now only text is supported
-        public static final String COLUMN_NAME_MESSAGE_TYPE = "type";
-        // id of peer contact. use your own id or "self" for outgoing message
-        public static final String COLUMN_NAME_SENDER_ID = "sender_id";
-        // Message content text
-        public static final String COLUMN_NAME_MESSAGE_TEXT = "text";
-        // sent or receive time
-        public static final String COLUMN_NAME_MESSAGE_TIME = "time";
-        // Whether the message has been read/presented, default 0 means not read
-        public static final String COLUMN_NAME_MESSAGE_READ = "read";
+        public static final String COLUMN_MESSAGE_ID = "message_id";
+        public static final String COLUMN_CONVERSATION_EVENT_ID = "conversation_event_id";
+        public static final String COLUMN_CONTEXT_ID = "context_id";
+        public static final String COLUMN_CBC_ID = DatabaseContracts.COLUMN_CBC_ID;
 
-        public static final String COLUMN_NAME_MESSAGE_DELIVERY_STATUS = "delivery_status";
-        public static final String COLUMN_NAME_MESSAGE_STATUS = "messageStatus";
-        public String[] PROJECTIONS = { COLUMN_NAME_MESSAGE_ID,
-                COLUMN_NAME_WINDOW_ID, COLUMN_NAME_MESSAGE_TYPE,
-                COLUMN_NAME_SENDER_ID,
-                COLUMN_NAME_MESSAGE_TEXT, COLUMN_NAME_MESSAGE_TIME,
-                COLUMN_NAME_MESSAGE_READ, COLUMN_NAME_MESSAGE_DELIVERY_STATUS,
-                COLUMN_NAME_MESSAGE_STATUS };
+        // for now only text is supported
+        public static final String COLUMN_MESSAGE_TYPE = "type";
+        // id of peer contact. use your own id or "self" for outgoing message
+        public static final String COLUMN_SENDER_ID = "sender_id";
+        // Message content text
+        public static final String COLUMN_MESSAGE_TEXT = "text";
+        // sent or receive time
+        public static final String COLUMN_MESSAGE_TIME = "time";
+        // Whether the message has been read/presented, default 0 means not read
+        public static final String COLUMN_MESSAGE_READ = "read";
+
+        public static final String COLUMN_MESSAGE_DELIVERY_STATUS = "outgoing_message_status";
+        public static final String COLUMN_EDIT_STATUS = "edit_status";
+        public static final String COLUMN_INCOMING_MESSAGE_STATUS = "incoming_message_status";
+    }
+
+    public static abstract class MessageEventEntry implements BaseColumns {
+        public static final String COLUMN_MESSAGE_ID = "message_id";
+        public static final String COLUMN_EVENT = "event";
+        public static final String COLUMN_DESCRIPTION = "description";
+        public static final String COLUMN_TIME = "time";
+        public static final String TABLE_NAME = "message_event";
     }
 
     public static abstract class CallEntry implements BaseColumns {
-        public static final String TABLE_NAME = "calls";
+        public static final String TABLE_NAME = "call";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
-
-        public static final String COLUMN_NAME_CALL_ID = "call_id";
-        public static final String COLUMN_NAME_CALLER = "caller";
-        public static final String COLUMN_NAME_CALLEE = "callee";
+        public static final String COLUMN_TYPE = "type";
+        public static final String COLUMN_CONVERSATION_EVENT_ID = "conversation_event_id";
+        public static final String COLUMN_CONTEXT_ID = "context_id";
+        public static final String COLUMN_CBC_ID = DatabaseContracts.COLUMN_CBC_ID;
+        public static final String COLUMN_CALL_ID = "call_id";
+        public static final String COLUMN_PEER_ID = "peer_id";
+        public static final String COLUMN_DIRECTION = "direction";
         // The "selfContact" of the CALL
-        public static final String COLUMN_NAME_ANSWER_TIME = "answer_time";
-        public static final String COLUMN_NAME_CLOSE_TIME = "closed_time";
+        public static final String COLUMN_ANSWER_TIME = "answer_time";
+        public static final String COLUMN_END_TIME = "end_time";
+        public static final String COLUMN_TIME = "time";
     }
 
-    public static abstract class WindowParticipantEntry implements BaseColumns {
-        public static final String TABLE_NAME = "window_participants";
+    public static abstract class CallEventEntry implements BaseColumns {
+        public static final String TABLE_NAME = "call_event";
+
+        public static final String COLUMN_CALL_ID = "call_id";
+        public static final String COLUMN_EVENT = "event";
+        public static final String COLUMN_TIME = "time";
+    }
+
+    public static abstract class ParticipantEntry implements BaseColumns {
+        public static final String TABLE_NAME = "participants";
 
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
-        public static final String COLUMN_NAME_USER_ID = "user_id";
-        // this is neccessary in case group chat with unknown participants
-        public static final String COLUMN_NAME_USER_NAME = "name";
-        // This is the default avatar
+        public static final String COLUMN_CBC_ID = DatabaseContracts.COLUMN_CBC_ID;
+        public static final String COLUMN_CONTACT_ID = "openpeer_contact_id";
+    }
+
+    public static abstract class PeerfileEntry implements BaseColumns {
+        public static final String TABLE_NAME = "peerfile_public";
+
+        public static final String COLUMN_PEERURI = "peer_uri";
+        public static final String COLUMN_PEERFILE_PUBLIC = "peerfile_public";
+    }
+
+    public static abstract class IdentityProviderEntry implements BaseColumns {
+        public static final String TABLE_NAME = "identity_provider";
+        public static final String COLUMN_DOMAIN = "domain";
     }
 
     public static abstract class WindowViewEntry implements BaseColumns {
-        public static final String TABLE_NAME = "windows";
-        public static final String URI_PATH_INFO = "/" + TABLE_NAME;
+        public static final String TABLE_NAME = "cbc_chats";
+        public static final String URI_PATH_INFO_CBC = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
+        public static final String URI_PATH_INFO_CONTEXT = "/context";
+
         public static final int INFO_ID_PATH_POSITION = 1;
 
-        public static final String COLUMN_NAME_GROUP_ID = "group_id";
+        public static final String COLUMN_AVATAR_URI = "avatar_uri";
         // This is window id based on participants
-        public static final String COLUMN_NAME_LAST_READ_MSG_ID = "lrm_id";
-        public static final String COLUMN_NAME_LAST_MESSAGE = "last_message";
-        public static final String COLUMN_NAME_LAST_MESSAGE_TIME = "last_message_time";
-        public static final String COLUMN_NAME_USER_ID = "user_id";
-        public static final String COLUMN_NAME_PARTICIPANT_NAMES = "name";
-        public static final String COLUMN_NAME_UNREAD_COUNT = "unread_count";
-
-        public static final String COLUMNS = "a." + BaseColumns._ID + " as "
-                + BaseColumns._ID + "," + "a." + COLUMN_NAME_WINDOW_ID
-                + " as " + COLUMN_NAME_WINDOW_ID + "," + "group_concat(" + "b."
-                + COLUMN_NAME_USER_ID + "," + "',')" + " as "
-                + COLUMN_NAME_USER_ID + "," + "group_concat(" + "b."
-                + COLUMN_NAME_PARTICIPANT_NAMES + "," + "',')" + " as "
-                + COLUMN_NAME_PARTICIPANT_NAMES + "," + "group_concat(" + "b."
-                + COLUMN_NAME_AVATAR_URI + "," + "',')" + " as "
-                + COLUMN_NAME_AVATAR_URI;
-    }
-
-    /**
-     * Not used for now.
-     * 
-     * 
-     */
-    public static abstract class GroupParticipantEntry implements BaseColumns {
-        public static final String TABLE_NAME = "window_participants";
-
-        // The session id this pariticipant is associated with
-        public static final String COLUMN_NAME_SESSION_ID = "group_id";
-        public static final String COLUMN_NAME_IDENTITY_ID = "identity_id";
-        // this is neccessary in case group chat with unknown participants
-        public static final String COLUMN_NAME_IDENTITY_NAME = "name";
+        public static final String COLUMN_LAST_READ_MSG_ID = "lrm_id";
+        public static final String COLUMN_LAST_MESSAGE = "last_message";
+        public static final String COLUMN_LAST_MESSAGE_TIME = "last_message_time";
+        public static final String COLUMN_USER_ID = "openpeer_contact_id";
+        public static final String COLUMN_PARTICIPANT_NAMES = "name";
+        public static final String COLUMN_UNREAD_COUNT = "unread_count";
+        public static final String COLUMN_ROLODEX_ID = "rolodex_id";
     }
 
     /**
      * View to get all the information of a contact
      * 
-     * @author brucexia
      * 
      */
     public static abstract class ContactsViewEntry implements BaseColumns {
-        public static final String TABLE_NAME = "contacts";
+        public static final String TABLE_NAME = "op_contacts";
+        public static final String URI_PATH_CONTACTS = "/contacts";
+        public static final String URI_PATH_CONTACTS_ID = "/contacts/#";
+
+        public static final String URI_PATH_OP_CONTACTS = "/contacts/openpeer";
+        public static final String URI_PATH_OP_CONTACTS_ID = "/contacts/openpeer/#";
 
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
 
-        public static final String COLUMN_NAME_USER_ID = "user_id";
+        public static final String COLUMN_USER_ID = "user_id";
         // HashCode of identityUri.
-        public static final String COLUMN_NAME_ASSOCIATED_IDENTITY_ID = "associated_ientity_id";
-        // public static final String COLUMN_NAME_IDENTITY_CONTACT_ID =
+        public static final String COLUMN_ASSOCIATED_IDENTITY_ID = "associated_identity_id";
+        // public static final String COLUMN_IDENTITY_CONTACT_ID =
         // "identity_contact_id";
-        public static final String COLUMN_NAME_IDENTITY_URI = "identity_uri";
-        public static final String COLUMN_NAME_IDENTITY_PROVIDER = "identity_provider";
+        public static final String COLUMN_IDENTITY_URI = "identity_uri";
+        public static final String COLUMN_IDENTITY_PROVIDER = "identity_provider";
+        public static final String COLUMN_AVATAR_URI = "avatar_uri";
 
-        public static final String COLUMN_NAME_CONTACT_NAME = "name";
-        public static final String COLUMN_NAME_URL = "profile_url";
-        public static final String COLUMN_NAME_VPROFILE_URL = "vprofile_url";
+        public static final String COLUMN_CONTACT_NAME = "name";
+        public static final String COLUMN_URL = "profile_url";
+        public static final String COLUMN_VPROFILE_URL = "vprofile_url";
 
         // colums for identity contact
-        public static final String COLUMN_NAME_STABLE_ID = "stable_id";
-        public static final String COLUMN_NAME_PEERFILE_PUBLIC = "peerfile_public";
-        public static final String COLUMN_NAME_IDENTITY_PROOF_BUNDLE = "identity_proof_bundle";
-        public static final String COLUMN_NAME_PRORITY = "priority";
-        public static final String COLUMN_NAME_WEIGHT = "weight";
-        public static final String COLUMN_NAME_LAST_UPDATE_TIME = "last_update_time";
-        public static final String COLUMN_NAME_EXPIRE = "expire";
+        public static final String COLUMN_STABLE_ID = "stable_id";
+        public static final String COLUMN_PEERFILE_PUBLIC = "peerfile_public";
+        public static final String COLUMN_IDENTITY_PROOF_BUNDLE = "identity_proof_bundle";
+        public static final String COLUMN_PRORITY = "priority";
+        public static final String COLUMN_WEIGHT = "weight";
+        public static final String COLUMN_LAST_UPDATE_TIME = "last_update_time";
+        public static final String COLUMN_EXPIRE = "expire";
 
-        public static final String COLUMNS = ContactEntry.TABLE_NAME + "."
-                + BaseColumns._ID + " as " + BaseColumns._ID + ","
-                + ContactEntry.TABLE_NAME + "."
-                + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + " as "
-                + COLUMN_NAME_ASSOCIATED_IDENTITY_ID + ","
-                + ContactEntry.TABLE_NAME + "." + COLUMN_NAME_CONTACT_NAME
-                + " as " + COLUMN_NAME_CONTACT_NAME + ","
-                + ContactEntry.TABLE_NAME + "." + COLUMN_NAME_IDENTITY_URI
-                + " as " + COLUMN_NAME_IDENTITY_URI + ","
-                + ContactEntry.TABLE_NAME + "." + COLUMN_NAME_IDENTITY_PROVIDER
-                + " as " + COLUMN_NAME_IDENTITY_PROVIDER + ","
-                + ContactEntry.TABLE_NAME + "." + COLUMN_NAME_URL + " as "
-                + COLUMN_NAME_URL + "," + ContactEntry.TABLE_NAME + "."
-                + COLUMN_NAME_VPROFILE_URL + " as " + COLUMN_NAME_VPROFILE_URL
-                + ","
-                + AvatarEntry.TABLE_NAME
-                + "."
-                + COLUMN_NAME_AVATAR_URI
-                + " as "
-                + COLUMN_NAME_AVATAR_URI
-                + ","
-                + UserEntry.TABLE_NAME
-                + "."
-                + COLUMN_NAME_PEER_URI
-                + " as "
-                + COLUMN_NAME_PEER_URI
-                + ","
-
-                // IdentityContact table
-                + IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_USER_ID
-                + " as " + COLUMN_NAME_USER_ID + ","
-                + IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_STABLE_ID
-                + " as " + COLUMN_NAME_STABLE_ID + ","
-                + IdentityContactEntry.TABLE_NAME + "."
-                + COLUMN_NAME_PEERFILE_PUBLIC + " as "
-                + COLUMN_NAME_PEERFILE_PUBLIC + ","
-                + IdentityContactEntry.TABLE_NAME + "."
-                + COLUMN_NAME_IDENTITY_PROOF_BUNDLE + " as "
-                + COLUMN_NAME_IDENTITY_PROOF_BUNDLE
-                + "," + IdentityContactEntry.TABLE_NAME + "."
-                + COLUMN_NAME_PRORITY + " as " + COLUMN_NAME_PRORITY + ","
-                + IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_WEIGHT
-                + " as " + COLUMN_NAME_WEIGHT + ","
-                + IdentityContactEntry.TABLE_NAME + "."
-                + COLUMN_NAME_LAST_UPDATE_TIME + " as "
-                + COLUMN_NAME_LAST_UPDATE_TIME + ","
-                + IdentityContactEntry.TABLE_NAME + "." + COLUMN_NAME_EXPIRE
-                + " as " + COLUMN_NAME_EXPIRE;
     }
 
-    public static final String SQL_CREATE_ACCOUNT = CREATE_TABLE
-            + AccountEntry.TABLE_NAME + " (" + BaseColumns._ID
-            + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + COLUMN_NAME_STABLE_ID
-            + TEXT_TYPE + UNIQUE_TYPE + " NOT NULL " + COMMA_SEP
-            + COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + " NOT NULL "
-            + COMMA_SEP + COLUMN_NAME_IDENTITY_URI + TEXT_TYPE
-            + UNIQUE_TYPE + " NOT NULL " + COMMA_SEP
-            + AccountEntry.COLUMN_NAME_RELOGIN_INFO + TEXT_TYPE + UNIQUE_TYPE
-            + COMMA_SEP
-            + AccountEntry.COLUMN_NAME_LOGGED_IN + INTEGER_TYPE + " default 0 "
-            + ")";
-    // Beginning of create table statements. new statements should be added at the end and marked with the DB version created
-    public static final String SQL_CREATE_VIEW_WINDOW = CREATE_VIEW
-            + WindowViewEntry.TABLE_NAME
-            + " AS SELECT d."
-            + BaseColumns._ID
-            + " as "
-            + BaseColumns._ID
-            + ","
-            + "d."
-            + COLUMN_NAME_WINDOW_ID
-            + " as "
-            + COLUMN_NAME_WINDOW_ID
-            + ","
-            + "d."
-            + WindowViewEntry.COLUMN_NAME_USER_ID
-            + " as "
-            + WindowViewEntry.COLUMN_NAME_USER_ID
-            + ","
-            + "d."
-            + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES
-            + " as "
-            + WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES
-            + ","
-            + WindowViewEntry.COLUMN_NAME_USER_ID
-            + ","
-            + "d."
-            + COLUMN_NAME_AVATAR_URI
-            + " as "
-            + COLUMN_NAME_AVATAR_URI
-            + ","
-            + "c."
-            + MessageEntry.COLUMN_NAME_MESSAGE_TEXT
-            + " as "
-            + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE
-            + ","
-            + "c."
-            + MessageEntry.COLUMN_NAME_MESSAGE_TIME
-            + " as "
-            + WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME
-            + ","
-            + " e.count as "
-            + WindowViewEntry.COLUMN_NAME_UNREAD_COUNT
-            + " from (SELECT "
-            + WindowViewEntry.COLUMNS
-            + " from "
-            + ConversationWindowEntry.TABLE_NAME
-            + " a "
-            + LEFT_JOIN
-            + WindowParticipantEntry.TABLE_NAME
-            + " b "
-            + " using("
-            + COLUMN_NAME_WINDOW_ID
-            + ") group by window_id)  d"
-            + " inner join (select window_id,text,time from "
-            + MessageEntry.TABLE_NAME
-            + " group by window_id) c using(window_id) "
-            + " left join (select count(*) as count,window_id from message where read=0 group by window_id) e "
-            + " using("
-            + COLUMN_NAME_WINDOW_ID + ")" + " group by "
-            + COLUMN_NAME_WINDOW_ID;
-    public static final String SQL_CREATE_VIEW_CONTACT = CREATE_VIEW
-            + ContactsViewEntry.TABLE_NAME + " AS SELECT "
-            + ContactsViewEntry.COLUMNS + " from " + ContactEntry.TABLE_NAME
-            + LEFT_JOIN + IdentityContactEntry.TABLE_NAME + " using("
-            + COLUMN_NAME_IDENTITY_URI + ")" + LEFT_JOIN
-            + AvatarEntry.TABLE_NAME + ON + AvatarEntry.TABLE_NAME + "."
-            + COLUMN_NAME_IDENTITY_URI + "=" + ContactEntry.TABLE_NAME + "."
-            + COLUMN_NAME_IDENTITY_URI + LEFT_JOIN + UserEntry.TABLE_NAME
-            + ON + UserEntry.TABLE_NAME + "." + UserEntry._ID + "="
-            + IdentityContactEntry.TABLE_NAME + "."
-            + IdentityContactEntry.COLUMN_NAME_USER_ID + " group by "
-            + COLUMN_NAME_IDENTITY_URI;
-
-    public static final String SQL_CREATE_CONTACT = CREATE_TABLE
-            + ContactEntry.TABLE_NAME + " (" + ContactEntry._ID
-            + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-            + ContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
-            + INTEGER_TYPE
-            + " default -1 "
-            + COMMA_SEP
-            // ContactEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP +
-            + ContactsViewEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE + UNIQUE_TYPE
-            + COMMA_SEP + ContactEntry.COLUMN_NAME_CONTACT_NAME
-            + TEXT_TYPE + " COLLATE NOCASE" + COMMA_SEP
-            + ContactEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE
-            + COMMA_SEP
-            + COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
-            + ContactEntry.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP
-            + ContactEntry.COLUMN_NAME_VPROFILE_URL + TEXT_TYPE + " )";
-    public static final String SQL_CREATE_IDENTITY = CREATE_TABLE
-            + IdentityEntry.TABLE_NAME + " (" + IdentityEntry._ID
-            + INTEGER_TYPE
-            + COMMA_SEP + IdentityEntry.COLUMN_NAME_IDENTITY_ID
-            + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-            + IdentityEntry.COLUMN_NAME_IDENTITY_PROVIDER + TEXT_TYPE
-            + COMMA_SEP + COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + COMMA_SEP
-            + IdentityEntry.COLUMN_NAME_IDENTITY_CONTACT_ID + INTEGER_TYPE
-            + COMMA_SEP
-            + IdentityEntry.COLUMN_NAME_IDENTITY_CONTACTS_VERSION + TEXT_TYPE +
-            // ... Any other options for the CREATE command
-            " )";
-    public static final String SQL_CREATE_AVATAR = CREATE_TABLE
-            + AvatarEntry.TABLE_NAME
-            + " ("
-            + AvatarEntry._ID
-            + INTEGER_TYPE
-            + COMMA_SEP
-            + COLUMN_NAME_IDENTITY_URI
-            + INTEGER_TYPE
-            + COMMA_SEP
-            + AvatarEntry.COLUMN_NAME_AVATAR_NAME
-            + TEXT_TYPE
-            + COMMA_SEP
-            + COLUMN_NAME_AVATAR_URI
-            + TEXT_TYPE
-            + COMMA_SEP
-            + AvatarEntry.COLUMN_NAME_WIDTH
-            + INTEGER_TYPE
-            + COMMA_SEP
-            + AvatarEntry.COLUMN_NAME_HEIGHT
-            + INTEGER_TYPE
-            + COMMA_SEP
-            + getCompositePrimaryKey(new String[] { COLUMN_NAME_IDENTITY_URI,
-                    COLUMN_NAME_AVATAR_URI }) + " )";
-    public static final String SQL_CREATE_IDENTITY_CONTACT = CREATE_TABLE
-            + IdentityContactEntry.TABLE_NAME + " ("
-            + IdentityContactEntry._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-            + IdentityContactEntry.COLUMN_NAME_STABLE_ID + TEXT_TYPE
-            + COMMA_SEP
-            + IdentityContactEntry.COLUMN_NAME_ASSOCIATED_IDENTITY_ID
-            + INTEGER_TYPE + " default -1 " + COMMA_SEP
-            + ContactsViewEntry.COLUMN_NAME_USER_ID + INTEGER_TYPE + COMMA_SEP
-            + COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE
-            + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_PEERFILE_PUBLIC
-            + TEXT_TYPE + COMMA_SEP
-            + IdentityContactEntry.COLUMN_NAME_IDENTITY_PROOF_BUNDLE
-            + TEXT_TYPE + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_PRORITY
-            + INTEGER_TYPE + COMMA_SEP
-            + IdentityContactEntry.COLUMN_NAME_WEIGHT + INTEGER_TYPE
-            + COMMA_SEP
-            + IdentityContactEntry.COLUMN_NAME_LAST_UPDATE_TIME + INTEGER_TYPE
-            + COMMA_SEP + IdentityContactEntry.COLUMN_NAME_EXPIRE + " )";
-    public static final String SQL_CREATE_USER = CREATE_TABLE
-            + UserEntry.TABLE_NAME + " (" + UserEntry._ID
-            + INTEGER_PRIMARY_KEY_TYPE
-            + COMMA_SEP + COLUMN_NAME_STABLE_ID + INTEGER_TYPE + COMMA_SEP
-            + COLUMN_NAME_PEER_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
-            + COLUMN_NAME_IDENTITY_URI + TEXT_TYPE + UNIQUE_TYPE + COMMA_SEP
-            + COLUMN_NAME_AVATAR_URI + TEXT_TYPE + " )";
-
-    public static final String SQL_CREATE_WINDOW = CREATE_TABLE
-            + ConversationWindowEntry.TABLE_NAME + " (" + BaseColumns._ID
-            + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP + COLUMN_NAME_WINDOW_ID
-            + INTEGER_TYPE + UNIQUE_TYPE + COMMA_SEP
-            + ConversationWindowEntry.COLUMN_NAME_GROUP_ID + TEXT_TYPE + " )";
-
-    public static final String SQL_CREATE_GROUP = CREATE_TABLE
-            + BaseColumns._ID + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-            + GroupEntry.TABLE_NAME + " (" + BaseColumns._ID
-            + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-            + GroupEntry.COLUMN_NAME_GROUP_ID
-            + TEXT_TYPE + COMMA_SEP + GroupEntry.COLUMN_NAME_GROUP_NAME
-            + TEXT_TYPE + " )";
-    public static final String SQL_CREATE_CALL = CREATE_TABLE
-            + CallEntry.TABLE_NAME + " (" + BaseColumns._ID
-            + INTEGER_PRIMARY_KEY_TYPE
-            + COMMA_SEP + CallEntry.COLUMN_NAME_CALL_ID + TEXT_TYPE
-            + UNIQUE_TYPE + COMMA_SEP + CallEntry.COLUMN_NAME_CALLER
-            + INTEGER_TYPE
-            + COMMA_SEP + CallEntry.COLUMN_NAME_CALLEE + INTEGER_TYPE
-            + COMMA_SEP + CallEntry.COLUMN_NAME_ANSWER_TIME + INTEGER_TYPE
-            + COMMA_SEP + CallEntry.COLUMN_NAME_CLOSE_TIME + INTEGER_TYPE
-            + " )";
-
-    public static final String SQL_CREATE_CONVERSATION_PARTICIPANT = CREATE_TABLE
-            + WindowParticipantEntry.TABLE_NAME
-            + " ("
-            + WindowParticipantEntry._ID
-            + INTEGER_TYPE
-            + COMMA_SEP
-            + COLUMN_NAME_WINDOW_ID
-            + INTEGER_TYPE
-            + COMMA_SEP
-            + WindowParticipantEntry.COLUMN_NAME_USER_ID
-            + INTEGER_TYPE
-            + COMMA_SEP
-            + WindowParticipantEntry.COLUMN_NAME_USER_NAME
-            + TEXT_TYPE
-            + COMMA_SEP
-            + ConversationWindowEntry.COLUMN_NAME_GROUP_ID
-            + TEXT_TYPE
-            + COMMA_SEP
-            + COLUMN_NAME_AVATAR_URI
-            + TEXT_TYPE
-            + COMMA_SEP
-            + getCompositePrimaryKey(new String[] { COLUMN_NAME_WINDOW_ID,
-                    WindowParticipantEntry.COLUMN_NAME_USER_ID }) + " )";
-
-    public static final String SQL_CREATE_MESSAGES = CREATE_TABLE
-            + MessageEntry.TABLE_NAME + " (" + MessageEntry._ID
-            + INTEGER_PRIMARY_KEY_TYPE + COMMA_SEP
-            + MessageEntry.COLUMN_NAME_MESSAGE_ID + TEXT_TYPE + UNIQUE_TYPE
-            + COMMA_SEP
-            + COLUMN_NAME_WINDOW_ID + INTEGER_TYPE + COMMA_SEP
-            + COLUMN_NAME_THREAD_ID + TEXT_TYPE + COMMA_SEP
-            + COLUMN_NAME_GROUP_ID
-            + INTEGER_TYPE + COMMA_SEP
-
-            + MessageEntry.COLUMN_NAME_MESSAGE_TYPE + TEXT_TYPE + COMMA_SEP
-            + MessageEntry.COLUMN_NAME_SENDER_ID + INTEGER_TYPE + COMMA_SEP
-            + MessageEntry.COLUMN_NAME_MESSAGE_TEXT + TEXT_TYPE + COMMA_SEP
-            + MessageEntry.COLUMN_NAME_MESSAGE_TIME + TEXT_TYPE + COMMA_SEP
-            + MessageEntry.COLUMN_NAME_MESSAGE_READ + INTEGER_TYPE
-            + " default 0" + COMMA_SEP
-            + MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS + INTEGER_TYPE
-            + " default 0"
-            + COMMA_SEP
-            + MessageEntry.COLUMN_NAME_MESSAGE_STATUS + INTEGER_TYPE
-            + " )";
-    public static final String SQL_CREATE_INDEX_MESSAGES_WINDOW = "create index if not exists "
-            + COLUMN_NAME_WINDOW_ID + ON
-            + MessageEntry.TABLE_NAME + "(" + COLUMN_NAME_WINDOW_ID + ")";
-    public static final String SQL_CREATE_INDEX_MESSAGES_THREAD = "create index if not exists "
-            + COLUMN_NAME_THREAD_ID + ON
-            + MessageEntry.TABLE_NAME + "(" + COLUMN_NAME_WINDOW_ID + ")";
-    public static final String SQL_CREATE_INDEX_MESSAGES_GROUP = "create index if not exists "
-            + COLUMN_NAME_GROUP_ID + ON
-            + MessageEntry.TABLE_NAME + "(" + COLUMN_NAME_GROUP_ID + ")";
-
-    public static final String CREATE_STATEMENTS[] = {
-            DatabaseContracts.SQL_CREATE_ACCOUNT,
-
-            DatabaseContracts.SQL_CREATE_IDENTITY,
-            DatabaseContracts.SQL_CREATE_IDENTITY_CONTACT,
-            DatabaseContracts.SQL_CREATE_CONTACT,
-            DatabaseContracts.SQL_CREATE_AVATAR,
-            DatabaseContracts.SQL_CREATE_USER,
-
-            DatabaseContracts.SQL_CREATE_CONVERSATION_PARTICIPANT,
-            DatabaseContracts.SQL_CREATE_WINDOW,
-            DatabaseContracts.SQL_CREATE_MESSAGES,
-            DatabaseContracts.SQL_CREATE_CALL,
-
-            SQL_CREATE_INDEX_MESSAGES_WINDOW, SQL_CREATE_INDEX_MESSAGES_THREAD,
-            SQL_CREATE_INDEX_MESSAGES_GROUP,
-            // Note: always keep view creation at end
-            DatabaseContracts.SQL_CREATE_VIEW_CONTACT,
-            DatabaseContracts.SQL_CREATE_VIEW_WINDOW };
-
-    // END of create statement
-    public static void upgradeToV2(SQLiteDatabase db) {
-        String sql = "alter table " + MessageEntry.TABLE_NAME + " add column "
-                + MessageEntry.COLUMN_NAME_MESSAGE_STATUS + " integer default 0";
-        db.execSQL(sql);
-    }
+    public static final String QUERY_OPENPEER_CONTACT_DETAIL = "select oc._id as _id, oc.stable_id as stable_id, oc.peer_uri as peer_uri,oc.peerfile_public as peerfile_public,rc._id as rolodex_id,rc.name as name, rc.identity_uri as identity_uri,rc.profile_url as profile_url,rc.vprofile_url as vprofile_url, ip.domain as domain, ic.identity_proof_bundle as identity_proof_bundle,ic.priority as priority,ic.weight as weight,ic.last_update_time as last_update_time,ic.expire as expire from openpeer_contact oc left join rolodex_contact rc on oc._id=rc.openpeer_contact_id left join identity_contact ic on rc.identity_contact_id=ic._id left join identity_provider ip on rc.identity_provider_id=ip._id";
+    public static final String QUERY_OPENPEER_CHATS_CONTACT_BASED = "SELECT d.cbc_id as _id,d.openpeer_contact_id as openpeer_contact_id,d.rolodex_id as rolodex_id,d.name as name,c.text as last_message,c.time as last_message_time, e.count as unread_count from (select a.cbc_id as cbc_id,group_concat(a.openpeer_contact_id,',') as openpeer_contact_id,group_concat(b._id,',') as rolodex_id,group_concat(b.name,',') as name from participants a  left join rolodex_contact b  on a.openpeer_contact_id=b.openpeer_contact_id and b.is_primary=1 group by cbc_id) d inner join (select cbc_id,text,time from message group by cbc_id) c using(cbc_id)  left join (select count(*) as count,cbc_id from message where read=0 group by cbc_id) e using(cbc_id) group by cbc_id";
+    public static final String QUERY_OPENPEER_CHATS_CONTEXT_BASED = "SELECT d.context_id as _id,d.openpeer_contact_id as openpeer_contact_id,d.rolodex_id as rolodex_id,d.name as name,c.text as last_message,c.time as last_message_time, e.count as unread_count from (select z.context_id as context_id,group_concat(a.openpeer_contact_id,',') as openpeer_contact_id,group_concat(b._id,',') as rolodex_id,group_concat(b.name,',') as name from conversation z left join participants a on z.participants=a.cbc_id left join rolodex_contact b  on a.openpeer_contact_id=b.openpeer_contact_id and b.is_primary=1 group by context_id) d inner join (select context_id,text,time from message group by context_id) c using(context_id)  left join (select count(*) as count,context_id from message where read=0 group by context_id) e using(context_id) group by context_id";
+    public static final String QUERY_MESSAGES_CONTACTS_BASED = "select m._id as _id, message_id,sender_id,type, text,time,outgoing_message_status,edit_status,rc.name as name from message m left join rolodex_contact rc on m.sender_id=rc.openpeer_contact_id ";
+    public static final String QUERY_CALL_CONTACTS_BASED = "select c._id+30000 as _id,c.call_id as message_id, c.peer_id as sender_id,c.type as type, c.call_id||','||c.peer_id||','||c.direction||','||ce.event as text,c.time as time,'' as outgoing_delivery_status,0 as edit_status,rc.name as name from call c inner join call_event ce on ce.call_id=c._id and ce.event not in ('CallState_Preparing','CallState_Closing')  left join rolodex_contact rc on c.peer_id=rc.openpeer_contact_id ";
 }

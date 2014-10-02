@@ -111,7 +111,7 @@ public class OPDataManager {
     }
 
     public void saveAccount() {
-        mDatastoreDelegate.saveOrUpdateAccount(mAccount);
+        mDatastoreDelegate.saveAccount(mAccount);
     }
 
     public OPAccount getSharedAccount() {
@@ -124,34 +124,23 @@ public class OPDataManager {
         for (OPIdentity identity : identities) {
             mSelfContacts.add(identity.getSelfIdentityContact());
         }
-        mDatastoreDelegate
-                .saveOrUpdateIdentities(mIdentities, mAccount.getID());
     }
 
     public List<OPIdentityContact> getSelfContacts() {
+        List<OPIdentity> identities =mAccount.getAssociatedIdentities() ;
+        mSelfContacts = new ArrayList<OPIdentityContact>();
+        for (OPIdentity identity : identities) {
+            mSelfContacts.add(identity.getSelfIdentityContact());
+        }
         return mSelfContacts;
     }
 
     public void onDownloadedRolodexContacts(OPIdentity identity) {
         OPDownloadedRolodexContacts downloaded = identity
                 .getDownloadedRolodexContacts();
-        long identityId = identity.getStableID();
-        String contactsVersion = downloaded.getVersionDownloaded();
-
         List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
-
-        for (OPRolodexContact contact : contacts) {
-            switch (contact.getDisposition()) {
-            case Disposition_Remove:
-                mDatastoreDelegate.deleteContact(contact.getIdentityURI());
-                break;
-            case Disposition_Update:
-                // break;
-            default:
-                mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
-            }
-        }
-        mDatastoreDelegate.notifyContactsChanged();
+        contacts = mDatastoreDelegate.saveDownloadedRolodexContacts(identity,
+                contacts, downloaded.getVersionDownloaded());
         identityLookup(identity, contacts);
     }
 
@@ -177,15 +166,12 @@ public class OPDataManager {
         }
     }
 
-    public String getContactsVersionForIdentity(long id) {
-        return mDatastoreDelegate.getDownloadedContactsVersion(id);
-    }
-
     public void updateIdentityContacts(String identityUri,
             List<OPIdentityContact> iContacts) {
 
         // Each IdentityContact represents a user. Update user info
-        mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
+        mDatastoreDelegate.saveIdentityContact(iContacts,
+                identityUri.hashCode());
     }
 
     public void refreshContacts() {
@@ -211,23 +197,6 @@ public class OPDataManager {
         return mDatastoreDelegate.getUserByPeerUri(uri);
     }
 
-    public OPUser getPeerUserForCall(OPCall call) {
-        OPContact contact = call.getPeer();
-        OPUser user = mDatastoreDelegate.getUserByPeerUri(contact.getPeerURI());
-        if (user == null) {
-            List<OPIdentityContact> identityContacts = call
-                    .getIdentityContactList(contact);
-            if (identityContacts == null || identityContacts.isEmpty()) {
-                OPLogger.error(OPLogLevel.LogLevel_Basic,
-                        "getIdentityContactList returns empty in call for contact "
-                                + contact.getPeerURI());
-            }
-            user = new OPUser(contact, identityContacts);
-            user = mDatastoreDelegate.saveUser(user);
-        }
-        return user;
-    }
-
     /**
      * @param url
      * @param lookup
@@ -238,29 +207,6 @@ public class OPDataManager {
             updateIdentityContacts(url, iContacts);
         }
         mIdentityLookups.remove(url);
-    }
-
-    /**
-     * @param from
-     * @param opConversationThread
-     * @return
-     */
-    public OPUser getUserForMessage(OPContact from, OPConversationThread thread) {
-        OPUser user = getUserByPeerUri(from.getPeerURI());
-        if (user == null) {
-            Log.d(TAG,
-                    "getUserForMessage User not found for " + from.getPeerURI());
-            List<OPIdentityContact> contacts = thread
-                    .getIdentityContactList(from);
-            if (contacts == null) {
-                Log.e(TAG,
-                        "getUserForMessage no identity contacts for "
-                                + from.getPeerURI());
-            }
-            user = new OPUser(from, contacts);
-            user = mDatastoreDelegate.saveUser(user);
-        }
-        return user;
     }
 
     public OPUser getUserById(long id) {
@@ -285,5 +231,4 @@ public class OPDataManager {
         mDatastoreDelegate.onSignOut();
 
     }
-
 }

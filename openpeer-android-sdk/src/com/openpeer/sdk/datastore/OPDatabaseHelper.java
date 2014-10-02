@@ -29,6 +29,10 @@
  *******************************************************************************/
 package com.openpeer.sdk.datastore;
 
+import java.io.IOException;
+
+import com.openpeer.sdk.utils.DbUtils;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -40,25 +44,31 @@ import android.util.Log;
 public class OPDatabaseHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "OpenPeer.db";
+    Context mContext;
 
     public OPDatabaseHelper(Context context, String name,
             SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
+        mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
-            Log.d("test", "create statement" + sql);
-            db.execSQL(sql);
+//        for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
+//            Log.d("test", "create statement" + sql);
+//            db.execSQL(sql);
+//        }
+        try {
+            DbUtils.executeSqlScript(mContext, db, "main.sql");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-            DatabaseContracts.upgradeToV2(db);
-        }
+
     }
 
     @Override
