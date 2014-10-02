@@ -42,7 +42,7 @@ import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.model.MessageState;
+import com.openpeer.sdk.model.MessageEditState;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
 import com.urbanairship.actions.DeepLinkAction;
@@ -118,10 +118,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
                     intent.getStringExtra(PushManager.EXTRA_ALERT),
                     Long.parseLong(intent.getStringExtra(KEY_SEND_TIME)) * 1000,
                     messageId,
-                    MessageState.Normal,
-                    MessageDeliveryStates.MessageDeliveryState_Delivered
-                            .ordinal()
-                    );
+                    MessageEditState.Normal);
             if (replacesMessageId != null) {
                 opMessage.setReplacesMessageId(replacesMessageId);
             }
@@ -129,7 +126,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
                     .getUserId() });
 
             OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
-                    windowId, "");
+                    windowId, "", 0);
 
         } else if (action.equals(PushManager.ACTION_NOTIFICATION_OPENED)) {
 
@@ -227,8 +224,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
                 alert,
                 Long.parseLong(extras.get(KEY_SEND_TIME)),
                 messageId,
-                MessageState.Normal,
-                MessageDeliveryStates.MessageDeliveryState_Delivered.ordinal());
+                MessageEditState.Normal);
 
         return OPNotificationBuilder.buildNotificationForMessage(
                 new long[] { message.getSenderId() }, message);

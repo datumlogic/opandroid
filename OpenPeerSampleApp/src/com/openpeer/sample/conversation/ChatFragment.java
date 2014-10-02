@@ -30,7 +30,6 @@
 package com.openpeer.sample.conversation;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,6 +44,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -57,7 +57,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -78,13 +77,10 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
-import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
-import com.openpeer.sdk.datastore.OPContentProvider;
-import com.openpeer.sdk.model.MessageState;
-import com.openpeer.sdk.model.OPSession;
+import com.openpeer.sdk.datastore.OPModelCursorHelper;
+import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.NoDuplicateArrayList;
@@ -103,7 +99,7 @@ public class ChatFragment extends BaseFragment implements
     private MessagesAdaptor mAdapter;
 
     private long mWindowId;
-    private OPSession mSession;
+    private OPConversation mSession;
     long[] mUserIDs;
     List<OPUser> participants;
     private CallInfoView mCallInfoView;
@@ -157,11 +153,11 @@ public class ChatFragment extends BaseFragment implements
      * 
      * @return
      */
-    private OPSession getSession() {
+    private OPConversation getSession() {
         mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
         if (mSession == null) {
             // this is user intiiated session
-            mSession = new OPSession(participants);
+            mSession = new OPConversation(participants);
             OPSessionManager.getInstance().addSession(mSession);
         }
         return mSession;
@@ -227,7 +223,16 @@ public class ChatFragment extends BaseFragment implements
     }
 
     void updateUsersView(List<OPUser> users) {
-        getActivity().getActionBar().setTitle(users.get(0).getName());
+        if (users.size() == 1) {
+            getActivity().getActionBar().setTitle(users.get(0).getName());
+        } else {
+            String names[] = new String[users.size()];
+            for (int i = 0; i < users.size(); i++) {
+                names[i] = users.get(i).getName();
+            }
+            getActivity().getActionBar().setTitle(
+                    TextUtils.join(",", names));
+        }
     }
 
     View setupView(View view) {
@@ -274,7 +279,8 @@ public class ChatFragment extends BaseFragment implements
                 }
                 OPMessage msg = null;
                 // we use 0 for home user
-                msg = new OPMessage(0,
+                msg = new OPMessage(OPDataManager.getInstance()
+                        .getSharedAccount().getSelfContactId(),
                         OPMessageType.TYPE_TEXT,
                         mComposeBox.getText().toString(),
                         System.currentTimeMillis(),
@@ -349,7 +355,7 @@ public class ChatFragment extends BaseFragment implements
         private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
         private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
         private final static int VIEWTYPE_STATUS_VIEW = 2;
-        
+        private final static int VIEWTYPE_CALL_VIEW = 3;
 
         int myLastReadMessagePosition = -1;
         int myLastDeliveredMessagePosition = -1;
@@ -412,20 +418,22 @@ public class ChatFragment extends BaseFragment implements
             }
 
             Cursor cursor = (Cursor) getItem(position);
-            long sender_id = cursor.getLong(cursor
-                    .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
-            if (sender_id == 0) {
-
-                return VIEWTYPE_SELF_MESSAGE_VIEW;
-            } else {
-                return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
-            }
+            return getItemViewType(cursor);
         }
 
         public int getItemViewType(Cursor cursor) {
+            String type = cursor.getString(cursor
+                    .getColumnIndex(MessageEntry.COLUMN_MESSAGE_TYPE));
+            if (OPMessage.OPMessageType.TYPE_INERNAL_CALL_AUDIO.equals(type)
+                    || OPMessage.OPMessageType.TYPE_INERNAL_CALL_VIDEO
+                            .equals(type)) {
+                return VIEWTYPE_CALL_VIEW;
+            }
+
             long sender_id = cursor.getLong(cursor
-                    .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
-            if (sender_id == 0) {
+                    .getColumnIndex(MessageEntry.COLUMN_SENDER_ID));
+            if (sender_id == OPDataManager.getInstance().getSharedAccount()
+                    .getSelfContactId()) {
                 return VIEWTYPE_SELF_MESSAGE_VIEW;
             }
             return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
@@ -434,7 +442,7 @@ public class ChatFragment extends BaseFragment implements
 
         @Override
         public int getViewTypeCount() {
-            return 3;
+            return 4;
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -450,22 +458,29 @@ public class ChatFragment extends BaseFragment implements
             } else {
                 Cursor cursor = (Cursor) getItem(position);
                 if (cursor != null) {
-                    OPMessage message = OPMessage.fromCursor(cursor);
+
                     if (convertView == null) {
                         convertView = newView(mContext, cursor, parent);
                     }
-                    if (convertView instanceof SelfMessageView) {
-                        if (position == myLastReadMessagePosition
-                                || position == myLastDeliveredMessagePosition
-                                || position == myLastSentMessagePosition) {
-                            ((SelfMessageView) convertView).update(message,
-                                    true);
-                        } else {
-                            ((SelfMessageView) convertView).update(message,
-                                    false);
+                    if (convertView instanceof CallItemView) {
+                        CallItem callItem = CallItem.fromCursor(cursor);
+                        ((CallItemView) convertView).update(callItem);
+                    } else {
+                        OPMessage message = OPModelCursorHelper
+                                .messageFromCursor(cursor);
+                        if (convertView instanceof SelfMessageView) {
+                            if (position == myLastReadMessagePosition
+                                    || position == myLastDeliveredMessagePosition
+                                    || position == myLastSentMessagePosition) {
+                                ((SelfMessageView) convertView).update(message,
+                                        true);
+                            } else {
+                                ((SelfMessageView) convertView).update(message,
+                                        false);
+                            }
+                        } else if (convertView instanceof PeerMessageView) {
+                            ((PeerMessageView) convertView).update(message);
                         }
-                    } else if (convertView instanceof PeerMessageView) {
-                        ((PeerMessageView) convertView).update(message);
                     }
                 }
                 return convertView;
@@ -507,6 +522,9 @@ public class ChatFragment extends BaseFragment implements
             case VIEWTYPE_STATUS_VIEW:
                 view = new ComposingStatusView(context);
                 break;
+            case VIEWTYPE_CALL_VIEW:
+                view = new CallItemView(context);
+                break;
             }
 
             return view;
@@ -520,30 +538,32 @@ public class ChatFragment extends BaseFragment implements
                 int position = cursor.getCount() - 1;
                 cursor.moveToLast();
                 while (!cursor.isBeforeFirst()) {
-                    int status = cursor
-                        .getInt(cursor
+                    String status = cursor
+                            .getString(cursor
                                     .getColumnIndex(MessageEntry
-                                                        .COLUMN_NAME_MESSAGE_DELIVERY_STATUS));
-                    MessageDeliveryStates messageState = MessageDeliveryStates
-                        .values()[status];
-                    if (messageState == MessageDeliveryStates.MessageDeliveryState_Read) {
-                        // if we found the first read message then break out of the loop
-                        myLastReadMessagePosition = position;
+                                    .COLUMN_MESSAGE_DELIVERY_STATUS));
+                    if (!TextUtils.isEmpty(status)) {
+                        MessageDeliveryStates messageState = MessageDeliveryStates
+                                .valueOf(status);
+                        if (messageState == MessageDeliveryStates.MessageDeliveryState_Read) {
+                            // if we found the first read message then break out of the loop
+                            myLastReadMessagePosition = position;
 
-                        break;
-                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Sent
-                        && myLastReadMessagePosition == -1
-                        && myLastDeliveredMessagePosition == -1
-                        && myLastSentMessagePosition == -1) {
-                        myLastSentMessagePosition = position;
-                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
-                        && myLastReadMessagePosition == -1
-                        && myLastDeliveredMessagePosition == -1) {
-                        // if this is the first delivered state we've encountered before we see a
-                        // read message, remember it
-                        // and keep looking for the first read message
-                        myLastDeliveredMessagePosition = position;
+                            break;
+                        } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Sent
+                                && myLastReadMessagePosition == -1
+                                && myLastDeliveredMessagePosition == -1
+                                && myLastSentMessagePosition == -1) {
+                            myLastSentMessagePosition = position;
+                        } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
+                                && myLastReadMessagePosition == -1
+                                && myLastDeliveredMessagePosition == -1) {
+                            // if this is the first delivered state we've encountered before we see a
+                            // read message, remember it
+                            // and keep looking for the first read message
+                            myLastDeliveredMessagePosition = position;
 
+                        }
                     }
                     cursor.moveToPrevious();
                     position--;
@@ -580,9 +600,9 @@ public class ChatFragment extends BaseFragment implements
         case R.id.menu_video:
             makeCall(true);
             return true;
-            // case R.id.menu_add:
-            // addParticipant();
-            // return true;
+        case R.id.menu_add:
+            addParticipant();
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -660,9 +680,7 @@ public class ChatFragment extends BaseFragment implements
         case URL_LOADER:
             // Returns a new CursorLoader
             return new CursorLoader(getActivity(), // Parent activity context
-                    OPContentProvider
-                            .getContentUri(DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
-                                    + mWindowId),
+                    mSession.getMessagesUri(),
                     null,
                     null, // No selection clause
                     null, // No selection arguments
@@ -737,8 +755,13 @@ public class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public boolean onContactQuit(OPContact opContact) {
-        return false;
+    public boolean onContactsChanged() {
+        updateUsersView(mSession.getParticipants());
+        mWindowId = mSession.getCurrentWindowId();
+
+        getLoaderManager().restartLoader(URL_LOADER, null, this);
+
+        return true;
     }
 
     /*

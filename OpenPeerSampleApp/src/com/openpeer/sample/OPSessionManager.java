@@ -46,11 +46,9 @@ import com.openpeer.javaapi.ContactConnectionStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
-import com.openpeer.javaapi.OPComposingStatus;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
-import com.openpeer.javaapi.OPElement;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMessage;
@@ -61,12 +59,12 @@ import com.openpeer.sample.push.PushResult;
 import com.openpeer.sample.push.PushToken;
 import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.model.OPSession;
+import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 
 public class OPSessionManager {
     static final String TAG = OPSessionManager.class.getSimpleName();
-    List<OPSession> mSessions;
+    List<OPConversation> mSessions;
 
     Hashtable<String, OPCall> mCalls;
 
@@ -77,12 +75,12 @@ public class OPSessionManager {
     public static OPSessionManager getInstance() {
         if (instance == null) {
             instance = new OPSessionManager();
-            instance.mSessions = new ArrayList<OPSession>();
+            instance.mSessions = new ArrayList<OPConversation>();
         }
         return instance;
     }
 
-    public OPSession addSession(OPSession session) {
+    public OPConversation addSession(OPConversation session) {
         mSessions.add(session);
         return session;
     }
@@ -93,8 +91,8 @@ public class OPSessionManager {
      * @param thread
      * @return
      */
-    public OPSession getSessionOfThread(OPConversationThread thread) {
-        for (OPSession session : mSessions) {
+    public OPConversation getSessionOfThread(OPConversationThread thread) {
+        for (OPConversation session : mSessions) {
             // TODO: use windowId to search when specified
             if (session.isForThread(thread)) {
                 Log.d("test",
@@ -104,7 +102,7 @@ public class OPSessionManager {
             }
         }
         // No existing session for the thread
-        OPSession session = new OPSession(thread);
+        OPConversation session = new OPConversation(thread);
         addSession(session);
         return session;
     }
@@ -115,8 +113,8 @@ public class OPSessionManager {
      * @param userIDs
      * @return
      */
-    public OPSession getSessionForUsers(long[] userIDs) {
-        for (OPSession session : mSessions) {
+    public OPConversation getSessionForUsers(long[] userIDs) {
+        for (OPConversation session : mSessions) {
             if (session.isForUsers(userIDs)) {
                 return session;
             }
@@ -131,20 +129,21 @@ public class OPSessionManager {
      *            user ids
      * @return
      */
-    private OPSession getSessionWithUsers(long[] ids) {
+    private OPConversation getSessionWithUsers(long[] ids) {
         // TODO: implement proper look up
         return getSessionForUsers(ids);
     }
 
     public OPCall placeCall(long[] userIDs, boolean audio, boolean video) {
         // long windowId = OPChatWindow.getWindowId(userIDs);
-        OPSession session = OPSessionManager.getInstance().getSessionWithUsers(
-                userIDs);
+        OPConversation session = OPSessionManager.getInstance()
+                .getSessionWithUsers(
+                        userIDs);
         List<OPUser> users = null;
         if (session == null) {
             // this is user intiiated session
             users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
-            session = new OPSession(users);
+            session = new OPConversation(users);
             addSession(session);
         } else {
             users = session.getParticipants();
@@ -162,15 +161,14 @@ public class OPSessionManager {
             @Override
             public void onConversationThreadNew(
                     OPConversationThread conversationThread) {
-                // TODO Auto-generated method stub
-
             }
 
             @Override
             public void onConversationThreadContactsChanged(
                     OPConversationThread conversationThread) {
                 // TODO Auto-generated method stub
-
+                // getSessionOfThread(conversationThread).onContactsChanged(
+                // conversationThread);
             }
 
             @Override
@@ -188,7 +186,7 @@ public class OPSessionManager {
                 ComposingStates state = conversationThread
                         .getContactComposingStatus(contact);
                 if (state != null) {
-                    OPSession session = getSessionOfThread(conversationThread);
+                    OPConversation session = getSessionOfThread(conversationThread);
                     session.onContactComposingStateChanged(state, contact);
                 }
             }
@@ -212,8 +210,8 @@ public class OPSessionManager {
 
                     return;
                 }
-                OPSession session = getSessionOfThread(conversationThread);
-                session.onMessageReceived(conversationThread,message);
+                OPConversation session = getSessionOfThread(conversationThread);
+                session.onMessageReceived(conversationThread, message);
                 if (BaseActivity.isAppInBackground()) {
                     OPNotificationBuilder.showNotificationForMessage(session,
                             message);
@@ -230,12 +228,14 @@ public class OPSessionManager {
                                 + state);
 
                 OPDataManager.getDatastoreDelegate()
-                        .updateMessageDeliveryStatus(messageID, state, System.currentTimeMillis());
+                        .updateMessageDeliveryStatus(messageID, state,
+                                System.currentTimeMillis());
             }
 
             @Override
             public void onConversationThreadPushMessage(
-                    OPConversationThread conversationThread, final String messageID,
+                    OPConversationThread conversationThread,
+                    final String messageID,
                     OPContact contact) {
                 final OPMessage message = conversationThread
                         .getMessageById(messageID);
@@ -245,7 +245,7 @@ public class OPSessionManager {
 
                             @Override
                             public void success(PushToken token,
-                                                Response response) {
+                                    Response response) {
                                 OPLogger.debug(OPLogLevel.LogLevel_Detail,
                                         "onConversationThreadPushMessage push message "
                                                 + message);
@@ -255,9 +255,12 @@ public class OPSessionManager {
                                             public void success(
                                                     PushResult pushResult,
                                                     Response response) {
-                                                OPDataManager.getDatastoreDelegate()
-                                                    .updateMessageDeliveryStatus(messageID,
-                                                                                 MessageDeliveryStates.MessageDeliveryState_Sent, System.currentTimeMillis());
+                                                OPDataManager
+                                                        .getDatastoreDelegate()
+                                                        .updateMessageDeliveryStatus(
+                                                                messageID,
+                                                                MessageDeliveryStates.MessageDeliveryState_Sent,
+                                                                System.currentTimeMillis());
 
                                             }
 
@@ -298,6 +301,8 @@ public class OPSessionManager {
 
             @Override
             public void onCallStateChanged(OPCall call, CallStates state) {
+                OPConversationThread thread = call.getConversationThread();
+                getSessionOfThread(thread).onCallStateChanged(call, state);
                 Intent intent = new Intent();
                 intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
                 intent.putExtra(IntentData.ARG_CALL_STATE, state);
@@ -353,8 +358,8 @@ public class OPSessionManager {
         if (BackgroundingManager.isBackgroundingPending()) {
             BackgroundingManager.onEnteringBackground();
         }
-        //save call log
-//        OPDataManager.getInstance().saveCallRecord();
+        // save call log
+        // OPDataManager.getInstance().saveCallRecord();
     }
 
     public void hangupCall(OPCall mCall, CallClosedReasons reason) {
@@ -365,9 +370,9 @@ public class OPSessionManager {
     public OPUser getPeerUserForCall(OPCall call) {
         OPContact contact = call.getPeer();
 
-        OPUser user = new OPUser(contact, call.getConversationThread()
-                .getIdentityContactList(contact));
-        user = OPDataManager.getDatastoreDelegate().saveUser(user);
+        OPUser user = OPDataManager.getDatastoreDelegate().getUser(contact,
+                call.getConversationThread()
+                        .getIdentityContactList(contact));
         return user;
     }
 

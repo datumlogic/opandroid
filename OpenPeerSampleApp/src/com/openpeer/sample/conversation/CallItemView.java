@@ -29,83 +29,62 @@
  *******************************************************************************/
 package com.openpeer.sample.conversation;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.openpeer.javaapi.CallStates;
+import com.openpeer.javaapi.OPCall;
+import com.openpeer.javaapi.OPCallDelegate;
+import com.openpeer.javaapi.OPRolodexContact;
+import com.openpeer.sample.IntentData;
+import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
-import com.squareup.picasso.Picasso;
+import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 
-public class ChatInfoItemView extends RelativeLayout {
+public class CallItemView extends LinearLayout {
+    private OPRolodexContact mContact;
 
     private ImageView mImageView;
-    private TextView mBadgeView;
     private TextView mTitleView;
-    private TextView mLastMessageView;
     private TextView mTimeView;
 
-    public ChatInfoItemView(Context context) {
+    public CallItemView(Context context) {
         this(context, null, 0);
     }
 
-    public ChatInfoItemView(Context context, AttributeSet attrs, int defStyle) {
+    public CallItemView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        LayoutInflater.from(context).inflate(R.layout.item_chat_info, this);
+        LayoutInflater.from(context).inflate(R.layout.item_call, this);
         mImageView = (ImageView) findViewById(R.id.image_view);
-        mBadgeView = (TextView) findViewById(R.id.badge_view);
 
         mTitleView = (TextView) findViewById(R.id.title);
-        mLastMessageView = (TextView) findViewById(R.id.text_message);
-        mTimeView = (TextView) findViewById(R.id.time_view);
+        mTimeView = (TextView) findViewById(R.id.time);
     }
 
-    public ChatInfoItemView(Context context, AttributeSet attrs) {
+    public CallItemView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-        // TODO Auto-generated constructor stub
     }
 
-    public void updateData(final ChatInfo chatInfo) {
-        mTitleView.setText(chatInfo.getmNameString());
-        String msg = chatInfo.getmLastMessage();
-        Long time = chatInfo.getmLastMessageTime();
-
-        int unreadCount = chatInfo.getmUnreadCount();
-
-        this.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                ConversationActivity.launchForChat(getContext(),
-                        chatInfo.getUserIDs());
-            }
-        });
-        if (chatInfo.getUserIDs().length == 1) {
-            Picasso.with(getContext()).load(chatInfo.getAvatarUri(48, 48))
-                    .into(mImageView);
-
-        }
-
-        if (msg != null) {
-            mLastMessageView.setText(msg);
-            mTimeView.setText(DateFormatUtils.getSameDayTime(time));
-        }
-        if (unreadCount > 0) {
-            mBadgeView.setVisibility(View.VISIBLE);
-            mBadgeView.setText("" + unreadCount);
+    public void update(CallItem item) {
+        mTimeView.setText(DateFormatUtils.getSameDayTime(item.getTime()));
+        String text;
+        String stateName = item.getState().name();
+        stateName = stateName.substring(stateName.indexOf("_"));
+        if (item.isOutgoing()) {
+            text = "Call to " + item.getPeerName() + stateName;
         } else {
-            mBadgeView.setVisibility(View.GONE);
+            text = "Call from " + item.getPeerName() + stateName;
         }
+        mTitleView.setText(text);
     }
-
-    public void onLongPress() {
-        Toast.makeText(getContext(), "TODO: on longpress show something",
-                Toast.LENGTH_LONG);
-    }
-
 }

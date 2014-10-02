@@ -38,7 +38,7 @@ import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.model.MessageState;
+import com.openpeer.sdk.model.MessageEditState;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
 import com.urbanairship.push.PushNotificationBuilder;
@@ -77,8 +77,7 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
                 alert,
                 Long.parseLong(extras.get(KEY_SEND_TIME)),
                 messageId,
-                MessageState.Normal,
-                MessageDeliveryStates.MessageDeliveryState_Delivered.ordinal());
+                MessageEditState.Normal);
         return OPNotificationBuilder.buildNotificationForMessage(
                 new long[] { sender.getUserId() }, message);
     }
@@ -89,8 +88,8 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
         OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(
                 senderUri);
         if (sender != null) {
-            return (int) OPModelUtils.getWindowId(new long[] { sender
-                    .getUserId() });
+            return (int) OPModelUtils.getWindowId(new long[] {
+                    sender.getUserId() });
         }
         return 0;
     }

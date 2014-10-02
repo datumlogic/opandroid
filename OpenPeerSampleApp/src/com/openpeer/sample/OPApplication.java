@@ -35,6 +35,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.StrictMode;
+import android.os.SystemClock;
 import android.util.Log;
 import android.webkit.CookieManager;
 
@@ -85,6 +86,7 @@ public class OPApplication extends Application {
                     .build());
         }
 
+        long startTime= System.currentTimeMillis();
         AirshipConfigOptions options = AirshipConfigOptions
                 .loadDefaultOptions(this);
         UAirship.takeOff(this, options);
@@ -93,6 +95,8 @@ public class OPApplication extends Application {
         PushManager.shared().setNotificationBuilder(
                 new OPPushNotificationBuilder());
         PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
+        long endTime= System.currentTimeMillis();
+        Log.d(TAG,"UA init time "+(endTime-startTime));
 
         OPHelper.getInstance().init(this, null);
         // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);

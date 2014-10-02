@@ -45,7 +45,7 @@ import com.openpeer.sample.conversation.ConversationActivity;
 import com.openpeer.sample.util.CallUtil;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.model.OPSession;
+import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 
 public class OPNotificationBuilder {
@@ -86,7 +86,7 @@ public class OPNotificationBuilder {
 		notificationManager.notify(notificationId, notification);
 	}
 
-	public static void showNotificationForMessage(OPSession session, OPMessage message) {
+	public static void showNotificationForMessage(OPConversation session, OPMessage message) {
 		Context context = OPApplication.getInstance();
 		Notification notification = buildNotificationForMessage(session.getParticipantIDs(), message);
 		int notificationId = (int) session.getCurrentWindowId() + NOTIFICATION_ID_BASE_MESSAGE;

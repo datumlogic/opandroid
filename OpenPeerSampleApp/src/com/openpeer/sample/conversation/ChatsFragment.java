@@ -39,7 +39,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,14 +48,14 @@ import android.widget.ListView;
 
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
-import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.datastore.DatabaseContracts;
-import com.openpeer.sdk.model.OPSession;
+import com.openpeer.sdk.datastore.OPContentProvider;
+import com.openpeer.sdk.model.OPConversation;
 
 public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private ChatInfoAdaptor mAdapter;
-	private List<OPSession> mSessions;
+	private List<OPConversation> mSessions;
 	private ListView mMessagesList;
 
 
@@ -123,9 +122,9 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 		return view;
 	}
 
-	private List<OPSession> getSessions() {
+	private List<OPConversation> getSessions() {
 		if (mSessions == null) {
-			mSessions = new ArrayList<OPSession>();
+			mSessions = new ArrayList<OPConversation>();
 			// TODO: do some setup
 		}
 		return mSessions;
@@ -161,12 +160,12 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 	private static final int URL_LOADER = 0;
 
 	// static final String LIST_PROJECTION[] = { BaseColumns._ID,
-	// WindowViewEntry.COLUMN_NAME_PARTICIPANT_NAMES,
-	// WindowViewEntry.COLUMN_NAME_LAST_MESSAGE,
-	// WindowViewEntry.COLUMN_NAME_LAST_MESSAGE_TIME,
+	// WindowViewEntry.COLUMN_PARTICIPANT_NAMES,
+	// WindowViewEntry.COLUMN_LAST_MESSAGE,
+	// WindowViewEntry.COLUMN_LAST_MESSAGE_TIME,
 	//
-	// WindowViewEntry.COLUMN_NAME_USER_ID,
-	// WindowViewEntry.COLUMN_NAME_WINDOW_ID };
+	// WindowViewEntry.COLUMN_USER_ID,
+	// WindowViewEntry.COLUMN_WINDOW_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
@@ -175,7 +174,7 @@ public class ChatsFragment extends BaseFragment implements LoaderManager.LoaderC
 			// Returns a new CursorLoader
 			return new CursorLoader(
 					getActivity(), // Parent activity context
-                    OPContentProvider.getContentUri(DatabaseContracts.WindowViewEntry.URI_PATH_INFO),
+                    OPContentProvider.getContentUri(DatabaseContracts.WindowViewEntry.URI_PATH_INFO_CBC),
 //					DatabaseContracts.WindowViewEntry.CONTENT_URI, // Table to
 																	// query
 					null,// LIST_PROJECTION, // Projection to return
