@@ -82,7 +82,7 @@ public class ChatInfoItemView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 ConversationActivity.launchForChat(getContext(),
-                        chatInfo.getUserIDs());
+                        chatInfo.getUserIDs(), chatInfo.getContextId());
             }
         });
         if (chatInfo.getUserIDs().length == 1) {

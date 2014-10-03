@@ -32,6 +32,7 @@ package com.openpeer.sample.conversation;
 import android.database.Cursor;
 
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 
 public class ChatInfo {
@@ -43,6 +44,15 @@ public class ChatInfo {
     private long mUserIDs[];
     private long mRolodexIDs[];
     private long mConversationId;
+    private String mContextId;
+
+    public String getContextId() {
+        return mContextId;
+    }
+
+    public void setContextId(String id) {
+        this.mContextId = id;
+    }
 
     private String mAvatarUri[];
 
@@ -105,15 +115,19 @@ public class ChatInfo {
         }
         int mUnreadCount = cursor.getInt(cursor
                 .getColumnIndex(WindowViewEntry.COLUMN_UNREAD_COUNT));
-        return new ChatInfo(IDs, rolodexIds, mNameString, mLastMessage,
+        ChatInfo ci = new ChatInfo(IDs, rolodexIds, mNameString, mLastMessage,
                 mLastMessageTime,
                 mUnreadCount, null);
+        ci.setContextId(cursor.getString(cursor
+                .getColumnIndex(MessageEntry._ID)));
+        return ci;
     }
 
     public String getAvatarUri(int width, int height) {
         // todo: Support proper selection of avatar url
-        long rolodexId=mRolodexIDs[0];
-        String uri = OPDataManager.getDatastoreDelegate().getAvatar(rolodexId, width, height);
+        long rolodexId = mRolodexIDs[0];
+        String uri = OPDataManager.getDatastoreDelegate().getAvatar(rolodexId,
+                width, height);
         return uri;
     }
 

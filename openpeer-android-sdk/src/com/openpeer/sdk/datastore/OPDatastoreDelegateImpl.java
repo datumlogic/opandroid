@@ -57,6 +57,7 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.AccountEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.AssociatedIdentityEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.AvatarEntry;
@@ -547,6 +548,25 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     }
 
     @Override
+    public long updateConversation(OPConversation conversation) {
+        SQLiteDatabase db = getWritableDB();
+        ContentValues values = new ContentValues();
+        values.put(ConversationEntry.COLUMN_TYPE, conversation.getType().name());
+        values.put(ConversationEntry.COLUMN_START_TIME,
+                System.currentTimeMillis());
+        values.put(ConversationEntry.COLUMN_PARTICIPANTS,
+                conversation.getCurrentWindowId());
+        values.put(ConversationEntry.COLUMN_CONTEXT_ID,
+                conversation.getContextId());
+        values.put(ConversationEntry.COLUMN_ACCOUNT_ID, OPDataManager
+                .getDatastoreDelegate().getLoggedinUser().getUserId());
+        long id = db.update(ConversationEntry.TABLE_NAME, values,
+                BaseColumns._ID + "=" + conversation.getId(), null);
+
+        return id;
+    }
+
+    @Override
     public long saveConversationEvent(long conversationId,
             OPConversationEvent event) {
         SQLiteDatabase db = getWritableDB();
@@ -616,27 +636,41 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public long saveCallEvent(String callId,
             CallEvent event) {
         SQLiteDatabase db = getWritableDB();
-        long callRecordId = simpleQueryForId(db, CallEntry.TABLE_NAME,
+        Cursor cursor = db.query(CallEntry.TABLE_NAME, null,
                 CallEntry.COLUMN_CALL_ID + "=?",
-                new String[] { callId });
-        ContentValues values = new ContentValues();
-        values.put(CallEventEntry.COLUMN_CALL_ID, callRecordId);
-        values.put(CallEventEntry.COLUMN_EVENT, event.getState().name());
-        values.put(MessageEventEntry.COLUMN_TIME, event.getTime());
-        if (event.getState() == CallStates.CallState_Open) {
-            ContentValues callValues = new ContentValues();
-            callValues.put(CallEntry.COLUMN_ANSWER_TIME,
-                    System.currentTimeMillis());
-            updateCall(callRecordId, callValues);
-        }
-        if (event.getState() == CallStates.CallState_Closed) {
-            ContentValues callValues = new ContentValues();
-            callValues.put(CallEntry.COLUMN_END_TIME,
-                    System.currentTimeMillis());
-            updateCall(callRecordId, callValues);
-        }
+                new String[] { callId }, null, null, null);
+        if (cursor == null) {
 
-        return db.insert(CallEventEntry.TABLE_NAME, null, values);
+        }
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            long callRecordId = cursor.getLong(0);
+            String contextId = cursor.getString(cursor
+                    .getColumnIndex(CallEntry.COLUMN_CONTEXT_ID));
+            long cbcId = cursor.getLong(cursor
+                    .getColumnIndex(CallEntry.COLUMN_CBC_ID));
+            ContentValues values = new ContentValues();
+            values.put(CallEventEntry.COLUMN_CALL_ID, callRecordId);
+            values.put(CallEventEntry.COLUMN_EVENT, event.getState().name());
+            values.put(MessageEventEntry.COLUMN_TIME, event.getTime());
+            if (event.getState() == CallStates.CallState_Open) {
+                ContentValues callValues = new ContentValues();
+                callValues.put(CallEntry.COLUMN_ANSWER_TIME,
+                        System.currentTimeMillis());
+                updateCall(callRecordId, callValues);
+            }
+            if (event.getState() == CallStates.CallState_Closed) {
+                ContentValues callValues = new ContentValues();
+                callValues.put(CallEntry.COLUMN_END_TIME,
+                        System.currentTimeMillis());
+                updateCall(callRecordId, callValues);
+            }
+
+            long id = db.insert(CallEventEntry.TABLE_NAME, null, values);
+            notifyMessageChanged(contextId, cbcId, null);
+            return id;
+        }
+        return 0;
     }
 
     @Override
@@ -856,6 +890,20 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         int count = mContext.getContentResolver().update(
                 OPContentProvider.getContentUri(url), values, where, null);
         Log.d("test", "markMessagesRead update count " + count);
+    }
+
+    @Override
+    public Uri getChatsUri() {
+        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
+        case ContactsBased:
+            return OPContentProvider
+                    .getContentUri(WindowViewEntry.URI_PATH_INFO_CBC);
+        case ContextBased:
+            return OPContentProvider
+                    .getContentUri(WindowViewEntry.URI_PATH_INFO_CONTEXT);
+        default:
+            return null;
+        }
     }
 
     int delete(String tableName, String whereClause, String[] whereArgs) {
@@ -1260,5 +1308,27 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                         .getColumnIndex(IdentityContactEntry.COLUMN_EXPIRE)));
 
         return contact;
+    }
+
+    private void notifyMessageChanged(String contextId, long cbcId,
+            String messageId) {
+
+        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
+        case ContactsBased:
+
+            mContext.getContentResolver()
+                    .notifyChange(
+                            OPContentProvider.getContentUri(MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
+                                    + cbcId), null);
+            break;
+        case ContextBased:
+            mContext.getContentResolver()
+                    .notifyChange(
+                            OPContentProvider.getContentUri(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE
+                                    + contextId), null);
+            break;
+        default:
+            break;
+        }
     }
 }

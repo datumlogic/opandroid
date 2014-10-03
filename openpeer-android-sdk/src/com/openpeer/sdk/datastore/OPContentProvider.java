@@ -230,25 +230,29 @@ public class OPContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
             String[] selectionArgs, String sortOrder) {
-        MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+        int index = mUriMatcher.match(uri);
+        if (index == -1) {
+            Log.d(TAG, "Illegal URI " + uri);
+        }
+        MatcherInfo value = MatcherInfo.values()[index];
         StringBuilder stringBuilder = new StringBuilder();
 
         switch (value) {
         case MESSAGES_WINDOW:
             stringBuilder
-                    .append(DatabaseContracts.QUERY_MESSAGES_CONTACTS_BASED);
+                    .append(DatabaseContracts.QUERY_MESSAGES);
             int windowId = Integer.parseInt(uri.getLastPathSegment());
             stringBuilder.append("where " + DatabaseContracts.COLUMN_CBC_ID
                     + "="
                     + windowId);
-            if (!TextUtils.isEmpty(selection)) {
-                stringBuilder.append(" and ").append(selection);
-            }
             stringBuilder.append(
-                    " union " + DatabaseContracts.QUERY_CALL_CONTACTS_BASED)
+                    " union " + DatabaseContracts.QUERY_CALL)
                     .append(" where ")
-                    .append(DatabaseContracts.COLUMN_CBC_ID + "=" + windowId)
-                    .append(" order by time");
+                    .append(DatabaseContracts.COLUMN_CBC_ID + "=" + windowId);
+
+            if (!TextUtils.isEmpty(selection)) {
+                stringBuilder.append(" order by time");
+            }
             Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(
                     stringBuilder.toString(), selectionArgs);
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -259,23 +263,35 @@ public class OPContentProvider extends ContentProvider {
             return queryMessage(uri, projection, selection, selectionArgs,
                     sortOrder);
         case MESSAGES_CONTEXT:
+            stringBuilder.append(DatabaseContracts.QUERY_MESSAGES)
+                    .append("where " + MessageEntry.COLUMN_CONTEXT_ID)
+                    .append("=?");
             String contextId = uri.getLastPathSegment();
-            stringBuilder.append(MessageEntry.COLUMN_CONTEXT_ID + "=?");
             if (!TextUtils.isEmpty(selection)) {
                 stringBuilder.append(" and ").append(selection);
             }
+            stringBuilder.append(" union " + DatabaseContracts.QUERY_CALL)
+                    .append(" where ")
+                    .append(MessageEntry.COLUMN_CONTEXT_ID + "=?");
+
+            stringBuilder.append(" order by time");
+
             String args[];
-            if (selectionArgs != null) {
-                args = new String[selectionArgs.length + 1];
-                args[0] = contextId;
-                for (int i = 0; i < selectionArgs.length; i++) {
-                    args[i + 1] = selectionArgs[i];
-                }
-            } else {
-                args = new String[] { contextId };
-            }
-            return queryMessages(uri, projection, stringBuilder.toString(),
-                    args, sortOrder);
+            // if (selectionArgs != null) {
+            // args = new String[selectionArgs.length + 1];
+            // args[0] = contextId;
+            // for (int i = 0; i < selectionArgs.length; i++) {
+            // args[i + 1] = selectionArgs[i];
+            // }
+            // } else {
+            args = new String[] { contextId, contextId };
+            // }
+
+            Cursor contextCursor = mOpenHelper.getReadableDatabase().rawQuery(
+                    stringBuilder.toString(), args);
+            contextCursor.setNotificationUri(getContext().getContentResolver(),
+                    uri);
+            return contextCursor;
         case MESSAGE_THREAD:
             return queryMessage(uri, projection, selection, selectionArgs,
                     sortOrder);
@@ -669,32 +685,7 @@ public class OPContentProvider extends ContentProvider {
         return instance;
     }
 
-    private void notifyMessageChanged(String messageId) {
-        String where = MessageEntry.COLUMN_MESSAGE_ID + "=?";
-        String args[] = new String[] { messageId };
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Cursor cursor = db.query(
-                DatabaseContracts.ContactsViewEntry.TABLE_NAME,
-                null, // The columns to return from the query
-                where, // The columns for the where clause
-                args, // The values for the where clause
-                null, // don't group the rows
-                null, // don't filter by row groups
-                null // The sort order
-                );
-        switch (getGroupChatMode()) {
-        case ContactsBased:
-            long windowId = cursor.getLong(cursor
-                    .getColumnIndex(DatabaseContracts.COLUMN_CBC_ID));
-            String url = MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
-                    + windowId + "/" + messageId;
-            getContext().getContentResolver().notifyChange(
-                    getContentUri(url), null);
-            break;
-        default:
-            break;
-        }
-    }
+    
 
     GroupChatMode getGroupChatMode() {
         return GroupChatMode.ContactsBased;

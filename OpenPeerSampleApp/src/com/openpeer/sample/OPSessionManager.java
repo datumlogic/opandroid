@@ -59,6 +59,7 @@ import com.openpeer.sample.push.PushResult;
 import com.openpeer.sample.push.PushToken;
 import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 
@@ -110,16 +111,31 @@ public class OPSessionManager {
     /**
      * Look up the session "for" users. This call use calculated window id to find the session.
      * 
-     * @param userIDs
+     * @param users
      * @return
      */
-    public OPConversation getSessionForUsers(long[] userIDs) {
+    public OPConversation getSessionForUsers(List<OPUser> users) {
         for (OPConversation session : mSessions) {
-            if (session.isForUsers(userIDs)) {
+            if (session.isForUsers(users)) {
                 return session;
             }
         }
-        return null;
+        OPConversation session = new OPConversation(users);
+        addSession(session);
+
+        return session;
+    }
+
+    public OPConversation getSessionOfContext(List<OPUser> users,
+            String contextId) {
+        for (OPConversation session : mSessions) {
+            if (session.getContextId().equals(contextId)) {
+                return session;
+            }
+        }
+        OPConversation session = new OPConversation(users, contextId);
+        addSession(session);
+        return session;
     }
 
     /**
@@ -129,24 +145,30 @@ public class OPSessionManager {
      *            user ids
      * @return
      */
-    private OPConversation getSessionWithUsers(long[] ids) {
-        // TODO: implement proper look up
-        return getSessionForUsers(ids);
+    private OPConversation getSessionWithUsers(List<OPUser> ids,
+            String contextId) {
+        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
+        case ContactsBased:
+            return getSessionForUsers(ids);
+        case ContextBased:
+            return getSessionOfContext(ids, contextId);
+        default:
+            return null;
+        }
     }
 
-    public OPCall placeCall(long[] userIDs, boolean audio, boolean video) {
+    public OPCall placeCall(long[] userIDs, boolean audio, boolean video,
+            String contextId) {
         // long windowId = OPChatWindow.getWindowId(userIDs);
+
+        List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(
+                userIDs);
         OPConversation session = OPSessionManager.getInstance()
-                .getSessionWithUsers(
-                        userIDs);
-        List<OPUser> users = null;
+                .getSessionWithUsers(users, contextId);
         if (session == null) {
             // this is user intiiated session
-            users = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
             session = new OPConversation(users);
             addSession(session);
-        } else {
-            users = session.getParticipants();
         }
 
         OPCall call = session.placeCall(users.get(0), audio, video);

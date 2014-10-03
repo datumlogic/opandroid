@@ -121,10 +121,12 @@ public interface OPDatastoreDelegate {
      * @param message
      * @param sessionId
      * @param threadId
-     * @param conversationEventId TODO
+     * @param conversationEventId
+     *            TODO
      * @return
      */
-    public Uri saveMessage(OPMessage message, long sessionId, String threadId, long conversationEventId);
+    public Uri saveMessage(OPMessage message, long sessionId, String threadId,
+            long conversationEventId);
 
     void saveParticipants(long windowId, List<OPUser> userList);
 
@@ -197,7 +199,8 @@ public interface OPDatastoreDelegate {
     /**
      * @param rolodexId
      * @param width
-     * @param height TODO
+     * @param height
+     *            TODO
      * @return
      */
     String getAvatar(long rolodexId, int width, int height);
@@ -243,16 +246,31 @@ public interface OPDatastoreDelegate {
 
     /**
      * @param call
-     * @param cbcId TODO
-     * @param contextId TODO
-     * @param conversationEventId TODO
+     * @param cbcId
+     *            TODO
+     * @param contextId
+     *            TODO
+     * @param conversationEventId
+     *            TODO
      * @return
      */
-    long saveCall(OPCall call, long cbcId, String contextId, long conversationEventId);
+    long saveCall(OPCall call, long cbcId, String contextId,
+            long conversationEventId);
 
     /**
      * @return
      */
     OPUser getLoggedinUser();
+
+    /**
+     * @param conversation
+     * @return
+     */
+    long updateConversation(OPConversation conversation);
+
+    /**
+     * @return
+     */
+    public Uri getChatsUri();
 
 }

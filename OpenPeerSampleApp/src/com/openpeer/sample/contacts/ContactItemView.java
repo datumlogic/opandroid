@@ -98,7 +98,7 @@ public class ContactItemView extends RelativeLayout {
                 @Override
                 public void onClick(View v) {
                     Log.d("test", "Chat button tapped");
-                    ConversationActivity.launchForChat(getContext(), mUserIds);
+                    ConversationActivity.launchForChat(getContext(), mUserIds, null);
                 }
             });
 
@@ -121,7 +121,7 @@ public class ContactItemView extends RelativeLayout {
 
     public void onClick() {
         final long userIds[] = { mUserId };
-        ConversationActivity.launchForChat(getContext(), userIds);
+        ConversationActivity.launchForChat(getContext(), userIds, null);
     }
 
 }

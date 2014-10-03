@@ -78,6 +78,7 @@ import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.OPModelCursorHelper;
 import com.openpeer.sdk.model.OPConversation;
@@ -99,6 +100,7 @@ public class ChatFragment extends BaseFragment implements
     private MessagesAdaptor mAdapter;
 
     private long mWindowId;
+
     private OPConversation mSession;
     long[] mUserIDs;
     List<OPUser> participants;
@@ -106,10 +108,12 @@ public class ChatFragment extends BaseFragment implements
     boolean mTyping;
     private OPMessage mEditingMessage;
 
-    public static ChatFragment newInstance(long[] userIdList) {
+    public static ChatFragment newInstance(long[] userIdList, String contextId) {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putLongArray(IntentData.ARG_PEER_USER_IDS, userIdList);
+        args.putString(IntentData.ARG_CONTEXT_ID, contextId);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -131,12 +135,16 @@ public class ChatFragment extends BaseFragment implements
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+        String contextId;
         if (savedInstanceState == null) {
             Bundle args = getArguments();
             mUserIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+            contextId = args.getString(IntentData.ARG_CONTEXT_ID);
         } else {
             mUserIDs = savedInstanceState
                     .getLongArray(IntentData.ARG_PEER_USER_IDS);
+            contextId = savedInstanceState.getString(IntentData.ARG_CONTEXT_ID);
+
         }
         participants = OPDataManager.getDatastoreDelegate().getUsers(mUserIDs);
 
@@ -145,22 +153,22 @@ public class ChatFragment extends BaseFragment implements
         // mSelfContact = OPDataManager.getInstance().getSelfContacts().get(0);
         this.setHasOptionsMenu(true);
         // TODO:remove this call and use lazy loading.
-        getSession();
-    }
-
-    /**
-     * Lazy creating session. Call this when user sends message
-     * 
-     * @return
-     */
-    private OPConversation getSession() {
-        mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
-        if (mSession == null) {
-            // this is user intiiated session
-            mSession = new OPConversation(participants);
-            OPSessionManager.getInstance().addSession(mSession);
+        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
+        case ContactsBased:
+            mSession = OPSessionManager.getInstance().getSessionForUsers(
+                    participants);
+            break;
+        case ContextBased:
+            mSession = OPSessionManager.getInstance().getSessionOfContext(
+                    participants, contextId);
+            break;
+        default:
+            break;
         }
-        return mSession;
+
+        if (TextUtils.isEmpty(mSession.getContextId())) {
+            mSession.setContextId(contextId);
+        }
     }
 
     @Override
@@ -292,7 +300,7 @@ public class ChatFragment extends BaseFragment implements
                 }
                 mComposeBox.setText("");
 
-                getSession().sendMessage(msg, false);
+                mSession.sendMessage(msg, false);
                 mTyping = false;
                 mSession.getThread().setStatusInThread(
                         ComposingStates.ComposingState_Active);
@@ -631,6 +639,9 @@ public class ChatFragment extends BaseFragment implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putLongArray(IntentData.ARG_PEER_USER_IDS, mUserIDs);
+        if (mSession.getContextId() != null)
+            outState.putString(IntentData.ARG_CONTEXT_ID,
+                    mSession.getContextId());
         super.onSaveInstanceState(outState);
     }
 
@@ -667,7 +678,8 @@ public class ChatFragment extends BaseFragment implements
                 peerUri)) {
             CallActivity.launchForCall(getActivity(), peerUri);
         } else {
-            CallActivity.launchForCall(getActivity(), mUserIDs, true, video);
+            CallActivity.launchForCall(getActivity(), mUserIDs,
+                    mSession.getContextId(), true, video);
         }
     }
 

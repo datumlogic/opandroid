@@ -51,6 +51,7 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.utils.OPModelUtils;
@@ -115,6 +116,11 @@ public class OPConversation extends Observable {
                 mParticipants);
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
 
+    }
+
+    public OPConversation(List<OPUser> users, String contextId) {
+        this(users);
+        mContextId = contextId;
     }
 
     /**
@@ -187,10 +193,10 @@ public class OPConversation extends Observable {
                 message.getMessageType(), message.getMessage(), signMessage);
         if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
             OPDataManager.getDatastoreDelegate().updateMessage(message,
-                    mCbcId, getThread().getThreadID());
+                    mCbcId, mContextId);
         } else {
             OPDataManager.getDatastoreDelegate().saveMessage(message,
-                    mCbcId, getThread().getThreadID(), getLastEvent().getId());
+                    mCbcId, mContextId, getLastEvent().getId());
         }
         return message;
     }
@@ -249,7 +255,10 @@ public class OPConversation extends Observable {
                     OPDataManager.getInstance().getSharedAccount(),
                     OPDataManager.getInstance().getSelfContacts());
             addContactToThread(mParticipants);
-            mContextId = mConvThread.getThreadID();
+            if (TextUtils.isEmpty(mContextId)) {
+                mContextId = mConvThread.getThreadID();
+                OPDataManager.getDatastoreDelegate().updateConversation(this);
+            }
         }
         return mConvThread;
     }
@@ -358,8 +367,8 @@ public class OPConversation extends Observable {
         return false;
     }
 
-    public boolean isForUsers(long[] userIDs) {
-        return getCurrentWindowId() == OPModelUtils.getWindowId(userIDs);
+    public boolean isForUsers(List<OPUser> users) {
+        return getCurrentWindowId() == OPModelUtils.getWindowId(users);
     }
 
     public void addParticipant(List<OPUser> users) {
@@ -376,7 +385,7 @@ public class OPConversation extends Observable {
             message.setSenderId(user.getUserId());
             if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
                 OPDataManager.getDatastoreDelegate().updateMessage(message,
-                        mCbcId, getThread().getThreadID());
+                        mCbcId, mContextId);
             } else {
                 if (isWindowAttached()) {
                     message.setRead(true);
@@ -384,7 +393,7 @@ public class OPConversation extends Observable {
                 }
 
                 OPDataManager.getDatastoreDelegate().saveMessage(message,
-                        mCbcId, getThread().getThreadID(),
+                        mCbcId, mContextId,
                         getLastEvent().getId());
 
             }
@@ -426,7 +435,7 @@ public class OPConversation extends Observable {
         // TODO: create appropriate logic,e.g. based on windowId
         switch (mType) {
         case ContextBased:
-            return thread.getThreadID().equals(mContextId);
+            return thread.getThreadID().equals(mConvThread.getThreadID());
         case ContactsBased:
             if (thread.getThreadID().equals(mConvThread.getThreadID())) {
                 if (mCbcId != OPModelUtils
@@ -581,14 +590,15 @@ public class OPConversation extends Observable {
         switch (mType) {
         case ContactsBased:
             return OPContentProvider
-                    .getContentUri(DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
+                    .getContentUri(MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
                             + mCbcId);
         case ContextBased:
             return OPContentProvider
-                    .getContentUri(DatabaseContracts.MessageEntry.URI_PATH_INFO_CONTEXT_ID
-                            + mCbcId);
+                    .getContentUri(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE
+                            + mContextId);
         default:
             return null;
         }
     }
+
 }
