@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Observable;
 
 import android.net.Uri;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -50,12 +49,9 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSdkConfig;
-import com.openpeer.sdk.datastore.DatabaseContracts;
-import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
-import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.utils.OPModelUtils;
-import com.openpeer.sdk.model.MessageEditState;
 
 /**
  * A session represents extact state of a conversation thread.
@@ -435,7 +431,19 @@ public class OPConversation extends Observable {
         // TODO: create appropriate logic,e.g. based on windowId
         switch (mType) {
         case ContextBased:
-            return thread.getThreadID().equals(mConvThread.getThreadID());
+            if (thread.getThreadID().equals(mConvThread.getThreadID())) {
+                if (mCbcId != OPModelUtils
+                        .getWindowIdForThread(thread)) {
+                    onContactsChanged(thread);
+                }
+                return true;
+            } else if (mCbcId == OPModelUtils
+                    .getWindowIdForThread(thread)) {
+                mConvThread = thread;
+                return true;
+            } else {
+                return false;
+            }
         case ContactsBased:
             if (thread.getThreadID().equals(mConvThread.getThreadID())) {
                 if (mCbcId != OPModelUtils
@@ -447,6 +455,8 @@ public class OPConversation extends Observable {
                     .getWindowIdForThread(thread)) {
                 mConvThread = thread;
                 return true;
+            } else {
+                return false;
             }
         case RoomBased:
             return false;
@@ -593,6 +603,9 @@ public class OPConversation extends Observable {
                     .getContentUri(MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
                             + mCbcId);
         case ContextBased:
+            if (TextUtils.isEmpty(mContextId)) {
+                return null;
+            }
             return OPContentProvider
                     .getContentUri(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE
                             + mContextId);

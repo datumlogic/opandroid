@@ -54,12 +54,13 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-//        for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
-//            Log.d("test", "create statement" + sql);
-//            db.execSQL(sql);
-//        }
+        // for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
+        // Log.d("test", "create statement" + sql);
+        // db.execSQL(sql);
+        // }
         try {
             DbUtils.executeSqlScript(mContext, db, "main.sql");
+            Log.d("OPDatabaseHelper", "onCreate done executing main.sql");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

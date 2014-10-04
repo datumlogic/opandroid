@@ -113,7 +113,7 @@ public class DbUtils{
     }
 
     public static byte[] readAsset(Context context, String filename) throws IOException {
-        InputStream in = context.getResources().getAssets().open(filename);
+        InputStream in = context.getAssets().open(filename);
         try {
             return readAllBytes(in);
         } finally {
