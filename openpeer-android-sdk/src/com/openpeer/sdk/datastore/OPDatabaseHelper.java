@@ -42,7 +42,7 @@ import android.util.Log;
  * 
  */
 public class OPDatabaseHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "OpenPeer.db";
     Context mContext;
 
@@ -60,7 +60,6 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
         // }
         try {
             DbUtils.executeSqlScript(mContext, db, "main.sql");
-            Log.d("OPDatabaseHelper", "onCreate done executing main.sql");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -69,7 +68,14 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if(oldVersion<3){
+            try {
+                DbUtils.executeSqlScript(mContext, db, "main.sql");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
