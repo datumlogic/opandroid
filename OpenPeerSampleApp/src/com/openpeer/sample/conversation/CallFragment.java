@@ -378,9 +378,10 @@ public class CallFragment extends BaseFragment {
         super.onDestroy();
 
         if (mVideo) {
-            mVideoView.removeAllViews();
-            previewLayout.removeAllViews();
+//            mVideoView.removeAllViews();
+//            previewLayout.removeAllViews();
             OPMediaEngine.getInstance().setChannelRenderView(null);
+            OPMediaEngine.getInstance().setCaptureRenderView(null);
         }
         getActivity().unregisterReceiver(receiver);
 
@@ -468,8 +469,7 @@ public class CallFragment extends BaseFragment {
             else
                 OPMediaEngine.getInstance().setCameraType(
                         CameraTypes.CameraType_Back);
-            mLocalSurface = SurfaceViewFactory.getLocalView(getActivity()
-                    .getApplicationContext());
+            mLocalSurface = ViERenderer.CreateRenderer(getActivity(),true);
             mRemoteSurface = ViERenderer.CreateRenderer(getActivity(), true);
             previewLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -478,7 +478,6 @@ public class CallFragment extends BaseFragment {
                     setupVideoPreview();
                 }
             });
-            setupVideoPreview();
             // This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(
@@ -486,7 +485,9 @@ public class CallFragment extends BaseFragment {
             OPMediaEngine.getInstance().setRecordVideoOrientation(
                     VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
-            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
+//            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
+//            OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
+            setupVideoPreview();
         }
         setupMediaControl();
 
@@ -516,11 +517,14 @@ public class CallFragment extends BaseFragment {
             mRemoteSurface.setZOrderMediaOverlay(true);
             mLocalSurface.setZOrderMediaOverlay(false);
             OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
-
+            OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
+            mRemoteSurface.setZOrderMediaOverlay(true);
+            mLocalSurface.setZOrderMediaOverlay(false);
         } else {
             previewLayout.addView(mLocalSurface, localvideoLayoutParam);
             remoteView.addView(mRemoteSurface, remotevideoLayoutParam);
             OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
+            OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
             mRemoteSurface.setZOrderMediaOverlay(false);
             mLocalSurface.setZOrderMediaOverlay(true);
         }
