@@ -370,11 +370,8 @@ public class OPConversation extends Observable {
     }
 
     public void addParticipant(List<OPUser> users) {
-        mParticipants.addAll(users);
         addContactToThread(users);
-        mCbcId = OPModelUtils.getWindowId(mParticipants);
-        OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
-                mParticipants);
+        onContactsChanged(mConvThread);
     }
 
     public void onMessageReceived(OPConversationThread thread, OPMessage message) {
