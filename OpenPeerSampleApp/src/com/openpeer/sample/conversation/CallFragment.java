@@ -469,7 +469,7 @@ public class CallFragment extends BaseFragment {
             else
                 OPMediaEngine.getInstance().setCameraType(
                         CameraTypes.CameraType_Back);
-            mLocalSurface = ViERenderer.CreateLocalRenderer(getActivity());
+            mLocalSurface = ViERenderer.CreateRenderer(getActivity(),true);
             mRemoteSurface = ViERenderer.CreateRenderer(getActivity(), true);
             previewLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -485,8 +485,8 @@ public class CallFragment extends BaseFragment {
             OPMediaEngine.getInstance().setRecordVideoOrientation(
                     VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
-            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
-            OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
+//            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
+//            OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
             setupVideoPreview();
         }
         setupMediaControl();
