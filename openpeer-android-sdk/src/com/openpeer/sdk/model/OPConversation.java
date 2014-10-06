@@ -478,7 +478,7 @@ public class OPConversation extends Observable {
         boolean contactsChanged = false;
         List<OPUser> users = new ArrayList<OPUser>();
         List<OPContact> contacts = conversationThread.getContacts();
-        List<OPContact> newContacts = new ArrayList<OPContact>();
+        List<OPUser> newContacts = new ArrayList<OPUser>();
         List<OPUser> deletedContacts = new ArrayList<OPUser>();
 
         for (OPUser user : mParticipants) {
@@ -491,44 +491,28 @@ public class OPConversation extends Observable {
                 continue;
             }
             if (!hasOPContact(contact)) {
-                newContacts.add(contact);
-            }
-        }
-        if (!newContacts.isEmpty()) {
-            for (OPContact contact : newContacts) {
-                contactsChanged = true;
-                // new contact
                 List<OPIdentityContact> iContacts = mConvThread
                         .getIdentityContactList(contact);
                 OPUser user = OPDataManager.getDatastoreDelegate().getUser(
                         contact, iContacts);
-
-                // This function will also set the userId so don't worry
-                mParticipants.add(user);
-                OPConversationEvent event = new OPConversationEvent(
-                        OPConversationEvent.EventTypes.ContactAdded,
-                        user.getUserId() + "",
-                        mCbcId,
-                        mId,
-                        mContextId);
-                onNewEvent(event);
+                newContacts.add(user);
             }
+        }
+        if (!newContacts.isEmpty()) {
+            mParticipants.addAll(newContacts);
         }
 
         if (!deletedContacts.isEmpty()) {
-            for (OPUser user : deletedContacts) {
-                contactsChanged = true;
-                mParticipants.remove(user);
-                OPConversationEvent event = new OPConversationEvent(
-                        OPConversationEvent.EventTypes.ContactDeleted,
-                        user.getUserId() + "",
-                        mCbcId,
-                        mId,
-                        mContextId);
-                onNewEvent(event);
-            }
+            mParticipants.removeAll(deletedContacts);
         }
         mCbcId = OPModelUtils.getWindowId(mParticipants);
+        OPConversationEvent event = new OPConversationEvent(
+                OPConversationEvent.EventTypes.ContactsChanged,
+                getContactsChangeJsonBlob(newContacts, deletedContacts),
+                mCbcId,
+                mId,
+                mContextId);
+        onNewEvent(event);
         OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
                 mParticipants);
         synchronized (mSessionListeners) {
@@ -612,6 +596,30 @@ public class OPConversation extends Observable {
         default:
             return null;
         }
+    }
+
+    String getContactsChangeJsonBlob(List<OPUser> addedUsers,
+            List<OPUser> deletedUsers) {
+        String jsonFormat = "{\"added\":[%s],\"removed\":[%s]}";
+        StringBuilder sb = new StringBuilder();
+        if (!addedUsers.isEmpty()) {
+            for (OPUser user : addedUsers) {
+                sb.append(user.getUserId() + ",");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        String addedIds = sb.toString();
+
+        sb = new StringBuilder();
+        if (!deletedUsers.isEmpty()) {
+            for (OPUser user : deletedUsers) {
+                sb.append(user.getUserId() + ",");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        String deletedIds = sb.toString();
+        return String.format(jsonFormat, addedIds, deletedIds);
     }
 
 }

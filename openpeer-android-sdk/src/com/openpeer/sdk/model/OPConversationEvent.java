@@ -62,8 +62,7 @@ public class OPConversationEvent {
 
     public enum EventTypes {
         NewConversation,
-        ContactAdded,
-        ContactDeleted,
+        ContactsChanged
     }
 
     public EventTypes getEvent() {
