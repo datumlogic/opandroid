@@ -250,9 +250,8 @@ public class OPContentProvider extends ContentProvider {
                     .append(" where ")
                     .append(DatabaseContracts.COLUMN_CBC_ID + "=" + windowId);
 
-            if (!TextUtils.isEmpty(selection)) {
-                stringBuilder.append(" order by time");
-            }
+            stringBuilder.append(" order by time");
+
             Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(
                     stringBuilder.toString(), selectionArgs);
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -266,16 +265,14 @@ public class OPContentProvider extends ContentProvider {
             stringBuilder.append(DatabaseContracts.QUERY_MESSAGES)
                     .append("where " + MessageEntry.COLUMN_CONTEXT_ID)
                     .append("=?");
-            String contextId = uri.getLastPathSegment();
-            if (!TextUtils.isEmpty(selection)) {
-                stringBuilder.append(" and ").append(selection);
-            }
+
             stringBuilder.append(" union " + DatabaseContracts.QUERY_CALL)
                     .append(" where ")
                     .append(MessageEntry.COLUMN_CONTEXT_ID + "=?");
 
             stringBuilder.append(" order by time");
 
+            String contextId = uri.getLastPathSegment();
             String args[];
             // if (selectionArgs != null) {
             // args = new String[selectionArgs.length + 1];
@@ -684,8 +681,6 @@ public class OPContentProvider extends ContentProvider {
         // TODO Auto-generated method stub
         return instance;
     }
-
-    
 
     GroupChatMode getGroupChatMode() {
         return GroupChatMode.ContactsBased;
