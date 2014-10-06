@@ -108,6 +108,7 @@ public class OPConversation extends Observable {
                 OPConversationEvent.EventTypes.NewConversation, "",
                 mCbcId, 0,
                 mContextId);
+        onNewEvent(mLastEvent);
         OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
                 mParticipants);
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
@@ -144,6 +145,7 @@ public class OPConversation extends Observable {
                 OPConversationEvent.EventTypes.NewConversation, "",
                 mCbcId, 0,
                 mContextId);
+        onNewEvent(mLastEvent);
         OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
                 mParticipants);
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
@@ -509,8 +511,7 @@ public class OPConversation extends Observable {
                         mCbcId,
                         mId,
                         mContextId);
-                OPDataManager.getDatastoreDelegate().saveConversationEvent(mId,
-                        event);
+                onNewEvent(event);
             }
         }
 
@@ -524,8 +525,7 @@ public class OPConversation extends Observable {
                         mCbcId,
                         mId,
                         mContextId);
-                OPDataManager.getDatastoreDelegate().saveConversationEvent(mId,
-                        event);
+                onNewEvent(event);
             }
         }
         mCbcId = OPModelUtils.getWindowId(mParticipants);
