@@ -469,7 +469,7 @@ public class CallFragment extends BaseFragment {
             else
                 OPMediaEngine.getInstance().setCameraType(
                         CameraTypes.CameraType_Back);
-            mLocalSurface = ViERenderer.CreateRenderer(getActivity(),true);
+            mLocalSurface = ViERenderer.CreateRenderer(getActivity(), true);
             mRemoteSurface = ViERenderer.CreateRenderer(getActivity(), true);
             previewLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -481,9 +481,9 @@ public class CallFragment extends BaseFragment {
             // This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(
-                    VideoOrientations.VideoOrientation_Portrait);
+                VideoOrientations.VideoOrientation_Portrait);
             OPMediaEngine.getInstance().setRecordVideoOrientation(
-                    VideoOrientations.VideoOrientation_LandscapeRight);
+                VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
 //            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
 //            OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
@@ -521,12 +521,13 @@ public class CallFragment extends BaseFragment {
             mRemoteSurface.setZOrderMediaOverlay(true);
             mLocalSurface.setZOrderMediaOverlay(false);
         } else {
+            mRemoteSurface.setZOrderMediaOverlay(false);
+            mLocalSurface.setZOrderMediaOverlay(true);
             previewLayout.addView(mLocalSurface, localvideoLayoutParam);
             remoteView.addView(mRemoteSurface, remotevideoLayoutParam);
             OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
             OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
-            mRemoteSurface.setZOrderMediaOverlay(false);
-            mLocalSurface.setZOrderMediaOverlay(true);
+
         }
     }
 

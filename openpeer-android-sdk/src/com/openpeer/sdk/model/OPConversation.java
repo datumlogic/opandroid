@@ -104,14 +104,15 @@ public class OPConversation extends Observable {
         // we can always get them through account
         mParticipants = users;
         mCbcId = OPModelUtils.getWindowId(mParticipants);
-        mLastEvent = new OPConversationEvent(
-                OPConversationEvent.EventTypes.NewConversation, "",
-                mCbcId, 0,
-                mContextId);
-        onNewEvent(mLastEvent);
+
         OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
                 mParticipants);
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
+        mLastEvent = new OPConversationEvent(
+                OPConversationEvent.EventTypes.NewConversation, "",
+                mCbcId, mId,
+                mContextId);
+        onNewEvent(mLastEvent);
 
     }
 
@@ -141,15 +142,15 @@ public class OPConversation extends Observable {
             }
         }
         mCbcId = OPModelUtils.getWindowId(mParticipants);
-        mLastEvent = new OPConversationEvent(
-                OPConversationEvent.EventTypes.NewConversation, "",
-                mCbcId, 0,
-                mContextId);
-        onNewEvent(mLastEvent);
+
         OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
                 mParticipants);
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
-
+        mLastEvent = new OPConversationEvent(
+                OPConversationEvent.EventTypes.NewConversation, "",
+                mCbcId, mId,
+                mContextId);
+        onNewEvent(mLastEvent);
     }
 
     public void registerListener(SessionListener listener) {
@@ -428,30 +429,30 @@ public class OPConversation extends Observable {
 
     public boolean isForThread(OPConversationThread thread) {
         // TODO: create appropriate logic,e.g. based on windowId
+        long cbcId = OPModelUtils
+                .getWindowIdForThread(thread);
         switch (mType) {
         case ContextBased:
-            if (thread.getThreadID().equals(mConvThread.getThreadID())) {
-                if (mCbcId != OPModelUtils
-                        .getWindowIdForThread(thread)) {
-                    onContactsChanged(thread);
-                }
+            if (mConvThread != null
+                    && thread.getThreadID().equals(mConvThread.getThreadID())) {
+                // if (mCbcId != cbcId) {
+                // onContactsChanged(thread);
+                // }
                 return true;
-            } else if (mCbcId == OPModelUtils
-                    .getWindowIdForThread(thread)) {
+            } else if (mCbcId == cbcId) {
                 mConvThread = thread;
                 return true;
             } else {
                 return false;
             }
         case ContactsBased:
-            if (thread.getThreadID().equals(mConvThread.getThreadID())) {
-                if (mCbcId != OPModelUtils
-                        .getWindowIdForThread(thread)) {
-                    onContactsChanged(thread);
-                }
+            if (mConvThread != null
+                    && thread.getThreadID().equals(mConvThread.getThreadID())) {
+                // if (mCbcId != cbcId) {
+                // onContactsChanged(thread);
+                // }
                 return true;
-            } else if (mCbcId == OPModelUtils
-                    .getWindowIdForThread(thread)) {
+            } else if (mCbcId == cbcId) {
                 mConvThread = thread;
                 return true;
             } else {

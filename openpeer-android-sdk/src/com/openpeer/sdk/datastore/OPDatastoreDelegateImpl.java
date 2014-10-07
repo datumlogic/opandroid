@@ -477,9 +477,9 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     }
 
     @Override
-    public Uri saveMessage(OPMessage message, long windowId, String threadId,
+    public Uri saveMessage(OPMessage message, long cbcId, String contextId,
             long conversationEventId) {
-
+        SQLiteDatabase db = getWritableDB();
         ContentValues values = new ContentValues();
         values.put(MessageEntry.COLUMN_MESSAGE_ID, message.getMessageId());
         values.put(MessageEntry.COLUMN_MESSAGE_TEXT, message.getMessage());
@@ -487,8 +487,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         values.put(MessageEntry.COLUMN_MESSAGE_TYPE,
                 message.getMessageType());
         values.put(MessageEntry.COLUMN_SENDER_ID, message.getSenderId());
-        values.put(MessageEntry.COLUMN_CBC_ID, windowId);
-        values.put(MessageEntry.COLUMN_CONTEXT_ID, threadId);
+        values.put(MessageEntry.COLUMN_CBC_ID, cbcId);
+        values.put(MessageEntry.COLUMN_CONTEXT_ID, contextId);
         values.put(MessageEntry.COLUMN_MESSAGE_READ, message.isRead());
         values.put(MessageEntry.COLUMN_EDIT_STATUS, message.getEditState()
                 .ordinal());
@@ -498,16 +498,13 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 .toMillis(false));
         values.put(MessageEntry.COLUMN_CONVERSATION_EVENT_ID,
                 conversationEventId);
-        String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
-                + windowId;
-        Uri uri = mContext.getContentResolver().insert(
-                OPContentProvider.getContentUri(url), values);
+        long id = db.insert(MessageEntry.TABLE_NAME, null, values);
+        // String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
+        // + cbcId;
+        // Uri uri = mContext.getContentResolver().insert(
+        // OPContentProvider.getContentUri(url), values);
+        Uri uri = notifyMessageChanged(contextId, cbcId, id);
 
-        // if (uri != null) {
-        // Log.d("test", "now notify change for " + url);
-        // mContext.getContentResolver().notifyChange(OPContentProvider.getContentUri(WindowViewEntry.URI_PATH_INFO), null);
-        // return true;
-        // }
         return uri;
     }
 
@@ -541,9 +538,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 .getDatastoreDelegate().getLoggedinUser().getUserId());
         long id = db.insert(ConversationEntry.TABLE_NAME, null, values);
         conversation.setId(id);
-        OPConversationEvent event = conversation.getLastEvent();
-        event.setConversationId(id);
-        saveConversationEvent(id, event);
+
         return id;
     }
 
@@ -667,7 +662,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
             }
 
             long id = db.insert(CallEventEntry.TABLE_NAME, null, values);
-            notifyMessageChanged(contextId, cbcId, null);
+            notifyMessageChanged(contextId, cbcId, 30000 + id);
             return id;
         }
         return 0;
@@ -1310,25 +1305,29 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         return contact;
     }
 
-    private void notifyMessageChanged(String contextId, long cbcId,
-            String messageId) {
+    private Uri notifyMessageChanged(String contextId, long cbcId,
+            long id) {
 
+        StringBuilder sb = new StringBuilder();
         switch (OPSdkConfig.getInstance().getGroupChatMode()) {
         case ContactsBased:
 
-            mContext.getContentResolver()
-                    .notifyChange(
-                            OPContentProvider.getContentUri(MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
-                                    + cbcId), null);
+            sb.append(MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + cbcId);
             break;
         case ContextBased:
-            mContext.getContentResolver()
-                    .notifyChange(
-                            OPContentProvider.getContentUri(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE
-                                    + contextId), null);
+            sb.append(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + contextId);
+
             break;
         default:
             break;
         }
+
+        if (id != 0) {
+            sb.append("/" + id);
+        }
+
+        Uri uri = OPContentProvider.getContentUri(sb.toString());
+        mContext.getContentResolver().notifyChange(uri, null);
+        return uri;
     }
 }

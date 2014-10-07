@@ -188,9 +188,8 @@ public class OPSessionManager {
             @Override
             public void onConversationThreadContactsChanged(
                     OPConversationThread conversationThread) {
-                // TODO Auto-generated method stub
-                // getSessionOfThread(conversationThread).onContactsChanged(
-                // conversationThread);
+                 getSessionOfThread(conversationThread).onContactsChanged(
+                 conversationThread);
             }
 
             @Override
