@@ -13,6 +13,8 @@
 #include "BackgroundingDelegateWrapper.h"
 #include "BackgroundingCompletionDelegateWrapper.h"
 
+#include "openpeer/core/IPushMessaging.h"
+
 #ifndef _ANDROID_OPENPEER_GLOBALS_H_
 #define _ANDROID_OPENPEER_GLOBALS_H_
 

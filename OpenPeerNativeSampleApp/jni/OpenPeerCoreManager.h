@@ -25,6 +25,25 @@ public:
 
 	static void fillJavaTokenFromCoreObject(jobject javaToken, IIdentity::Token coreToken);
 
+	//push messaging helper methods
+
+	//Push info related helper methods
+	static IPushMessaging::PushInfo pushInfoToCore(jobject javaPushInfo);
+	static jobject pushInfoToJava(IPushMessaging::PushInfo corePushInfo);
+	static IPushMessaging::PushInfoList pushInfoListToCore(jobject javaPushInfoList);
+	static jobject pushInfoListToJava(IPushMessaging::PushInfoList corePushInfoList);
+
+	static IPushMessaging::PushStateContactDetailList pushStateContactDetailListToCore(jobject javaPushStateContactDetailList);
+	static jobject pushStateContactDetailListToJava(IPushMessaging::PushStateContactDetailList);
+
+	static IPushMessaging::PushStateDetailMap pushStateDetailMapToCore(jobject javaPushStateDetailMap);
+	static jobject pushStateDetailMapToJava(IPushMessaging::PushStateDetailMap);
+
+	static IPushMessaging::PushMessageList pushMessageListToCore(jobject javaPushMessageList);
+	static jobject pushMessageListToJava(IPushMessaging::PushMessageList);
+
+
+
 public:
 	static IStackMessageQueuePtr queuePtr;
 	static ISettingsPtr settingsPtr;
