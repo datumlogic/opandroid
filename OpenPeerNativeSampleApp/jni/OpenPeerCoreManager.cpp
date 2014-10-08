@@ -124,7 +124,7 @@ IPushMessaging::PushInfo OpenPeerCoreManager::pushInfoToCore(jobject javaPushInf
 		jclass javaItemClass = findClass("com/openpeer/javaapi/OPPushInfo");
 
 		jmethodID getServiceTypeMethodID = jni_env->GetMethodID( javaItemClass, "getServiceType", "()Ljava/lang/String;" );
-		jstring serviceType = jni_env->CallObjectMethod(javaPushInfo, getServiceTypeMethodID);
+		jstring serviceType = (jstring)jni_env->CallObjectMethod(javaPushInfo, getServiceTypeMethodID);
 		returnObject.mServiceType = String(jni_env->GetStringUTFChars(serviceType, NULL));
 		jni_env->ReleaseStringUTFChars(serviceType, returnObject.mServiceType);
 		jni_env->DeleteLocalRef(serviceType);
@@ -289,12 +289,12 @@ IPushMessaging::PushStateContactDetail OpenPeerCoreManager::pushStateContactDeta
 
 		//mErrorCode
 		jmethodID getErrorCodeMethodID = jni_env->GetMethodID( javaItemClass, "getErrorCode", "()I" );
-		jint errorCode = jni_env->CallObjectMethod(javaPushStateContactDetail, getErrorCodeMethodID);
+		jint errorCode = jni_env->CallIntMethod(javaPushStateContactDetail, getErrorCodeMethodID);
 		returnObject.mErrorCode = (int) errorCode;
 
 		//mErrorReason
 		jmethodID getErrorReasonMethodID = jni_env->GetMethodID( javaItemClass, "getErrorReason", "()Ljava/lang/String;" );
-		jstring errorReason = jni_env->CallObjectMethod(javaPushStateContactDetail, getErrorReasonMethodID);
+		jstring errorReason = (jstring) jni_env->CallObjectMethod(javaPushStateContactDetail, getErrorReasonMethodID);
 		returnObject.mErrorReason = String(jni_env->GetStringUTFChars(errorReason, NULL));
 		jni_env->ReleaseStringUTFChars(errorReason, returnObject.mErrorReason);
 		jni_env->DeleteLocalRef(errorReason);
@@ -410,8 +410,117 @@ jobject OpenPeerCoreManager::pushStateContactDetailListToJava(IPushMessaging::Pu
 	return returnListObject;
 }
 
-IPushMessaging::PushStateDetailMap OpenPeerCoreManager::pushStateDetailMapToCore(jobject javaPushStateDetailMap);
-jobject OpenPeerCoreManager::pushStateDetailMapToJava(IPushMessaging::PushStateDetailMap);
+IPushMessaging::PushStateDetailMap OpenPeerCoreManager::pushStateDetailMapToCore(jobject javaPushStateDetailMap)
+{
+	IPushMessaging::PushStateDetailMap returnMap;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushStateDetailMapToCore called");
+
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		jclass hashMapClass = findClass("java/util/HashMap");
+		// size method fetch
+		jmethodID sizeMethodID = jni_env->GetMethodID(hashMapClass, "size", "()I");
+
+
+		// Get the Set Class
+		jclass setClass = findClass("java/util/Set");
+		// Get the "Iterator" class
+		jclass iteratorClass = findClass("java/util/Iterator");
+		// Get the Map.Entry class
+		jclass mapEntryClass = findClass("java/util/Map/Entry");
+
+		// Get link to Method "entrySet"
+		jmethodID entrySetMethod = jni_env->GetMethodID(hashMapClass, "entrySet", "()Ljava/util/Set;");
+		// Get link to Method "iterator"
+		jmethodID iteratorMethod = jni_env->GetMethodID(setClass, "iterator", "()Ljava/util/Iterator;");
+		// Get link to Method "hasNext"
+		jmethodID hasNextMethod = jni_env->GetMethodID(iteratorClass, "hasNext", "()Z");
+		// Get link to Method "next"
+		jmethodID nextMethod = jni_env->GetMethodID(iteratorClass, "next", "()Ljava/util/Map/Entry;");
+		// Get link to GetKey/GetValue methods
+		jmethodID getKeyMethod = jni_env->GetMethodID(mapEntryClass, "getKey", "()Ljava/lang/Object");
+		jmethodID getValueMethod = jni_env->GetMethodID(mapEntryClass, "getValue", "()Ljava/lang/Object");
+
+		int mapItemsCount = (int)jni_env->CallIntMethod( javaPushStateDetailMap, sizeMethodID );
+
+		jboolean bHasNext = false;
+		if (mapItemsCount > 0)
+		{
+			bHasNext = true;
+		}
+		// Invoke the "entrySet" method on the HashMap object
+		jobject entrySetObject = jni_env->CallObjectMethod(javaPushStateDetailMap, entrySetMethod);
+		// Invoke the "iterator" method on the jobject_of_entryset variable of type Set
+		jobject iteratorObject = jni_env->CallObjectMethod(entrySetObject, iteratorMethod);
+		while(bHasNext)
+		{
+			//Gewt key and value from map entry iterator
+			jobject keyObject = jni_env->CallObjectMethod(iteratorObject, getKeyMethod);
+			jobject valueObject = jni_env->CallObjectMethod(iteratorObject, getValueMethod);
+
+			//Pack key and value to C++ class
+			std::pair<IPushMessaging::PushStates, IPushMessaging::PushStateContactDetailList> coreEntry;
+			IPushMessaging::PushStates state = (IPushMessaging::PushStates) getIntValueFromEnumObject(keyObject, "com/openpeer/javaapi/PushStates");
+			IPushMessaging::PushStateContactDetailList coreList = pushStateContactDetailListToCore(valueObject);
+			coreEntry = std::make_pair(state, coreList);
+
+			returnMap.insert(coreEntry);
+
+			// Invoke - Get the value hasNextMethod
+			bHasNext = jni_env->CallBooleanMethod(iteratorObject, hasNextMethod);
+			//Invoke next() method to obtain entry
+			iteratorObject = jni_env->CallObjectMethod(iteratorObject, nextMethod);
+
+		}
+
+
+	}
+	return returnMap;
+
+}
+jobject OpenPeerCoreManager::pushStateDetailMapToJava(IPushMessaging::PushStateDetailMap coreMap)
+{
+
+	jobject returnMapObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushStateDetailMapToJava called");
+
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		jclass hashMapClass = findClass("java/util/HashMap");
+		jmethodID hashMapConstructorMethodID = jni_env->GetMethodID(hashMapClass, "<init>", "()V");
+		jobject returnMapObject = jni_env->NewObject(hashMapClass, hashMapConstructorMethodID);
+
+		jmethodID putMethod = jni_env->GetMethodID(
+				hashMapClass,
+				"put",
+				"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+		);
+
+		for( IPushMessaging::PushStateDetailMap::iterator it = coreMap.begin(); it != coreMap.end(); ++it )
+		{
+			//key == PushStates
+			jobject key = getJavaEnumObject("com/openpeer/javaapi/PushStates", (int)(*it).first );
+
+			//value == List<OPPushStateContactDetail>
+			jobject value = pushStateContactDetailListToJava( (*it).second );
+
+			jni_env->CallVoidMethod(
+					returnMapObject,
+					putMethod,
+					key,
+					value
+			);
+		}
+	}
+
+	return returnMapObject;
+}
 
 IPushMessaging::PushMessageList OpenPeerCoreManager::pushMessageListToCore(jobject javaPushMessageList);
 jobject OpenPeerCoreManager::pushMessageListToJava(IPushMessaging::PushMessageList);
