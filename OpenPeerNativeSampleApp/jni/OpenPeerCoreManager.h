@@ -33,6 +33,8 @@ public:
 	static IPushMessaging::PushInfoList pushInfoListToCore(jobject javaPushInfoList);
 	static jobject pushInfoListToJava(IPushMessaging::PushInfoList corePushInfoList);
 
+	static IPushMessaging::PushStateContactDetail pushStateContactDetailToCore(jobject javaPushStateContactDetail);
+	static jobject pushStateContactDetailToJava(IPushMessaging::PushStateContactDetail corePushStateContactDetail);
 	static IPushMessaging::PushStateContactDetailList pushStateContactDetailListToCore(jobject javaPushStateContactDetailList);
 	static jobject pushStateContactDetailListToJava(IPushMessaging::PushStateContactDetailList);
 

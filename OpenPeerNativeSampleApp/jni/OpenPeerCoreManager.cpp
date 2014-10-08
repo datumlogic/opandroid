@@ -266,8 +266,149 @@ jobject OpenPeerCoreManager::pushInfoListToJava(IPushMessaging::PushInfoList cor
 	return returnListObject;
 }
 
-IPushMessaging::PushStateContactDetailList OpenPeerCoreManager::pushStateContactDetailListToCore(jobject javaPushStateContactDetailList);
-jobject OpenPeerCoreManager::pushStateContactDetailListToJava(IPushMessaging::PushStateContactDetailList);
+IPushMessaging::PushStateContactDetail OpenPeerCoreManager::pushStateContactDetailToCore(jobject javaPushStateContactDetail)
+{
+	IPushMessaging::PushStateContactDetail returnObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushStateContactDetailToCore called");
+
+	jni_env = getEnv();
+	if (jni_env)
+	{
+		//mRemotePeer
+		jclass javaItemClass = findClass("com/openpeer/javaapi/OPPushStateContactDetail");
+
+		jmethodID getRemotePeerMethodID = jni_env->GetMethodID( javaItemClass, "getRemotePeer", "()Lcom/openpeer/javaapi/OPContact;" );
+		jobject remotePeer = jni_env->CallObjectMethod(javaPushStateContactDetail, getRemotePeerMethodID);
+		jclass contactCls = findClass("com/openpeer/javaapi/OPContact");
+		jfieldID contactFid = jni_env->GetFieldID(contactCls, "nativeClassPointer", "J");
+		jlong remotePeerPointerValue = jni_env->GetLongField(remotePeer, contactFid);
+		IContactPtr* coreRemotePeerPtr = (IContactPtr*)remotePeerPointerValue;
+		returnObject.mRemotePeer = *coreRemotePeerPtr;
+
+		//mErrorCode
+		jmethodID getErrorCodeMethodID = jni_env->GetMethodID( javaItemClass, "getErrorCode", "()I" );
+		jint errorCode = jni_env->CallObjectMethod(javaPushStateContactDetail, getErrorCodeMethodID);
+		returnObject.mErrorCode = (int) errorCode;
+
+		//mErrorReason
+		jmethodID getErrorReasonMethodID = jni_env->GetMethodID( javaItemClass, "getErrorReason", "()Ljava/lang/String;" );
+		jstring errorReason = jni_env->CallObjectMethod(javaPushStateContactDetail, getErrorReasonMethodID);
+		returnObject.mErrorReason = String(jni_env->GetStringUTFChars(errorReason, NULL));
+		jni_env->ReleaseStringUTFChars(errorReason, returnObject.mErrorReason);
+		jni_env->DeleteLocalRef(errorReason);
+	}
+
+	return returnObject;
+}
+jobject OpenPeerCoreManager::pushStateContactDetailToJava(IPushMessaging::PushStateContactDetail corePushStateContactDetail)
+{
+	jobject returnObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushStateContactDetailToCore called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+		jclass javaStateContactDetailClass = findClass("com/openpeer/javaapi/OPPushStateContactDetail");
+		jmethodID javaStateContactDetailConstructorMethodID = jni_env->GetMethodID(javaStateContactDetailClass, "<init>", "()V");
+		returnObject = jni_env->NewObject(javaStateContactDetailClass, javaStateContactDetailConstructorMethodID);
+
+		//mRemotePeer
+		IContactPtr coreRemotePeer = corePushStateContactDetail.mRemotePeer;
+		IContactPtr* ptrToRemotePeer = new boost::shared_ptr<IContact>(coreRemotePeer);
+		jclass contactCls = findClass("com/openpeer/javaapi/OPContact");
+		jmethodID contactMethod = jni_env->GetMethodID(contactCls, "<init>", "()V");
+		jobject remotePeerObject = jni_env->NewObject(contactCls, contactMethod);
+
+		jfieldID fid = jni_env->GetFieldID(contactCls, "nativeClassPointer", "J");
+		jlong remotePeer = (jlong) ptrToRemotePeer;
+		jni_env->SetLongField(remotePeerObject, fid, remotePeer);
+
+		jmethodID setRemotePeerMethodID = jni_env->GetMethodID( javaStateContactDetailClass, "setRemotePeer", "(Lcom/openpeer/javaapi/OPContact;)V" );
+		jni_env->CallVoidMethod(returnObject, setRemotePeerMethodID, remotePeerObject);
+
+		//mErrorCode
+		jint errorCode = (jint) corePushStateContactDetail.mErrorCode;
+		jmethodID setErrorCodeMethodID = jni_env->GetMethodID( javaStateContactDetailClass, "setErrorCode", "(I)V" );
+		jni_env->CallVoidMethod(returnObject, setErrorCodeMethodID, errorCode);
+
+		//mErrorReason
+		jmethodID setErrorReasonMethodID = jni_env->GetMethodID( javaStateContactDetailClass, "setErrorReason", "(Ljava/lang/String;)V" );
+		jstring errorReason = jni_env->NewStringUTF(corePushStateContactDetail.mErrorReason.c_str());
+		jni_env->CallVoidMethod(returnObject, setErrorReasonMethodID, errorReason);
+
+	}
+
+	return returnObject;
+}
+
+IPushMessaging::PushStateContactDetailList OpenPeerCoreManager::pushStateContactDetailListToCore(jobject javaPushStateContactDetailList)
+{
+	IPushMessaging::PushStateContactDetailList returnListObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushStateContactDetailListToCore called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass arrayListClass = findClass("java/util/ArrayList");
+		// Fetch "java.util.List.get(int location)" MethodID
+		jmethodID listGetMethodID = jni_env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+		// Fetch "int java.util.List.size()" MethodID
+		jmethodID sizeMethodID = jni_env->GetMethodID( arrayListClass, "size", "()I" );
+
+		// Call "int java.util.List.size()" method and get count of items in the list.
+		int listItemsCount = (int)jni_env->CallIntMethod( javaPushStateContactDetailList, sizeMethodID );
+
+		for( int i=0; i<listItemsCount; ++i )
+		{
+			// Call "java.util.List.get" method and get Contact object by index.
+			jobject pushStateContactDetailObject = jni_env->CallObjectMethod( javaPushStateContactDetailList, listGetMethodID, i );
+			IPushMessaging::PushStateContactDetail corePushStateContactDetail = pushStateContactDetailToCore(pushStateContactDetailObject);
+			//add core contacts to list for removal
+			returnListObject.push_front(corePushStateContactDetail);
+		}
+	}
+	return returnListObject;
+}
+jobject OpenPeerCoreManager::pushStateContactDetailListToJava(IPushMessaging::PushStateContactDetailList corePushStateContactDetailList)
+{
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushStateContactDetailListToJava called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//fill java list
+		for(IPushMessaging::PushStateContactDetailList::iterator coreListIter = corePushStateContactDetailList.begin();
+				coreListIter != corePushStateContactDetailList.end(); coreListIter++)
+		{
+			jobject javaItemObject = pushStateContactDetailToJava(*coreListIter);
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , javaItemObject);
+			jni_env->DeleteLocalRef(javaItemObject);
+		}
+	}
+	return returnListObject;
+}
 
 IPushMessaging::PushStateDetailMap OpenPeerCoreManager::pushStateDetailMapToCore(jobject javaPushStateDetailMap);
 jobject OpenPeerCoreManager::pushStateDetailMapToJava(IPushMessaging::PushStateDetailMap);
