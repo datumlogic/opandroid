@@ -327,6 +327,7 @@ public class CallFragment extends BaseFragment {
                         OPMediaEngine.getInstance().setCameraType(
                                 CameraTypes.CameraType_Back);
                     }
+                    setPreview(OPMediaEngine.getInstance().getCameraType(), 0);
 
                 }
             });
@@ -597,47 +598,56 @@ public class CallFragment extends BaseFragment {
 
     // orientation is not used for now
     void setPreview(CameraTypes cameraType, int orientation) {
+        mVideoView.removeAllViews();
         int width = getActivity().getResources().getDimensionPixelSize(
                 R.dimen.width_local_video);
         List<OPCaptureCapability> capabilities = OPMediaEngine.getInstance()
                 .getCaptureCapabilities(cameraType);
         int size = capabilities.size();
-        if(size==0){
-            throw new RuntimeException("CaptureCapability is empty for "+cameraType.name());
-        }
-        OPCaptureCapability preferredCapability = capabilities.get(0);
-        int minDiff = Math.abs(preferredCapability.getWidth() - width);
+        if (size != 0) {
 
-        // find out the closest resolution
-        if (size > 1) {
-            for (int i = 1; i < size; i++) {
-                OPCaptureCapability capability = capabilities.get(i);
-                int diff = capability.getWidth() - width;
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    preferredCapability = capabilities.get(i);
+            OPCaptureCapability preferredCapability = capabilities.get(0);
+            int minDiff = Math.abs(preferredCapability.getWidth() - width);
+
+            // find out the closest resolution
+            if (size > 1) {
+                for (int i = 1; i < size; i++) {
+                    OPCaptureCapability capability = capabilities.get(i);
+                    int diff = capability.getWidth() - width;
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        preferredCapability = capabilities.get(i);
+                    }
                 }
             }
+
+            float aspectRatio = (float) preferredCapability.getWidth()
+                    / (float) preferredCapability.getHeight();
+            float heightRatio = 1.0f;
+            float widthRatio = 1.0f;
+
+            // if the camera aspect ratio is bigger, we need to crop it
+            // taller,e.g. 4/3 / 16/9 = 0.75 for height
+            if (ASPECT_RATIO < aspectRatio) {
+                heightRatio = ASPECT_RATIO / aspectRatio;
+            } else {
+                // wider e.g. 10/9 / 4/3 =0.8 for width
+                widthRatio = aspectRatio / ASPECT_RATIO;
+            }
+
+            OPMediaEngine.getInstance().setCaptureRenderViewCropping(0.0f,
+                    0.0f, heightRatio,
+                    widthRatio);
         }
 
-        float aspectRatio = preferredCapability.getHeight()
-                / preferredCapability.getWidth();
-        float heightRatio = 1.0f;
-        // if the camera aspect ratio is bigger, we need to crop it
-        if (ASPECT_RATIO < aspectRatio) {
-            heightRatio = ASPECT_RATIO / aspectRatio;
-        }
         RelativeLayout.LayoutParams localvideoLayoutParam = new RelativeLayout.LayoutParams(
                 width,
                 (int) (width * ASPECT_RATIO));
-        OPMediaEngine.getInstance().setCaptureRenderViewCropping(0.0f, 0.0f,
-                1.0f, heightRatio);
         localvideoLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
         RelativeLayout.LayoutParams remotevideoLayoutParam = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-        mRemoteSurface.setLayoutParams(remotevideoLayoutParam);
 
         mRemoteSurface.setZOrderMediaOverlay(false);
         mLocalSurface.setZOrderMediaOverlay(true);
