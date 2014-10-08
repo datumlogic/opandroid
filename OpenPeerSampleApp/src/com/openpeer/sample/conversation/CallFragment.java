@@ -49,6 +49,7 @@ import android.widget.RelativeLayout;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.CameraTypes;
 import com.openpeer.javaapi.OPCall;
+import com.openpeer.javaapi.OPCaptureCapability;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
@@ -378,8 +379,8 @@ public class CallFragment extends BaseFragment {
         super.onDestroy();
 
         if (mVideo) {
-//            mVideoView.removeAllViews();
-//            previewLayout.removeAllViews();
+            // mVideoView.removeAllViews();
+            // previewLayout.removeAllViews();
             OPMediaEngine.getInstance().setChannelRenderView(null);
             OPMediaEngine.getInstance().setCaptureRenderView(null);
         }
@@ -475,25 +476,25 @@ public class CallFragment extends BaseFragment {
                 @Override
                 public void onClick(View view) {
                     mVideoPreviewSwitched = !mVideoPreviewSwitched;
-                    setupVideoPreview();
+                    // setupVideoPreview();
                 }
             });
             // This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(
-                VideoOrientations.VideoOrientation_Portrait);
+                    VideoOrientations.VideoOrientation_Portrait);
             OPMediaEngine.getInstance().setRecordVideoOrientation(
-                VideoOrientations.VideoOrientation_LandscapeRight);
+                    VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
-//            OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
-//            OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
-            setupVideoPreview();
+            // OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
+            // OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
+            setPreview(OPMediaEngine.getInstance().getCameraType(), 0);
         }
         setupMediaControl();
 
     }
 
-    private static final double ASPECT_RATIO = 16.0 / 9.0;
+    private static final float ASPECT_RATIO = 4.0f / 3.0f;
 
     private void setupVideoPreview() {
         RelativeLayout.LayoutParams remotevideoLayoutParam = new RelativeLayout.LayoutParams(
@@ -592,6 +593,59 @@ public class CallFragment extends BaseFragment {
     void hideOverlay() {
         getActivity().getActionBar().hide();
         mStatusOverlay.setVisibility(View.GONE);
+    }
+
+    // orientation is not used for now
+    void setPreview(CameraTypes cameraType, int orientation) {
+        int width = getActivity().getResources().getDimensionPixelSize(
+                R.dimen.width_local_video);
+        List<OPCaptureCapability> capabilities = OPMediaEngine.getInstance()
+                .getCaptureCapabilities(cameraType);
+        int size = capabilities.size();
+        if(size==0){
+            throw new RuntimeException("CaptureCapability is empty for "+cameraType.name());
+        }
+        OPCaptureCapability preferredCapability = capabilities.get(0);
+        int minDiff = Math.abs(preferredCapability.getWidth() - width);
+
+        // find out the closest resolution
+        if (size > 1) {
+            for (int i = 1; i < size; i++) {
+                OPCaptureCapability capability = capabilities.get(i);
+                int diff = capability.getWidth() - width;
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    preferredCapability = capabilities.get(i);
+                }
+            }
+        }
+
+        float aspectRatio = preferredCapability.getHeight()
+                / preferredCapability.getWidth();
+        float heightRatio = 1.0f;
+        // if the camera aspect ratio is bigger, we need to crop it
+        if (ASPECT_RATIO < aspectRatio) {
+            heightRatio = ASPECT_RATIO / aspectRatio;
+        }
+        RelativeLayout.LayoutParams localvideoLayoutParam = new RelativeLayout.LayoutParams(
+                width,
+                (int) (width * ASPECT_RATIO));
+        OPMediaEngine.getInstance().setCaptureRenderViewCropping(0.0f, 0.0f,
+                1.0f, heightRatio);
+        localvideoLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+        RelativeLayout.LayoutParams remotevideoLayoutParam = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        mRemoteSurface.setLayoutParams(remotevideoLayoutParam);
+
+        mRemoteSurface.setZOrderMediaOverlay(false);
+        mLocalSurface.setZOrderMediaOverlay(true);
+        mVideoView.addView(mLocalSurface, localvideoLayoutParam);
+        mVideoView.addView(mRemoteSurface, remotevideoLayoutParam);
+        OPMediaEngine.getInstance().setChannelRenderView(mRemoteSurface);
+        OPMediaEngine.getInstance().setCaptureRenderView(mLocalSurface);
+
     }
 
 }
