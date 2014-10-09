@@ -1,5 +1,7 @@
 #include "OpenPeerCoreManager.h"
 #include "globals.h"
+#include "openpeer/core/IHelper.h"
+#include "openpeer/core/IPushMessaging.h"
 #include <android/log.h>;
 
 IStackMessageQueuePtr OpenPeerCoreManager::queuePtr = IStackMessageQueuePtr();
@@ -522,5 +524,256 @@ jobject OpenPeerCoreManager::pushStateDetailMapToJava(IPushMessaging::PushStateD
 	return returnMapObject;
 }
 
-IPushMessaging::PushMessageList OpenPeerCoreManager::pushMessageListToCore(jobject javaPushMessageList);
-jobject OpenPeerCoreManager::pushMessageListToJava(IPushMessaging::PushMessageList);
+IPushMessaging::PushMessage OpenPeerCoreManager::pushMessageToCore(jobject javaPushMessage)
+{
+	IPushMessaging::PushMessage returnObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushMessageToCore called");
+
+	jni_env = getEnv();
+	if (jni_env)
+	{
+		jclass javaItemClass = findClass("com/openpeer/javaapi/OPPushMessage");
+
+		//mMessageID
+		jmethodID getMessageIDMethodID = jni_env->GetMethodID( javaItemClass, "getMessageID", "()Ljava/lang/String;" );
+		jstring messageID = (jstring)jni_env->CallObjectMethod(javaPushMessage, getMessageIDMethodID);
+		returnObject.mMessageID = String(jni_env->GetStringUTFChars(messageID, NULL));
+		jni_env->ReleaseStringUTFChars(messageID, returnObject.mMessageID);
+		jni_env->DeleteLocalRef(messageID);
+
+		//mMimeType
+		jmethodID getMimeTypeMethodID = jni_env->GetMethodID( javaItemClass, "getMimeType", "()Ljava/lang/String;" );
+		jstring mimeType = (jstring)jni_env->CallObjectMethod(javaPushMessage, getMimeTypeMethodID);
+		returnObject.mMimeType = String(jni_env->GetStringUTFChars(mimeType, NULL));
+		jni_env->ReleaseStringUTFChars(mimeType, returnObject.mMimeType);
+		jni_env->DeleteLocalRef(mimeType);
+
+		//mFullMessage
+		jmethodID getFullMessageMethodID = jni_env->GetMethodID( javaItemClass, "getFullMessage", "()Ljava/lang/String;" );
+		jstring fullMessage = (jstring)jni_env->CallObjectMethod(javaPushMessage, getFullMessageMethodID);
+		returnObject.mFullMessage = String(jni_env->GetStringUTFChars(fullMessage, NULL));
+		jni_env->ReleaseStringUTFChars(fullMessage, returnObject.mFullMessage);
+		jni_env->DeleteLocalRef(fullMessage);
+
+		//mRawFullMessage
+		jmethodID getRawFullMessageMethodID = jni_env->GetMethodID( javaItemClass, "getRawFullMessage", "()[B" );
+		jbyteArray rawFullMessage = (jbyteArray) jni_env->CallObjectMethod(javaPushMessage, getRawFullMessageMethodID);
+		jbyte* rawFullMessageBytes = jni_env->GetByteArrayElements(rawFullMessage,NULL);
+		jsize rawFullMessageSize = jni_env->GetArrayLength(rawFullMessage);
+		returnObject.mRawFullMessage = IHelper::convert((BYTE*)rawFullMessageBytes, rawFullMessageSize);
+		jni_env->ReleaseByteArrayElements(rawFullMessage,rawFullMessageBytes,0);
+
+		//mPushType
+		jmethodID getPushTypeMethodID = jni_env->GetMethodID( javaItemClass, "getPushType", "()Ljava/lang/String;" );
+		jstring pushType = (jstring)jni_env->CallObjectMethod(javaPushMessage, getPushTypeMethodID);
+		returnObject.mPushType = String(jni_env->GetStringUTFChars(pushType, NULL));
+		jni_env->ReleaseStringUTFChars(pushType, returnObject.mPushType);
+		jni_env->DeleteLocalRef(pushType);
+
+		//mPushInfos
+		jmethodID getPushInfosMethodID = jni_env->GetMethodID( javaItemClass, "getPushInfos", "()Ljava/util/List;" );
+		jobject pushInfos = jni_env->CallObjectMethod(javaPushMessage, getPushInfosMethodID);
+		returnObject.mPushInfos = pushInfoListToCore(pushInfos);
+
+		//mSent
+		jmethodID getSentMethodID = jni_env->GetMethodID( javaItemClass, "getSent", "()Landroid/text/format/Time;" );
+		jobject sent = jni_env->CallObjectMethod(javaPushMessage, getSentMethodID);
+		jclass timeClass = findClass("android/text/format/Time");
+		jmethodID timeMethodID   = jni_env->GetMethodID(timeClass, "toMillis", "(Z)J");
+		jlong longValue = jni_env->CallLongMethod(sent, timeMethodID, false);
+		returnObject.mSent = boost::posix_time::from_time_t(longValue/1000) + boost::posix_time::millisec(longValue % 1000);
+
+		//mExpires
+		jmethodID getExpiresMethodID = jni_env->GetMethodID( javaItemClass, "getExpires", "()Landroid/text/format/Time;" );
+		jobject expires = jni_env->CallObjectMethod(javaPushMessage, getExpiresMethodID);
+		jlong longExpiresValue = jni_env->CallLongMethod(expires, timeMethodID, false);
+		returnObject.mExpires = boost::posix_time::from_time_t(longExpiresValue/1000) + boost::posix_time::millisec(longExpiresValue % 1000);
+
+		//mFrom
+		jmethodID getFromMethodID = jni_env->GetMethodID( javaItemClass, "getFrom", "()Lcom/openpeer/javaapi/OPContact;" );
+		jobject from = jni_env->CallObjectMethod(javaPushMessage, getFromMethodID);
+		jclass contactCls = findClass("com/openpeer/javaapi/OPContact");
+		jfieldID contactFid = jni_env->GetFieldID(contactCls, "nativeClassPointer", "J");
+		jlong fromPointerValue = jni_env->GetLongField(from, contactFid);
+		IContactPtr* coreFromPtr = (IContactPtr*)fromPointerValue;
+		returnObject.mFrom = *coreFromPtr;
+
+		//mPushStateDetails
+		jmethodID getPushStateDetailsMethodID = jni_env->GetMethodID( javaItemClass, "getPushStateDetails", "()Ljava/util/Map;" );
+		jobject pushStateDetails = jni_env->CallObjectMethod(javaPushMessage, getPushStateDetailsMethodID);
+		returnObject.mPushStateDetails = pushStateDetailMapToCore(pushStateDetails);
+	}
+
+	return returnObject;
+}
+jobject OpenPeerCoreManager::pushMessageToJava(IPushMessaging::PushMessage corePushMessage)
+{
+	jobject returnObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushMessageToJava called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+
+		jclass javaItemClass = findClass("com/openpeer/javaapi/OPPushInfo");
+		jmethodID javaItemConstructorMethodID = jni_env->GetMethodID(javaItemClass, "<init>", "()V");
+		returnObject = jni_env->NewObject(javaItemClass, javaItemConstructorMethodID);
+
+		//mMessageID
+		jmethodID setMessageIDMethodID = jni_env->GetMethodID( javaItemClass, "setMessageID", "(Ljava/lang/String;)V" );
+		jstring messageID = jni_env->NewStringUTF(corePushMessage.mMessageID.c_str());
+		jni_env->CallVoidMethod(returnObject, setMessageIDMethodID, messageID);
+
+		//mMimeType
+		jmethodID setMimeTypeMethodID = jni_env->GetMethodID( javaItemClass, "setMimeType", "(Ljava/lang/String;)V" );
+		jstring mimeType = jni_env->NewStringUTF(corePushMessage.mMimeType.c_str());
+		jni_env->CallVoidMethod(returnObject, setMimeTypeMethodID, mimeType);
+
+		//mFullMessage
+		jmethodID setFullMessageMethodID = jni_env->GetMethodID( javaItemClass, "setFullMessage", "(Ljava/lang/String;)V" );
+		jstring fullMessage = jni_env->NewStringUTF(corePushMessage.mFullMessage.c_str());
+		jni_env->CallVoidMethod(returnObject, setFullMessageMethodID, fullMessage);
+
+		//mRawFullMessage
+		jmethodID setRawFullMessageMethodID = jni_env->GetMethodID( javaItemClass, "setRawFullMessage", "([B)V" );
+		jbyteArray rawFullMessage = jni_env->NewByteArray(corePushMessage.mRawFullMessage->SizeInBytes());
+		jni_env->SetByteArrayRegion(rawFullMessage, (int)0, (int)corePushMessage.mRawFullMessage->SizeInBytes(), (const signed char *)corePushMessage.mRawFullMessage->data());
+		jni_env->CallVoidMethod(returnObject, setRawFullMessageMethodID, rawFullMessage);
+
+		//mPushType
+		jmethodID setPushTypeMethodID = jni_env->GetMethodID( javaItemClass, "setPushType", "(Ljava/lang/String;)V" );
+		jstring pushType = jni_env->NewStringUTF(corePushMessage.mPushType.c_str());
+		jni_env->CallVoidMethod(returnObject, setFullMessageMethodID, pushType);
+
+		//mPushInfos
+		jmethodID setPushInfosMethodID = jni_env->GetMethodID( javaItemClass, "setPushInfos", "(Ljava/util/List;)V" );
+		jobject pushInfos = pushInfoListToJava(corePushMessage.mPushInfos);
+		jni_env->CallVoidMethod(returnObject, setPushInfosMethodID, pushInfos);
+
+		//mSent
+		jmethodID setSentMethodID = jni_env->GetMethodID( javaItemClass, "setSent", "(Landroid/text/format/Time;)V" );
+		//Convert and set time from C++ to Android; Fetch methods needed to accomplish this
+		Time time_t_epoch = boost::posix_time::time_from_string("1970-01-01 00:00:00.000");
+		jclass timeCls = findClass("android/text/format/Time");
+		jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+		jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
+		//calculate and set Ring Time
+		zsLib::Duration sentDuration = corePushMessage.mSent - time_t_epoch;
+		jobject sentObject = jni_env->NewObject(timeCls, timeMethodID);
+		jni_env->CallVoidMethod(sentObject, timeSetMillisMethodID, sentDuration.total_milliseconds());
+		jni_env->CallVoidMethod(returnObject, setSentMethodID, sentObject);
+
+		//mExpires
+		jmethodID setExpiresMethodID = jni_env->GetMethodID( javaItemClass, "setExpires", "(Landroid/text/format/Time;)V" );
+		//calculate and set Ring Time
+		zsLib::Duration expiresDuration = corePushMessage.mExpires - time_t_epoch;
+		jobject expiresObject = jni_env->NewObject(timeCls, timeMethodID);
+		jni_env->CallVoidMethod(expiresObject, timeSetMillisMethodID, expiresDuration.total_milliseconds());
+		jni_env->CallVoidMethod(returnObject, setExpiresMethodID, expiresObject);
+
+		//mFrom
+		IContactPtr coreFrom = corePushMessage.mFrom;
+		IContactPtr* ptrToFrom = new boost::shared_ptr<IContact>(coreFrom);
+		jclass contactCls = findClass("com/openpeer/javaapi/OPContact");
+		jmethodID contactMethod = jni_env->GetMethodID(contactCls, "<init>", "()V");
+		jobject fromObject = jni_env->NewObject(contactCls, contactMethod);
+
+		jfieldID fid = jni_env->GetFieldID(contactCls, "nativeClassPointer", "J");
+		jlong from = (jlong) ptrToFrom;
+		jni_env->SetLongField(fromObject, fid, from);
+
+		jmethodID setFromMethodID = jni_env->GetMethodID( javaItemClass, "setFrom", "(Lcom/openpeer/javaapi/OPContact;)V" );
+		jni_env->CallVoidMethod(returnObject, setFromMethodID, fromObject);
+
+		//mPushStateDetails
+		jmethodID setPushStateDetailsMethodID = jni_env->GetMethodID( javaItemClass, "setPushStateDetails", "(Ljava/util/Map;)V" );
+		jobject pushStateDetails = pushStateDetailMapToJava(corePushMessage.mPushStateDetails);
+		jni_env->CallVoidMethod(returnObject, setPushStateDetailsMethodID, pushStateDetails);
+
+		//nativeClassPointer
+		IPushMessaging::PushMessagePtr corePushMessagePtr = IPushMessaging::PushMessagePtr(&corePushMessage);
+		IPushMessaging::PushMessagePtr* ptrToPushMessage = new boost::shared_ptr<IPushMessaging::PushMessage>(corePushMessagePtr);
+
+		jfieldID nativePtrFid = jni_env->GetFieldID(javaItemClass, "nativeClassPointer", "J");
+		jlong pushMessage = (jlong) ptrToPushMessage;
+		jni_env->SetLongField(returnObject, nativePtrFid, pushMessage);
+
+	}
+
+	return returnObject;
+}
+IPushMessaging::PushMessageList OpenPeerCoreManager::pushMessageListToCore(jobject javaPushMessageList)
+{
+	IPushMessaging::PushMessageList returnListObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushMessageListToCore called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass arrayListClass = findClass("java/util/ArrayList");
+		// Fetch "java.util.List.get(int location)" MethodID
+		jmethodID listGetMethodID = jni_env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+		// Fetch "int java.util.List.size()" MethodID
+		jmethodID sizeMethodID = jni_env->GetMethodID( arrayListClass, "size", "()I" );
+
+		// Call "int java.util.List.size()" method and get count of items in the list.
+		int listItemsCount = (int)jni_env->CallIntMethod( javaPushMessageList, sizeMethodID );
+
+		for( int i=0; i<listItemsCount; ++i )
+		{
+			// Call "java.util.List.get" method and get Contact object by index.
+			jobject pushMessageObject = jni_env->CallObjectMethod( javaPushMessageList, listGetMethodID, i );
+			//todo check if needed
+			IPushMessaging::PushMessage corePushMessage = pushMessageToCore(pushMessageObject);
+
+			//add core contacts to list for removal
+			jclass cls = findClass("com/openpeer/javaapi/OPPushMessage");
+			jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+			jlong pointerValue = jni_env->GetLongField(pushMessageObject, fid);
+
+			IPushMessaging::PushMessagePtr* corePushMessagePtr = (IPushMessaging::PushMessagePtr*)pointerValue;
+			returnListObject.push_front(*corePushMessagePtr);
+		}
+	}
+	return returnListObject;
+}
+jobject OpenPeerCoreManager::pushMessageListToJava(IPushMessaging::PushMessageList corePushMessageList)
+{
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager pushMessageListToJava called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//fill java list
+		for(IPushMessaging::PushMessageList::iterator coreListIter = corePushMessageList.begin();
+				coreListIter != corePushMessageList.end(); coreListIter++)
+		{
+			jobject javaItemObject = pushMessageToJava(*coreListIter->get());
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , javaItemObject);
+			jni_env->DeleteLocalRef(javaItemObject);
+		}
+	}
+	return returnListObject;
+}

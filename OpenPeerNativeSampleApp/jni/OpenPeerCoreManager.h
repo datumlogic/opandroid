@@ -41,6 +41,8 @@ public:
 	static IPushMessaging::PushStateDetailMap pushStateDetailMapToCore(jobject javaPushStateDetailMap);
 	static jobject pushStateDetailMapToJava(IPushMessaging::PushStateDetailMap);
 
+	static IPushMessaging::PushMessage pushMessageToCore(jobject javaPushMessage);
+	static jobject pushMessageToJava(IPushMessaging::PushMessage);
 	static IPushMessaging::PushMessageList pushMessageListToCore(jobject javaPushMessageList);
 	static jobject pushMessageListToJava(IPushMessaging::PushMessageList);
 

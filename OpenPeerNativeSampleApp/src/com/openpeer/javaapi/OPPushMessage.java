@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import android.text.format.Time;
+import android.util.Log;
 
 public class OPPushMessage {
+	private long nativeClassPointer;
+	
     private String mMessageID;                  // system will fill in this value
 
     private String mMimeType;
@@ -101,4 +104,17 @@ public class OPPushMessage {
 	public void setPushStateDetails(Map<PushStates, List<OPPushStateContactDetail>> mPushStateDetails) {
 		this.mPushStateDetails = mPushStateDetails;
 	}
+	
+    private native void releaseCoreObjects(); 
+    
+    protected void finalize() throws Throwable {
+    	
+    	if (nativeClassPointer != 0)
+    	{
+    		Log.d("output", "Cleaning stack core objects");
+    		releaseCoreObjects();
+    	}
+    		
+    	super.finalize();
+    }
 }
