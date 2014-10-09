@@ -83,6 +83,7 @@ import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.OPModelCursorHelper;
 import com.openpeer.sdk.model.OPConversation;
+import com.openpeer.sdk.model.OPConversationEvent;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.NoDuplicateArrayList;
@@ -373,6 +374,7 @@ public class ChatFragment extends BaseFragment implements
         private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
         private final static int VIEWTYPE_STATUS_VIEW = 2;
         private final static int VIEWTYPE_CALL_VIEW = 3;
+        private final static int VIEWTYPE_CONVERSATION_EVENT_VIEW = 4;
 
         int myLastReadMessagePosition = -1;
         int myLastDeliveredMessagePosition = -1;
@@ -446,6 +448,12 @@ public class ChatFragment extends BaseFragment implements
                 .equals(type)) {
                 return VIEWTYPE_CALL_VIEW;
             }
+            if (OPConversationEvent.EventTypes.ContactsAdded.name()
+                    .equals(type)
+                    || OPConversationEvent.EventTypes.ContactsRemoved.name()
+                            .equals(type)) {
+                return VIEWTYPE_CONVERSATION_EVENT_VIEW;
+            }
 
             long sender_id = cursor.getLong(cursor
                                                 .getColumnIndex(MessageEntry.COLUMN_SENDER_ID));
@@ -459,7 +467,7 @@ public class ChatFragment extends BaseFragment implements
 
         @Override
         public int getViewTypeCount() {
-            return 4;
+            return 5;
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -497,6 +505,9 @@ public class ChatFragment extends BaseFragment implements
                             }
                         } else if (convertView instanceof PeerMessageView) {
                             ((PeerMessageView) convertView).update(message);
+                        } else if (convertView instanceof ConversationEventView) {
+                            ((ConversationEventView) convertView)
+                                    .update(message);
                         }
                     }
                 }
@@ -541,6 +552,11 @@ public class ChatFragment extends BaseFragment implements
                 break;
             case VIEWTYPE_CALL_VIEW:
                 view = new CallItemView(context);
+                break;
+            case VIEWTYPE_CONVERSATION_EVENT_VIEW:
+                view = (ConversationEventView) LayoutInflater.from(context)
+                        .inflate(R.layout.item_conversation_event, null);
+                
                 break;
             }
 
@@ -642,9 +658,9 @@ public class ChatFragment extends BaseFragment implements
             userIds);
         if (users != null) {
             mSession.addParticipant(users);
-            updateUsersView(mSession.getParticipants());
-            mWindowId = mSession.getCurrentWindowId();
-            getLoaderManager().restartLoader(URL_LOADER, null, this);
+            // updateUsersView(mSession.getParticipants());
+            // mWindowId = mSession.getCurrentWindowId();
+            // getLoaderManager().restartLoader(URL_LOADER, null, this);
         }
     }
 
