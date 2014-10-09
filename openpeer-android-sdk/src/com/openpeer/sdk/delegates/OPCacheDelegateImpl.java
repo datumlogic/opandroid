@@ -33,13 +33,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDoneException;
-import android.database.sqlite.SQLiteStatement;
 import android.text.format.Time;
-import android.util.Log;
 
 import com.openpeer.javaapi.OPCacheDelegate;
-import com.openpeer.sdk.BuildConfig;
 
 /**
  * @ExcludeFromJavadoc We use SQLiteDatabase to store the cache. Since SQLiteDatabase is thread safe, there's no need to synchronize the
@@ -150,20 +146,14 @@ public class OPCacheDelegateImpl extends OPCacheDelegate {
     private void clearExpiredEntriesOnStart() {
         String where = COLUMN_EXPIRES + "<" + System.currentTimeMillis();
         int count = mDBHelper.getWritableDB().delete(TABLE_CACHE, where, null);
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, String.format(
-                    "clearExpiredEntriesOnStart deleted %d entries", count));
-        }
+
     }
 
     private void clearExpiredEntries() {
         String where = COLUMN_EXPIRES + "<" + System.currentTimeMillis()
                 + " and " + COLUMN_EXPIRES + "!=0";
         int count = mDBHelper.getWritableDB().delete(TABLE_CACHE, where, null);
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, String.format("clearExpiredEntries deleted %d entries",
-                    count));
-        }
+
     }
 
 }
