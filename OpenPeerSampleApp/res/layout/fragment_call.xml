@@ -8,20 +8,6 @@
         android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <FrameLayout
-            android:id="@+id/remoteVideoView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"/>
-
-        <FrameLayout
-            android:id="@+id/localVideoView"
-            android:layout_width="@dimen/width_local_video"
-            android:layout_height="@dimen/height_local_video"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="-60dp"
-            />
     </RelativeLayout>
 
     <RelativeLayout
