@@ -98,6 +98,12 @@ public class OPConversation extends Observable {
      * @param users
      */
     public OPConversation(List<OPUser> users) {
+        this(users, "");
+
+    }
+
+    public OPConversation(List<OPUser> users, String contextId) {
+        mContextId = contextId;
         mType = OPSdkConfig.getInstance().getGroupChatMode();
 
         // TODO: decide if we need to keep selfcontacts in OPDataManager since
@@ -113,12 +119,6 @@ public class OPConversation extends Observable {
                 mCbcId, mId,
                 mContextId);
         onNewEvent(mLastEvent);
-
-    }
-
-    public OPConversation(List<OPUser> users, String contextId) {
-        this(users);
-        mContextId = contextId;
     }
 
     /**
@@ -372,7 +372,7 @@ public class OPConversation extends Observable {
 
     public void addParticipant(List<OPUser> users) {
         addContactToThread(users);
-        onContactsChanged(mConvThread);
+        // onContactsChanged(mConvThread);
     }
 
     public void onMessageReceived(OPConversationThread thread, OPMessage message) {
@@ -474,7 +474,6 @@ public class OPConversation extends Observable {
     public void onContactsChanged(OPConversationThread conversationThread) {
 
         boolean contactsChanged = false;
-        List<OPUser> users = new ArrayList<OPUser>();
         List<OPContact> contacts = conversationThread.getContacts();
         List<OPUser> newContacts = new ArrayList<OPUser>();
         List<OPUser> deletedContacts = new ArrayList<OPUser>();
@@ -498,19 +497,37 @@ public class OPConversation extends Observable {
         }
         if (!newContacts.isEmpty()) {
             mParticipants.addAll(newContacts);
+            contactsChanged = true;
         }
 
         if (!deletedContacts.isEmpty()) {
             mParticipants.removeAll(deletedContacts);
+            contactsChanged = true;
+        }
+        if (!contactsChanged) {
+            Log.e(TAG, "onContactsChanged called when no contacts change");
+            return;
         }
         mCbcId = OPModelUtils.getWindowId(mParticipants);
-        OPConversationEvent event = new OPConversationEvent(
-                OPConversationEvent.EventTypes.ContactsChanged,
-                getContactsChangeJsonBlob(newContacts, deletedContacts),
-                mCbcId,
-                mId,
-                mContextId);
-        onNewEvent(event);
+        if (!newContacts.isEmpty()) {
+
+            OPConversationEvent event = new OPConversationEvent(
+                    OPConversationEvent.EventTypes.ContactsAdded,
+                    getContactsIdString(newContacts),
+                    mCbcId,
+                    mId,
+                    mContextId);
+            onNewEvent(event);
+        }
+        if (!deletedContacts.isEmpty()) {
+            OPConversationEvent event = new OPConversationEvent(
+                    OPConversationEvent.EventTypes.ContactsRemoved,
+                    getContactsIdString(deletedContacts),
+                    mCbcId,
+                    mId,
+                    mContextId);
+            onNewEvent(event);
+        }
         OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
                 mParticipants);
         synchronized (mSessionListeners) {
@@ -596,28 +613,17 @@ public class OPConversation extends Observable {
         }
     }
 
-    String getContactsChangeJsonBlob(List<OPUser> addedUsers,
-            List<OPUser> deletedUsers) {
-        String jsonFormat = "{\"added\":[%s],\"removed\":[%s]}";
+    String getContactsIdString(List<OPUser> users) {
         StringBuilder sb = new StringBuilder();
-        if (!addedUsers.isEmpty()) {
-            for (OPUser user : addedUsers) {
+        if (!users.isEmpty()) {
+            for (OPUser user : users) {
                 sb.append(user.getUserId() + ",");
             }
             sb.deleteCharAt(sb.length() - 1);
         }
-        String addedIds = sb.toString();
+        String ids = sb.toString();
 
-        sb = new StringBuilder();
-        if (!deletedUsers.isEmpty()) {
-            for (OPUser user : deletedUsers) {
-                sb.append(user.getUserId() + ",");
-            }
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        String deletedIds = sb.toString();
-        return String.format(jsonFormat, addedIds, deletedIds);
+        return ids;
     }
 
 }

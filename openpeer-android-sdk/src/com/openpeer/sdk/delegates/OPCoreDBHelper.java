@@ -35,8 +35,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.openpeer.sdk.BuildConfig;
-
 /**
  * @ExcludeFromJavadoc Helper class for cache and setting database.
  */
@@ -82,9 +80,6 @@ public class OPCoreDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         for (String sql : CREATE_STATEMENTS) {
-            if (BuildConfig.DEBUG) {
-                Log.d("test", "create statement" + sql);
-            }
             db.execSQL(sql);
         }
         OPSettingsDelegateImpl.loadDefaultSettings(db);
