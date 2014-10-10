@@ -26,84 +26,31 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the FreeBSD Project.
  */
-package com.openpeer.sdk.model;
+package com.openpeer.sample.util;
 
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 /**
  *
  */
-public class OPConversationEvent {
-    /**
-     * @param event
-     * @param description
-     * @param participants
-     * @param conversation_id
-     * @param contextId
-     */
-    public OPConversationEvent(EventTypes event, String description,
-            long participants, long conversation_id, String contextId) {
-        super();
-        this.event = event;
-        this.description = description;
-        this.participants = participants;
-        this.conversationId = conversation_id;
-        this.contextId = contextId;
-    }
+public class ViewUtils {
+    public static void measureView(View child) {
+        ViewGroup.LayoutParams p = child.getLayoutParams();
+        if (p == null) {
+            p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
 
-    EventTypes event;
-    String description;
-    long participants;
-    long conversationId;
-    String contextId;
-    private long mId;
-
-    public void setId(long id) {
-        this.mId = id;
-    }
-
-    public enum EventTypes {
-        NewConversation,
-        ContactsAdded,
-        ContactsRemoved
-    }
-
-    public EventTypes getEvent() {
-        return event;
-    }
-
-    public void setEvent(EventTypes event) {
-        this.event = event;
-    }
-
-    public String getContent() {
-        return description;
-    }
-
-    public void setContent(String content) {
-        this.description = content;
-    }
-
-    public long getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(long participants) {
-        this.participants = participants;
-    }
-
-    public long getConversation_id() {
-        return conversationId;
-    }
-
-    public void setConversationId(long id) {
-        this.conversationId = id;
-    }
-
-    /**
-     * @return
-     */
-    public long getId() {
-        // TODO Auto-generated method stub
-        return mId;
+        int childWidthSpec = ViewGroup.getChildMeasureSpec(0, 0 + 0, p.width);
+        int lpHeight = p.height;
+        int childHeightSpec;
+        if (lpHeight > 0) {
+            childHeightSpec = MeasureSpec.makeMeasureSpec(lpHeight, MeasureSpec.EXACTLY);
+        } else {
+            childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        }
+        child.measure(childWidthSpec, childHeightSpec);
     }
 
 }

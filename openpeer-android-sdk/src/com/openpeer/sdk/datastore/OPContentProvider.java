@@ -249,7 +249,10 @@ public class OPContentProvider extends ContentProvider {
                     " union " + DatabaseContracts.QUERY_CALL)
                     .append(" where ")
                     .append(DatabaseContracts.COLUMN_CBC_ID + "=" + windowId);
-
+//            stringBuilder
+//                    .append(" union "
+//                            + DatabaseContracts.QUERY_CONVERSATION_EVENT)
+//                    .append(" and ").append("ce.participants=" + windowId);
             stringBuilder.append(" order by time");
 
             Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(
@@ -269,7 +272,10 @@ public class OPContentProvider extends ContentProvider {
             stringBuilder.append(" union " + DatabaseContracts.QUERY_CALL)
                     .append(" where ")
                     .append(MessageEntry.COLUMN_CONTEXT_ID + "=?");
-
+            stringBuilder
+                    .append(" union "
+                            + DatabaseContracts.QUERY_CONVERSATION_EVENT)
+                    .append(" and ").append("c.context_id=?");
             stringBuilder.append(" order by time");
 
             String contextId = uri.getLastPathSegment();
@@ -281,7 +287,7 @@ public class OPContentProvider extends ContentProvider {
             // args[i + 1] = selectionArgs[i];
             // }
             // } else {
-            args = new String[] { contextId, contextId };
+            args = new String[] { contextId, contextId,contextId };
             // }
 
             Cursor contextCursor = mOpenHelper.getReadableDatabase().rawQuery(

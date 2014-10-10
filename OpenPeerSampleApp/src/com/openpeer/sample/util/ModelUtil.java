@@ -26,84 +26,34 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the FreeBSD Project.
  */
-package com.openpeer.sdk.model;
+package com.openpeer.sample.util;
+
+import java.util.List;
+
+import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.OPUser;
 
 /**
  *
  */
-public class OPConversationEvent {
-    /**
-     * @param event
-     * @param description
-     * @param participants
-     * @param conversation_id
-     * @param contextId
-     */
-    public OPConversationEvent(EventTypes event, String description,
-            long participants, long conversation_id, String contextId) {
-        super();
-        this.event = event;
-        this.description = description;
-        this.participants = participants;
-        this.conversationId = conversation_id;
-        this.contextId = contextId;
+public class ModelUtil {
+    public static String getUserNamesFromIDsString(String rawContent) {
+        String[] ids = rawContent.split(",");
+        if (ids.length > 0) {
+            long[] lIds = new long[ids.length];
+            for (int i = 0; i < ids.length; i++) {
+                lIds[i] = Long.parseLong(ids[i]);
+            }
+            List<OPUser> users = OPDataManager.getDatastoreDelegate()
+                    .getUsers(lIds);
+            StringBuilder sb = new StringBuilder();
+            for (OPUser user : users) {
+                sb.append(user.getName() + ",");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        }
+        return null;
+
     }
-
-    EventTypes event;
-    String description;
-    long participants;
-    long conversationId;
-    String contextId;
-    private long mId;
-
-    public void setId(long id) {
-        this.mId = id;
-    }
-
-    public enum EventTypes {
-        NewConversation,
-        ContactsAdded,
-        ContactsRemoved
-    }
-
-    public EventTypes getEvent() {
-        return event;
-    }
-
-    public void setEvent(EventTypes event) {
-        this.event = event;
-    }
-
-    public String getContent() {
-        return description;
-    }
-
-    public void setContent(String content) {
-        this.description = content;
-    }
-
-    public long getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(long participants) {
-        this.participants = participants;
-    }
-
-    public long getConversation_id() {
-        return conversationId;
-    }
-
-    public void setConversationId(long id) {
-        this.conversationId = id;
-    }
-
-    /**
-     * @return
-     */
-    public long getId() {
-        // TODO Auto-generated method stub
-        return mId;
-    }
-
 }
