@@ -523,6 +523,8 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPCallSystemMessage.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPToken.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPElement.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushMessagingRegisterQuery.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushMessagingQuery.cpp \
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a
