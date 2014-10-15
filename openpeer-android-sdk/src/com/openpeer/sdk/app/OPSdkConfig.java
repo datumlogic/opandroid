@@ -44,6 +44,7 @@ import android.text.format.Time;
 import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.sdk.model.GroupChatMode;
+import com.openpeer.sdk.utils.AssetUtils;
 
 /**
  * 
@@ -76,15 +77,14 @@ public class OPSdkConfig {
     private static final String KEY_IDENTITY_BASE_URI = "identityFederateBaseURI";
     private static final String KEY_NAMESPACE_GRANT_SERVICE_URL = "namespaceGrantServiceURL";
     private static final String KEY_LOCKBOX_SERVICE_DOMAIN = "lockBoxServiceDomain";
-    private static final String KEY_APP_ID = "appId";
-    private static final String KEY_APP_APPKEY = "appKey";
+    private static final String KEY_APP_ID = "id";
+    private static final String KEY_APP_APPKEY = "sharedSecret";
     private static final String KEY_CHAT_MODE = "application/chatMode";
 
     private static final long DURATION_ONE_MONTH_IN_MILLIS = 30 * 24 * 60 * 60
             * 1000;
 
     public static boolean debug = true;
-    private Context mContext;
     private Properties mProperties = new Properties();
     private static OPSdkConfig instance;
     private static final String instanceId = java.util.UUID.randomUUID()
@@ -142,17 +142,10 @@ public class OPSdkConfig {
         return id;
     }
 
-    public String getAPPSettingsString() {
+    public static String getAPPSettingsString(Context context) {
         try {
             JSONObject parent = new JSONObject();
             JSONObject jsonObject = new JSONObject();
-
-            jsonObject.put(KEY_APP_NAME,
-                    mProperties.getProperty(KEY_APP_NAME));
-            jsonObject.put(KEY_APP_IMAGE_URL,
-                    mProperties.getProperty(KEY_APP_IMAGE_URL));
-            jsonObject.put(KEY_APP_APPLICATION_URL,
-                    mProperties.getProperty(KEY_APP_APPLICATION_URL));
 
             Time expires = new Time();
             expires.set(System.currentTimeMillis()
@@ -160,14 +153,14 @@ public class OPSdkConfig {
             jsonObject
                     .put("openpeer/calculated/authorizated-application-id",
                             OPStack.createAuthorizedApplicationID(
-                                    mProperties.getProperty(KEY_APP_ID),
-                                    mProperties.getProperty(KEY_APP_APPKEY),
+                                    OPHelper.getSettingsDelegate().getString(
+                                            KEY_APP_ID),
+                                    OPHelper.getSettingsDelegate().getString(
+                                            KEY_APP_APPKEY),
                                     expires));
 
-            jsonObject.put("openpeer/calculated/user-agent",
-                    mProperties.get(KEY_USER_AGENT));
             jsonObject.put("openpeer/calculated/device-id", Secure.getString(
-                    mContext.getContentResolver(), Secure.ANDROID_ID));
+                    context.getContentResolver(), Secure.ANDROID_ID));
             jsonObject.put("openpeer/calculated/os",
                     android.os.Build.VERSION.RELEASE);
             jsonObject
@@ -179,42 +172,26 @@ public class OPSdkConfig {
             e.printStackTrace();
             return "";
         }
-
     }
 
     public void init(Context context) {
-        // try {
-        /**
-         * getAssets() Return an AssetManager instance for your application's package. AssetManager Provides access to an application's raw
-         * asset files;
-         */
-        instance.mContext = context;
-        AssetManager assetManager = context.getAssets();
-        /**
-         * Open an asset using ACCESS_STREAMING mode. This
-         */
-        InputStream inputStream;
         try {
-            inputStream = assetManager.open(PATH_CONFIG_FILE);
+            byte[] bytes = AssetUtils.readAsset(context,
+                    "app_settings_bojan.json");
+            String str = new String(bytes, "UTF-8");
+            OPSettings.apply(str);
 
+            OPSettings.apply(getAPPSettingsString(context));
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        /**
-         * Loads properties from the specified InputStream,
-         */
-        try {
-            mProperties.load(inputStream);
-            OPSettings.apply(getAPPSettingsString());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
     }
 
     public GroupChatMode getGroupChatMode() {
-        return GroupChatMode.valueOf(mProperties.getProperty(KEY_CHAT_MODE));
+        return GroupChatMode.valueOf(OPHelper.getSettingsDelegate().getString(
+                KEY_CHAT_MODE));
     }
 
 }
