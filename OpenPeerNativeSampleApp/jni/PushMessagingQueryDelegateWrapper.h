@@ -14,7 +14,7 @@ public:
 	PushMessagingQueryDelegateWrapper(jobject delegate);
 public:
 
-	//IPushMessagingRegisterQueryDelegate implementation
+	//IPushMessagingQueryDelegate implementation
     virtual void onPushMessagingQueryUploaded(IPushMessagingQueryPtr query);
     virtual void onPushMessagingQueryPushStatesChanged(IPushMessagingQueryPtr query);
 

@@ -498,6 +498,7 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/IdentityLookupDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/PushMessagingRegisterQueryDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/PushMessagingQueryDelegateWrapper.cpp \
+		OpenPeerNativeSampleApp/jni/PushMessagingDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/ConversationThreadDelegateWrapper.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPBackgrounding.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPBackgroundingQuery.cpp \
