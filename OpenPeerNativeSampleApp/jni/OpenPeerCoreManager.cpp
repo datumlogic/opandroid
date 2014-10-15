@@ -777,3 +777,150 @@ jobject OpenPeerCoreManager::pushMessageListToJava(IPushMessaging::PushMessageLi
 	}
 	return returnListObject;
 }
+
+IPushMessaging::ValueNameList OpenPeerCoreManager::valueNameListToCore(jobject javaValueNameList)
+{
+	IPushMessaging::ValueNameList returnListObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager valueNameListToCore called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass arrayListClass = findClass("java/util/ArrayList");
+		// Fetch "java.util.List.get(int location)" MethodID
+		jmethodID listGetMethodID = jni_env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+		// Fetch "int java.util.List.size()" MethodID
+		jmethodID sizeMethodID = jni_env->GetMethodID( arrayListClass, "size", "()I" );
+
+		// Call "int java.util.List.size()" method and get count of items in the list.
+		int listItemsCount = (int)jni_env->CallIntMethod( javaValueNameList, sizeMethodID );
+
+		for( int i=0; i<listItemsCount; ++i )
+		{
+			// Call "java.util.List.get" method and get ValueName object by index.
+			jstring valueName = (jstring) jni_env->CallObjectMethod( javaValueNameList, listGetMethodID, i );
+			IPushMessaging::ValueName coreValueName = String(jni_env->GetStringUTFChars(valueName, NULL));
+			returnListObject.push_front(coreValueName);
+			jni_env->ReleaseStringUTFChars(valueName, coreValueName);
+			jni_env->DeleteLocalRef(valueName);
+
+		}
+	}
+	return returnListObject;
+}
+IPushMessaging::NameValueMap OpenPeerCoreManager::nameValueMapToCore(jobject javaNameValueMap)
+{
+	IPushMessaging::NameValueMap returnMap;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager nameValueMapToCore called");
+
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		jclass hashMapClass = findClass("java/util/HashMap");
+		// size method fetch
+		jmethodID sizeMethodID = jni_env->GetMethodID(hashMapClass, "size", "()I");
+
+
+		// Get the Set Class
+		jclass setClass = findClass("java/util/Set");
+		// Get the "Iterator" class
+		jclass iteratorClass = findClass("java/util/Iterator");
+		// Get the Map.Entry class
+		jclass mapEntryClass = findClass("java/util/Map/Entry");
+
+		// Get link to Method "entrySet"
+		jmethodID entrySetMethod = jni_env->GetMethodID(hashMapClass, "entrySet", "()Ljava/util/Set;");
+		// Get link to Method "iterator"
+		jmethodID iteratorMethod = jni_env->GetMethodID(setClass, "iterator", "()Ljava/util/Iterator;");
+		// Get link to Method "hasNext"
+		jmethodID hasNextMethod = jni_env->GetMethodID(iteratorClass, "hasNext", "()Z");
+		// Get link to Method "next"
+		jmethodID nextMethod = jni_env->GetMethodID(iteratorClass, "next", "()Ljava/util/Map/Entry;");
+		// Get link to GetKey/GetValue methods
+		jmethodID getKeyMethod = jni_env->GetMethodID(mapEntryClass, "getKey", "()Ljava/lang/Object");
+		jmethodID getValueMethod = jni_env->GetMethodID(mapEntryClass, "getValue", "()Ljava/lang/Object");
+
+		int mapItemsCount = (int)jni_env->CallIntMethod( javaNameValueMap, sizeMethodID );
+
+		jboolean bHasNext = false;
+		if (mapItemsCount > 0)
+		{
+			bHasNext = true;
+		}
+		// Invoke the "entrySet" method on the HashMap object
+		jobject entrySetObject = jni_env->CallObjectMethod(javaNameValueMap, entrySetMethod);
+		// Invoke the "iterator" method on the jobject_of_entryset variable of type Set
+		jobject iteratorObject = jni_env->CallObjectMethod(entrySetObject, iteratorMethod);
+		while(bHasNext)
+		{
+			//Gewt key and value from map entry iterator
+			jstring name = (jstring) jni_env->CallObjectMethod(iteratorObject, getKeyMethod);
+			jstring value = (jstring) jni_env->CallObjectMethod(iteratorObject, getValueMethod);
+
+			//Pack key and value to C++ class
+			std::pair<IPushMessaging::Name, IPushMessaging::Value> coreEntry;
+			IPushMessaging::Name coreName = String(jni_env->GetStringUTFChars(name, NULL));
+			IPushMessaging::Value coreValue = String(jni_env->GetStringUTFChars(value, NULL));
+			coreEntry = std::make_pair(coreName, coreValue);
+			returnMap.insert(coreEntry);
+			jni_env->ReleaseStringUTFChars(name, coreName);
+			jni_env->ReleaseStringUTFChars(value, coreValue);
+			jni_env->DeleteLocalRef(name);
+			jni_env->DeleteLocalRef(value);
+
+			// Invoke - Get the value hasNextMethod
+			bHasNext = jni_env->CallBooleanMethod(iteratorObject, hasNextMethod);
+			//Invoke next() method to obtain entry
+			iteratorObject = jni_env->CallObjectMethod(iteratorObject, nextMethod);
+
+		}
+
+
+	}
+	return returnMap;
+}
+jobject OpenPeerCoreManager::nameValueMapToJava(IPushMessaging::NameValueMapPtr coreMap)
+{
+	jobject returnMapObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager nameValueMapToJava called");
+
+	jni_env = getEnv();
+	if(jni_env)
+	{
+		jclass hashMapClass = findClass("java/util/HashMap");
+		jmethodID hashMapConstructorMethodID = jni_env->GetMethodID(hashMapClass, "<init>", "()V");
+		jobject returnMapObject = jni_env->NewObject(hashMapClass, hashMapConstructorMethodID);
+
+		jmethodID putMethod = jni_env->GetMethodID(
+				hashMapClass,
+				"put",
+				"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+		);
+
+		for( IPushMessaging::NameValueMap::iterator it = coreMap->begin(); it != coreMap->end(); ++it )
+		{
+			//key == Name
+			jstring key = jni_env->NewStringUTF((*it).first.c_str() );
+
+			//value == Value
+			jstring value = jni_env->NewStringUTF( (*it).second.c_str() );
+
+			jni_env->CallVoidMethod(
+					returnMapObject,
+					putMethod,
+					key,
+					value
+			);
+		}
+	}
+
+	return returnMapObject;
+}

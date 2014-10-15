@@ -46,6 +46,10 @@ public:
 	static IPushMessaging::PushMessageList pushMessageListToCore(jobject javaPushMessageList);
 	static jobject pushMessageListToJava(IPushMessaging::PushMessageList);
 
+	static IPushMessaging::ValueNameList valueNameListToCore(jobject);
+	static IPushMessaging::NameValueMap nameValueMapToCore(jobject);
+	static jobject nameValueMapToJava(IPushMessaging::NameValueMapPtr);
+
 
 
 public:

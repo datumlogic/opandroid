@@ -10,6 +10,8 @@ public class OPPushMessaging {
 	private long nativeClassPointer;
 
 	private long nativeDelegatePointer;
+	
+	private long nativeDatabaseAbstractionDelegatePointer;
 
 	//-----------------------------------------------------------------------
 	// PURPOSE: create a connection to the push messaging service
@@ -76,8 +78,7 @@ public class OPPushMessaging {
 	//          were filtererd out because they were not compatible push
 	//          messages.
 	public native List<OPPushMessage> getMessagesUpdates(
-			String inLastVersionDownloaded,  // pass in NULL if no previous version known
-			String outUpdatedToVersion          // updated to this version (if same as passed in then no change available)
+			String inLastVersionDownloaded  // pass in NULL if no previous version known
 			);
 
 	//-----------------------------------------------------------------------
@@ -105,7 +106,7 @@ public class OPPushMessaging {
 
 	protected void finalize() throws Throwable {
 
-		if (nativeClassPointer != 0 || nativeDelegatePointer != 0)
+		if (nativeClassPointer != 0 || nativeDelegatePointer != 0 || nativeDatabaseAbstractionDelegatePointer != 0)
 		{
 			Log.d("output", "Cleaning push messaging core objects");
 			releaseCoreObjects();

@@ -12,6 +12,10 @@
 #include "MediaEngineDelegateWrapper.h"
 #include "BackgroundingDelegateWrapper.h"
 #include "BackgroundingCompletionDelegateWrapper.h"
+#include "PushMessagingDelegateWrapper.h"
+#include "PushMessagingQueryDelegateWrapper.h"
+#include "PushMessagingRegisterQueryDelegateWrapper.h"
+#include "PushMessagingDatabaseAbstractionDelegateWrapper.h"
 
 #include "openpeer/core/IPushMessaging.h"
 
