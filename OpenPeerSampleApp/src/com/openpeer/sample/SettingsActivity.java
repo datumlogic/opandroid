@@ -29,6 +29,10 @@
  *******************************************************************************/
 package com.openpeer.sample;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import settings.SettingsDownloader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -47,14 +51,17 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
+import com.openpeer.javaapi.OPSettings;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
 
@@ -284,9 +291,31 @@ public class SettingsActivity extends BaseActivity {
     }
     
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(
+                requestCode, resultCode, intent);
         if (scanResult != null) {
-            Log.d(TAG,"scan result "+scanResult);
+            Log.d(TAG, "scan result " + scanResult);
+            String url = scanResult.getContents();
+            if (!TextUtils.isEmpty(url)) {
+                Callback<JsonElement> callback = new Callback<JsonElement>() {
+
+                    @Override
+                    public void failure(RetrofitError arg0) {
+                        Log.d(TAG,"failure "+arg0.toString());
+                    }
+
+                    @Override
+                    public void success(JsonElement arg0, Response arg1) {
+                        String jsonBlob = arg0.toString();
+                        if (!TextUtils.isEmpty(jsonBlob)) {
+                            OPSettings.apply(jsonBlob);
+                        }
+                    }
+
+                };
+
+                SettingsDownloader.download(url, callback);
+            }
         }
       
       }
