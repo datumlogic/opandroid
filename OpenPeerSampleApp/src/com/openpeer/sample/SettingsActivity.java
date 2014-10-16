@@ -33,7 +33,9 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import settings.SettingsDownloader;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -170,17 +172,14 @@ public class SettingsActivity extends BaseActivity {
             notificationSoundPref = (RingtonePreference) findPreference(KEY_NOTIFICATION_SOUND_SELECT);
             ringtonePref = (RingtonePreference) findPreference(KEY_RINGTONE);
             Preference signoutPref = findPreference(KEY_SIGNOUT);
-            signoutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (OPSessionManager.getInstance().hasCalls()) {
-                        Toast.makeText(getActivity(), R.string.msg_cannot_signout_with_call, Toast.LENGTH_LONG).show();
-                    } else {
-                        OPApplication.signout();
-                    }
-                    return true;
-                }
-            });
+            signoutPref
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            ((SettingsActivity) getActivity()).doSignout();
+                            return true;
+                        }
+                    });
 
             Preference scanPreference = findPreference("scan");
             scanPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
@@ -301,7 +300,13 @@ public class SettingsActivity extends BaseActivity {
 
                     @Override
                     public void failure(RetrofitError arg0) {
-                        Log.d(TAG,"failure "+arg0.toString());
+                        Log.d(TAG, "failure " + arg0.toString());
+                        if (hasWindowFocus()) {
+                            Toast.makeText(
+                                    SettingsActivity.this,
+                                    "failed to download settings. Try again later",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
 
                     @Override
@@ -309,6 +314,16 @@ public class SettingsActivity extends BaseActivity {
                         String jsonBlob = arg0.toString();
                         if (!TextUtils.isEmpty(jsonBlob)) {
                             OPSettings.apply(jsonBlob);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                            builder.setMessage("New settings have been applied! Please relogin")
+                            .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                   doSignout();
+                                }
+                            });
+                            builder.create().show();
                         }
                     }
 
@@ -318,6 +333,17 @@ public class SettingsActivity extends BaseActivity {
             }
         }
       
-      }
+    }
+
+    void doSignout() {
+        if (OPSessionManager.getInstance().hasCalls()) {
+            Toast.makeText(SettingsActivity.this,
+                    R.string.msg_cannot_signout_with_call, Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            OPApplication.signout();
+            finish();
+        }
+    }
 
 }
