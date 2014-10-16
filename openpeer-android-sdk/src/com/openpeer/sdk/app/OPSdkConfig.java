@@ -81,8 +81,8 @@ public class OPSdkConfig {
     private static final String KEY_APP_APPKEY = "sharedSecret";
     private static final String KEY_CHAT_MODE = "application/chatMode";
 
-    private static final long DURATION_ONE_MONTH_IN_MILLIS = 30 * 24 * 60 * 60
-            * 1000;
+    private static final long DURATION_ONE_YEAR_IN_MILLIS = 12* 30 * 24 * 60 * 60
+            * 1000l;
 
     public static boolean debug = true;
     private Properties mProperties = new Properties();
@@ -147,17 +147,10 @@ public class OPSdkConfig {
             JSONObject parent = new JSONObject();
             JSONObject jsonObject = new JSONObject();
 
-            Time expires = new Time();
-            expires.set(System.currentTimeMillis()
-                    + DURATION_ONE_MONTH_IN_MILLIS);
+
             jsonObject
                     .put("openpeer/calculated/authorizated-application-id",
-                            OPStack.createAuthorizedApplicationID(
-                                    OPHelper.getSettingsDelegate().getString(
-                                            KEY_APP_ID),
-                                    OPHelper.getSettingsDelegate().getString(
-                                            KEY_APP_APPKEY),
-                                    expires));
+                            generateAuthorizedAppId());
 
             jsonObject.put("openpeer/calculated/device-id", Secure.getString(
                     context.getContentResolver(), Secure.ANDROID_ID));
@@ -174,6 +167,18 @@ public class OPSdkConfig {
         }
     }
 
+    public static String generateAuthorizedAppId(){
+        Time expires = new Time();
+        expires.set(System.currentTimeMillis() + DURATION_ONE_YEAR_IN_MILLIS);
+
+        String id = OPStack.createAuthorizedApplicationID(
+                OPHelper.getSettingsDelegate().getString(
+                        KEY_APP_ID),
+                OPHelper.getSettingsDelegate().getString(
+                        KEY_APP_APPKEY),
+                expires);
+        return id;
+    }
     public void init(Context context) {
         try {
             byte[] bytes = AssetUtils.readAsset(context,

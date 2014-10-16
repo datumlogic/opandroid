@@ -182,6 +182,10 @@ public class OPHelper {
         OPSettings.setup(mSettingsDelegate);
         if (TextUtils.isEmpty(OPSdkConfig.getInstance().getAppId())) {
             OPSdkConfig.getInstance().init(context);
+        } else {
+            OPSettings.setString(
+                    "openpeer/calculated/authorizated-application-id",
+                    OPSdkConfig.generateAuthorizedAppId());
         }
 
         if (mCacheDelegate == null) {
