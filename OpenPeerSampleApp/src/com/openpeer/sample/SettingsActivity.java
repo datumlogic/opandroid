@@ -41,14 +41,18 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sample.util.SettingsHelper;
@@ -65,6 +69,7 @@ public class SettingsActivity extends BaseActivity {
     static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
     static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
     static final String KEY_SIGNOUT = "signout";
+    private static final String TAG = "SettingsActivity";
 
     public static void launch(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
@@ -170,6 +175,19 @@ public class SettingsActivity extends BaseActivity {
                 }
             });
 
+            Preference scanPreference = findPreference("scan");
+            scanPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+
+                @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            IntentIntegrator integrator = new IntentIntegrator(
+                                    getActivity());
+                            integrator
+                                    .initiateScan(IntentIntegrator.QR_CODE_TYPES);
+                            return true;
+                        }
+                
+            });
             setupAboutInfo();
             setupLoggerScreen();
         }
@@ -264,5 +282,13 @@ public class SettingsActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
+            Log.d(TAG,"scan result "+scanResult);
+        }
+      
+      }
 
 }
