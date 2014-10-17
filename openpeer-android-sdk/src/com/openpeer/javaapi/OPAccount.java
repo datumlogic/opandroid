@@ -91,9 +91,9 @@ public class OPAccount {
         return login(accountDelegate,
                 conversationThreadDelegate,
                 callDelegate,
-                OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+                OPSdkConfig.getInstance().getOuterFrameUrl(),
                 OPSdkConfig.getInstance().getGrantId(),
-                OPSdkConfig.getInstance().getLockboxServiceDomain(),
+                OPSdkConfig.getInstance().getIdentityProviderDomain(),
                 false);
     }
 
@@ -116,7 +116,7 @@ public class OPAccount {
         return relogin(delegate,
                 conversationThreadDelegate,
                 callDelegate,
-                OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
+                OPSdkConfig.getInstance().getOuterFrameUrl(),
                 reloginInformation);
 
     }
@@ -133,7 +133,8 @@ public class OPAccount {
     private static native OPAccount login(OPAccountDelegate delegate,
             OPConversationThreadDelegate conversationThreadDelegate,
             OPCallDelegate callDelegate,
-            String namespaceGrantOuterFrameURLUponReload, String grantID,
+            String namespaceGrantOuterFrameURLUponReload, 
+            String grantID,
             String lockboxServiceDomain,
             boolean forceCreateNewLockboxAccount);
 

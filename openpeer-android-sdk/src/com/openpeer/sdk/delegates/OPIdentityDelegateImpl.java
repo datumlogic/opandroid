@@ -46,6 +46,7 @@ import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.app.OPIdentityLoginWebview;
+import com.openpeer.sdk.app.OPSdkConfig;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
     OPIdentityLoginWebview mLoginView;
@@ -96,7 +97,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
             Log.d("login", "loading identity webview");
             mListener.onStartIdentityLogin();
             mLoginView
-                    .loadUrl("http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose&federated=false");
+                    .loadUrl(OPSdkConfig.getInstance().getOuterFrameUrl());
 
             break;
         case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
