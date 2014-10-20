@@ -80,6 +80,7 @@ public class OPSdkConfig {
     private static final String KEY_APP_ID = "id";
     private static final String KEY_APP_APPKEY = "sharedSecret";
     private static final String KEY_CHAT_MODE = "application/chatMode";
+    private static final String KEY_REDIRECT_UPON_LOGIN_URL = "redirectAfterLoginCompleteURL";
 
     private static final long DURATION_ONE_YEAR_IN_MILLIS = 12* 30 * 24 * 60 * 60
             * 1000l;
@@ -89,6 +90,7 @@ public class OPSdkConfig {
     private static OPSdkConfig instance;
     private static final String instanceId = java.util.UUID.randomUUID()
             .toString();
+
 
     public static String getInstanceid() {
         return instanceId;
@@ -111,6 +113,10 @@ public class OPSdkConfig {
 
     public String getOuterFrameUrl() {
         return OPHelper.getSettingsDelegate().getString(KEY_OUTER_FRAME_URL);
+    }
+    
+    public String getRedirectUponCompleteUrl() {
+        return OPHelper.getSettingsDelegate().getString(KEY_REDIRECT_UPON_LOGIN_URL);
     }
 
     public String getIdentityProviderDomain() {
@@ -182,7 +188,7 @@ public class OPSdkConfig {
     public void init(Context context) {
         try {
             byte[] bytes = AssetUtils.readAsset(context,
-                    "app_settings_bojan.json");
+                    "app_settings_bruce2.json");
             String str = new String(bytes, "UTF-8");
             OPSettings.apply(str);
 

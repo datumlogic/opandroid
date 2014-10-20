@@ -51,7 +51,7 @@ public class OPIdentity {
 				delegate,
 				config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
 				config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
-				config.getOuterFrameUrl());
+				config.getRedirectUponCompleteUrl());
 	}
 
 	// BEGINNING OF JNI -- BE careful of any interface changes!!!

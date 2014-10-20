@@ -146,7 +146,7 @@ public class LoginManager {
 																										// identity);
 				identityDelegate.bindListener(mListener);
 				identityDelegate.setWebview(webview);
-				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getOuterFrameUrl());
+				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getRedirectUponCompleteUrl());
 
 			} else {
 
