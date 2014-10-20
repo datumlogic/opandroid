@@ -1,4 +1,4 @@
-package settings;
+package com.openpeer.sample.settings;
 
 import com.google.gson.JsonElement;
 import com.openpeer.sample.push.HackApiService;

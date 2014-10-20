@@ -32,7 +32,6 @@ package com.openpeer.sample;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import settings.SettingsDownloader;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -64,6 +63,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPSettings;
+import com.openpeer.sample.settings.SettingsDownloader;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
 
