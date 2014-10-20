@@ -46,10 +46,8 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import android.text.TextUtils;
@@ -71,7 +69,6 @@ public class SettingsActivity extends BaseActivity {
     static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
     static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
     static final String KEY_FILE_LOGGER = "file_logger";
-    static final String KEY_LOG_SWITCH = "logSwitch";
     static final String KEY_OUT_LOG_SERVER = "log_server_url";
     static final String KEY_FILE_LOGGER_PATH = "log_file";
     static final String KEY_RINGTONE = "ringtone";
@@ -97,7 +94,7 @@ public class SettingsActivity extends BaseActivity {
 
     public static class SettingsFragment extends PreferenceFragment {
 
-        SwitchPreference logSwitchlPref;
+        SwitchPreference logSwitchPref;
         EditTextPreference logServerPref;
         EditTextPreference logFilePref;
         RingtonePreference ringtonePref;
@@ -114,7 +111,7 @@ public class SettingsActivity extends BaseActivity {
             final SwitchPreference fileLogging = (SwitchPreference) findPreference(KEY_FILE_LOGGER);
             SwitchPreference notificationSoundSwitchPref = (SwitchPreference) findPreference(KEY_NOTIFICATION_SOUND_SWITCH);
 
-            logSwitchlPref = (SwitchPreference) findPreference(KEY_LOG_SWITCH);
+            logSwitchPref = (SwitchPreference) findPreference(SettingsHelper.KEY_LOG_SWITCH);
             logServerPref = (EditTextPreference) findPreference(KEY_OUT_LOG_SERVER);
             logFilePref = (EditTextPreference) findPreference(KEY_FILE_LOGGER_PATH);
 
@@ -160,11 +157,11 @@ public class SettingsActivity extends BaseActivity {
                     return true;
                 }
             });
-            logSwitchlPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            logSwitchPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    SettingsHelper.toggleLogger((Boolean) newValue);
+                    SettingsHelper.setLogEnabled((Boolean) newValue);
 
                     return true;
                 }
@@ -229,6 +226,8 @@ public class SettingsActivity extends BaseActivity {
             } else {
                 notificationSoundPref.setSummary("None");
             }
+            
+            logSwitchPref.setChecked(SettingsHelper.isLogEnabled());
         }
 
         @Override

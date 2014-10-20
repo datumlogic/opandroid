@@ -24,7 +24,7 @@
 
     <SwitchPreference
         android:defaultValue="false"
-        android:key="logSwitch"
+        android:key="isLoggerEnabled"
         android:title="Enable Log"/>
 
     <PreferenceScreen

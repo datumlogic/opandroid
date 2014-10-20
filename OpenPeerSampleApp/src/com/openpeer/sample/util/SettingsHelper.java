@@ -31,6 +31,7 @@ package com.openpeer.sample.util;
 
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
+import com.openpeer.javaapi.OPSettings;
 import com.openpeer.sample.OPApplication;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPHelper;
@@ -50,7 +51,7 @@ public class SettingsHelper {
     static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
     static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
     static final String KEY_FILE_LOGGER = "file_logger";
-    static final String KEY_LOG_SWITCH = "logSwitch";
+    public static final String KEY_LOG_SWITCH = "isLoggerEnabled";
     static final String KEY_OUT_LOG_SERVER = "log_server_url";
     static final String KEY_FILE_LOGGER_PATH = "log_file";
     static final String KEY_TELENT_LOGGER = "local_telnet_logger";
@@ -114,8 +115,12 @@ public class SettingsHelper {
      * 
      */
     public static boolean isLogEnabled() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
-        return mPreferences.getBoolean(KEY_LOG_SWITCH, false);
+        return OPHelper.getSettingsDelegate().getBool(KEY_LOG_SWITCH);
+    }
+    
+    public static void setLogEnabled(boolean enabled) {
+         OPSettings.setBool(KEY_LOG_SWITCH,enabled);
+         toggleLogger(enabled);
     }
 
     public boolean isOutgoingLoggerOn() {
@@ -146,7 +151,7 @@ public class SettingsHelper {
     /**
      * @param newValue
      */
-    public static void toggleLogger(Boolean newValue) {
+    private static void toggleLogger(Boolean newValue) {
         final String loggerKeys[] = OPApplication.getInstance().getResources().getStringArray(R.array.logKeys);
         String loggerDefaults[] = OPApplication.getInstance().getResources().getStringArray(R.array.logLevelDefaults);
 
