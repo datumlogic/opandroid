@@ -139,6 +139,17 @@ public class OPDataManager {
         OPDownloadedRolodexContacts downloaded = identity
                 .getDownloadedRolodexContacts();
         List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
+        if (contacts == null) {
+            OPLogger.error(OPLogLevel.LogLevel_Detail,
+                    "download rolodex contacts is null for identity "
+                            + identity.getIdentityURI());
+            return;
+        } else if (contacts.isEmpty()) {
+            OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                    "download rolodex contacts is empty for identity "
+                            + identity.getIdentityURI());
+            return;
+        }
         contacts = mDatastoreDelegate.saveDownloadedRolodexContacts(identity,
                 contacts, downloaded.getVersionDownloaded());
         identityLookup(identity, contacts);

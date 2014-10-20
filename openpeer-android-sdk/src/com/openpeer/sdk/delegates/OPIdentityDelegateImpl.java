@@ -114,20 +114,25 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
         case IdentityState_Ready:
             if (OPDataManager.getInstance().getSharedAccount().getState() == AccountStates.AccountState_Ready) {
                 // OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
-
-                String version = OPDataManager
-                        .getDatastoreDelegate()
-                        .getDownloadedContactsVersion(identity.getIdentityURI());
-                if (TextUtils.isEmpty(version)) {
-                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
-                            "start download initial contacts");
-                    identity.startRolodexDownload("");
-                } else {
-                    // check for new contacts
-                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
-                            "start download initial contacts");
-                    identity.startRolodexDownload(version);
+                if (mListener != null) {
+                    mListener.onLoginComplete();
+                    mListener = null;
+                    mLoginView = null;
                 }
+
+            }
+            String version = OPDataManager
+                    .getDatastoreDelegate()
+                    .getDownloadedContactsVersion(identity.getIdentityURI());
+            if (TextUtils.isEmpty(version)) {
+                OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                        "start download initial contacts");
+                identity.startRolodexDownload("");
+            } else {
+                // check for new contacts
+                OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                        "start download initial contacts");
+                identity.startRolodexDownload(version);
             }
             break;
         case IdentityState_Shutdown:
@@ -159,11 +164,6 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
     @Override
     public void onIdentityRolodexContactsDownloaded(OPIdentity identity) {
         OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
-        if (mListener != null) {
-            mListener.onLoginComplete();
-            mListener = null;
-            mLoginView = null;
-        }
     }
 
     public void passMessageToJS(final String msg) {

@@ -150,15 +150,15 @@ public class LoginManager {
 
 			} else {
 
-				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getIdentityURI());
-				if (TextUtils.isEmpty(version)) {
-					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
-					identity.startRolodexDownload("");
-				} else {
-					// check for new contacts
-					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
-					identity.startRolodexDownload(version);
-				}
+//				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getIdentityURI());
+//				if (TextUtils.isEmpty(version)) {
+//					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
+//					identity.startRolodexDownload("");
+//				} else {
+//					// check for new contacts
+//					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
+//					identity.startRolodexDownload(version);
+//				}
 			}
 		}
 
