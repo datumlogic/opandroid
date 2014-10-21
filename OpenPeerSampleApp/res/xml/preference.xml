@@ -37,7 +37,7 @@
 
         <EditTextPreference
             android:defaultValue="log.opp.me:8115"
-            android:key="log_server_url"
+            android:key="defaultOutgoingTelnetServer"
             android:title="Server url"/>
 
         <SwitchPreference

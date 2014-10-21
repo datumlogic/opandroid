@@ -77,8 +77,8 @@ public class OPSdkConfig {
     private static final String KEY_IDENTITY_BASE_URI = "identityFederateBaseURI";
     private static final String KEY_NAMESPACE_GRANT_SERVICE_URL = "namespaceGrantServiceURL";
     private static final String KEY_LOCKBOX_SERVICE_DOMAIN = "lockBoxServiceDomain";
-    private static final String KEY_APP_ID = "id";
-    private static final String KEY_APP_APPKEY = "sharedSecret";
+    private static final String KEY_APP_ID = "applicationID";
+    private static final String KEY_APP_APPKEY = "applicationSharedSecret";
     private static final String KEY_CHAT_MODE = "application/chatMode";
     private static final String KEY_REDIRECT_UPON_LOGIN_URL = "redirectAfterLoginCompleteURL";
 
@@ -188,7 +188,7 @@ public class OPSdkConfig {
     public void init(Context context) {
         try {
             byte[] bytes = AssetUtils.readAsset(context,
-                    "app_settings_bruce2.json");
+                    "app_settings_prod_fb.json");
             String str = new String(bytes, "UTF-8");
             OPSettings.apply(str);
 

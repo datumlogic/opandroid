@@ -129,12 +129,10 @@ public class LoginManager {
 
 		List<OPIdentity> identities = account.getAssociatedIdentities();
 		if (identities.size() == 0) {
-			Log.d("TODO", "Account test FAILED identities emppty ");
+			Log.d("TODO", "Account login FAILED identities empty ");
 
 			return;
 		}
-		//TODO: test if calling OPIdentity methods work before identity reaches ready state
-//        OPDataManager.getInstance().setIdentities(identities);
 
 		for (OPIdentity identity : identities) {
 			if (!identity.isDelegateAttached()) {//This is relogin

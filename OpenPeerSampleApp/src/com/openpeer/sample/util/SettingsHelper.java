@@ -46,15 +46,15 @@ import android.preference.PreferenceManager;
 public class SettingsHelper {
 
     private static final String KEY_RINGTONE = "ringtone";
-    static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
-    static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
-    static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
-    static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
-    static final String KEY_FILE_LOGGER = "file_logger";
+    public static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
+    public static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
+    public static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
+    public static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
+    public static final String KEY_FILE_LOGGER = "file_logger";
     public static final String KEY_LOG_SWITCH = "isLoggerEnabled";
-    static final String KEY_OUT_LOG_SERVER = "log_server_url";
-    static final String KEY_FILE_LOGGER_PATH = "log_file";
-    static final String KEY_TELENT_LOGGER = "local_telnet_logger";
+    public  static final String KEY_OUT_LOG_SERVER = "defaultOutgoingTelnetServer";
+    public static final String KEY_FILE_LOGGER_PATH = "log_file";
+    public static final String KEY_TELENT_LOGGER = "local_telnet_logger";
 
     SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
 
@@ -127,8 +127,8 @@ public class SettingsHelper {
         return mPreferences.getBoolean(KEY_OUT_TELNET_LOGGER, false);
     }
 
-    public String getLogServer() {
-        return mPreferences.getString(KEY_OUT_LOG_SERVER, null);
+    public static String getLogServer() {
+        return OPHelper.getSettingsDelegate().getString(KEY_OUT_LOG_SERVER);
     }
 
     public boolean isTelnetLoggerOn() {
@@ -167,5 +167,12 @@ public class SettingsHelper {
                 OPLogger.setLogLevel(key, OPLogLevel.LogLevel_None);
             }
         }
+    }
+
+    /**
+     * @param newValue
+     */
+    public static void setLogServer(String newValue) {
+        OPSettings.setString(KEY_OUT_LOG_SERVER, newValue);
     }
 }
