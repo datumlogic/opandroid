@@ -2,6 +2,7 @@ package com.openpeer.openpeernativesampleapp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.webrtc.videoengine.ViERenderer;
 
@@ -10,35 +11,25 @@ import com.openpeer.javaapi.CameraTypes;
 import com.openpeer.javaapi.OPCaptureCapability;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMediaEngine;
-import com.openpeer.javaapi.OPStack;
-import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.javaapi.test.OPTestMediaEngine;
-import com.openpeer.openpeernativesampleapp.LoginManager;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
-import android.sax.TextElementListener;
 import android.util.Log;
-import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 public class MediaScreen extends Activity {
 
-	SurfaceView myLocalSurface = null;
-	SurfaceView myRemoteSurface = null;
+	SurfaceView localSurface = null;
+	SurfaceView remoteSurface = null;
 	int mediaEngineStatus = 0;
 	boolean speakerphoneEnabled = false;
+	boolean videoSwitched = false;
 	CameraTypes cameraType = CameraTypes.CameraType_Front;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +46,6 @@ public class MediaScreen extends Activity {
 		
 		OPMediaEngine.init(getApplicationContext());
 		OPMediaEngine.getInstance().setCameraType(cameraType);
-		OPMediaEngine.getInstance().setCaptureRenderViewCropping(0.0F, 0.0F, 1.0F, 1.0F);
-		OPMediaEngine.getInstance().setChannelRenderViewCropping(0.0F, 0.0F, 1.0F, 1.0F);
 		OPMediaEngine.getInstance().setEcEnabled(true);
 		OPMediaEngine.getInstance().setAgcEnabled(true);
 		OPMediaEngine.getInstance().setNsEnabled(false);
@@ -69,6 +58,8 @@ public class MediaScreen extends Activity {
 		
 		setupMediaControlButton();
 		setupAudioOutputButton();
+		setupSwitchSurfaceButton();
+		setupButton01();
 	}
 
 	private void setupMediaControlButton() {
@@ -81,17 +72,18 @@ public class MediaScreen extends Activity {
 			
 			@Override
 			public void onClick(View v) { 
-				LinearLayout localViewLinearLayout;
-				LinearLayout remoteViewLinearLayout;
+				LinearLayout leftViewLinearLayout;
+				LinearLayout rightViewLinearLayout;
 				switch (mediaEngineStatus) {
 				case 0:
-					myLocalSurface = ViERenderer.CreateRenderer(screen, true);
-					localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
-					localViewLinearLayout.addView(myLocalSurface);
+					OPMediaEngine.getInstance().setCaptureRenderViewCropping(0.0F, 0.5F, 1.0F, 1.0F);
+					localSurface = ViERenderer.CreateRenderer(screen, true);
+					leftViewLinearLayout = (LinearLayout) findViewById(R.id.leftViewLinearLayout);
+					leftViewLinearLayout.addView(localSurface);
 					List<OPCaptureCapability> capabilities = 
 							OPMediaEngine.getInstance().getCaptureCapabilities(cameraType);
 					for (OPCaptureCapability capability : capabilities) {
-						String capabilityString = String.format("Capability - width: %d, height: %d, fps: %d", 
+						String capabilityString = String.format(Locale.US, "Capability - width: %d, height: %d, fps: %d", 
 								capability.getWidth(), capability.getHeight(), capability.getMaxFPS());
 						Log.d("JNI", capabilityString);
 					}
@@ -106,16 +98,17 @@ public class MediaScreen extends Activity {
 						captureCapability.setMaxFPS(15);
 					}
 					OPMediaEngine.getInstance().setCaptureCapability(captureCapability, cameraType);
-					OPMediaEngine.getInstance().setCaptureRenderView(myLocalSurface);
+					OPMediaEngine.getInstance().setCaptureRenderView(localSurface);
 					OPMediaEngine.getInstance().startVideoCapture();
 					mediaControlButton.setText("Start Media Channel");
 					mediaEngineStatus++;
 					break;
 				case 1:
-					myRemoteSurface = ViERenderer.CreateRenderer(screen, true);
-					remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
-					remoteViewLinearLayout.addView(myRemoteSurface);
-					OPMediaEngine.getInstance().setChannelRenderView(myRemoteSurface);
+					OPMediaEngine.getInstance().setChannelRenderViewCropping(0.0F, 0.0F, 1.0F, 1.0F);
+					remoteSurface = ViERenderer.CreateRenderer(screen, true);
+					rightViewLinearLayout = (LinearLayout) findViewById(R.id.rightViewLinearLayout);
+					rightViewLinearLayout.addView(remoteSurface);
+					OPMediaEngine.getInstance().setChannelRenderView(remoteSurface);
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).setReceiverAddress(remoteIPAddressEditText.getText().toString());
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVoice();
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).startVideoChannel();
@@ -125,17 +118,17 @@ public class MediaScreen extends Activity {
 				case 2:
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVoice();
 					((OPTestMediaEngine) OPMediaEngine.getInstance()).stopVideoChannel();
-					remoteViewLinearLayout = (LinearLayout) findViewById(R.id.remoteViewLinearLayout);
-					remoteViewLinearLayout.removeView(myRemoteSurface);
-					myRemoteSurface = null;
+					rightViewLinearLayout = (LinearLayout) findViewById(R.id.rightViewLinearLayout);
+					rightViewLinearLayout.removeView(remoteSurface);
+					remoteSurface = null;
 					mediaControlButton.setText("Stop Video Capture");
 					mediaEngineStatus++;
 					break;
 				case 3:
 					OPMediaEngine.getInstance().stopVideoCapture();
-					localViewLinearLayout = (LinearLayout) findViewById(R.id.localViewLinearLayout);
-					localViewLinearLayout.removeView(myLocalSurface);
-					myLocalSurface = null;
+					leftViewLinearLayout = (LinearLayout) findViewById(R.id.leftViewLinearLayout);
+					leftViewLinearLayout.removeView(localSurface);
+					localSurface = null;
 					mediaControlButton.setText("Start Video Capture");
 					mediaEngineStatus = 0;
 					break;
@@ -162,6 +155,50 @@ public class MediaScreen extends Activity {
 					audioOutputButton.setText("Ear Speaker");
 				}
 				speakerphoneEnabled = !speakerphoneEnabled;
+			}
+		});
+	}
+
+	private void setupSwitchSurfaceButton() {
+		final Button switchSurfaceButton = (Button) findViewById(R.id.buttonSwitchSurface);
+		final MediaScreen screen = this;
+		
+		switchSurfaceButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				LinearLayout leftViewLinearLayout = (LinearLayout) findViewById(R.id.leftViewLinearLayout);
+				LinearLayout rightViewLinearLayout = (LinearLayout) findViewById(R.id.rightViewLinearLayout);
+				
+				leftViewLinearLayout.removeAllViews();
+				rightViewLinearLayout.removeAllViews();
+
+				localSurface = ViERenderer.CreateRenderer(screen, true);
+				remoteSurface = ViERenderer.CreateRenderer(screen, true);
+
+				if (videoSwitched) {
+					leftViewLinearLayout.addView(localSurface);
+					rightViewLinearLayout.addView(remoteSurface);
+				} else {
+					leftViewLinearLayout.addView(remoteSurface);
+					rightViewLinearLayout.addView(localSurface);
+				}
+				videoSwitched = !videoSwitched;
+
+				OPMediaEngine.getInstance().setCaptureRenderView(localSurface);
+				OPMediaEngine.getInstance().setChannelRenderView(remoteSurface);
+			}
+		});
+	}
+
+	private void setupButton01() {
+		final Button button01 = (Button) findViewById(R.id.button01);
+		
+		button01.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
 			}
 		});
 	}
