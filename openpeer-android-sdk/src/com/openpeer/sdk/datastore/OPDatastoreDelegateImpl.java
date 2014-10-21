@@ -218,8 +218,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         return true;
     }
 
-    @Override
-    public boolean saveOrUpdateIdentities(List<OPIdentity> identities,
+    private boolean saveOrUpdateIdentities(List<OPIdentity> identities,
             long accountId, long opId) {
         for (OPIdentity identity : identities) {
             OPIdentityContact iContact = identity.getSelfIdentityContact();

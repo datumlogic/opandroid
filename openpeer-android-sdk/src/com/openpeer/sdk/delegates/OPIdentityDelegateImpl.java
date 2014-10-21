@@ -51,6 +51,15 @@ import com.openpeer.sdk.app.OPSdkConfig;
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
     OPIdentityLoginWebview mLoginView;
     LoginUIListener mListener;
+    private boolean mIsAssociating;
+
+    public boolean isAssociating() {
+        return mIsAssociating;
+    }
+
+    public void setIsAssociating(boolean isAssociating) {
+        this.mIsAssociating = isAssociating;
+    }
 
     private static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
 
@@ -122,18 +131,21 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
                 }
 
             }
-            String version = OPDataManager
-                    .getDatastoreDelegate()
-                    .getDownloadedContactsVersion(identity.getIdentityURI());
-            if (TextUtils.isEmpty(version)) {
-                OPLogger.debug(OPLogLevel.LogLevel_Detail,
-                        "start download initial contacts");
-                identity.startRolodexDownload("");
-            } else {
-                // check for new contacts
-                OPLogger.debug(OPLogLevel.LogLevel_Detail,
-                        "start download initial contacts");
-                identity.startRolodexDownload(version);
+            if (mIsAssociating) {
+                String version = OPDataManager
+                        .getDatastoreDelegate()
+                        .getDownloadedContactsVersion(identity.getIdentityURI());
+                if (TextUtils.isEmpty(version)) {
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                            "start download initial contacts");
+                    identity.startRolodexDownload("");
+                } else {
+                    // check for new contacts
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                            "start download initial contacts");
+                    identity.startRolodexDownload(version);
+                }
+                mIsAssociating = false;
             }
             break;
         case IdentityState_Shutdown:

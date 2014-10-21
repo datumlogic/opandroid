@@ -141,24 +141,23 @@ public class LoginManager {
 				OPIdentityLoginWebview webview = mListener.getIdentityWebview(identity);
 				webview.getClient().setIdentity(identity);
 
-				OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(identity);// new
-																										// OPIdentityDelegateImplementation(mIdentityLoginWebView,
-																										// identity);
+				OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(identity);
+				identityDelegate.setIsAssociating(true);
 				identityDelegate.bindListener(mListener);
 				identityDelegate.setWebview(webview);
 				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getRedirectUponCompleteUrl());
 
 			} else {
 
-//				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getIdentityURI());
-//				if (TextUtils.isEmpty(version)) {
-//					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
-//					identity.startRolodexDownload("");
-//				} else {
-//					// check for new contacts
-//					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
-//					identity.startRolodexDownload(version);
-//				}
+				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getIdentityURI());
+				if (TextUtils.isEmpty(version)) {
+					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
+					identity.startRolodexDownload("");
+				} else {
+					// check for new contacts
+					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
+					identity.startRolodexDownload(version);
+				}
 			}
 		}
 

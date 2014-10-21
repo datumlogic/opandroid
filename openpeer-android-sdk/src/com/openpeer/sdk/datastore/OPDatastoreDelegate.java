@@ -61,18 +61,6 @@ public interface OPDatastoreDelegate {
     public boolean saveAccount(OPAccount account);
 
     /**
-     * Save or update the associated identities of account. Call this function after login or relogin
-     * 
-     * @param identies
-     * @param accountId
-     * @param opId
-     *            TODO
-     * @return
-     */
-    public boolean saveOrUpdateIdentities(List<OPIdentity> identies,
-            long accountId, long opId);
-
-    /**
      * Save or update the Rolodex contacts related to identity. Call this fucntion after RolodexContacts download and identity lookup
      * completion.
      * 
