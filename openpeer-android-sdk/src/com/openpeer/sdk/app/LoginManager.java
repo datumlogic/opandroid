@@ -156,6 +156,11 @@ public class LoginManager {
 					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
 					identity.startRolodexDownload(version);
 				}
+				
+                if(mListener!=null){
+                    mListener.onLoginComplete();
+                    mListener=null;
+                }
 			}
 		}
 

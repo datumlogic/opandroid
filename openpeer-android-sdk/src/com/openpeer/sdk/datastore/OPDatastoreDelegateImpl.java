@@ -248,6 +248,26 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     @Override
     public boolean saveOrUpdateIdentity(OPIdentity identity, long accountId) {
+        SQLiteDatabase db = getWritableDB();
+
+        long identityId = simpleQueryForId(db,
+                DatabaseContracts.AssociatedIdentityEntry.TABLE_NAME,
+                AssociatedIdentityEntry.COLUMN_IDENTITY_URI + "=?",
+                new String[] { identity.getIdentityURI() });
+        if (identityId == 0) {
+            long opId = 0;
+
+            OPIdentityContact iContact = identity.getSelfIdentityContact();
+            long identityContactId = saveIdentityContactTable(iContact);
+            long rolodexId = saveRolodexContactTable(iContact, opId,
+                    identityContactId, 0);
+            saveIdentityTable(identity, accountId, rolodexId);
+        } else if (accountId != 0) {
+            ContentValues values = new ContentValues();
+            values.put(AssociatedIdentityEntry.COLUMN_ACCOUNT_ID, accountId);
+            db.update(AssociatedIdentityEntry.TABLE_NAME, values,
+                    BaseColumns._ID + "=" + identityId, null);
+        }
         return true;
     }
 
