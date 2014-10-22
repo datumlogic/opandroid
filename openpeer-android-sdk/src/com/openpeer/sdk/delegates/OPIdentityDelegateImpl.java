@@ -42,6 +42,7 @@ import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sdk.app.IntentData;
+import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
@@ -49,17 +50,6 @@ import com.openpeer.sdk.app.OPIdentityLoginWebview;
 import com.openpeer.sdk.app.OPSdkConfig;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
-    OPIdentityLoginWebview mLoginView;
-    LoginUIListener mListener;
-    private boolean mIsAssociating;
-
-    public boolean isAssociating() {
-        return mIsAssociating;
-    }
-
-    public void setIsAssociating(boolean isAssociating) {
-        this.mIsAssociating = isAssociating;
-    }
 
     private static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
 
@@ -76,18 +66,9 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
         return instance;
     }
 
-    public void bindListener(LoginUIListener listener) {
-        mListener = listener;
-    }
-
     public void associateIdentity(OPIdentity identity) {
         instances.remove(0L);
         instances.put(identity.getID(), this);
-    }
-
-    public void setWebview(OPIdentityLoginWebview webview) {
-        this.mLoginView = webview;
-
     }
 
     private OPIdentityDelegateImpl() {
@@ -100,24 +81,35 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
         // why isn' this working? Weird!!
         // mLoginView = mListener.getIdentityWebview(identity);
         // mLoginView.getClient().setIdentity(identity);
+        LoginUIListener mListener = LoginManager.getInstance().getListener();
+        if (mListener == null) {
+            OPLogger.debug(OPLogLevel.LogLevel_Debug,
+                    "No UI listener while state change " + state);
+        }
         switch (state) {
-        case IdentityState_WaitingForBrowserWindowToBeLoaded:
+        case IdentityState_PendingAssociation:
+            break;
+        case IdentityState_WaitingAttachmentOfDelegate:
+            break;
+        case IdentityState_WaitingForBrowserWindowToBeLoaded: {
 
             Log.d("login", "loading identity webview");
-            mListener.onStartIdentityLogin();
-            mLoginView
-                    .loadUrl(OPSdkConfig.getInstance().getOuterFrameUrl());
-
+            mListener.onStartIdentityLogin(identity);
+            OPIdentityLoginWebview mLoginView = mListener
+                    .getIdentityWebview(identity);
+            mLoginView.loadUrl(OPSdkConfig.getInstance().getOuterFrameUrl());
             break;
+        }
+
         case IdentityState_WaitingForBrowserWindowToBeMadeVisible:
 
-            mListener.onIdentityLoginWebViewMadeVisible();
+            mListener.onIdentityLoginWebViewMadeVisible(identity);
 
             identity.notifyBrowserWindowVisible();
             break;
         case IdentityState_WaitingForBrowserWindowToClose:
 
-            mListener.onIdentityLoginWebViewClose();
+            mListener.onIdentityLoginWebViewClose(identity);
 
             identity.notifyBrowserWindowClosed();
             break;
@@ -125,13 +117,10 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
             if (OPDataManager.getInstance().getSharedAccount().getState() == AccountStates.AccountState_Ready) {
                 // OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
                 if (mListener != null) {
-                    mListener.onLoginComplete();
-                    mListener = null;
-                    mLoginView = null;
+                    mListener.onAccountLoginComplete();
                 }
-
             }
-            if (mIsAssociating) {
+            if (identity.isAssociating()) {
                 String version = OPDataManager
                         .getDatastoreDelegate()
                         .getDownloadedContactsVersion(identity.getIdentityURI());
@@ -145,21 +134,23 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
                             "start download initial contacts");
                     identity.startRolodexDownload(version);
                 }
-                mIsAssociating = false;
+                identity.setIsAssocaiting(false);
             }
+            identity.setIsLoggingIn(false);
             break;
         case IdentityState_Shutdown:
             // Temporary defensive code. Proper logic will be put in place soon.
             if (mListener != null) {
                 mListener.onLoginError();
-                mListener = null;
-                mLoginView = null;
 
             }
             Intent intent = new Intent(IntentData.ACTION_IDENTITY_SHUTDOWN);
             intent.putExtra(IntentData.PARAM_IDENTITY_URI,
                     identity.getIdentityURI());
             OPHelper.getInstance().sendBroadcast(intent);
+            identity.setIsAssocaiting(false);
+            identity.setIsLoggingIn(false);
+
             break;
         }
     }
@@ -171,7 +162,11 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
         String msg = identity.getNextMessageForInnerBrowerWindowFrame();
         Log.d("login", "identity pendingMessageForInnerFrame " + msg);
 
-        passMessageToJS(msg);
+        String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
+        Log.w("login", "Identity webview Pass to JS: " + cmd);
+        OPIdentityLoginWebview mLoginView = LoginManager.getInstance()
+                .getListener().getIdentityWebview(identity);
+        mLoginView.loadUrl(cmd);
     }
 
     @Override
@@ -179,11 +174,4 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
         OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
     }
 
-    public void passMessageToJS(final String msg) {
-
-        String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
-        Log.w("login", "Identity webview Pass to JS: " + cmd);
-        mLoginView.loadUrl(cmd);
-
-    }
 }

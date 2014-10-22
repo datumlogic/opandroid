@@ -34,17 +34,17 @@ import com.openpeer.javaapi.OPIdentity;
 import android.webkit.WebView;
 
 public interface LoginUIListener {
-	public void onStartIdentityLogin();
+	public void onStartIdentityLogin(OPIdentity identity);
 
-	public void onLoginComplete();
+	public void onAccountLoginComplete();
 
 	public void onLoginError();
 
-	public void onIdentityLoginWebViewMadeVisible();
+	public void onIdentityLoginWebViewMadeVisible(OPIdentity identity);
 
 	public void onAccountLoginWebViewMadeVisible();
 
-	public void onIdentityLoginWebViewClose();
+	public void onIdentityLoginWebViewClose(OPIdentity identity);
 
 	public void onAccountLoginWebViewMadeClose();
 	

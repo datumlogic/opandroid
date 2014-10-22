@@ -29,6 +29,7 @@
  *******************************************************************************/
 package com.openpeer.sdk.app;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.text.TextUtils;
@@ -47,6 +48,8 @@ public class LoginManager {
 	private static LoginUIListener mListener;
 
 	private static LoginManager instance;
+
+    private static boolean sAccountLoginDone;
 
 	public static LoginManager getInstance() {
 		if (instance == null) {
@@ -73,7 +76,6 @@ public class LoginManager {
 		mListener = listener;
 
 		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
-		accountDelegate.bind(mListener);
 		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, callDelegate);
 		OPDataManager.getInstance().setSharedAccount(account);
 		startIdentityLogin();
@@ -97,7 +99,6 @@ public class LoginManager {
 			String reloginInfo) {
 		mListener = listener;
 		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
-		accountDelegate.bind(mListener);
 		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, callDelegate, reloginInfo);
 
 		OPDataManager.getInstance().setSharedAccount(account);
@@ -110,11 +111,12 @@ public class LoginManager {
 		OPIdentityLoginWebview mIdentityLoginWebView = mListener.getIdentityWebview(null);
 
 		OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(null);
-		identityDelegate.bindListener(mListener);
-		identityDelegate.setWebview(mIdentityLoginWebView);
-
 		identity = OPIdentity.login(account, identityDelegate);
+		identityDelegate.associateIdentity(identity);
+		identity.setIsLoggingIn(true);
 		mIdentityLoginWebView.getClient().setIdentity(identity);
+		
+		
 	}
 
 	/**
@@ -140,9 +142,7 @@ public class LoginManager {
 				webview.getClient().setIdentity(identity);
 
 				OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(identity);
-				identityDelegate.setIsAssociating(true);
-				identityDelegate.bindListener(mListener);
-				identityDelegate.setWebview(webview);
+				identity.setIsAssocaiting(true);
 				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getRedirectUponCompleteUrl());
 
 			} else {
@@ -156,12 +156,11 @@ public class LoginManager {
 					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
 					identity.startRolodexDownload(version);
 				}
-				
-                if(mListener!=null){
-                    mListener.onLoginComplete();
-                    mListener=null;
-                }
+               
 			}
+			 if(mListener!=null){
+                 mListener.onAccountLoginComplete();
+             }
 		}
 
 	}
@@ -175,9 +174,8 @@ public class LoginManager {
 	 * 
 	 * @return
 	 */
-	public static boolean isLogIn() {
-		// TODO Auto-generated method stub
-		return instance != null;
+	public static boolean isAccountLoginDone() {
+		return sAccountLoginDone;
 	}
 
 	/**
@@ -185,6 +183,13 @@ public class LoginManager {
 	 */
 	public static void onAccountShutdown() {
 		// release resources
-		instance = null;
 	}
+
+    /**
+     * @return
+     */
+    public LoginUIListener getListener() {
+        // TODO Auto-generated method stub
+        return mListener;
+    }
 }

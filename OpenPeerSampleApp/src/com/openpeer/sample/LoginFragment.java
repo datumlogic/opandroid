@@ -106,7 +106,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
     /* START implementation of LoginUIListener */
     @Override
-    public void onStartIdentityLogin() {
+    public void onStartIdentityLogin(OPIdentity identity) {
         progressView.setVisibility(View.GONE);
         mAccountLoginWebView.setVisibility(View.GONE);
 
@@ -114,14 +114,14 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
     }
 
     @Override
-    public void onLoginComplete() {
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                if (!isDetached()) {
-                    ((BaseFragmentActivity) getActivity()).hideLoginFragment();
-                }
-            }
-        });
+    public void onAccountLoginComplete() {
+//        getActivity().runOnUiThread(new Runnable() {
+//            public void run() {
+//                if (!isDetached()) {
+//                    ((BaseFragmentActivity) getActivity()).hideLoginFragment();
+//                }
+//            }
+//        });
         PushManager.enablePush();
 
         //TODO: move it to proper place after login refactoring.
@@ -153,7 +153,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
     }
 
     @Override
-    public void onIdentityLoginWebViewMadeVisible() {
+    public void onIdentityLoginWebViewMadeVisible(OPIdentity identity) {
         mIdentityLoginWebView.setVisibility(View.VISIBLE);
         mAccountLoginWebView.setVisibility(View.GONE);
         progressView.setVisibility(View.GONE);
@@ -167,7 +167,7 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
         mAccountLoginWebView.setVisibility(View.VISIBLE);
     }
 
-    public void onIdentityLoginWebViewClose() {
+    public void onIdentityLoginWebViewClose(OPIdentity identity) {
         mIdentityLoginWebView.setVisibility(View.GONE);
     }
 
@@ -182,6 +182,8 @@ public class LoginFragment extends BaseFragment implements LoginUIListener {
 
 	@Override
 	public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity) {
+	    mIdentityLoginWebView.getClient().setIdentity(identity);
+
 		return mIdentityLoginWebView;
 	}
     /* END implementation of LoginUIListener */
