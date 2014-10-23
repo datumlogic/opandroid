@@ -452,12 +452,12 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPToken_releaseCoreObjects
 		jlong pointerValue = jni_env->GetLongField(javaObject, fid);
 
 		delete (UseTokenPtr*)pointerValue;
-		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPComposingStatus releaseCoreObjects Core object deleted.");
+		__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPToken releaseCoreObjects Core object deleted.");
 
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPComposingStatus releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPToken releaseCoreObjects Core object not deleted - already NULL!");
 	}
 }
 
