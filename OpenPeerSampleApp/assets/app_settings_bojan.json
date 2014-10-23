@@ -1,0 +1,20 @@
+{
+  "root": {
+"outerFrameURL": "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true",
+    "identityProviderDomain": "identity-v1-rel-lespaul-i.hcs.io",
+                        "identityFederateBaseURI": "identity://identity-v1-rel-lespaul-i.hcs.io/",
+                        "namespaceGrantServiceURL": "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
+                        "lockBoxServiceDomain": "identity-v1-rel-lespaul-i.hcs.io",
+    "defaultOutgoingTelnetServer": "log.opp.me:8115",
+    "isLoggerEnabled": true,
+    "logLevelForServicesHttp": "trace",
+    "applicationSettingsVersion": "1",
+    "id":"com.openpeer.nativeApp",
+    "sharedSecret":"14b2c9df6713df465d97d0736863c42964faa678",
+    "openpeer/common/application-name":"OpenPeer Native Sample App",
+"openpeer/common/application-image-url":"http://fake-image-url",
+"openpeer/common/application-url":"http://fake-application-url",
+"openpeer/calculated/user-agent":"OpenPeerNativeSampleApp",
+"application/chatMode":"ContactsBased"
+  }
+}

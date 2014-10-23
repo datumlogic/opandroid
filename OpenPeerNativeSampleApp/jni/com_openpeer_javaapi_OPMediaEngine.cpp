@@ -2,7 +2,6 @@
 #include "OpenPeerCoreManager.h"
 #include "openpeer/core/IStack.h"
 #include "openpeer/core/ILogger.h"
-//#include "openpeer/core/IMediaEngine.h"
 #include "openpeer/core/internal/core_MediaEngine.h"
 #include "openpeer/core/test/TestMediaEngine.h"
 #include <android/log.h>

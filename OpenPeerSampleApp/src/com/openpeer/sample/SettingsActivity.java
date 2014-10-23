@@ -29,7 +29,13 @@
  *******************************************************************************/
 package com.openpeer.sample;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import settings.SettingsDownloader;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -41,16 +47,23 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
+import com.openpeer.javaapi.OPSettings;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
 
@@ -65,6 +78,7 @@ public class SettingsActivity extends BaseActivity {
     static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
     static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
     static final String KEY_SIGNOUT = "signout";
+    private static final String TAG = "SettingsActivity";
 
     public static void launch(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
@@ -158,18 +172,28 @@ public class SettingsActivity extends BaseActivity {
             notificationSoundPref = (RingtonePreference) findPreference(KEY_NOTIFICATION_SOUND_SELECT);
             ringtonePref = (RingtonePreference) findPreference(KEY_RINGTONE);
             Preference signoutPref = findPreference(KEY_SIGNOUT);
-            signoutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (OPSessionManager.getInstance().hasCalls()) {
-                        Toast.makeText(getActivity(), R.string.msg_cannot_signout_with_call, Toast.LENGTH_LONG).show();
-                    } else {
-                        OPApplication.signout();
-                    }
-                    return true;
-                }
-            });
+            signoutPref
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            ((SettingsActivity) getActivity()).doSignout();
+                            return true;
+                        }
+                    });
 
+            Preference scanPreference = findPreference("scan");
+            scanPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+
+                @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            IntentIntegrator integrator = new IntentIntegrator(
+                                    getActivity());
+                            integrator
+                                    .initiateScan(IntentIntegrator.QR_CODE_TYPES);
+                            return true;
+                        }
+                
+            });
             setupAboutInfo();
             setupLoggerScreen();
         }
@@ -263,6 +287,63 @@ public class SettingsActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(
+                requestCode, resultCode, intent);
+        if (scanResult != null) {
+            Log.d(TAG, "scan result " + scanResult);
+            String url = scanResult.getContents();
+            if (!TextUtils.isEmpty(url)) {
+                Callback<JsonElement> callback = new Callback<JsonElement>() {
+
+                    @Override
+                    public void failure(RetrofitError arg0) {
+                        Log.d(TAG, "failure " + arg0.toString());
+                        if (hasWindowFocus()) {
+                            Toast.makeText(
+                                    SettingsActivity.this,
+                                    "failed to download settings. Try again later",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void success(JsonElement arg0, Response arg1) {
+                        String jsonBlob = arg0.toString();
+                        if (!TextUtils.isEmpty(jsonBlob)) {
+                            OPSettings.apply(jsonBlob);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                            builder.setMessage("New settings have been applied! Please relogin")
+                            .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                   doSignout();
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    }
+
+                };
+
+                SettingsDownloader.download(url, callback);
+            }
+        }
+      
+    }
+
+    void doSignout() {
+        if (OPSessionManager.getInstance().hasCalls()) {
+            Toast.makeText(SettingsActivity.this,
+                    R.string.msg_cannot_signout_with_call, Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            OPApplication.signout();
+            finish();
+        }
     }
 
 }
