@@ -1,12 +1,12 @@
 package com.openpeer.javaapi;
 
-public class OPPushInfo {
-	
+public class OPPushPresencePushInfo {
+
 	private String mServiceType;  // e.g. "apns", "gcm", or all
-    private OPElement mValues;   // "values" data associated with push messages (use "getValues(...)" to extract data
-    private OPElement mCustom;   // extended push related custom push data
-	
-    public String getServiceType() {
+	private OPElement mValues;   // "values" data associated with push messages (use "getValues(...)" to extract data
+	private OPElement mCustom;   // extended push related custom push data
+
+	public String getServiceType() {
 		return mServiceType;
 	}
 	public void setServiceType(String mServiceType) {
