@@ -31,7 +31,7 @@
         android:key="debug_settings"
         android:title="@string/logger_settings">
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="out_telnet_logger"
             android:title="@string/out_telnet_logger"/>
 
@@ -41,7 +41,7 @@
             android:title="Server url"/>
 
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="local_telnet_logger"
             android:title="@string/local_telnet_logger"/>
         <SwitchPreference
