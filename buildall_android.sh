@@ -63,7 +63,7 @@ popd
 
 #curl build -- 3
 pushd `pwd`
-cd libs/op/libs/ortc-lib/libs/curl/projects/android
+cd libs/op/libs/ortc-lib/libs/curl-build-scripts/
 ./build_curl_android.sh $Input
 popd
 
