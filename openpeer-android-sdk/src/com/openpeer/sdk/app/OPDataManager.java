@@ -33,13 +33,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import android.util.Log;
-
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -49,6 +45,7 @@ import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
+import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityLookupDelegateImpl;
 import com.openpeer.sdk.model.OPUser;
 
@@ -65,18 +62,27 @@ public class OPDataManager {
     private OPDatastoreDelegate mDatastoreDelegate;
 
     private OPAccount mAccount;
-    private List<OPIdentity> mIdentities;
+    private Hashtable<Long, OPIdentity> mIdentities;
     private List<OPIdentityContact> mSelfContacts;
-    Hashtable<String, OPIdentityLookup> mIdentityLookups = new Hashtable<String, OPIdentityLookup>();
-
-    private boolean mAccountReady;
+    Hashtable<String, OPIdentityLookup> mIdentityLookups;
 
     public static OPDatastoreDelegate getDatastoreDelegate() {
         return getInstance().mDatastoreDelegate;
     }
 
-    public List<OPIdentity> getIdentities() {
-        return mIdentities;
+    public void addIdentity(OPIdentity identity) {
+        if (mIdentities == null) {
+            mIdentities = new Hashtable<Long, OPIdentity>();
+        }
+        mIdentities.put(identity.getID(), identity);
+    }
+
+    public OPIdentity getStoredIdentityById(long id) {
+        if (mIdentities == null) {
+            return null;
+        } else {
+            return mIdentities.get(id);
+        }
     }
 
     public String getReloginInfo() {
@@ -118,16 +124,8 @@ public class OPDataManager {
         return mAccount;
     }
 
-    public void setIdentities(List<OPIdentity> identities) {
-        mIdentities = identities;
-        mSelfContacts = new ArrayList<OPIdentityContact>();
-        for (OPIdentity identity : identities) {
-            mSelfContacts.add(identity.getSelfIdentityContact());
-        }
-    }
-
     public List<OPIdentityContact> getSelfContacts() {
-        List<OPIdentity> identities =mAccount.getAssociatedIdentities() ;
+        List<OPIdentity> identities = mAccount.getAssociatedIdentities();
         mSelfContacts = new ArrayList<OPIdentityContact>();
         for (OPIdentity identity : identities) {
             mSelfContacts.add(identity.getSelfIdentityContact());
@@ -173,6 +171,9 @@ public class OPDataManager {
                 inputLookupList, OPSdkConfig.getInstance()
                         .getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
         if (identityLookup != null) {
+            if (mIdentityLookups == null) {
+                mIdentityLookups = new Hashtable<String, OPIdentityLookup>();
+            }
             mIdentityLookups.put(identity.getIdentityURI(), identityLookup);
         }
     }
@@ -217,7 +218,9 @@ public class OPDataManager {
         if (iContacts != null) {
             updateIdentityContacts(url, iContacts);
         }
-        mIdentityLookups.remove(url);
+        if (mIdentityLookups != null) {
+            mIdentityLookups.remove(url);
+        }
     }
 
     public OPUser getUserById(long id) {
@@ -235,11 +238,16 @@ public class OPDataManager {
         for (OPIdentity identity : identities) {
             identity.cancel();
         }
-        mIdentities = null;
-        mSelfContacts = null;
-        mAccount.shutdown();
-        mAccount = null;
-        mDatastoreDelegate.onSignOut();
 
+        mAccount.shutdown();
+        mDatastoreDelegate.onSignOut();
+    }
+
+    /**
+     * 
+     */
+    public void afterSignout() {
+        OPDataManager.getDatastoreDelegate().onSignOut();
+        OPIdentityDelegateImpl.clearAfterSignout();
     }
 }

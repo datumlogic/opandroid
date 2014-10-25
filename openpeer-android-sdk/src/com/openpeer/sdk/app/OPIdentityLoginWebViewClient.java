@@ -113,7 +113,7 @@ public class OPIdentityLoginWebViewClient extends WebViewClient {
 			String cmd = String.format("javascript:initInnerFrame(\'%s\')",
 					mIdentity.getInnerBrowserWindowFrameURL());
 			Log.w("login", "INIT INNER FRAME: " + cmd);
-			view.loadUrl(cmd);
+			view.loadUrl(cmd); 
 			// LoginManager.initInnerFrame();
 		} else {
 			super.onPageFinished(view, url);

@@ -34,14 +34,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.sample.BaseActivity;
-import com.openpeer.sample.BaseFragmentActivity;
 import com.openpeer.sample.IntentData;
-import com.openpeer.sample.MainActivity;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
 
@@ -84,7 +80,6 @@ public class ConversationActivity extends BaseActivity {
         if (OPDataManager.getInstance().getSharedAccount() == null
                 || !OPDataManager.getInstance().isAccountReady()) {
             // BaseActivity.showInvalidStateWarning(this);
-            showLoginFragment();
             return;
         }
     }

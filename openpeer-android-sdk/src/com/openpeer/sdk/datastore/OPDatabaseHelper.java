@@ -44,6 +44,7 @@ import android.util.Log;
 public class OPDatabaseHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "OpenPeer.db";
+    private static OPDatabaseHelper instance;
     Context mContext;
 
     public OPDatabaseHelper(Context context, String name,
@@ -68,7 +69,7 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if(oldVersion<3){
+        if (oldVersion < 3) {
             try {
                 DbUtils.executeSqlScript(mContext, db, "main.sql");
             } catch (IOException e) {
@@ -81,6 +82,26 @@ public class OPDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         super.onDowngrade(db, oldVersion, newVersion);
+    }
+
+    /**
+     * @param context
+     * @return
+     */
+    public static OPDatabaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new OPDatabaseHelper(context,
+                    OPDatabaseHelper.DATABASE_NAME, // the name of the database)
+                    null, // uses the default SQLite cursor
+                    OPDatabaseHelper.DATABASE_VERSION);
+        }
+        return instance;
+    }
+
+    public void closeAndDeleteDB() {
+        instance.close();
+
+        mContext.deleteDatabase(DATABASE_NAME);
     }
 
 }

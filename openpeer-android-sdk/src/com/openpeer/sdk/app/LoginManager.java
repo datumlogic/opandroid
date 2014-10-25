@@ -30,11 +30,14 @@
 package com.openpeer.sdk.app;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPConversationThreadDelegate;
@@ -45,145 +48,220 @@ import com.openpeer.sdk.delegates.OPAccountDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 
 public class LoginManager {
-	private static LoginUIListener mListener;
 
-	private static LoginManager instance;
+    private LoginUIListener mListener;
 
-    private static boolean sAccountLoginDone;
+    private static LoginManager instance;
 
-	public static LoginManager getInstance() {
-		if (instance == null) {
-			instance = new LoginManager();
-		}
-		return instance;
-	}
+    private boolean mAccountLoggingIn;
+    private List<LoginRecord> mLoginRecords;
+    Hashtable<Long, OPIdentity> mIdentitiesLoggingIn;
 
-	private LoginManager() {
-	}
+    private boolean mLoginPerformed;
 
-	/**
-	 * 
-	 * @param listener
-	 *            Application need to pass the UI listener to handle state changes.
-	 * @param callDelegate
-	 *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
-	 * @param conversationThreadDelegate
-	 *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
-	 */
-	public void login(LoginUIListener listener,
-			OPCallDelegate callDelegate,
-			OPConversationThreadDelegate conversationThreadDelegate) {
-		mListener = listener;
+    private static class LoginRecord {
+        long time;
+        int result;
+        int failureReason;
+    }
 
-		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
-		OPAccount account = OPAccount.login(accountDelegate, conversationThreadDelegate, callDelegate);
-		OPDataManager.getInstance().setSharedAccount(account);
-		startIdentityLogin();
-	}
+    public static LoginManager getInstance() {
+        if (instance == null) {
+            instance = new LoginManager();
+        }
+        return instance;
+    }
 
-	/**
-	 * 
-	 * @param listener
-	 *            Application need to pass the UI listener to handle state changes.
-	 * @param callDelegate
-	 *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
-	 * @param conversationThreadDelegate
-	 *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
-	 * 
-	 * @param reloginInfo
-	 *            relogin jason blob stored from last login session
-	 */
-	public void relogin(LoginUIListener listener,
-			OPCallDelegate callDelegate,
-			OPConversationThreadDelegate conversationThreadDelegate,
-			String reloginInfo) {
-		mListener = listener;
-		OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl.getInstance();
-		OPAccount account = OPAccount.relogin(accountDelegate, conversationThreadDelegate, callDelegate, reloginInfo);
+    private LoginManager() {
+    }
 
-		OPDataManager.getInstance().setSharedAccount(account);
-	}
+    public void startLogin(OPCallDelegate callDelegate,
+            OPConversationThreadDelegate conversationThreadDelegate) {
+        String reloginInfo = OPDataManager.getInstance().getReloginInfo();
+        if (reloginInfo == null || reloginInfo.length() == 0) {
+            login(callDelegate,
+                    conversationThreadDelegate);
+        } else {
+            relogin(callDelegate,
+                    conversationThreadDelegate,
+                    reloginInfo);
+        }
+        mLoginPerformed = true;
+    }
 
-	private void startIdentityLogin() {
-		OPAccount account = OPDataManager.getInstance().getSharedAccount();
+    /**
+     * 
+     * @param callDelegate
+     *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+     * @param conversationThreadDelegate
+     *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+     */
+    public void login(
+            OPCallDelegate callDelegate,
+            OPConversationThreadDelegate conversationThreadDelegate) {
 
-		OPIdentity identity = new OPIdentity();
-		OPIdentityLoginWebview mIdentityLoginWebView = mListener.getIdentityWebview(null);
+        OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl
+                .getInstance();
+        OPAccount account = OPAccount.login(accountDelegate,
+                conversationThreadDelegate, callDelegate);
+        OPDataManager.getInstance().setSharedAccount(account);
+        mAccountLoggingIn = true;
+        mListener.onStartAccountLogin();
 
-		OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(null);
-		identity = OPIdentity.login(account, identityDelegate);
-		identityDelegate.associateIdentity(identity);
-		identity.setIsLoggingIn(true);
-		mIdentityLoginWebView.getClient().setIdentity(identity);
-		
-		
-	}
+        startIdentityLogin(null);
+    }
 
-	/**
-	 * Handle account state ready. If this is a login, it means the primary identity login has completed, so start downloading contacts. If
-	 * this is a relogin, attach Identity delegates to associated identities and start logging in identities
-	 * 
-	 * @param account
-	 */
-	public void onAccountStateReady(OPAccount account) {
+    /**
+     * 
 
-		OPDataManager.getInstance().saveAccount();
+     * @param callDelegate
+     *            Global call delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+     * @param conversationThreadDelegate
+     *            Global conversation thread delegate implementation. The object MUST be kept valid throughout the app lifecycle.
+     * 
+     * @param reloginInfo
+     *            relogin jason blob stored from last login session
+     */
 
-		List<OPIdentity> identities = account.getAssociatedIdentities();
-		if (identities.size() == 0) {
-			Log.d("TODO", "Account login FAILED identities empty ");
+    public void relogin(
+            OPCallDelegate callDelegate,
+            OPConversationThreadDelegate conversationThreadDelegate,
+            String reloginInfo) {
+        OPAccountDelegateImpl accountDelegate = OPAccountDelegateImpl
+                .getInstance();
+        OPAccount account = OPAccount.relogin(accountDelegate,
+                conversationThreadDelegate, callDelegate, reloginInfo);
 
-			return;
-		}
+        OPDataManager.getInstance().setSharedAccount(account);
+        mAccountLoggingIn = true;
+        mListener.onStartAccountLogin();
+    }
 
-		for (OPIdentity identity : identities) {
-			if (!identity.isDelegateAttached()) {//This is relogin
-				OPIdentityLoginWebview webview = mListener.getIdentityWebview(identity);
-				webview.getClient().setIdentity(identity);
+    public void startIdentityLogin(String uri) {
+        OPAccount account = OPDataManager.getInstance().getSharedAccount();
 
-				OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl.getInstance(identity);
-				identity.setIsAssocaiting(true);
-				identity.attachDelegate(identityDelegate, OPSdkConfig.getInstance().getRedirectUponCompleteUrl());
+        OPIdentity identity = new OPIdentity();
 
-			} else {
+        OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl
+                .getInstance(null);
 
-				String version = OPDataManager.getDatastoreDelegate().getDownloadedContactsVersion(identity.getIdentityURI());
-				if (TextUtils.isEmpty(version)) {
-					OPLogger.debug(OPLogLevel.LogLevel_Detail, "start download initial contacts");
-					identity.startRolodexDownload("");
-				} else {
-					// check for new contacts
-					OPLogger.debug(OPLogLevel.LogLevel_Detail,  "start download  contacts since version " + version);
-					identity.startRolodexDownload(version);
-				}
-               
-			}
-			 if(mListener!=null){
-                 mListener.onAccountLoginComplete();
-             }
-		}
+        identity = OPIdentity.login(uri, account, identityDelegate);
+        identity.setIsLoggingIn(true);
+        OPDataManager.getInstance().addIdentity(identity);
+        if (mListener != null) {
+            mListener.onStartIdentityLogin(identity);
+        }
+    }
 
-	}
+    /**
+     * Handle account state ready. If this is a login, it means the primary identity login has completed, so start downloading contacts. If
+     * this is a relogin, attach Identity delegates to associated identities and start logging in identities
+     * 
+     * @param account
+     */
+    public void onAccountStateReady(OPAccount account) {
 
-	public static void onLoginComplete() {
-		instance = null;
-	}
+        OPDataManager.getInstance().saveAccount();
 
-	/**
-	 * If login in progress
-	 * 
-	 * @return
-	 */
-	public static boolean isAccountLoginDone() {
-		return sAccountLoginDone;
-	}
+        List<OPIdentity> identities = account.getAssociatedIdentities();
+        if (identities.size() == 0) {
+            Log.d("TODO", "Account login FAILED identities empty ");
 
-	/**
-	 * Handle account shutdown state change.
-	 */
-	public static void onAccountShutdown() {
-		// release resources
-	}
+            return;
+        }
+
+        for (OPIdentity identity : identities) {
+            if (identity.getState() != IdentityStates.IdentityState_Ready) {
+                addIdentityLoggingIn(identity);
+            }
+            if (!identity.isDelegateAttached()) {// This is relogin
+                OPIdentityDelegateImpl identityDelegate = OPIdentityDelegateImpl
+                        .getInstance(identity);
+                identity.setIsAssocaiting(true);
+                identity.attachDelegate(identityDelegate, OPSdkConfig
+                        .getInstance().getRedirectUponCompleteUrl());
+
+            } else {
+
+                String version = OPDataManager
+                        .getDatastoreDelegate()
+                        .getDownloadedContactsVersion(identity.getIdentityURI());
+                if (TextUtils.isEmpty(version)) {
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                            "start download initial contacts");
+                    identity.startRolodexDownload("");
+                } else {
+                    // check for new contacts
+                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                            "start download  contacts since version " + version);
+                    identity.startRolodexDownload(version);
+                }
+            }
+        }
+        if (!isIdentityLoginInprog()) {
+            mAccountLoggingIn = false;
+        }
+        if (mListener != null) {
+            mListener.onAccountLoginComplete();
+        }
+
+    }
+
+    public static void onLoginComplete() {
+    }
+
+    /**
+     * If login in progress
+     * 
+     * @return
+     */
+    public boolean isLoggingIn() {
+        return mAccountLoggingIn || isIdentityLoginInprog();
+    }
+
+    /**
+     * Handle account shutdown state change.
+     */
+    public void onAccountShutdown() {
+        // release resources
+    }
+
+    public void onIdentityLoginSucceed(OPIdentity identity) {
+        if (identity.isAssociating()) {
+            String version = OPDataManager
+                    .getDatastoreDelegate()
+                    .getDownloadedContactsVersion(identity.getIdentityURI());
+            if (TextUtils.isEmpty(version)) {
+                OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                        "start download initial contacts");
+                identity.startRolodexDownload("");
+            } else {
+                // check for new contacts
+                OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                        "start download initial contacts");
+                identity.startRolodexDownload(version);
+            }
+            identity.setIsAssocaiting(false);
+        }
+        identity.setIsLoggingIn(false);
+        mListener.onIdentityLoginCompleted(identity);
+
+    }
+
+    public void onIdentityLoginFail(OPIdentity identity) {
+        if (mListener != null) {
+            mListener.onLoginError();
+
+        }
+        Intent intent = new Intent(IntentData.ACTION_IDENTITY_SHUTDOWN);
+        intent.putExtra(IntentData.PARAM_IDENTITY_URI,
+                identity.getIdentityURI());
+        OPHelper.getInstance().sendBroadcast(intent);
+        identity.setIsAssocaiting(false);
+        identity.setIsLoggingIn(false);
+        removeLoggingInIdentity(identity);
+
+    }
 
     /**
      * @return
@@ -191,5 +269,46 @@ public class LoginManager {
     public LoginUIListener getListener() {
         // TODO Auto-generated method stub
         return mListener;
+    }
+
+    public void registerListener(LoginUIListener listener) {
+        mListener = listener;
+    }
+
+    public void unregisterListener() {
+        mListener = null;
+    }
+
+    public void addIdentityLoggingIn(OPIdentity identity) {
+        if (mIdentitiesLoggingIn == null) {
+            mIdentitiesLoggingIn = new Hashtable<Long, OPIdentity>();
+        }
+        mIdentitiesLoggingIn.put(identity.getID(), identity);
+    }
+
+    void removeLoggingInIdentity(OPIdentity identity) {
+        if (mIdentitiesLoggingIn != null) {
+            mIdentitiesLoggingIn.remove(identity.getID());
+        }
+    }
+
+    boolean isIdentityLoginInprog() {
+        return mIdentitiesLoggingIn != null && !mIdentitiesLoggingIn.isEmpty();
+    }
+
+    /**
+     * 
+     */
+    public void afterSignout() {
+        mIdentitiesLoggingIn = null;
+        mAccountLoggingIn = false;
+    }
+
+    /**
+     * @return
+     */
+    public boolean loginPerformed() {
+        // TODO Auto-generated method stub
+        return mLoginPerformed;
     }
 }

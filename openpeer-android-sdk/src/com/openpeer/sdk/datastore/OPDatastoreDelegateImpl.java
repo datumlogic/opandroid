@@ -120,10 +120,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     public OPDatastoreDelegateImpl init(Context context) {
         mContext = context;
-        mOpenHelper = new OPDatabaseHelper(context,
-                OPDatabaseHelper.DATABASE_NAME, // the name of the database)
-                null, // uses the default SQLite cursor
-                OPDatabaseHelper.DATABASE_VERSION);
+        mOpenHelper = OPDatabaseHelper.getInstance(context);
+
         return this;// fluent API
     }
 
@@ -993,7 +991,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
      */
     @Override
     public void onSignOut() {
-        OPContentProvider.clear();
+        OPContentProvider.getInstance().shutdown();
+        mOpenHelper.closeAndDeleteDB();
     }
 
     /*

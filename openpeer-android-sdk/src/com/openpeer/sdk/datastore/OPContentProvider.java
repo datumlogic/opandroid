@@ -218,10 +218,7 @@ public class OPContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mOpenHelper = new OPDatabaseHelper(getContext(),
-                OPDatabaseHelper.DATABASE_NAME, // the name of the database)
-                null, // uses the default SQLite cursor
-                OPDatabaseHelper.DATABASE_VERSION);
+        mOpenHelper = OPDatabaseHelper.getInstance(getContext());
         initMatcher();
         instance = this;
         return true;
@@ -665,19 +662,6 @@ public class OPContentProvider extends ContentProvider {
             break;
         }
 
-    }
-
-    @Override
-    public void shutdown() {
-        // TODO Auto-generated method stub
-        super.shutdown();
-        instance.mOpenHelper.close();
-
-    }
-
-    public static void clear() {
-        instance.shutdown();
-        instance.getContext().deleteDatabase(OPDatabaseHelper.DATABASE_NAME);
     }
 
     /**

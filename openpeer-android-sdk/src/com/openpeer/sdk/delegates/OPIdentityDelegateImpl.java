@@ -31,29 +31,27 @@ package com.openpeer.sdk.delegates;
 
 import java.util.Hashtable;
 
-import android.content.Intent;
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.IdentityStates;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityDelegate;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
-import com.openpeer.sdk.app.IntentData;
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.app.OPIdentityLoginWebview;
 import com.openpeer.sdk.app.OPSdkConfig;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 
-    private static Hashtable<Long, OPIdentityDelegateImpl> instances = new Hashtable<Long, OPIdentityDelegateImpl>();
+    private static Hashtable<Long, OPIdentityDelegateImpl> instances;
 
     public static OPIdentityDelegateImpl getInstance(OPIdentity identity) {
+        if (instances == null) {
+            instances = new Hashtable<Long, OPIdentityDelegateImpl>();
+        }
         Long id = 0L;
         if (identity != null) {
             id = identity.getID();
@@ -77,14 +75,15 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
     @Override
     public void onIdentityStateChanged(OPIdentity identity, IdentityStates state) {
         // TODO Auto-generated method stub
-        Log.d("state", "identity state " + state);
+        Log.d("login", "identity state " + state);
         // why isn' this working? Weird!!
         // mLoginView = mListener.getIdentityWebview(identity);
         // mLoginView.getClient().setIdentity(identity);
         LoginUIListener mListener = LoginManager.getInstance().getListener();
         if (mListener == null) {
-            OPLogger.debug(OPLogLevel.LogLevel_Debug,
+            OPLogger.error(OPLogLevel.LogLevel_Debug,
                     "No UI listener while state change " + state);
+
         }
         switch (state) {
         case IdentityState_PendingAssociation:
@@ -92,9 +91,10 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
         case IdentityState_WaitingAttachmentOfDelegate:
             break;
         case IdentityState_WaitingForBrowserWindowToBeLoaded: {
-
+            if (mListener == null) {
+                return;
+            }
             Log.d("login", "loading identity webview");
-            mListener.onStartIdentityLogin(identity);
             OPIdentityLoginWebview mLoginView = mListener
                     .getIdentityWebview(identity);
             mLoginView.loadUrl(OPSdkConfig.getInstance().getOuterFrameUrl());
@@ -114,43 +114,14 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
             identity.notifyBrowserWindowClosed();
             break;
         case IdentityState_Ready:
-            if (OPDataManager.getInstance().getSharedAccount().getState() == AccountStates.AccountState_Ready) {
-                // OPDataManager.getInstance().setIdentities(OPDataManager.getInstance().getSharedAccount().getAssociatedIdentities());
-                if (mListener != null) {
-                    mListener.onAccountLoginComplete();
-                }
-            }
-            if (identity.isAssociating()) {
-                String version = OPDataManager
-                        .getDatastoreDelegate()
-                        .getDownloadedContactsVersion(identity.getIdentityURI());
-                if (TextUtils.isEmpty(version)) {
-                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
-                            "start download initial contacts");
-                    identity.startRolodexDownload("");
-                } else {
-                    // check for new contacts
-                    OPLogger.debug(OPLogLevel.LogLevel_Detail,
-                            "start download initial contacts");
-                    identity.startRolodexDownload(version);
-                }
-                identity.setIsAssocaiting(false);
-            }
-            identity.setIsLoggingIn(false);
+            LoginManager.getInstance().onIdentityLoginSucceed(identity);
             break;
         case IdentityState_Shutdown:
             // Temporary defensive code. Proper logic will be put in place soon.
-            if (mListener != null) {
-                mListener.onLoginError();
+            LoginManager.getInstance().onIdentityLoginFail(identity);
 
-            }
-            Intent intent = new Intent(IntentData.ACTION_IDENTITY_SHUTDOWN);
-            intent.putExtra(IntentData.PARAM_IDENTITY_URI,
-                    identity.getIdentityURI());
-            OPHelper.getInstance().sendBroadcast(intent);
-            identity.setIsAssocaiting(false);
-            identity.setIsLoggingIn(false);
-
+            break;
+        default:
             break;
         }
     }
@@ -174,4 +145,7 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
         OPDataManager.getInstance().onDownloadedRolodexContacts(identity);
     }
 
+    public static void clearAfterSignout() {
+        instances = null;
+    }
 }

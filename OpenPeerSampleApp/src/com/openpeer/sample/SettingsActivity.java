@@ -33,6 +33,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -251,7 +252,6 @@ public class SettingsActivity extends BaseActivity {
 
         @Override
         public void onResume() {
-            // TODO Auto-generated method stub
             super.onResume();
             setupSettingDisplays();
         }
@@ -372,8 +372,9 @@ public class SettingsActivity extends BaseActivity {
                     R.string.msg_cannot_signout_with_call, Toast.LENGTH_LONG)
                     .show();
         } else {
-            OPApplication.signout();
-            finish();
+            registerSignoutReceiver();
+            showSignoutView();
+            OPApplication.getInstance().signout();
         }
     }
 

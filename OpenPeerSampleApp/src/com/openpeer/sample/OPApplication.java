@@ -35,7 +35,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.StrictMode;
-import android.os.SystemClock;
 import android.util.Log;
 import android.webkit.CookieManager;
 
@@ -44,6 +43,7 @@ import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.OPPushNotificationBuilder;
 import com.openpeer.sample.push.PushIntentReceiver;
 import com.openpeer.sample.util.SettingsHelper;
+import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.urbanairship.AirshipConfigOptions;
 import com.urbanairship.Logger;
@@ -55,6 +55,7 @@ public class OPApplication extends Application {
     private static OPApplication instance;
     BroadcastReceiver mReceiver;
     boolean DEVELOPER_MODE = false;
+    private BroadcastReceiver mSignoutReceiver;
 
     static {
         try {
@@ -86,22 +87,6 @@ public class OPApplication extends Application {
                     .build());
         }
 
-        long startTime= System.currentTimeMillis();
-        AirshipConfigOptions options = AirshipConfigOptions
-                .loadDefaultOptions(this);
-        UAirship.takeOff(this, options);
-        Logger.logLevel = Log.VERBOSE;
-
-        PushManager.shared().setNotificationBuilder(
-                new OPPushNotificationBuilder());
-        PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
-        long endTime= System.currentTimeMillis();
-        Log.d(TAG,"UA init time "+(endTime-startTime));
-
-        OPHelper.getInstance().init(this, null);
-        // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
-        OPSessionManager.getInstance().init();
-        SettingsHelper.getInstance().initLoggers();
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -110,9 +95,11 @@ public class OPApplication extends Application {
                 unregisterReceiver(mReceiver);
             }
         };
+
         IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
         filter.addAction(Intent.ACTION_REBOOT);
         registerReceiver(mReceiver, filter);
+        init();
     }
 
     public static OPApplication getInstance() {
@@ -120,11 +107,30 @@ public class OPApplication extends Application {
         return instance;
     }
 
-    public static void signout() {
+    public void signout() {
+
         OPSessionManager.getInstance().onSignOut();
         OPPushManager.onSignOut();
-        OPHelper.getInstance().onSignOut();
         CookieManager.getInstance().removeAllCookie();
         OPNotificationBuilder.cancelAllUponSignout();
+        UAirship.land();
+        OPHelper.getInstance().onSignOut();
     }
+
+    private void init() {
+        AirshipConfigOptions options = AirshipConfigOptions
+                .loadDefaultOptions(this);
+        UAirship.takeOff(this, options);
+        Logger.logLevel = Log.VERBOSE;
+
+        PushManager.shared().setNotificationBuilder(
+                new OPPushNotificationBuilder());
+        PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
+
+        OPHelper.getInstance().init(this, null);
+        // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
+        OPSessionManager.getInstance().init();
+        SettingsHelper.getInstance().initLoggers();
+    }
+
 }

@@ -53,6 +53,7 @@ import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
+import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
 
@@ -276,6 +277,10 @@ public class OPHelper {
         OPDataManager.getInstance().onSignOut();
     }
 
+    public boolean isSigningOut() {
+        return isSigningOut;
+    }
+
     /**
      * @ExcludeFromJavadoc
      */
@@ -284,7 +289,10 @@ public class OPHelper {
         if (isSigningOut) {
             mCacheDelegate.clear(null);
             intent.setAction(IntentData.ACTION_SIGNOUT_DONE);
+            OPDataManager.getInstance().afterSignout();
+            LoginManager.getInstance().afterSignout();
         } else {
+            LoginManager.getInstance().onAccountShutdown();
             intent.setAction(IntentData.ACTION_ACCOUNT_SHUTDOWN);
         }
         mContext.sendBroadcast(intent);

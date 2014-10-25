@@ -29,6 +29,7 @@
  *******************************************************************************/
 package com.openpeer.javaapi;
 
+import android.text.TextUtils;
 import android.text.format.Time;
 import android.util.Log;
 
@@ -41,17 +42,23 @@ public class OPIdentity {
      * Start identity login. This is handled automatically in {@link com.openpeer.sdk.app.LoginManager}. Application should not use this
      * method directly
      * 
+     * @param identityUri
+     *            Pass null for initial login. Pass in the stored identity uri if you need to manually relogin this identity.
      * @param account
      * @param delegate
      * @return
      */
-    public static OPIdentity login(OPAccount account,
+
+    public static OPIdentity login(String identityUri, OPAccount account,
             OPIdentityDelegate delegate) {
         OPSdkConfig config = OPSdkConfig.getInstance();
+        if (TextUtils.isEmpty(identityUri)) {
+            identityUri = config.getIdentityBaseUri();
+        }
         return login(account,
                 delegate,
                 config.getIdentityProviderDomain(),// "identity-v1-rel-lespaul-i.hcs.io",
-                config.getIdentityBaseUri(),// "identity://identity-v1-rel-lespaul-i.hcs.io/",
+                identityUri,// "identity://identity-v1-rel-lespaul-i.hcs.io/",
                 config.getRedirectUponCompleteUrl());
     }
 
@@ -165,7 +172,6 @@ public class OPIdentity {
         super.finalize();
     }
 
-
     public void setIsLoggingIn(boolean b) {
         IdentityData.getInstance(getID()).setLoggingIn(b);
     }
@@ -180,5 +186,13 @@ public class OPIdentity {
 
     public boolean isAssociating() {
         return IdentityData.getInstance(getID()).isAssociating();
+    }
+
+    /**
+     * @return
+     */
+    public IdentityStates getState() {
+        // TODO Auto-generated method stub
+        return getState(0, "");
     }
 }

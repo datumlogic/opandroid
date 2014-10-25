@@ -43,12 +43,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.sample.contacts.ContactsFragment;
 import com.openpeer.sample.conversation.ChatsFragment;
 import com.openpeer.sample.conversation.DiscoveryFragment;
-import com.openpeer.sample.util.NetworkUtil;
 import com.openpeer.sdk.app.OPDataManager;
 
 public class MainActivity extends BaseActivity implements ChatsFragment.ChatsViewListener {
@@ -169,11 +167,12 @@ public class MainActivity extends BaseActivity implements ChatsFragment.ChatsVie
     public void onResume() {
         super.onResume();
         OPAccount account = OPDataManager.getInstance().getSharedAccount();
-        if (account == null || account.getState() == AccountStates.AccountState_Shutdown) {
-            if (NetworkUtil.isConnected()) {
-                showLoginFragment();
-            }
-        }
+//        if (account == null || account.getState() == AccountStates.AccountState_Shutdown) {
+////        if(LoginManager.getInstance().isLoggingIn()){
+//            if (NetworkUtil.isConnected()) {
+//                showLoginFragment();
+//            }
+//        }
     }
 
     @Override
@@ -186,8 +185,4 @@ public class MainActivity extends BaseActivity implements ChatsFragment.ChatsVie
         mViewPager.setCurrentItem(TAB_FAVORITES);
     }
 
-    @Override
-    protected void onSignoutComplete() {
-        showLoginFragment();
-    }
 }
