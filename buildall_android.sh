@@ -35,6 +35,12 @@ else
 	read Input
 	echo "You entered:$Input"
 fi
+if [[ $2 == *clean* ]]; then
+	echo "------cleaning old build----------"
+	rm -rf libs/op/libs/build
+	rm -rf libs/op/libs/ortc-lib/libs/build/
+fi
+
 
 #Set path
 echo "----------------- Exporting the android-ndk path ----------------"
