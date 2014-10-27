@@ -50,6 +50,12 @@ public:
 	static IPushMessaging::NameValueMap nameValueMapToCore(jobject);
 	static jobject nameValueMapToJava(IPushMessaging::NameValueMapPtr);
 
+	//push presence
+	static IPushPresence::PushInfo presencePushInfoToCore(jobject javaPushInfo);
+	static IPushPresence::ValueNameList presenceValueNameListToCore(jobject);
+	static IPushPresence::NameValueMap presenceNameValueMapToCore(jobject);
+	static jobject presenceNameValueMapToJava(IPushPresence::NameValueMapPtr);
+
 
 
 public:

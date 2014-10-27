@@ -530,6 +530,8 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushMessaging.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushPresenceRegisterQuery.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushPresenceStatus.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushPresence.cpp \
+		
 
 
 LOCAL_LDLIBS += $(ANDROIDNDK_PATH)/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a

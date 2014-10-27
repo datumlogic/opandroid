@@ -16,8 +16,12 @@
 #include "PushMessagingQueryDelegateWrapper.h"
 #include "PushMessagingRegisterQueryDelegateWrapper.h"
 #include "PushMessagingDatabaseAbstractionDelegateWrapper.h"
+#include "PushPresenceDelegateWrapper.h"
+#include "PushPresenceRegisterQueryDelegateWrapper.h"
+#include "PushPresenceDatabaseAbstractionDelegateWrapper.h"
 
 #include "openpeer/core/IPushMessaging.h"
+#include "openpeer/core/IPushPresence.h"
 
 #ifndef _ANDROID_OPENPEER_GLOBALS_H_
 #define _ANDROID_OPENPEER_GLOBALS_H_

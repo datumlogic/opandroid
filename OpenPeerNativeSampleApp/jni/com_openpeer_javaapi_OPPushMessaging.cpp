@@ -25,7 +25,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPPushMessaging_create
 	jobject object;
 	JNIEnv *jni_env = 0;
 
-	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPIdentity native login called");
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OPPushMessaging native create called");
 
 	jni_env = getEnv();
 
