@@ -17,6 +17,12 @@ opandroid/openpeer-android-sdk/jni/   - contains the Java SDK JNI wires
 opandroid/OpenPeerSampleApp/    	  - contains the sample application 
 
 How to build:
+Prerequisites: 
+-- Android SDK https://developer.android.com/sdk/index.html?hl=i
+-- Android NDK  Android NDK r8e(http://dl.google.com/android/ndk/android-ndk-r10c-darwin-x86_64.bin for mac) is required. Path to the NDK is mandatory input for building 3rd party libraries. 
+-- ninja build sysytem required for WebRTC library build. You can install ninja using MacPorts or Homebrew (http://martine.github.io/ninja/).
+
+Building step by step:
 
 1) Download and build required native 3rd party libraries by running buildall_android.sh script from your terminal:
 
@@ -24,8 +30,7 @@ pushd opandroid/
 ./buildall_android.sh {PATH_TO_NDK}
 popd
 
-NOTE: It is required to have Android NDK r8e installed on the target machine. Path to the NDK is mandatory input for building 3rd party libraries. ninja build sysytem is required for WebRTC library build. You can install ninja using MacPorts or Homebrew (http://martine.github.io/ninja/).
-
+This will take long time but should only need to be done whenever there's change in the libs/op repository. Use buildall_android.sh to build the C++ libraries first. The libraries binary files are placed in libs/op/libs/build and libs/op/libs/ortc-lib/libs/build/ and are linked into library project.
 
 2) From Eclipse ADT, import sdk project:
 
@@ -47,13 +52,16 @@ libs/op/libs/op-stack-cpp    		    	– C++ Hookflash Open Peer stack
 libs/op/libs/op-core-cpp    		    	– C++ Hookflash Open Peer core API (works on the Open Peer stack)
 libs/op/libs/ortc-lib/libs/WebRTC           – android port of the webRTC media stack
 
-Use buildall_android.sh to build the C++ libraries first. The libraries binary files are placed in libs/op/libs/build and libs/op/libs/ortc-lib/libs/build/ and are linked into library project.
-
-During development we use symbolic links to link the sdk source folder from sample app so we can invoke native application debugging in eclipse. Executing setup-native-debug-proj.sh will setup all symbolic links so you can do native debugging, executing setup-library-proj.sh will clean all the links and use the sdk as library.
-
-Building all the C++ libraries will take long time, currently between 40mins and one hour, depending on the hardware. We're aware of that pain and am working on improvement.
+During development we use symbolic links to link the sdk source folder from sample app so we can invoke native application debugging in eclipse. You should not need to debug native libary but in case you do, executing setup-native-debug-proj.sh will setup all symbolic links so you can do native debugging, executing setup-library-proj.sh will clean all the links and use the sdk as library. You can also use gdb command line debugging that way you don't need this script.
 
 We're also aware many developers use Android Studio vs Eclipse. Due to constraint that Android studio doesn't have nice support for native debugging so we're doing our own development with eclipse. But we will explore the way to set up native debugging in Android studio and add project configuration for Android studio as well.
+
+Build with one script(ant 1.8 or newer is required):
+We have a simple script buillall.sh at root. The script will simply invoke the buildall_android.sh, then invoke ant to build the sample app. To use this script, you will need to export ANDROID_HOME and ANDROID_NDK_HOME
+export ANDROID_HOME={PATH-TO-YOUR-ANDROID-SDK}
+export ANDROID_NDK_HOME={PATH-TO-YOUR-ANDROID-NDK}
+./buildall.sh
+For convenience I put these settings in my .bash_profile(suppose you're using mac or linux)
 
 Branches:
 
@@ -72,29 +80,32 @@ Thank you for your interest in the Hookflash Open Peer Android SDK.
 
 License:
 
- Copyright (c) 2014, SMB Phone Inc.
- All rights reserved.
- 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- 
- 1. Redistributions of source code must retain the above copyright notice, this
- list of conditions and the following disclaimer.
- 2. Redistributions in binary form must reproduce the above copyright notice,
- this list of conditions and the following disclaimer in the documentation
- and/or other materials provided with the distribution.
- 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
- The views and conclusions contained in the software and documentation are those
- of the authors and should not be interpreted as representing official policies,
- either expressed or implied, of the FreeBSD Project.
+ /*******************************************************************************
+ *
+ *  Copyright (c) 2014 , Hookflash Inc.
+ *  All rights reserved.
+ *  
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *  
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
+ *  
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ *  The views and conclusions contained in the software and documentation are those
+ *  of the authors and should not be interpreted as representing official policies,
+ *  either expressed or implied, of the FreeBSD Project.
+ *******************************************************************************/
