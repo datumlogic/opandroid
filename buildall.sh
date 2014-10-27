@@ -9,12 +9,8 @@ if [ -z $ANDROID_HOME ];then
 fi
 ./buildall_android.sh $ANDROID_NDK_HOME
 pushd `pwd`
-echo "start building sdk"
-cd openpeer_sdk_android
-ant release
-popd
-pushd `pwd`
-echo "start building sample app"
+echo "start building sample app and sdk"
 cd OpenPeerSampleApp
 ant release
+echo "Done building sample app and sdk"
 popd
