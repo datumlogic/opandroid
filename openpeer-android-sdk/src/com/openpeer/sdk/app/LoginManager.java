@@ -180,6 +180,7 @@ public class LoginManager {
                 identity.setIsAssocaiting(true);
                 identity.attachDelegate(identityDelegate, OPSdkConfig
                         .getInstance().getRedirectUponCompleteUrl());
+                OPDataManager.getInstance().addIdentity(identity);
 
             } else {
 

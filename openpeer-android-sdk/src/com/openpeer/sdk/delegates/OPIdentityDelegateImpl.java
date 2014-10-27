@@ -29,8 +29,6 @@
  *******************************************************************************/
 package com.openpeer.sdk.delegates;
 
-import java.util.Hashtable;
-
 import android.util.Log;
 
 import com.openpeer.javaapi.IdentityStates;
@@ -46,27 +44,14 @@ import com.openpeer.sdk.app.OPSdkConfig;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 
-    private static Hashtable<Long, OPIdentityDelegateImpl> instances;
+    private static OPIdentityDelegateImpl instances;
 
     public static OPIdentityDelegateImpl getInstance(OPIdentity identity) {
         if (instances == null) {
-            instances = new Hashtable<Long, OPIdentityDelegateImpl>();
+            instances = new OPIdentityDelegateImpl();
         }
-        Long id = 0L;
-        if (identity != null) {
-            id = identity.getID();
-        }
-        OPIdentityDelegateImpl instance = instances.get(id);
-        if (instance == null) {
-            instance = new OPIdentityDelegateImpl();
-            instances.put(id, instance);
-        }
-        return instance;
-    }
 
-    public void associateIdentity(OPIdentity identity) {
-        instances.remove(0L);
-        instances.put(identity.getID(), this);
+        return instances;
     }
 
     private OPIdentityDelegateImpl() {
@@ -146,6 +131,5 @@ public class OPIdentityDelegateImpl extends OPIdentityDelegate {
     }
 
     public static void clearAfterSignout() {
-        instances = null;
     }
 }

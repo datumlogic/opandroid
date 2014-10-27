@@ -133,6 +133,7 @@ public class OPAccountDelegateImpl extends OPAccountDelegate {
 
                 identity.attachDelegate(delegate, OPSdkConfig.getInstance()
                         .getRedirectUponCompleteUrl());
+                OPDataManager.getInstance().addIdentity(identity);
             }
         }
     }
