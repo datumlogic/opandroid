@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="custom_rules">
+    <condition property="ndk.dir" value="${env.ANDROID_NDK_HOME}">
+        <isset property="env.ANDROID_NDK_HOME" />
+    </condition>
+<target name="-pre-build">
+    <copydir dest="src/" src="../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_capture/android/java/src"/>
+    <copydir dest="src/" src="../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_render/android/java/src"/>
+    <copydir dest="src/" src="../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/audio_device/android/java/src"/>
+</target>
+<target name="-post-build">
+   <delete dir="src/org"/>
+</target>
+
+<target name="clean" depends="android_rules.clean">
+    <exec executable="${ndk.dir}/ndk-build" failonerror="true">
+        <arg value="clean"/>
+    </exec>
+</target>
+</project>
