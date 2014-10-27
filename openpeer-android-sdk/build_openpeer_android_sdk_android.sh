@@ -80,8 +80,4 @@ export NDK_PROJECT_PATH=`pwd`
 ndk-build NDK_DEBUG=1 APP_PLATFORM=android-9 HOST_OS=$HOST_OS V=1 NDK_LOG=1
 popd
 
-echo "-------- Installing ortc-lib -----"
-cp -r ./obj/local/armeabi-v7a/lib* build
-
-#clean
-#rm -rf ./obj
+echo "-------- Done building ortc-lib -----"
