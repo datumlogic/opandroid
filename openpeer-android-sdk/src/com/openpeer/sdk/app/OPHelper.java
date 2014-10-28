@@ -97,7 +97,7 @@ public class OPHelper {
 
             String deviceId = Secure.getString(mContext.getContentResolver(),
                     Secure.ANDROID_ID);
-            String instanceId = OPSdkConfig.getInstanceid();
+            String instanceId = OPSdkConfig.getInstance().getInstanceId();
             String telnetLogString = deviceId + "-" + instanceId + "\n";
             OPLogger.installOutgoingTelnetLogger(url, true, telnetLogString);
         } else {
@@ -169,7 +169,6 @@ public class OPHelper {
             OPMediaEngineDelegate mediaengineDelegate) {
         mCacheDelegate = cacheDelegate;
         mSettingsDelegate = settingsDelegate;
-        long start = SystemClock.uptimeMillis();
 
         mContext = context;
 
@@ -181,13 +180,11 @@ public class OPHelper {
             mSettingsDelegate = OPSettingsDelegateImpl.getInstance(mContext);
         }
         OPSettings.setup(mSettingsDelegate);
-        if (TextUtils.isEmpty(OPSdkConfig.getInstance().getAppId())) {
-            OPSdkConfig.getInstance().init(context);
-        } else {
-            OPSettings.setString(
-                    "openpeer/calculated/authorizated-application-id",
-                    OPSdkConfig.generateAuthorizedAppId());
-        }
+
+        OPSdkConfig.getInstance().init(context);
+
+        OPSdkConfig.getInstance().applySystemSettings(context);
+        OPSdkConfig.getInstance().applyApplicationSettings();
 
         if (mCacheDelegate == null) {
             mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);

@@ -423,7 +423,7 @@ public class OPSessionManager {
      * Clean up on signout
      */
     public void onSignOut() {
-        mCallStates = null;
+        mCallStates.clear();
         mCalls.clear();
         mSessions.clear();
     }
