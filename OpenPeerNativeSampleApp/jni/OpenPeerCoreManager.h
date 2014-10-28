@@ -58,6 +58,7 @@ public:
 
 	//push presence structure helpers
 	static jobject presenceStatusToJava(PresenceStatusPtr status);
+	static jobject presenceTimeZoneLocationToJava(PresenceTimeZoneLocationPtr location);
 
 
 

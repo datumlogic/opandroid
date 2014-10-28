@@ -214,7 +214,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPPresenceStatus_releaseCoreObj
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPComposingStatus releaseCoreObjects Core object not deleted - already NULL!");
+		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPPresenceStatus releaseCoreObjects Core object not deleted - already NULL!");
 	}
 }
 

@@ -1152,4 +1152,46 @@ jobject OpenPeerCoreManager::presenceStatusToJava(PresenceStatusPtr statusPtr)
 
 }
 
+jobject OpenPeerCoreManager::presenceTimeZoneLocationToJava(PresenceTimeZoneLocationPtr locationPtr)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPPresenceTimeZoneLocation");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	PresenceTimeZoneLocationPtr* ptrToPresenceLocation = new boost::shared_ptr<PresenceTimeZoneLocation>(locationPtr);
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong location = (jlong) ptrToPresenceLocation;
+	jni_env->SetLongField(object, fid, location);
+
+	jclass timeCls = findClass("android/text/format/Time");
+	jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+	jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
+	jobject timeObject = jni_env->NewObject(timeCls, timeMethodID);
+	jni_env->CallVoidMethod(timeObject, timeSetMillisMethodID, locationPtr.get()->mOffset.total_milliseconds());
+
+	jfieldID offsetFid = jni_env->GetFieldID(cls, "mOffset", "Landroid/text/format/Time;");
+	jni_env->SetObjectField(object, offsetFid, timeObject);
+
+	jfieldID abbrevationFid = jni_env->GetFieldID(cls, "mAbbreviation", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, abbrevationFid, jni_env->NewStringUTF(locationPtr.get()->mAbbreviation));
+
+	jfieldID nameFid = jni_env->GetFieldID(cls, "mName", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, nameFid, jni_env->NewStringUTF(locationPtr.get()->mName));
+
+	jfieldID cityFid = jni_env->GetFieldID(cls, "mCity", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, cityFid, jni_env->NewStringUTF(locationPtr.get()->mCity));
+
+	jfieldID countryFid = jni_env->GetFieldID(cls, "mCountry", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, countryFid, jni_env->NewStringUTF(locationPtr.get()->mCountry));
+
+	return object;
+}
+
 
