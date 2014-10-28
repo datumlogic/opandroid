@@ -531,6 +531,7 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushPresenceRegisterQuery.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushPresenceStatus.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushPresence.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPresenceStatus.cpp \
 		
 
 

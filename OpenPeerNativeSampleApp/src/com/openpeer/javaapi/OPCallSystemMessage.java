@@ -41,7 +41,7 @@ public class OPCallSystemMessage {
 
 		if (nativeClassPointer != 0)
 		{
-			Log.d("output", "Cleaning OPComposingStatus core objects");
+			Log.d("output", "Cleaning OPCallSystemMessage core objects");
 			releaseCoreObjects();
 		}
 

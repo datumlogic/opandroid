@@ -1117,3 +1117,39 @@ jobject OpenPeerCoreManager::presenceNameValueMapToJava(IPushPresence::NameValue
 
 	return returnMapObject;
 }
+
+jobject OpenPeerCoreManager::presenceStatusToJava(PresenceStatusPtr statusPtr)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPPresenceStatus");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	PresenceStatusPtr* ptrToPresenceStatus = new boost::shared_ptr<PresenceStatus>(statusPtr);
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong status = (jlong) ptrToPresenceStatus;
+	jni_env->SetLongField(object, fid, status);
+
+	jfieldID statusFid = jni_env->GetFieldID(cls, "mStatus", "Lcom/openpeer/javaapi/PresenceStatuses;");
+	jni_env->SetObjectField(object, statusFid, getJavaEnumObject("com/openpeer/javaapi/PresenceStatuses", (int)statusPtr.get()->mStatus));
+
+	jfieldID extendedStatusFid = jni_env->GetFieldID(cls, "mExtendedStatus", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, extendedStatusFid, jni_env->NewStringUTF(statusPtr.get()->mExtendedStatus));
+
+	jfieldID statusMessageFid = jni_env->GetFieldID(cls, "mStatusMessage", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, statusMessageFid, jni_env->NewStringUTF(statusPtr.get()->mStatusMessage));
+
+	jfieldID priorityFid = jni_env->GetFieldID(cls, "mPriority", "I");
+	jni_env->SetIntField(object, priorityFid, (jint)statusPtr.get()->mPriority);
+
+	return object;
+
+}
+
+

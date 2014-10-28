@@ -56,6 +56,9 @@ public:
 	static IPushPresence::NameValueMap presenceNameValueMapToCore(jobject);
 	static jobject presenceNameValueMapToJava(IPushPresence::NameValueMapPtr);
 
+	//push presence structure helpers
+	static jobject presenceStatusToJava(PresenceStatusPtr status);
+
 
 
 public:
