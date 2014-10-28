@@ -53,7 +53,6 @@ public class OPSdkConfig {
     private static final String KEY_GRANT_ID = "openpeer/calculated/grantId";
 
     private static final String PREFIX_APP_COMMON_SETTING = "openpeer/common/";
-    private static final String PREFIX_APP_CALCULATED_SETTING = "openpeer/calculated/";
 
     private static final String KEY_APP_NAME = PREFIX_APP_COMMON_SETTING
             + "application-name";
@@ -75,19 +74,14 @@ public class OPSdkConfig {
     public static final String KEY_REDIRECT_UPON_LOGIN_URL = "redirectAfterLoginCompleteURL";
     public static final String KEY_INSTANCE_ID = "openpeer/calculated/instance-id";
     public static final String KEY_AUTHORIZED_APP_ID = "openpeer/calculated/authorizated-application-id";
+    private static final String KEY_DEVICE_ID = "openpeer/calculated/device-id";
+    private static final String KEY_SYSTEM = "openpeer/calculated/system";
+    private static final String KEY_OS = "openpeer/calculated/os";
 
-    private static final long DURATION_ONE_YEAR_IN_MILLIS = 12 * 30 * 24 * 60
-            * 60
+    static final long DURATION_ONE_YEAR_IN_MILLIS = 12 * 30 * 24 * 60 * 60
             * 1000l;
 
-    public static boolean debug = true;
     private static OPSdkConfig instance;
-
-    private static final String KEY_DEVICE_ID = "openpeer/calculated/device-id";
-
-    private static final String KEY_SYSTEM = "openpeer/calculated/system";
-
-    private static final String KEY_OS = "openpeer/calculated/os";
 
     public String getInstanceId() {
         return OPHelper.getSettingsDelegate().getString(KEY_INSTANCE_ID);
@@ -160,7 +154,7 @@ public class OPSdkConfig {
     }
 
     /**
-     * This funciton need to be called on app launch to make sure device/os settings are up to date
+     * This funciton need to be called on app launch or after switching application to make sure application settings are up to date
      * 
      * @param context
      */
@@ -180,10 +174,8 @@ public class OPSdkConfig {
         expires.set(System.currentTimeMillis() + DURATION_ONE_YEAR_IN_MILLIS);
 
         String id = OPStack.createAuthorizedApplicationID(
-                OPHelper.getSettingsDelegate().getString(
-                        KEY_APP_ID),
-                OPHelper.getSettingsDelegate().getString(
-                        KEY_APP_APPKEY),
+                OPHelper.getSettingsDelegate().getString(KEY_APP_ID),
+                OPHelper.getSettingsDelegate().getString(KEY_APP_APPKEY),
                 expires);
         return id;
     }
@@ -205,8 +197,12 @@ public class OPSdkConfig {
     }
 
     public GroupChatMode getGroupChatMode() {
-        return GroupChatMode.valueOf(OPHelper.getSettingsDelegate().getString(
-                KEY_CHAT_MODE));
+        String mode = OPHelper.getSettingsDelegate().getString(KEY_CHAT_MODE);
+        if (TextUtils.isEmpty(mode)) {
+            return GroupChatMode.ContactsBased;
+        } else {
+            return GroupChatMode.valueOf(mode);
+        }
     }
 
 }
