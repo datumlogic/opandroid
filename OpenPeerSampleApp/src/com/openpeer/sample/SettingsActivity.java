@@ -65,6 +65,7 @@ import com.openpeer.javaapi.OPSettings;
 import com.openpeer.sample.settings.SettingsDownloader;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
+import com.openpeer.sdk.app.OPSdkConfig;
 
 public class SettingsActivity extends BaseActivity {
     static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
@@ -339,6 +340,10 @@ public class SettingsActivity extends BaseActivity {
                         String jsonBlob = arg0.toString();
                         if (!TextUtils.isEmpty(jsonBlob)) {
                             OPSettings.apply(jsonBlob);
+                            //App settings have changed so regenerate authorized-application-id and instance-id
+                            OPSdkConfig.getInstance().applyApplicationSettings();
+                            SettingsHelper.getInstance().initLoggers();
+                            
                             AlertDialog.Builder builder = new AlertDialog.Builder(
                                     SettingsActivity.this);
                             builder.setMessage(
