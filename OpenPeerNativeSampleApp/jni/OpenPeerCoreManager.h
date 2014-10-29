@@ -58,7 +58,12 @@ public:
 
 	//push presence structure helpers
 	static jobject presenceStatusToJava(PresenceStatusPtr status);
-	static jobject presenceTimeZoneLocationToJava(PresenceTimeZoneLocationPtr location);
+	static jobject presenceTimeZoneLocationToJava(PresenceTimeZoneLocationPtr locationPtr);
+	static jobject presenceGeographicLocationToJava(PresenceGeographicLocationPtr locationPtr);
+	static jobject presenceStreetLocationToJava(PresenceStreetLocationPtr locationPtr);
+	static jobject presenceResourceToJava(PresenceResources::Resource resource);
+	static jobject presenceResourceListToJava(PresenceResources::ResourceList resourceList);
+	static jobject presenceResourcesToJava(PresenceResourcesPtr resourcesPtr);
 
 
 

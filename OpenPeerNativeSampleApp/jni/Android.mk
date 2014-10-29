@@ -533,6 +533,9 @@ LOCAL_SRC_FILES := \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPushPresence.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPresenceStatus.cpp \
 		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPresenceTimeZoneLocation.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPresenceGeographicLocation.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPresenceStreetLocation.cpp \
+		OpenPeerNativeSampleApp/jni/com_openpeer_javaapi_OPPresenceResources.cpp \
 		
 
 

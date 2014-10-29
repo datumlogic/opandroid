@@ -1149,7 +1149,6 @@ jobject OpenPeerCoreManager::presenceStatusToJava(PresenceStatusPtr statusPtr)
 	jni_env->SetIntField(object, priorityFid, (jint)statusPtr.get()->mPriority);
 
 	return object;
-
 }
 
 jobject OpenPeerCoreManager::presenceTimeZoneLocationToJava(PresenceTimeZoneLocationPtr locationPtr)
@@ -1194,4 +1193,221 @@ jobject OpenPeerCoreManager::presenceTimeZoneLocationToJava(PresenceTimeZoneLoca
 	return object;
 }
 
+jobject OpenPeerCoreManager::presenceGeographicLocationToJava(PresenceGeographicLocationPtr locationPtr)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
 
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPPresenceGeographicLocation");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	PresenceGeographicLocationPtr* ptrToPresenceLocation = new boost::shared_ptr<PresenceGeographicLocation>(locationPtr);
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong location = (jlong) ptrToPresenceLocation;
+	jni_env->SetLongField(object, fid, location);
+
+	jfieldID latitudeFid = jni_env->GetFieldID(cls, "mLatitude", "D");
+	jni_env->SetDoubleField(object, latitudeFid, (jdouble) locationPtr.get()->mLatitude);
+
+	jfieldID longitudeFid = jni_env->GetFieldID(cls, "mLongitude", "D");
+	jni_env->SetDoubleField(object, longitudeFid, (jdouble) locationPtr.get()->mLongitude);
+
+	jfieldID accRadiusFid = jni_env->GetFieldID(cls, "mGeographicAccuracyRadius", "D");
+	jni_env->SetDoubleField(object, accRadiusFid, (jdouble) locationPtr.get()->mGeographicAccuracyRadius);
+
+	jfieldID altitudeFid = jni_env->GetFieldID(cls, "mAltitude", "D");
+	jni_env->SetDoubleField(object, altitudeFid, (jdouble) locationPtr.get()->mAltitude);
+
+	jfieldID altitudeAccFid = jni_env->GetFieldID(cls, "mAltitudeAccuracy", "D");
+	jni_env->SetDoubleField(object, altitudeAccFid, (jdouble) locationPtr.get()->mAltitudeAccuracy);
+
+	jfieldID directionFid = jni_env->GetFieldID(cls, "mDirection", "D");
+	jni_env->SetDoubleField(object, directionFid, (jdouble) locationPtr.get()->mDirection);
+
+	jfieldID speedFid = jni_env->GetFieldID(cls, "mSpeed", "D");
+	jni_env->SetDoubleField(object, speedFid, (jdouble) locationPtr.get()->mSpeed);
+
+	return object;
+}
+
+jobject OpenPeerCoreManager::presenceStreetLocationToJava(PresenceStreetLocationPtr locationPtr)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPPresenceStreetLocation");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	PresenceStreetLocationPtr* ptrToPresenceLocation = new boost::shared_ptr<PresenceStreetLocation>(locationPtr);
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong location = (jlong) ptrToPresenceLocation;
+	jni_env->SetLongField(object, fid, location);
+
+	fid = jni_env->GetFieldID(cls, "mFriendlyName", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mFriendlyName));
+
+	fid = jni_env->GetFieldID(cls, "mSuiteNumber", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mSuiteNumber));
+
+	fid = jni_env->GetFieldID(cls, "mBuildingFloor", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mBuildingFloor));
+
+	fid = jni_env->GetFieldID(cls, "mBuilding", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mBuilding));
+
+	fid = jni_env->GetFieldID(cls, "mStreetNumber", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mStreetNumber));
+
+	fid = jni_env->GetFieldID(cls, "mStreetNumberSuffix", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mStreetNumberSuffix));
+
+	fid = jni_env->GetFieldID(cls, "mStreetDirectionPrefix", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mStreetDirectionPrefix));
+
+	fid = jni_env->GetFieldID(cls, "mStreetName", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mStreetName));
+
+	fid = jni_env->GetFieldID(cls, "mStreetSuffix", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mStreetSuffix));
+
+	fid = jni_env->GetFieldID(cls, "mStreetDirectionSuffix", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mStreetDirectionSuffix));
+
+	fid = jni_env->GetFieldID(cls, "mPostalCommunity", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mPostalCommunity));
+
+	fid = jni_env->GetFieldID(cls, "mServiceCommunity", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mServiceCommunity));
+
+	fid = jni_env->GetFieldID(cls, "mProvince", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mProvince));
+
+	fid = jni_env->GetFieldID(cls, "mCountry", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(locationPtr.get()->mCountry));
+
+	return object;
+}
+
+jobject OpenPeerCoreManager::presenceResourceToJava(PresenceResources::Resource resource)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPPresenceResource");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	jfieldID fid = jni_env->GetFieldID(cls, "mID", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mID));
+
+	fid = jni_env->GetFieldID(cls, "mRelatedID", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mRelatedID));
+
+	fid = jni_env->GetFieldID(cls, "mType", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mType));
+
+	fid = jni_env->GetFieldID(cls, "mFriendlyName", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mFriendlyName));
+
+	fid = jni_env->GetFieldID(cls, "mResourceURL", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mResourceURL));
+
+	fid = jni_env->GetFieldID(cls, "mMimeType", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mMimeType));
+
+	fid = jni_env->GetFieldID(cls, "mSize", "I");
+	jni_env->SetIntField(object, fid, (jint)resource.mSize);
+
+	fid = jni_env->GetFieldID(cls, "mWidth", "I");
+	jni_env->SetIntField(object, fid, (jint)resource.mWidth);
+
+	fid = jni_env->GetFieldID(cls, "mHeight", "I");
+	jni_env->SetIntField(object, fid, (jint)resource.mHeight);
+
+	jclass timeCls = findClass("android/text/format/Time");
+	jmethodID timeMethodID = jni_env->GetMethodID(timeCls, "<init>", "()V");
+	jmethodID timeSetMillisMethodID   = jni_env->GetMethodID(timeCls, "set", "(J)V");
+	jobject timeObject = jni_env->NewObject(timeCls, timeMethodID);
+	jni_env->CallVoidMethod(timeObject, timeSetMillisMethodID, resource.mLength.total_milliseconds());
+
+	fid = jni_env->GetFieldID(cls, "mLength", "Landroid/text/format/Time;");
+	jni_env->SetObjectField(object, fid, timeObject);
+
+	fid = jni_env->GetFieldID(cls, "mExternalLinkURL", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mExternalLinkURL));
+
+	fid = jni_env->GetFieldID(cls, "mEncoding", "Ljava/lang/String;");
+	jni_env->SetObjectField(object, fid, jni_env->NewStringUTF(resource.mEncoding));
+
+	return object;
+}
+
+jobject OpenPeerCoreManager::presenceResourceListToJava(PresenceResources::ResourceList resourceList)
+{
+	jobject returnListObject;
+	JNIEnv *jni_env = 0;
+
+	__android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni", "OpenPeerCoreManager presenceResourceListToJava called");
+
+	jni_env = getEnv();
+
+	if(jni_env)
+	{
+		//create return object - java/util/List is interface, ArrayList is implementation
+		jclass returnListClass = findClass("java/util/ArrayList");
+		jmethodID listConstructorMethodID = jni_env->GetMethodID(returnListClass, "<init>", "()V");
+		returnListObject = jni_env->NewObject(returnListClass, listConstructorMethodID);
+
+		//fetch List.add object
+		jmethodID listAddMethodID = jni_env->GetMethodID(returnListClass, "add", "(Ljava/lang/Object;)Z");
+
+		//fill java list
+		for(PresenceResources::ResourceList::iterator coreListIter = resourceList.begin();
+				coreListIter != resourceList.end(); coreListIter++)
+		{
+			jobject javaItemObject = presenceResourceToJava(*coreListIter);
+			//add to return List
+			jboolean success = jni_env->CallBooleanMethod(returnListObject,listAddMethodID , javaItemObject);
+			jni_env->DeleteLocalRef(javaItemObject);
+		}
+	}
+	return returnListObject;
+}
+
+jobject OpenPeerCoreManager::presenceResourcesToJava(PresenceResourcesPtr resourcesPtr)
+{
+	jclass cls;
+	jmethodID method;
+	jobject object;
+	JNIEnv *jni_env = 0;
+
+	jni_env = getEnv();
+
+	cls = findClass("com/openpeer/javaapi/OPPresenceResources");
+	method = jni_env->GetMethodID(cls, "<init>", "()V");
+	object = jni_env->NewObject(cls, method);
+
+	PresenceResourcesPtr* ptrToPresenceResources = new boost::shared_ptr<PresenceResources>(resourcesPtr);
+	jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+	jlong resources = (jlong) ptrToPresenceResources;
+	jni_env->SetLongField(object, fid, resources);
+
+	fid = jni_env->GetFieldID(cls, "mResources", "Ljava/util/List;");
+	jni_env->SetObjectField(object, fid, presenceResourceListToJava(resourcesPtr->mResources));
+
+	return object;
+}
