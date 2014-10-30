@@ -52,11 +52,12 @@ public class SettingsHelper {
     public static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
     public static final String KEY_FILE_LOGGER = "file_logger";
     public static final String KEY_LOG_SWITCH = "isLoggerEnabled";
-    public  static final String KEY_OUT_LOG_SERVER = "defaultOutgoingTelnetServer";
+    public static final String KEY_OUT_LOG_SERVER = "defaultOutgoingTelnetServer";
     public static final String KEY_FILE_LOGGER_PATH = "log_file";
     public static final String KEY_TELENT_LOGGER = "local_telnet_logger";
 
-    SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+    SharedPreferences mPreferences = PreferenceManager
+            .getDefaultSharedPreferences(OPApplication.getInstance());
 
     static SettingsHelper instance;
 
@@ -68,28 +69,34 @@ public class SettingsHelper {
     }
 
     public static Ringtone getRingtone() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
 
         String ringtoneStr = mPreferences.getString(KEY_RINGTONE, null);
         if (ringtoneStr == null) {
-            ringtoneStr = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString();
+            ringtoneStr = RingtoneManager.getDefaultUri(
+                    RingtoneManager.TYPE_RINGTONE).toString();
             SharedPreferences.Editor editor = mPreferences.edit();
             editor.putString(KEY_RINGTONE, ringtoneStr);
             editor.apply();
         }
-        return RingtoneManager.getRingtone(OPApplication.getInstance(), Uri.parse(ringtoneStr));
+        return RingtoneManager.getRingtone(OPApplication.getInstance(),
+                Uri.parse(ringtoneStr));
     }
 
     public static boolean isSoundNotificationOnForNewMessage() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
 
         return mPreferences.getBoolean(KEY_NOTIFICATION_SOUND_SWITCH, true);
     }
 
     public static Uri getNotificationSound() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
 
-        String ringtoneStr = mPreferences.getString(KEY_NOTIFICATION_SOUND_SELECT, null);
+        String ringtoneStr = mPreferences.getString(
+                KEY_NOTIFICATION_SOUND_SELECT, null);
         if (ringtoneStr == null) {
             return null;
         }
@@ -98,8 +105,10 @@ public class SettingsHelper {
 
     public void initLoggers() {
         if (isLogEnabled()) {
+            toggleLogger(true);
             if (isOutgoingLoggerOn()) {
-                OPHelper.getInstance().toggleOutgoingTelnetLogging(true, getLogServer());
+                OPHelper.getInstance().toggleOutgoingTelnetLogging(true,
+                        getLogServer());
             }
             if (isTelnetLoggerOn()) {
                 OPHelper.getInstance().toggleTelnetLogging(true, 59999);
@@ -107,7 +116,6 @@ public class SettingsHelper {
             if (isFileLoggerOn()) {
                 OPHelper.getInstance().toggleFileLogger(true, getLogFile());
             }
-            toggleLogger(true);
         }
     }
 
@@ -117,14 +125,14 @@ public class SettingsHelper {
     public static boolean isLogEnabled() {
         return OPHelper.getSettingsDelegate().getBool(KEY_LOG_SWITCH);
     }
-    
+
     public static void setLogEnabled(boolean enabled) {
-         OPSettings.setBool(KEY_LOG_SWITCH,enabled);
-         toggleLogger(enabled);
+        OPSettings.setBool(KEY_LOG_SWITCH, enabled);
+        toggleLogger(enabled);
     }
 
     public boolean isOutgoingLoggerOn() {
-        return mPreferences.getBoolean(KEY_OUT_TELNET_LOGGER, false);
+        return mPreferences.getBoolean(KEY_OUT_TELNET_LOGGER, true);
     }
 
     public static String getLogServer() {
@@ -132,7 +140,7 @@ public class SettingsHelper {
     }
 
     public boolean isTelnetLoggerOn() {
-        return mPreferences.getBoolean(KEY_TELENT_LOGGER, false);
+        return mPreferences.getBoolean(KEY_TELENT_LOGGER, true);
     }
 
     public boolean isFileLoggerOn() {
@@ -144,7 +152,8 @@ public class SettingsHelper {
     }
 
     public static String getString(String key, String defaultValue) {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
         return mPreferences.getString(key, defaultValue);
     }
 
@@ -152,8 +161,10 @@ public class SettingsHelper {
      * @param newValue
      */
     private static void toggleLogger(Boolean newValue) {
-        final String loggerKeys[] = OPApplication.getInstance().getResources().getStringArray(R.array.logKeys);
-        String loggerDefaults[] = OPApplication.getInstance().getResources().getStringArray(R.array.logLevelDefaults);
+        final String loggerKeys[] = OPApplication.getInstance().getResources()
+                .getStringArray(R.array.logKeys);
+        String loggerDefaults[] = OPApplication.getInstance().getResources()
+                .getStringArray(R.array.logLevelDefaults);
 
         if (newValue) {
             for (int i = 0; i < loggerKeys.length; i++) {

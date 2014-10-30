@@ -185,7 +185,10 @@ public class OPHelper {
 
         OPSdkConfig.getInstance().applySystemSettings(context);
         OPSdkConfig.getInstance().applyApplicationSettings();
-
+        OPSettings
+                .setUInt(
+                        "openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds",
+                        0);
         if (mCacheDelegate == null) {
             mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
         }
@@ -196,10 +199,6 @@ public class OPHelper {
         OPStack stack = OPStack.singleton();
 
         // OPSettings.applyDefaults();
-        OPSettings
-                .setUInt(
-                        "openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds",
-                        0);
 
         stack.setup(stackDelegate, mediaengineDelegate);
         if (datastoreDelegate != null) {

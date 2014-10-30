@@ -60,8 +60,7 @@ public class OPSdkConfig {
             + "application-image-url";
     private static final String KEY_APP_APPLICATION_URL = PREFIX_APP_COMMON_SETTING
             + "application-url";
-    public static final String KEY_USER_AGENT = PREFIX_APP_COMMON_SETTING
-            + "user-agent";
+    public static final String KEY_USER_AGENT = "openpeer/calculated/user-agent";
 
     public static final String KEY_OUTER_FRAME_URL = "outerFrameURL";
     public static final String KEY_IDENTITY_PROVIDE_DOMAIN = "identityProviderDomain";
@@ -186,7 +185,7 @@ public class OPSdkConfig {
         }
         try {
             byte[] bytes = AssetUtils.readAsset(context,
-                    "app_settings_prod_fb.json");
+                    "app_settings_opp_fb.json");
             String str = new String(bytes, "UTF-8");
             OPSettings.apply(str);
         } catch (IOException e) {

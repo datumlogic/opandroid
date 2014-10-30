@@ -54,7 +54,8 @@ import com.openpeer.sdk.app.OPIdentityLoginWebview;
 import com.urbanairship.push.PushManager;
 
 /**
- *
+ * The listener monitor the Account/Identity login state changes and show appropriate UI indications. Activity should register this to the
+ * LoginManager upon creation and unregister upon destroy
  */
 public class LoginUIListenerImpl implements LoginUIListener {
     WebView mAccountLoginWebView;
