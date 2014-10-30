@@ -35,6 +35,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPSettingsDelegate;
 
 /**
@@ -44,7 +45,6 @@ import com.openpeer.javaapi.OPSettingsDelegate;
 public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     private final static String TAG = OPSettingsDelegateImpl.class
             .getSimpleName();
-    private static final String PREF_CACHE_NAME = "core_setting";
     private Context mContext;
     private static OPSettingsDelegateImpl instance;
     private static final String TABLE_SETTINGS = "settings";
@@ -242,6 +242,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     }
 
     public static void onDatabaseCreated(SQLiteDatabase db) {
+        OPSettings.applyDefaults();
         loadSettings(db, DEFAULT_VALUES);
 
         loadSettings(db, V3_SETTINGS);

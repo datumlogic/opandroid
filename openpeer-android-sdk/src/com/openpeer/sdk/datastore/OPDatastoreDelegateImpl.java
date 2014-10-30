@@ -53,6 +53,8 @@ import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
@@ -1069,9 +1071,13 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         }
         values.put(RolodexContactEntry.COLUMN_IDENTITY_PROVIDER_ID,
                 identityProviderId);
-
-        values.put(RolodexContactEntry.COLUMN_CONTACT_NAME,
-                contact.getName());
+        if (!TextUtils.isEmpty(contact.getName())) {
+            values.put(RolodexContactEntry.COLUMN_CONTACT_NAME,
+                    contact.getName());
+        } else {
+            OPLogger.error(OPLogLevel.LogLevel_Basic,
+                    "Name is empty for identity " + contact.getIdentityURI());
+        }
         values.put(RolodexContactEntry.COLUMN_IDENTITY_URI,
                 contact.getIdentityURI());
         values.put(RolodexContactEntry.COLUMN_PROFILE_URL,
