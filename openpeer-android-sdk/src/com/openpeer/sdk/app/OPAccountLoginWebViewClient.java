@@ -32,6 +32,8 @@ package com.openpeer.sdk.app;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import com.openpeer.sdk.utils.StringUtils;
+
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.webkit.WebResourceResponse;
@@ -74,7 +76,7 @@ public class OPAccountLoginWebViewClient extends WebViewClient {
 			data = data.substring(5);
 			// Log.w("JNI", data);
 			try {
-				data = URLDecoder.decode(data, "UTF-8");
+				data = StringUtils.hexToString(URLDecoder.decode(data, "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
