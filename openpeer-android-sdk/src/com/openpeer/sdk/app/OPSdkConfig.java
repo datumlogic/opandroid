@@ -72,7 +72,7 @@ public class OPSdkConfig {
     public static final String KEY_CHAT_MODE = "application/chatMode";
     public static final String KEY_REDIRECT_UPON_LOGIN_URL = "redirectAfterLoginCompleteURL";
     public static final String KEY_INSTANCE_ID = "openpeer/calculated/instance-id";
-    public static final String KEY_AUTHORIZED_APP_ID = "openpeer/calculated/authorizated-application-id";
+    public static final String KEY_AUTHORIZED_APP_ID = "openpeer/calculated/authorized-application-id";
     private static final String KEY_DEVICE_ID = "openpeer/calculated/device-id";
     private static final String KEY_SYSTEM = "openpeer/calculated/system";
     private static final String KEY_OS = "openpeer/calculated/os";
