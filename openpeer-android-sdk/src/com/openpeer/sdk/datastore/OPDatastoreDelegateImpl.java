@@ -166,8 +166,10 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public boolean saveAccount(OPAccount account) {
         SQLiteDatabase db = getWritableDB();
         long accountRecordId = 0;
+        OPContact contact = OPContact.getForSelf(account);
         // find the existing record of the account
-        String peerUri = account.getPeerUri();
+        String peerUri = contact.getPeerURI();
+        String peerfile = contact.getPeerFilePublic();
         String stableId = account.getStableID();
         List<OPIdentity> identities = account.getAssociatedIdentities();
         String where = AccountEntry.COLUMN_STABLE_ID + "=?";
@@ -193,9 +195,6 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                     account.getReloginInformation());
 
             accountRecordId = db.insert(AccountEntry.TABLE_NAME, null, values);
-
-            String peerfile = identities.get(0).getSelfIdentityContact()
-                    .getPeerFilePublic().getPeerFileString();
 
             // insert openpeer_contact entry of myself
             long opId = saveOPContactTable(stableId, peerUri, peerfile);
@@ -739,68 +738,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         try {
             db.beginTransaction();
             for (OPIdentityContact contact : iContacts) {
-                String where = RolodexContactEntry.COLUMN_IDENTITY_URI + "=?";
-                String args[] = new String[] { contact.getIdentityURI() };
-                String columns[] = new String[] {
-                        BaseColumns._ID,
-                        RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID,
-                        RolodexContactEntry.COLUMN_IDENTITY_CONTACT_ID };
-                Cursor cursor = db.query(RolodexContactEntry.TABLE_NAME,
-                        columns, where, args, null, null, null);
-                if (cursor == null) {
-                }
-                if (cursor.getCount() > 0) {
-                    ContentValues values = new ContentValues();
-
-                    cursor.moveToFirst();
-
-                    long rolodexId = cursor.getLong(0);
-                    long opId = cursor.getLong(1);
-                    long identityContactId = cursor.getLong(2);
-                    cursor.close();
-
-                    if (identityContactId == 0) {
-                        identityContactId = saveIdentityContactTable(contact);
-                        values.put(
-                                RolodexContactEntry.COLUMN_IDENTITY_CONTACT_ID,
-                                identityContactId);
-                    } else {
-                        // TODO: update
-                    }
-                    // Insert openpeer_contact table entry
-                    if (opId == 0) {
-                        // now update rolodex_contact.identity_contact_id
-                        String peerfile = contact.getPeerFilePublic()
-                                .getPeerFileString();
-                        OPContact opContact = OPContact
-                                .createFromPeerFilePublic(OPDataManager
-                                        .getInstance().getSharedAccount(),
-                                        peerfile);
-                        String peerUri = opContact.getPeerURI();
-
-                        opId = saveOPContactTable(contact.getStableID(),
-                                peerUri, peerfile);
-                        values.put(
-                                RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID,
-                                opId);
-                    } else {
-                        // TODO: update
-
-                    }
-                    if (values.size() > 0) {
-                        int count = db.update(RolodexContactEntry.TABLE_NAME,
-                                values,
-                                RolodexContactEntry._ID + "=" + rolodexId,
-                                null);
-                    }
-
-                    mContext.getContentResolver()
-                            .notifyChange(
-                                    OPContentProvider
-                                            .getContentUri(RolodexContactEntry.URI_PATH_INFO),
-                                    null);
-
-                }
+                saveIdentityContact(db, contact, associatedIdentityId);
             }
             db.setTransactionSuccessful();
         } catch (SQLiteException ex) {
@@ -861,10 +799,14 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     @Override
     public OPUser getUser(OPContact contact,
             List<OPIdentityContact> identityContacts) {
+        SQLiteDatabase db = getWritableDB();
         OPUser user = new OPUser(contact, identityContacts);
         long contactRecordId = 0;
         if (identityContacts == null || identityContacts.size() == 0) {
-
+            OPLogger.error(OPLogLevel.LogLevel_Basic,
+                    "No identity attached to contact " + contact.getPeerURI());
+            throw new RuntimeException("No identity attached to contact "
+                    + contact.getPeerURI());
         }
         // find the existing record of the account
         String peerUri = contact.getPeerURI();
@@ -876,9 +818,40 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 OpenpeerContactEntry.TABLE_NAME,
                 where, args);
         if (contactRecordId == 0) {
+            // look for the identity uri matches
+            for (OPIdentityContact ic : identityContacts) {
+
+                String params[] = new String[] { ic.getIdentityURI() };
+                String opIdStr = simpleQueryForString(getWritableDB(),
+                        RolodexContactEntry.TABLE_NAME,
+                        RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID,
+                        RolodexContactEntry.COLUMN_IDENTITY_URI + "=?", params);
+                if (!TextUtils.isEmpty(opIdStr)) {
+                    contactRecordId = Long.parseLong(opIdStr);
+                    // now update the openpeer_contact record
+                    if (contactRecordId > 0) {
+                        user.setUserId(contactRecordId);
+                        updateOPTable(contactRecordId, stableId, peerUri,
+                                contact.getPeerFilePublic());
+
+                        return user;
+                    }
+                }
+            }
             saveUser(user, 0);
         } else {
             user.setUserId(contactRecordId);
+            updateOPTable(contactRecordId, stableId, peerUri,
+                    contact.getPeerFilePublic());
+            // add/delete identities associated
+            for (OPIdentityContact ic : identityContacts) {
+                if (simpleQueryForId(db, RolodexContactEntry.TABLE_NAME,
+                        RolodexContactEntry.COLUMN_IDENTITY_URI + "=?",
+                        new String[] { ic.getIdentityURI() }) > 0) {
+
+                }
+                ;
+            }
         }
 
         return user;
@@ -1071,13 +1044,9 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         }
         values.put(RolodexContactEntry.COLUMN_IDENTITY_PROVIDER_ID,
                 identityProviderId);
-        if (!TextUtils.isEmpty(contact.getName())) {
-            values.put(RolodexContactEntry.COLUMN_CONTACT_NAME,
-                    contact.getName());
-        } else {
-            OPLogger.error(OPLogLevel.LogLevel_Basic,
-                    "Name is empty for identity " + contact.getIdentityURI());
-        }
+        values.put(RolodexContactEntry.COLUMN_CONTACT_NAME,
+                contact.getName());
+
         values.put(RolodexContactEntry.COLUMN_IDENTITY_URI,
                 contact.getIdentityURI());
         values.put(RolodexContactEntry.COLUMN_PROFILE_URL,
@@ -1091,6 +1060,10 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         if (rolodexId == 0) {
             rolodexId = db.insert(RolodexContactEntry.TABLE_NAME, null,
                     values);
+            if (rolodexId == -1) {
+                throw new SQLiteException("Inserting rolodex contact failed "
+                        + values.toString());
+            }
             // insert avatars
             List<OPAvatar> avatars = contact.getAvatars();
             if (avatars != null && !avatars.isEmpty()) {
@@ -1353,5 +1326,96 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         Uri uri = OPContentProvider.getContentUri(sb.toString());
         mContext.getContentResolver().notifyChange(uri, null);
         return uri;
+    }
+
+    private void updateOPTable(long id, String stableId, String peerUri,
+            String peerfile) {
+        ContentValues values = new ContentValues();
+        values.put(OpenpeerContactEntry.COLUMN_STABLE_ID, stableId);
+        values.put(OpenpeerContactEntry.COLUMN_PEERURI, peerUri);
+        values.put(OpenpeerContactEntry.COLUMN_PEERFILE_PUBLIC,
+                peerfile);
+        getWritableDB().update(OpenpeerContactEntry.TABLE_NAME,
+                values, BaseColumns._ID + "=" + id,
+                null);
+    }
+
+    private long insertIfNonExist(SQLiteDatabase db, String table,
+            ContentValues values, String where, String params[]) {
+        long id = simpleQueryForId(db, table, where, params);
+        if (id == 0) {
+            return db.insert(table, null, values);
+        }
+        return -1l;
+    }
+
+    private long saveIdentityContact(SQLiteDatabase db,
+            OPIdentityContact contact, long associatedIdentityId) {
+
+        String where = RolodexContactEntry.COLUMN_IDENTITY_URI + "=?";
+        String args[] = new String[] { contact.getIdentityURI() };
+        String columns[] = new String[] {
+                BaseColumns._ID,
+                RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID,
+                RolodexContactEntry.COLUMN_IDENTITY_CONTACT_ID };
+        Cursor cursor = db.query(RolodexContactEntry.TABLE_NAME,
+                columns, where, args, null, null, null);
+        if (cursor == null) {
+        }
+        if (cursor.getCount() > 0) {
+            ContentValues values = new ContentValues();
+
+            cursor.moveToFirst();
+
+            long rolodexId = cursor.getLong(0);
+            long opId = cursor.getLong(1);
+            long identityContactId = cursor.getLong(2);
+            cursor.close();
+
+            if (identityContactId == 0) {
+                identityContactId = saveIdentityContactTable(contact);
+                values.put(
+                        RolodexContactEntry.COLUMN_IDENTITY_CONTACT_ID,
+                        identityContactId);
+            } else {
+                // TODO: update
+            }
+            // Insert openpeer_contact table entry
+            if (opId == 0) {
+                // now update rolodex_contact.identity_contact_id
+                String peerfile = contact.getPeerFilePublic()
+                        .getPeerFileString();
+                OPContact opContact = OPContact
+                        .createFromPeerFilePublic(OPDataManager
+                                .getInstance().getSharedAccount(),
+                                peerfile);
+                String peerUri = opContact.getPeerURI();
+
+                opId = saveOPContactTable(contact.getStableID(),
+                        peerUri, peerfile);
+                values.put(
+                        RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID,
+                        opId);
+            } else {
+                // TODO: update
+
+            }
+            if (values.size() > 0) {
+                int count = db.update(RolodexContactEntry.TABLE_NAME,
+                        values,
+                        RolodexContactEntry._ID + "=" + rolodexId,
+                        null);
+            }
+
+            mContext.getContentResolver()
+                    .notifyChange(
+                            OPContentProvider
+                                    .getContentUri(RolodexContactEntry.URI_PATH_INFO),
+                            null);
+            return identityContactId;
+
+        }
+        return 0;
+
     }
 }
