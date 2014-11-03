@@ -2,16 +2,16 @@
  *
  *  Copyright (c) 2014 , Hookflash Inc.
  *  All rights reserved.
- *  
+ *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *  
+ *
  *  1. Redistributions of source code must retain the above copyright notice, this
  *  list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *  this list of conditions and the following disclaimer in the documentation
  *  and/or other materials provided with the distribution.
- *  
+ *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -22,7 +22,7 @@
  *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  The views and conclusions contained in the software and documentation are those
  *  of the authors and should not be interpreted as representing official policies,
  *  either expressed or implied, of the FreeBSD Project.
@@ -43,16 +43,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.sample.contacts.ContactsFragment;
 import com.openpeer.sample.conversation.ChatsFragment;
 import com.openpeer.sample.conversation.DiscoveryFragment;
-import com.openpeer.sample.util.NetworkUtil;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPHelper;
 
-public class MainActivity extends BaseActivity implements OPHelper.InitListener, ChatsFragment.ChatsViewListener {
+public class MainActivity extends BaseActivity implements ChatsFragment.ChatsViewListener {
     TabsAdapter mTabsAdapter;
     ViewPager mViewPager;
     private static final int TAB_CHATS = 0;
@@ -73,18 +70,7 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tabNames = this.getResources().getStringArray(R.array.tabs);
-        go();
-    }
-
-    void go() {
-        OPAccount account = OPDataManager.getInstance().getSharedAccount();
         setupContentView();
-        if (account == null || account.getState() == AccountStates.AccountState_Shutdown) {
-            if (NetworkUtil.isConnected()) {
-                showLoginFragment();
-            }
-
-        }
     }
 
     private void setupContentView() {
@@ -178,12 +164,25 @@ public class MainActivity extends BaseActivity implements OPHelper.InitListener,
     }
 
     @Override
-    public void onInitialized() {
-        go();
+    public void onResume() {
+        super.onResume();
+        OPAccount account = OPDataManager.getInstance().getSharedAccount();
+//        if (account == null || account.getState() == AccountStates.AccountState_Shutdown) {
+////        if(LoginManager.getInstance().isLoggingIn()){
+//            if (NetworkUtil.isConnected()) {
+//                showLoginFragment();
+//            }
+//        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
     public void onChatsEmptyViewClick() {
         mViewPager.setCurrentItem(TAB_FAVORITES);
     }
+
 }

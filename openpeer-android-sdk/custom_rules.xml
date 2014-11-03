@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="custom_rules">
+<target name="-pre-build">
+    <copydir dest="src/" src="../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_capture/android/java/src"/>
+    <copydir dest="src/" src="../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_render/android/java/src"/>
+    <copydir dest="src/" src="../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/audio_device/android/java/src"/>
+</target>
+<target name="-post-build">
+   <delete dir="src/org"/>
+</target>
+
+</project>

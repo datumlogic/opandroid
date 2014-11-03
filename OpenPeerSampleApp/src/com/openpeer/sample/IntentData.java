@@ -43,5 +43,6 @@ public class IntentData {
     public static final String ACTION_CALL_STATE_CHANGE = "com.openpeer.CALL_STATE";
     public static final String ARG_CALL_STATE = "callState";
     public static final String ARG_CALL_ID = "callId";
+    public static final String ARG_CONTEXT_ID = "contextId";
 
 }

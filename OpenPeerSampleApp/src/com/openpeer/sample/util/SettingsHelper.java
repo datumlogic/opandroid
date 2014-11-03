@@ -31,7 +31,9 @@ package com.openpeer.sample.util;
 
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
+import com.openpeer.javaapi.OPSettings;
 import com.openpeer.sample.OPApplication;
+import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPHelper;
 
 import android.content.SharedPreferences;
@@ -44,17 +46,18 @@ import android.preference.PreferenceManager;
 public class SettingsHelper {
 
     private static final String KEY_RINGTONE = "ringtone";
-    static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
-    static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
-    static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
-    static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
-    static final String KEY_FILE_LOGGER = "file_logger";
-    static final String KEY_LOG_LEVEL = "log_level";
-    static final String KEY_OUT_LOG_SERVER = "log_server_url";
-    static final String KEY_FILE_LOGGER_PATH = "log_file";
-    static final String KEY_TELENT_LOGGER = "local_telnet_logger";
+    public static final String KEY_NOTIFICATION_SOUND_SWITCH = "notification_sound_switch";
+    public static final String KEY_NOTIFICATION_SOUND_SELECT = "notification_sound_select";
+    public static final String KEY_OUT_TELNET_LOGGER = "out_telnet_logger";
+    public static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
+    public static final String KEY_FILE_LOGGER = "file_logger";
+    public static final String KEY_LOG_SWITCH = "isLoggerEnabled";
+    public static final String KEY_OUT_LOG_SERVER = "defaultOutgoingTelnetServer";
+    public static final String KEY_FILE_LOGGER_PATH = "log_file";
+    public static final String KEY_TELENT_LOGGER = "local_telnet_logger";
 
-    SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+    SharedPreferences mPreferences = PreferenceManager
+            .getDefaultSharedPreferences(OPApplication.getInstance());
 
     static SettingsHelper instance;
 
@@ -66,28 +69,34 @@ public class SettingsHelper {
     }
 
     public static Ringtone getRingtone() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
 
         String ringtoneStr = mPreferences.getString(KEY_RINGTONE, null);
         if (ringtoneStr == null) {
-            ringtoneStr = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString();
+            ringtoneStr = RingtoneManager.getDefaultUri(
+                    RingtoneManager.TYPE_RINGTONE).toString();
             SharedPreferences.Editor editor = mPreferences.edit();
             editor.putString(KEY_RINGTONE, ringtoneStr);
             editor.apply();
         }
-        return RingtoneManager.getRingtone(OPApplication.getInstance(), Uri.parse(ringtoneStr));
+        return RingtoneManager.getRingtone(OPApplication.getInstance(),
+                Uri.parse(ringtoneStr));
     }
 
     public static boolean isSoundNotificationOnForNewMessage() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
 
         return mPreferences.getBoolean(KEY_NOTIFICATION_SOUND_SWITCH, true);
     }
 
     public static Uri getNotificationSound() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
 
-        String ringtoneStr = mPreferences.getString(KEY_NOTIFICATION_SOUND_SELECT, null);
+        String ringtoneStr = mPreferences.getString(
+                KEY_NOTIFICATION_SOUND_SELECT, null);
         if (ringtoneStr == null) {
             return null;
         }
@@ -95,46 +104,43 @@ public class SettingsHelper {
     }
 
     public void initLoggers() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
-        OPLogger.setLogLevel(getLogLevel());
-        if (isOutgoingLoggerOn()) {
-            OPHelper.getInstance().toggleOutgoingTelnetLogging(true, getLogServer());
-        }
-        if (isTelnetLoggerOn()) {
-            OPHelper.getInstance().toggleTelnetLogging(true, 59999);
-        }
-        if (isFileLoggerOn()) {
-            OPHelper.getInstance().toggleFileLogger(true, getLogFile());
+        if (isLogEnabled()) {
+            toggleLogger(true);
+            if (isOutgoingLoggerOn()) {
+                OPHelper.getInstance().toggleOutgoingTelnetLogging(true,
+                        getLogServer());
+            }
+            if (isTelnetLoggerOn()) {
+                OPHelper.getInstance().toggleTelnetLogging(true, 59999);
+            }
+            if (isFileLoggerOn()) {
+                OPHelper.getInstance().toggleFileLogger(true, getLogFile());
+            }
         }
     }
 
     /**
-     * <boolean name="local_telnet_logger" value="true" />
-     * <string name="log_file">/storage/emulated/0/oplog.txt</string>
-     * <boolean name="file_logger" value="true" />
-     * <string name="log_server_url">log.opp.me:8115</string>
-     * <boolean name="out_telnet_logger" value="true" />
-     * <string name="ringtone">content://settings/system/ringtone</string>
-     * <string name="log_level">1</string>
-     * <boolean name="notification_sound_switch" value="true" />
+     * 
      */
-    public OPLogLevel getLogLevel() {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(OPApplication.getInstance());
-        int intValue = Integer.parseInt(mPreferences.getString(KEY_LOG_LEVEL, "0"));
-        OPLogLevel level = OPLogLevel.values()[intValue];
-        return level;
+    public static boolean isLogEnabled() {
+        return OPHelper.getSettingsDelegate().getBool(KEY_LOG_SWITCH);
+    }
+
+    public static void setLogEnabled(boolean enabled) {
+        OPSettings.setBool(KEY_LOG_SWITCH, enabled);
+        toggleLogger(enabled);
     }
 
     public boolean isOutgoingLoggerOn() {
-        return mPreferences.getBoolean(KEY_OUT_TELNET_LOGGER, false);
+        return mPreferences.getBoolean(KEY_OUT_TELNET_LOGGER, true);
     }
 
-    public String getLogServer() {
-        return mPreferences.getString(KEY_OUT_LOG_SERVER, null);
+    public static String getLogServer() {
+        return OPHelper.getSettingsDelegate().getString(KEY_OUT_LOG_SERVER);
     }
 
     public boolean isTelnetLoggerOn() {
-        return mPreferences.getBoolean(KEY_TELENT_LOGGER, false);
+        return mPreferences.getBoolean(KEY_TELENT_LOGGER, true);
     }
 
     public boolean isFileLoggerOn() {
@@ -143,5 +149,41 @@ public class SettingsHelper {
 
     public String getLogFile() {
         return mPreferences.getString(KEY_FILE_LOGGER_PATH, null);
+    }
+
+    public static String getString(String key, String defaultValue) {
+        SharedPreferences mPreferences = PreferenceManager
+                .getDefaultSharedPreferences(OPApplication.getInstance());
+        return mPreferences.getString(key, defaultValue);
+    }
+
+    /**
+     * @param newValue
+     */
+    private static void toggleLogger(Boolean newValue) {
+        final String loggerKeys[] = OPApplication.getInstance().getResources()
+                .getStringArray(R.array.logKeys);
+        String loggerDefaults[] = OPApplication.getInstance().getResources()
+                .getStringArray(R.array.logLevelDefaults);
+
+        if (newValue) {
+            for (int i = 0; i < loggerKeys.length; i++) {
+                String key = loggerKeys[i];
+                String value = getString(key, loggerDefaults[i]);
+                OPLogLevel level = OPLogLevel.values()[Integer.parseInt(value)];
+                OPLogger.setLogLevel(key, level);
+            }
+        } else {
+            for (String key : loggerKeys) {
+                OPLogger.setLogLevel(key, OPLogLevel.LogLevel_None);
+            }
+        }
+    }
+
+    /**
+     * @param newValue
+     */
+    public static void setLogServer(String newValue) {
+        OPSettings.setString(KEY_OUT_LOG_SERVER, newValue);
     }
 }

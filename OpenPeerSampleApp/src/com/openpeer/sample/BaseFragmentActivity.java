@@ -58,16 +58,6 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     }
 
-    public void showLoginFragment() {
-        findViewById(R.id.fragment_login).setVisibility(View.VISIBLE);
-
-        this.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_login, LoginFragment.newInstance())
-                .addToBackStack(null)
-                .commit();
-
-    }
-
     public void hideLoginFragment() {
         findViewById(R.id.fragment_login).setVisibility(View.GONE);
     }

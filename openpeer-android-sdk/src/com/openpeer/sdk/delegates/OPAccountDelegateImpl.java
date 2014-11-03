@@ -29,14 +29,21 @@
  *******************************************************************************/
 package com.openpeer.sdk.delegates;
 
+import java.util.List;
+
 import android.util.Log;
 
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPAccountDelegate;
+import com.openpeer.javaapi.OPIdentity;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.LoginUIListener;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPHelper;
+import com.openpeer.sdk.app.OPIdentityLoginWebview;
 import com.openpeer.sdk.app.OPSdkConfig;
 
 /**
@@ -44,95 +51,106 @@ import com.openpeer.sdk.app.OPSdkConfig;
  *                     LoginManager.login
  */
 public class OPAccountDelegateImpl extends OPAccountDelegate {
-	LoginUIListener mListener;
-	private static OPAccountDelegateImpl instance;
+    private static OPAccountDelegateImpl instance;
 
-	/**
-	 * Create and hold on the instance
-	 * 
-	 * @return
-	 */
-	public static OPAccountDelegateImpl getInstance() {
-		if (instance == null) {
-			instance = new OPAccountDelegateImpl();
-		}
-		return instance;
-	}
+    /**
+     * Create and hold on the instance
+     * 
+     * @return
+     */
+    public static OPAccountDelegateImpl getInstance() {
+        if (instance == null) {
+            instance = new OPAccountDelegateImpl();
+        }
+        return instance;
+    }
 
-	private OPAccountDelegateImpl() {
-	}
+    private OPAccountDelegateImpl() {
+    }
 
-	public void bind(LoginUIListener listener) {
-		this.mListener = listener;
-	}
+    @Override
+    public void onAccountStateChanged(OPAccount account, AccountStates state) {
+        Log.d("state", "Account state " + state);
+        final LoginUIListener mListener = LoginManager.getInstance()
+                .getListener();
+        switch (state) {
+        case AccountState_WaitingForAssociationToIdentity:
+            break;
+        case AccountState_WaitingForBrowserWindowToBeLoaded:
 
-	public void unbind() {
-		this.mListener = null;
-	}
+            mListener.getAccountWebview().loadUrl(
+                    OPSdkConfig.getInstance().getNamespaceGrantServiceUrl());
 
-	@Override
-	public void onAccountStateChanged(OPAccount account, AccountStates state) {
-		Log.d("state", "Account state " + state);
-		switch (state) {
-		case AccountState_WaitingForAssociationToIdentity:
-			break;
-		case AccountState_WaitingForBrowserWindowToBeLoaded:
+            break;
+        case AccountState_WaitingForBrowserWindowToBeMadeVisible:
 
-			mListener.getAccountWebview().loadUrl(OPSdkConfig.getInstance().getNamespaceGrantServiceUrl());
+            mListener.onAccountLoginWebViewMadeVisible();
 
-			break;
-		case AccountState_WaitingForBrowserWindowToBeMadeVisible:
+            account.notifyBrowserWindowVisible();
+            break;
+        case AccountState_WaitingForBrowserWindowToClose:
 
-			mListener.onAccountLoginWebViewMadeVisible();
+            mListener.onAccountLoginWebViewMadeClose();
 
-			account.notifyBrowserWindowVisible();
-			break;
-		case AccountState_WaitingForBrowserWindowToClose:
-			mListener.getAccountWebview().post(new Runnable() {
-				public void run() {
-					mListener.onAccountLoginWebViewMadeClose();
-				}
-			});
-			account.notifyBrowserWindowClosed();
-			break;
-		case AccountState_Ready:
-			Log.w("login", "Account READY !!!!!!!!!!!!");
-			OPDataManager.getInstance().setAccountReady(true);
+            account.notifyBrowserWindowClosed();
+            break;
+        case AccountState_Ready:
+            Log.w("login", "Account READY !!!!!!!!!!!!");
+            LoginManager.getInstance().onAccountStateReady(account);
+            break;
+        case AccountState_Shutdown:
 
-			LoginManager.getInstance().onAccountStateReady(account);
-			mListener = null;
-			break;
-		case AccountState_Shutdown:
-			OPDataManager.getInstance().setAccountReady(false);
+            OPHelper.getInstance().onAccountShutdown();
 
-			mListener.onLoginError();
-			mListener = null;
+            break;
+        default:
+            break;
+        }
 
-			if (LoginManager.isLogIn()) {
-				LoginManager.onAccountShutdown();
-			}
+    }
 
-			break;
-		default:
-			break;
-		}
+    @Override
+    public void onAccountAssociatedIdentitiesChanged(OPAccount account) {
+        OPLogger.debug(OPLogLevel.LogLevel_Debug,
+                "onAccountAssociatedIdentitiesChanged");
 
-	}
+        List<OPIdentity> identities = account.getAssociatedIdentities();
+        if (identities == null) {
+            OPLogger.error(OPLogLevel.LogLevel_Debug,
+                    "onAccountAssociatedIdentitiesChanged getAssociatedIdentities is null");
+            return;
+        }
 
-	@Override
-	public void onAccountAssociatedIdentitiesChanged(OPAccount account) {
-	}
+        LoginUIListener listener = LoginManager.getInstance().getListener();
+        for (OPIdentity identity : identities) {
+            if (null == OPDataManager.getInstance().getStoredIdentityById(
+                    identity.getID())) {
+                OPDataManager.getInstance().addIdentity(identity);
+            }
+            if (!identity.isDelegateAttached()) {
+                OPIdentityDelegateImpl delegate = OPIdentityDelegateImpl
+                        .getInstance(identity);
 
-	@Override
-	public void onAccountPendingMessageForInnerBrowserWindowFrame(OPAccount account) {
+                identity.attachDelegate(delegate, OPSdkConfig.getInstance()
+                        .getRedirectUponCompleteUrl());
+                OPDataManager.getInstance().addIdentity(identity);
+            }
+        }
+    }
 
-		String msg = account.getNextMessageForInnerBrowerWindowFrame();
-		passMessageToJS(msg);
-	}
+    @Override
+    public void onAccountPendingMessageForInnerBrowserWindowFrame(
+            OPAccount account) {
 
-	void passMessageToJS(final String msg) {
-		String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
-		mListener.getAccountWebview().loadUrl(cmd);
+        String msg = account.getNextMessageForInnerBrowerWindowFrame();
+        passMessageToJS(msg);
+    }
 
-	}
+    void passMessageToJS(final String msg) {
+        final LoginUIListener mListener = LoginManager.getInstance()
+                .getListener();
+        String cmd = String.format("javascript:sendBundleToJS(\'%s\')", msg);
+        mListener.getAccountWebview().loadUrl(cmd);
+
+    }
 }

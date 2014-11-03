@@ -2,7 +2,7 @@ package com.openpeer.delegates;
 
 import android.util.Log;
 
-import com.openpeer.javaapi.ContactStates;
+import com.openpeer.javaapi.ContactConnectionStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
@@ -30,11 +30,18 @@ public class OPConversationThreadDelegateImplementation extends
 	}
 
 	@Override
-	public void onConversationThreadContactStateChanged(
+	public void onConversationThreadContactConnectionStateChanged(
 			OPConversationThread conversationThread, OPContact contact,
-			ContactStates state) {
+			ContactConnectionStates state) {
 		// TODO Auto-generated method stub
-		Log.d("output", "onConversationThreadContactStateChanged  state = " + state.toString());
+		Log.d("output", "onConversationThreadContactConnectionStateChanged  state = " + state.toString());
+	}
+	
+	@Override
+	public void onConversationThreadContactStatusChanged(
+			OPConversationThread conversationThread, OPContact contact) {
+		// TODO Auto-generated method stub
+		Log.d("output", "onConversationThreadContactStatusChanged");
 	}
 
 	@Override

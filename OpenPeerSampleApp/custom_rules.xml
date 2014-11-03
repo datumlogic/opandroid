@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="custom_rules">
+<target name="-post-build">
+    <xpath input="${manifest.abs.file}" expression="/manifest/@android:versionCode" output="build.packaging.versionCode" default="0"/>
+    <move file="${out.packaged.file}" tofile="../OpenPeerSampleApp-${build.packaging.versionCode}.apk"/>
+</target>
+
+</project>

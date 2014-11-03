@@ -1,5 +1,7 @@
 package com.openpeer.javaapi;
 
+import java.util.List;
+
 import android.util.Log;
 
 
@@ -37,6 +39,12 @@ public class OPMediaEngine {
 
 	public native void setCaptureRenderView(Object renderView);
 	public native void setChannelRenderView(Object renderView);
+	
+	public native void setCaptureCapability(OPCaptureCapability capability, CameraTypes cameraType);
+	public native List<OPCaptureCapability> getCaptureCapabilities(CameraTypes cameraType);
+	
+	public native void setCaptureRenderViewCropping(float left, float top, float right, float bottom);
+	public native void setChannelRenderViewCropping(float left, float top, float right, float bottom);
 
 	public native void setEcEnabled(boolean enabled);
 	public native void setAgcEnabled(boolean enabled);

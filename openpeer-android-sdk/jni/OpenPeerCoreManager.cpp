@@ -83,12 +83,13 @@ String OpenPeerCoreManager::getObjectClassName (jobject delegate)
 	jstring strObj = (jstring)env->CallObjectMethod(clsObj, mid);
 
 	// Now get the c string from the java jstring object
-	ret = String(env->GetStringUTFChars(strObj, NULL));
+	const char *utf8Str = env->GetStringUTFChars(strObj, NULL);
+	ret = String(utf8Str);
 
 	env->DeleteLocalRef(clsObj);
 	env->DeleteLocalRef(cls);
 	// Release the memory pinned char array
-	env->ReleaseStringUTFChars(strObj, ret);
+	env->ReleaseStringUTFChars(strObj, utf8Str);
 	env->DeleteLocalRef(strObj);
 	return ret;
 }

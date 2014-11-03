@@ -56,11 +56,8 @@ import android.widget.SearchView;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
-
-import static com.openpeer.sdk.datastore.DatabaseContracts.COLUMN_NAME_AVATAR_URI;
-import static com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry.COLUMN_NAME_CONTACT_NAME;
 
 
 public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
@@ -199,32 +196,32 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 
 	// Begin: CursorCallback implementation
 	private static final int URL_LOADER = 0;
-	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_NAME_CONTACT_NAME, COLUMN_NAME_AVATAR_URI,
-			ContactsViewEntry.COLUMN_NAME_STABLE_ID, ContactsViewEntry.COLUMN_NAME_USER_ID };
+//	static final String LIST_PROJECTION[] = { BaseColumns._ID, COLUMN_CONTACT_NAME, COLUMN_AVATAR_URI,
+//			ContactsEntry.COLUMN_STABLE_ID, ContactsEntry.COLUMN_USER_ID };
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
-        StringBuilder builder = new StringBuilder("not (" + ContactsViewEntry.COLUMN_NAME_USER_ID + "=0 and " + ContactsViewEntry.COLUMN_NAME_STABLE_ID + " not null)");
-        String slectionArgs[] = null;
-		if (arg1 != null) {
-			String query = arg1.getString("query");
-			Log.d("test", "ContactsFragment onCreateLoader query " + query);
-			if (!TextUtils.isEmpty(query)) {
-				// Note: instr is available from sqlite 3.7.15
-				builder.append(" and name like ?");
-				slectionArgs = new String[] { "%" + query + "%" };
-			}
-
-		}
+//        StringBuilder builder = new StringBuilder("not (" + RolodexContactEntry.COLUMN_USER_ID + "=0 and " + ContactsEntry.COLUMN_STABLE_ID + " not null)");
+//        String slectionArgs[] = null;
+//		if (arg1 != null) {
+//			String query = arg1.getString("query");
+//			Log.d("test", "ContactsFragment onCreateLoader query " + query);
+//			if (!TextUtils.isEmpty(query)) {
+//				// Note: instr is available from sqlite 3.7.15
+//				builder.append(" and name like ?");
+//				slectionArgs = new String[] { "%" + query + "%" };
+//			}
+//
+//		}
 		switch (loaderID) {
 		case URL_LOADER:
 			// Returns a new CursorLoader
 			return new CursorLoader(getActivity(), // Parent activity context
-					OPContentProvider.getContentUri(ContactsViewEntry.URI_PATH_INFO),
+					OPContentProvider.getContentUri(RolodexContactEntry.URI_PATH_INFO),
 
-					LIST_PROJECTION, // Projection to return
-					builder.toString(), // No selection clause
-					slectionArgs, // No selection arguments
+					null, // Projection to return
+null,//					builder.toString(), // No selection clause
+null,//					slectionArgs, // No selection arguments
 					null // Default sort order
 			);
 		default:

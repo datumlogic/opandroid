@@ -43,5 +43,9 @@ public abstract class OPCacheDelegate {
                        Time expires,
                        String str
                        );
+	/**
+	 * 
+	 * @param cookieNamePath Passing in null should clear all cache
+	 */
 	public abstract void clear(String cookieNamePath);
 }

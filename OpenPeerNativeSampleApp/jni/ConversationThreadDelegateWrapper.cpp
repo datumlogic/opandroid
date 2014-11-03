@@ -121,10 +121,10 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactsChanged(ICon
 		android_jvm->DetachCurrentThread();
 	}
 }
-void ConversationThreadDelegateWrapper::onConversationThreadContactStateChanged(
+void ConversationThreadDelegateWrapper::onConversationThreadContactConnectionStateChanged(
 		IConversationThreadPtr conversationThread,
 		IContactPtr contact,
-		IConversationThread::ContactStates state
+		IConversationThread::ContactConnectionStates state
 )
 {
 	jclass cls;
@@ -132,7 +132,7 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactStateChanged(
 	jobject convThreadObject;
 	jobject contactObject;
 	JNIEnv *jni_env = 0;
-	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onConversationThreadContactStateChanged called");
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onConversationThreadContactConnectionStateChanged called");
 
 	bool attached = false;
 	switch (android_jvm->GetEnv((void**)&jni_env, JNI_VERSION_1_6))
@@ -174,12 +174,12 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactStateChanged(
 
 		jclass callbackClass = findClass(className.c_str());
 
-		method = jni_env->GetMethodID(callbackClass, "onConversationThreadContactStateChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;Lcom/openpeer/javaapi/ContactStates;)V");
-		jni_env->CallVoidMethod(javaDelegate, method, convThreadObject, contactObject, OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/ContactStates", (jint) state));
+		method = jni_env->GetMethodID(callbackClass, "onConversationThreadContactConnectionStateChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;Lcom/openpeer/javaapi/ContactConnectionStates;)V");
+		jni_env->CallVoidMethod(javaDelegate, method, convThreadObject, contactObject, OpenPeerCoreManager::getJavaEnumObject("com/openpeer/javaapi/ContactConnectionStates", (jint) state));
 	}
 	else
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onConversationThreadContactStateChanged Java delegate is NULL !!!");
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onConversationThreadContactConnectionStateChanged Java delegate is NULL !!!");
 	}
 	if (jni_env->ExceptionCheck()) {
 		jni_env->ExceptionDescribe();
@@ -190,6 +190,65 @@ void ConversationThreadDelegateWrapper::onConversationThreadContactStateChanged(
 		android_jvm->DetachCurrentThread();
 	}
 }
+
+void ConversationThreadDelegateWrapper::onConversationThreadContactStatusChanged(
+		IConversationThreadPtr conversationThread,
+		IContactPtr contact
+)
+{
+	jclass cls;
+	jmethodID method;
+	jobject convThreadObject;
+	jobject contactObject;
+	JNIEnv *jni_env = 0;
+	__android_log_print(ANDROID_LOG_INFO, "com.openpeer.jni","onConversationThreadContactStatusChanged called");
+
+
+	jint attach_result = android_jvm->AttachCurrentThread(&jni_env, NULL);
+	if (attach_result < 0 || jni_env == 0)
+	{
+		return;
+	}
+	if (javaDelegate != NULL){
+		jclass conversationThreadClass = findClass("com/openpeer/javaapi/OPConversationThread");
+		jmethodID ctmethod = jni_env->GetMethodID(conversationThreadClass, "<init>", "()V");
+		convThreadObject = jni_env->NewObject(conversationThreadClass, ctmethod);
+
+		IConversationThreadPtr* ptrToConversationThread = new boost::shared_ptr<IConversationThread>(conversationThread);
+		jfieldID ctfid = jni_env->GetFieldID(conversationThreadClass, "nativeClassPointer", "J");
+		jlong convThread = (jlong) ptrToConversationThread;
+		jni_env->SetLongField(convThreadObject, ctfid, convThread);
+
+
+		jclass contactClass = findClass("com/openpeer/javaapi/OPContact");
+		jmethodID contactConstructor = jni_env->GetMethodID(contactClass, "<init>", "()V");
+		contactObject = jni_env->NewObject(contactClass, contactConstructor);
+
+		IContactPtr* ptrToContact = new boost::shared_ptr<IContact>(contact);
+		jfieldID fid = jni_env->GetFieldID(contactClass, "nativeClassPointer", "J");
+		jlong ptrforJava = (jlong) ptrToContact;
+		jni_env->SetLongField(contactObject, fid, ptrforJava);
+
+		//get delegate implementation class name in order to get method
+		String className = OpenPeerCoreManager::getObjectClassName(javaDelegate);
+
+		jclass callbackClass = findClass(className.c_str());
+
+		method = jni_env->GetMethodID(callbackClass, "onConversationThreadContactStatusChanged", "(Lcom/openpeer/javaapi/OPConversationThread;Lcom/openpeer/javaapi/OPContact;)V");
+		jni_env->CallVoidMethod(javaDelegate, method, convThreadObject, contactObject);
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni", "onConversationThreadContactStatusChanged Java delegate is NULL !!!");
+	}
+	if (jni_env->ExceptionCheck()) {
+		jni_env->ExceptionDescribe();
+	}
+
+	android_jvm->DetachCurrentThread();
+
+}
+
 void ConversationThreadDelegateWrapper::onConversationThreadMessage(
 		IConversationThreadPtr conversationThread,
 		const char *messageID

@@ -34,22 +34,31 @@ import com.openpeer.javaapi.OPIdentity;
 import android.webkit.WebView;
 
 public interface LoginUIListener {
-	public void onStartIdentityLogin();
+    public void onStartIdentityLogin(OPIdentity identity);
+    public void onStartAccountLogin();
 
-	public void onLoginComplete();
 
-	public void onLoginError();
+    public void onAccountLoginComplete();
 
-	public void onIdentityLoginWebViewMadeVisible();
+    public void onLoginError();
 
-	public void onAccountLoginWebViewMadeVisible();
+    public void onIdentityLoginWebViewMadeVisible(OPIdentity identity);
 
-	public void onIdentityLoginWebViewClose();
+    public void onAccountLoginWebViewMadeVisible();
 
-	public void onAccountLoginWebViewMadeClose();
-	
-	public WebView getAccountWebview();
-	
-	public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity);
+    public void onIdentityLoginWebViewClose(OPIdentity identity);
+
+    public void onIdentityLoginCompleted(OPIdentity identity);
+
+    public void onAccountLoginWebViewMadeClose();
+
+    public WebView getAccountWebview();
+
+    public OPIdentityLoginWebview getIdentityWebview(OPIdentity identity);
+
+    /**
+     * @param identity
+     */
+    public void onIdentityLoginFail(OPIdentity identity);
 
 }

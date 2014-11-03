@@ -29,9 +29,9 @@
  *******************************************************************************/
 package com.openpeer.sdk.datastore;
 
-import java.util.List;
+import static com.openpeer.sdk.datastore.DatabaseContracts.COLUMN_CBC_ID;
 
-import com.openpeer.javaapi.OPAccount;
+import java.util.List;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -43,464 +43,649 @@ import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
-import static com.openpeer.sdk.datastore.DatabaseContracts.*;
+
+import com.openpeer.sdk.app.OPSdkConfig;
+import com.openpeer.sdk.datastore.DatabaseContracts.AccountEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.AssociatedIdentityEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.AvatarEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.CallEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ContactsViewEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ConversationEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.IdentityContactEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.OpenpeerContactEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.ParticipantEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
+import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
+import com.openpeer.sdk.model.GroupChatMode;
 
 public class OPContentProvider extends ContentProvider {
 
-	private OPDatabaseHelper mOpenHelper;
-	static final int MESSAGES = 0;
-	static final int CONTACTS = 1;
-	static final int WINDOWS = 2;
-	static final int GROUPS = 3;
-	static final int USERS = 4;
-	static final int MESSAGE = 5;
+    private OPDatabaseHelper mOpenHelper;
 
-	static final int USER = 100;
-	private static final int CONTACT = 6;
-	private static final String TAG = OPContentProvider.class.getSimpleName();
+    static final int USER = 100;
+    private static final int CONTACT = 6;
+    private static final String TAG = OPContentProvider.class.getSimpleName();
 
-	UriMatcher mUriMatcher;
-	static String sAuthority = "";
-	static final String SCHEME = "content://";
-	private static OPContentProvider instance;
+    UriMatcher mUriMatcher;
+    static String sAuthority = "";
+    static final String SCHEME = "content://";
+    private static OPContentProvider instance;
 
-	static enum MatcherInfo {
-		ACCOUNTS(AccountEntry.TABLE_NAME),
-		ACCOUNT(AccountEntry.TABLE_NAME + "/#"),
-		IDENTTIIES(IdentityEntry.TABLE_NAME),
-		IDENTITY(IdentityEntry.TABLE_NAME + "/#"),
+    static enum MatcherInfo {
+        ACCOUNTS(AccountEntry.TABLE_NAME),
+        ACCOUNT(AccountEntry.TABLE_NAME + "/#"),
+        IDENTTIIES(AssociatedIdentityEntry.TABLE_NAME),
+        IDENTITY(AssociatedIdentityEntry.TABLE_NAME + "/#"),
 
-		MESSAGES_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW),
-		MESSAGES_THREAD(MessageEntry.URI_PATH_INFO_THREAD),
-		MESSAGES_GROUP(MessageEntry.URI_PATH_INFO_GROUP),
+        MESSAGES_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW),
+        MESSAGES_CONTEXT(MessageEntry.URI_PATH_INFO_CONTEXT),
 
-		MESSAGE_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW_ID),
-		MESSAGE_THREAD(MessageEntry.URI_PATH_INFO_THREAD_ID),
-		MESSAGE_GROUP(MessageEntry.URI_PATH_INFO_GROUP_ID),
+        MESSAGE_WINDOW(MessageEntry.URI_PATH_INFO_WINDOW_ID),
+        MESSAGE_THREAD(MessageEntry.URI_PATH_INFO_CONTEXT_ID),
 
-		MESSAGES(MessageEntry.TABLE_NAME),
-		MESSAGE(MessageEntry.TABLE_NAME + "/#"),
+        MESSAGES(MessageEntry.TABLE_NAME),
+        MESSAGE(MessageEntry.TABLE_NAME + "/#"),
 
-		CONTACTS(DatabaseContracts.ContactsViewEntry.TABLE_NAME),
-		CONTACT(DatabaseContracts.ContactsViewEntry.TABLE_NAME + "/#"),
+        // CONTACTS(DatabaseContracts.ContactsViewEntry.URI_PATH_CONTACTS),
+        // CONTACT(DatabaseContracts.ContactsViewEntry.URI_PATH_CONTACTS_ID),
+        // CONTACTS_OPENPEER(
+        // DatabaseContracts.ContactsViewEntry.URI_PATH_OP_CONTACTS),
+        // CONTACT_OPENPEER(
+        // DatabaseContracts.ContactsViewEntry.URI_PATH_OP_CONTACTS_ID),
 
-		CONVERSATION_WINDOWS(ConversationWindowEntry.URI_PATH_INFO),
-		CONVERSATION_WINDOW(ConversationWindowEntry.URI_PATH_INFO_ID),
+        CONVERSATIONS(ConversationEntry.URI_PATH_INFO),
+        CONVERSATION(ConversationEntry.URI_PATH_INFO_ID),
 
-		WINDOW_PARTICIPANTS(WindowParticipantEntry.URI_PATH_INFO),
-		WINDOW_PARTICIPANT(WindowParticipantEntry.URI_PATH_INFO_ID),
+        WINDOW_PARTICIPANTS(ParticipantEntry.URI_PATH_INFO),
+        WINDOW_PARTICIPANT(ParticipantEntry.URI_PATH_INFO_ID),
 
-		HISTORY_WINDOW(WindowViewEntry.TABLE_NAME),
-		HISTORY_THREAD(""),
-		HISTORY_GROUP(""),
-		USERS(UserEntry.TABLE_NAME),
-		USER(UserEntry.TABLE_NAME + "/#"),
+        HISTORY_CONTACT_BASED(WindowViewEntry.URI_PATH_INFO_CBC),
+        HISTORY_CONTEXT_BASED(WindowViewEntry.URI_PATH_INFO_CONTEXT),
+        OPENPEER_CONTACT(OpenpeerContactEntry.URI_PATH_INFO_ID),
+        OPENPEER_CONTACT_DETAIL(OpenpeerContactEntry.URI_PATH_INFO_DETAIL),
+        OPENPEER_CONTACT_DETAIL_ID(OpenpeerContactEntry.URI_PATH_INFO_DETAIL_ID),
 
-		IDENTITY_CONTACTS(IdentityContactEntry.TABLE_NAME),
-		IDENTITY_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
+        // USER(UserEntry.TABLE_NAME + "/#"),
 
-		ROLODEX_CONTACTS(ContactEntry.TABLE_NAME),
-		ROLODEX_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
+        IDENTITY_CONTACTS(IdentityContactEntry.TABLE_NAME),
+        IDENTITY_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
 
-		AVATARS(AvatarEntry.TABLE_NAME),
-		AVATAR(AvatarEntry.TABLE_NAME + "/#"),
+        ROLODEX_CONTACTS(RolodexContactEntry.TABLE_NAME),
+        ROLODEX_CONTACT(IdentityContactEntry.TABLE_NAME + "/#"),
 
-		CALLS(CallEntry.TABLE_NAME),
-		CALL(CallEntry.TABLE_NAME + "/#");
+        AVATARS(AvatarEntry.TABLE_NAME),
+        AVATAR(AvatarEntry.TABLE_NAME + "/#"),
 
-		private final String mPath;
+        CALLS(CallEntry.TABLE_NAME),
+        CALL(CallEntry.TABLE_NAME + "/#");
 
-		private MatcherInfo(final String path) {
-			mPath = path;
-		}
+        private final String mPath;
 
-		public String getPath() {
-			return mPath;
-		}
-	}
+        private MatcherInfo(final String path) {
+            mPath = path;
+        }
 
-	/**
-	 * Helper class to get the content URI with the authority provided by application and path string defined in DatabaseContracts
-	 * 
-	 * @param path
-	 * @return
-	 */
-	public static Uri getContentUri(String path) {
-		return Uri.parse(SCHEME + sAuthority + path);
-	}
+        public String getPath() {
+            return mPath;
+        }
+    }
 
-	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
-		StringBuilder stringBuilder = new StringBuilder();
-		switch (value) {
+    /**
+     * Helper class to get the content URI with the authority provided by application and path string defined in DatabaseContracts
+     * 
+     * @param path
+     * @return
+     */
+    public static Uri getContentUri(String path) {
+        return Uri.parse(SCHEME + sAuthority + path);
+    }
 
-		case MESSAGES_WINDOW:
-			return 0;
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+        StringBuilder stringBuilder = new StringBuilder();
+        switch (value) {
 
-		}
-		String table = uri.getLastPathSegment();
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		int result = db.delete(table, selection, selectionArgs);
-		return result;
-	}
+        case MESSAGES_WINDOW:
+            return 0;
 
-	@Override
-	public String getType(Uri uri) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        }
+        String table = uri.getLastPathSegment();
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int result = db.delete(table, selection, selectionArgs);
+        return result;
+    }
 
-	@Override
-	public int bulkInsert(Uri uri, ContentValues[] values) {
-		int result = super.bulkInsert(uri, values);
-		// test();
-		return result;
-	}
+    @Override
+    public String getType(Uri uri) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		Uri result = null;
-		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
-		StringBuilder stringBuilder = new StringBuilder();
-		switch (value) {
-		case MESSAGES_WINDOW:
-			return insertMessage(uri, values);
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        int result = super.bulkInsert(uri, values);
+        // test();
+        return result;
+    }
 
-		default:
-			String tableName = null;
-			List<String> pathSegments = uri.getPathSegments();
-			switch (pathSegments.size()) {
-			case 1:
-				tableName = pathSegments.get(0);
-				break;
-			case 2:
-				tableName = pathSegments.get(1);
-				break;
-			}
-			if (tableName != null) {
-				SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-				long rowId = db.insert(tableName, null, values);
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        Uri result = null;
+        MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+        StringBuilder stringBuilder = new StringBuilder();
+        switch (value) {
+        case MESSAGES_WINDOW:
+            return insertMessage(uri, values);
 
-				if (rowId != -1) {
-					getContext().getContentResolver().notifyChange(uri, null);
-					return ContentUris.withAppendedId(uri, rowId);
-				}
-			}
-		}
-		return result;
-	}
+        default:
+            String tableName = null;
+            List<String> pathSegments = uri.getPathSegments();
+            switch (pathSegments.size()) {
+            case 1:
+                tableName = pathSegments.get(0);
+                break;
+            case 2:
+                tableName = pathSegments.get(1);
+                break;
+            }
+            if (tableName != null) {
+                SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+                long rowId = db.insert(tableName, null, values);
 
-	private Uri insertWindow(Uri uri, ContentValues values) {
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		long rowId = db.insert(DatabaseContracts.ConversationWindowEntry.TABLE_NAME, null, values);
-		return uri;
-	}
+                if (rowId != -1) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                    return ContentUris.withAppendedId(uri, rowId);
+                }
+            }
+        }
+        return result;
+    }
 
-	private Uri insertMessage(Uri uri, ContentValues values) {
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		long result = db.insert(DatabaseContracts.MessageEntry.TABLE_NAME, null, values);
-		getContext().getContentResolver().notifyChange(ContentUris.withAppendedId(uri, result), null);
-		notifyChatGroupChange();
-		return uri;
-	}
+    private Uri insertMessage(Uri uri, ContentValues values) {
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        long result = db.insert(DatabaseContracts.MessageEntry.TABLE_NAME,
+                null, values);
+        getContext().getContentResolver().notifyChange(
+                ContentUris.withAppendedId(uri, result), null);
+        notifyChatHistoryChange();
+        return uri;
+    }
 
-	private Uri insertContacts(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean onCreate() {
+        mOpenHelper = OPDatabaseHelper.getInstance(getContext());
+        initMatcher();
+        instance = this;
+        return true;
+    }
 
-	private Uri insertUser(Uri uri, ContentValues values) {
-		// TODO Auto-generated method stub
-		long id = mOpenHelper.getWritableDatabase().insert(UserEntry.TABLE_NAME, null, values);
-		if (id > 1) {
-			Uri noteUri = ContentUris.withAppendedId(uri, id);
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        int index = mUriMatcher.match(uri);
+        if (index == -1) {
+            Log.d(TAG, "Illegal URI " + uri);
+        }
+        MatcherInfo value = MatcherInfo.values()[index];
+        StringBuilder stringBuilder = new StringBuilder();
 
-			// Notifies observers registered against this provider that the
-			// datachanged.
-			getContext().getContentResolver().notifyChange(noteUri, null);
-			return noteUri;
-		} else {
-			return null;
-		}
-	}
+        switch (value) {
+        case MESSAGES_WINDOW:
+            stringBuilder
+                    .append(DatabaseContracts.QUERY_MESSAGES);
+            int windowId = Integer.parseInt(uri.getLastPathSegment());
+            stringBuilder.append("where " + DatabaseContracts.COLUMN_CBC_ID
+                    + "="
+                    + windowId);
+            stringBuilder.append(
+                    " union " + DatabaseContracts.QUERY_CALL)
+                    .append(" where ")
+                    .append(DatabaseContracts.COLUMN_CBC_ID + "=" + windowId);
+//            stringBuilder
+//                    .append(" union "
+//                            + DatabaseContracts.QUERY_CONVERSATION_EVENT)
+//                    .append(" and ").append("ce.participants=" + windowId);
+            stringBuilder.append(" order by time");
 
-	@Override
-	public boolean onCreate() {
-		mOpenHelper = new OPDatabaseHelper(getContext(),
-				OPDatabaseHelper.DATABASE_NAME, // the name of the database)
-				null, // uses the default SQLite cursor
-				OPDatabaseHelper.DATABASE_VERSION);
-		initMatcher();
-		instance = this;
-		return true;
-	}
+            Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(
+                    stringBuilder.toString(), selectionArgs);
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+            return cursor;
+            // return queryMessages(uri, projection, stringBuilder.toString(),
+            // selectionArgs, sortOrder);
+        case MESSAGE_WINDOW:
+            return queryMessage(uri, projection, selection, selectionArgs,
+                    sortOrder);
+        case MESSAGES_CONTEXT:
+            stringBuilder.append(DatabaseContracts.QUERY_MESSAGES)
+                    .append("where " + MessageEntry.COLUMN_CONTEXT_ID)
+                    .append("=?");
 
-	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
-		StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(" union " + DatabaseContracts.QUERY_CALL)
+                    .append(" where ")
+                    .append(MessageEntry.COLUMN_CONTEXT_ID + "=?");
+            stringBuilder
+                    .append(" union "
+                            + DatabaseContracts.QUERY_CONVERSATION_EVENT)
+                    .append(" and ").append("c.context_id=?");
+            stringBuilder.append(" order by time");
 
-		switch (value) {
-		case MESSAGES_WINDOW:
-			int windowId = Integer.parseInt(uri.getLastPathSegment());
-			stringBuilder.append(DatabaseContracts.COLUMN_NAME_WINDOW_ID + "=" + windowId);
-			if (!TextUtils.isEmpty(selection)) {
-				stringBuilder.append(" and ").append(selection);
-			}
-			return queryMessages(uri, projection, stringBuilder.toString(), selectionArgs, sortOrder);
-		case MESSAGE_WINDOW:
-			return queryMessage(uri, projection, selection, selectionArgs, sortOrder);
-		case MESSAGES_THREAD:
-			int threadId = Integer.parseInt(uri.getLastPathSegment());
-			stringBuilder.append(DatabaseContracts.COLUMN_NAME_THREAD_ID + "=" + threadId);
-			if (!TextUtils.isEmpty(selection)) {
-				stringBuilder.append(" and ").append(selection);
-			}
-			return queryMessages(uri, projection, stringBuilder.toString(), selectionArgs, sortOrder);
-		case MESSAGE_THREAD:
-			return queryMessage(uri, projection, selection, selectionArgs, sortOrder);
-		case MESSAGES_GROUP:
-		case MESSAGE_GROUP:
-			return null;
-		default:
-			break;
+            String contextId = uri.getLastPathSegment();
+            String args[];
+            // if (selectionArgs != null) {
+            // args = new String[selectionArgs.length + 1];
+            // args[0] = contextId;
+            // for (int i = 0; i < selectionArgs.length; i++) {
+            // args[i + 1] = selectionArgs[i];
+            // }
+            // } else {
+            args = new String[] { contextId, contextId,contextId };
+            // }
 
-		}
+            Cursor contextCursor = mOpenHelper.getReadableDatabase().rawQuery(
+                    stringBuilder.toString(), args);
+            contextCursor.setNotificationUri(getContext().getContentResolver(),
+                    uri);
+            return contextCursor;
+        case MESSAGE_THREAD:
+            return queryMessage(uri, projection, selection, selectionArgs,
+                    sortOrder);
+        case OPENPEER_CONTACT:
+            return queryOpenPeerContact(uri, projection, selection,
+                    selectionArgs,
+                    sortOrder);
+        case OPENPEER_CONTACT_DETAIL:
 
-		String tableName = null;
-		List<String> pathSegments = uri.getPathSegments();
-		switch (pathSegments.size()) {
-		case 1:
-			tableName = pathSegments.get(0);
-			break;
-		case 2:
-			tableName = pathSegments.get(1);
-			break;
-		}
-		if (tableName != null) {
-			SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+            return queryOpenPeerContactDetail(uri, projection,
+                    selection,
+                    selectionArgs,
+                    sortOrder);
+        case OPENPEER_CONTACT_DETAIL_ID:
+            if (TextUtils.isEmpty(selection)) {
+                selection = "oc._id=" + uri.getLastPathSegment();
+            } else {
+                selection = "oc._id=" + uri.getLastPathSegment() + " and "
+                        + selection;
+            }
+            return queryOpenPeerContactDetail(uri, projection, selection,
+                    selectionArgs,
+                    sortOrder);
+        case ROLODEX_CONTACTS:
+            return queryRolodexContacts(uri, projection, selection,
+                    selectionArgs,
+                    sortOrder);
+        case HISTORY_CONTACT_BASED:
+            return queryContactBasedChatHistory(uri, projection, selection,
+                    selectionArgs,
+                    sortOrder);
+        case HISTORY_CONTEXT_BASED:
+            return queryContextBasedChatHistory(uri, projection, selection,
+                    selectionArgs,
+                    sortOrder);
 
-			Cursor cursor = db.query(
-					tableName,
-					projection, // The columns to return from the query
-					selection, // The columns for the where clause
-					selectionArgs, // The values for the where clause
-					null, // don't group the rows
-					null, // don't filter by row groups
-					sortOrder // The sort order
-					);
-			cursor.setNotificationUri(getContext().getContentResolver(), uri);
-			return cursor;
-		} else {
-			return null;
-		}
-	}
+        default:
+            break;
 
-	/**
-	 * Should be used to retrieve user details like identityContact info
-	 * 
-	 * @param uri
-	 * @param projection
-	 * @param selection
-	 * @param selectionArgs
-	 * @param sortOrder
-	 * @return
-	 */
-	private Cursor queryUserDetail(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		Cursor cursor = mOpenHelper.getReadableDatabase().query(true, ContactsViewEntry.TABLE_NAME, projection, selection, selectionArgs,
-				null, null, sortOrder, null, null);
-		return null;
-	}
+        }
 
-	/**
-	 * Should be used to check if the user exists
-	 * 
-	 * @param uri
-	 * @param projection
-	 * @param selection
-	 * @param selectionArgs
-	 * @param sortOrder
-	 * @return
-	 */
-	private Cursor queryUsers(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        String tableName = null;
+        List<String> pathSegments = uri.getPathSegments();
+        switch (pathSegments.size()) {
+        case 1:
+            tableName = pathSegments.get(0);
+            break;
+        case 2:
+            tableName = pathSegments.get(1);
+            break;
+        }
+        if (tableName != null) {
+            SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
-		Cursor cursor = mOpenHelper.getReadableDatabase().query(true, UserEntry.TABLE_NAME, projection, selection, selectionArgs, null,
-				null, sortOrder, null, null);
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
-	}
+            Cursor cursor = db.query(
+                    tableName,
+                    projection, // The columns to return from the query
+                    selection, // The columns for the where clause
+                    selectionArgs, // The values for the where clause
+                    null, // don't group the rows
+                    null, // don't filter by row groups
+                    sortOrder // The sort order
+                    );
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+            return cursor;
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		int result;
-		MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
-		StringBuilder stringBuilder = new StringBuilder();
+    /**
+     * @return
+     */
+    private Cursor queryContextBasedChatHistory(Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        String rawQuery = DatabaseContracts.QUERY_OPENPEER_CHATS_CONTEXT_BASED;
+        if (!TextUtils.isEmpty(selection)) {
+            rawQuery = rawQuery + " where " + selection;
+        }
+        Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(rawQuery,
+                selectionArgs);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
-		switch (value) {
-		// If the incoming URI is for notes, chooses the Notes projection
-		// case CONTACT:
-		// result = updateContacts(uri, values, selection, selectionArgs);
-		// break;
-		case MESSAGES_WINDOW:
-			int windowId = Integer.parseInt(uri.getLastPathSegment());
-			stringBuilder.append(DatabaseContracts.COLUMN_NAME_WINDOW_ID + "=" + windowId);
-			if (!TextUtils.isEmpty(selection)) {
-				stringBuilder.append(" and ").append(selection);
-			}
-			return updateMessages(uri, values, stringBuilder.toString(), selectionArgs);
-			// case WINDOWS:
-			// return 0;
-		default:
-			String table = uri.getLastPathSegment();
-			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-			result = db.update(table, values, selection, selectionArgs);
-		}
-		return result;
-	}
+        return cursor;
+    }
 
-	private int updateMessages(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+    /**
+     * @return
+     */
+    private Cursor queryContactBasedChatHistory(Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        String rawQuery = DatabaseContracts.QUERY_OPENPEER_CHATS_CONTACT_BASED;
+        if (!TextUtils.isEmpty(selection)) {
+            rawQuery = rawQuery + " where " + selection;
+        }
+        Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(rawQuery,
+                selectionArgs);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
-		int result = db.update(MessageEntry.TABLE_NAME, values, selection, selectionArgs);
-		if (result != 0) {
-			getContext().getContentResolver().notifyChange(uri, null);
-			notifyChatGroupChange();
-		}
-		return result;
-	}
+        return cursor;
+    }
 
-	private int updateContacts(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    /**
+     * Should be used to retrieve user details like identityContact info
+     * 
+     * @param uri
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @return
+     */
+    private Cursor queryOpenPeerContact(Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        long id = Integer.parseInt(uri.getLastPathSegment());
+        // String rawQuery =
+        // "select oc._id as openpeer_id, oc.stable_id, pf.peer_uri as peer_uri,pf.peerfile_public as peerfile_public,oc.name as name, oc.identity_uri as identity_uri,ip.identity_provider_domain as identity_provider_domain from openpeer_contact oc"
+        // +
+        // " left join peefile_public pf on oc.peerfile_id=left join rolodex_contact rc on oc._id=rc.openpeer_contact_id left join identity_contact ic on rc.identity_contact_id=ic._id left join identity_provider ip on rc.identity_provider_id=ip._id"
+        // + " where oc.id=" + id;
+        String rawQuery = "select oc._id as openpeer_contact_id, oc.stable_id as stable_id, pf.peer_uri as peer_uri,pf.peerfile_public as peerfile_public from openpeer_contact oc left join peerfile_public pf on oc.peerfile_id=pf._id where oc._id="
+                + id;
+        Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(rawQuery,
+                null);
+        return cursor;
+    }
 
-	void initMatcher() {
-		try {
-			ProviderInfo providers[] = this.getContext().getPackageManager()
-					.getPackageInfo(getContext().getPackageName(), PackageManager.GET_PROVIDERS).providers;
-			if (providers != null && providers.length > 0) {
-				String myName = OPContentProvider.class.getCanonicalName();
-				for (ProviderInfo provider : providers) {
-					if (myName.equals(provider.name)) {
-						sAuthority = provider.authority;
-					}
-				}
-			}
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    /**
+     * Should be used to retrieve user details like identityContact info
+     * 
+     * @param uri
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @return
+     */
+    private Cursor queryOpenPeerContactDetail(Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        String rawQuery = null;
 
-		for (MatcherInfo mi : MatcherInfo.values()) {
-			if (!TextUtils.isEmpty(mi.getPath())) {
-				mUriMatcher.addURI(sAuthority, mi.getPath(), mi.ordinal());
-			}
-		}
-	}
+        if (!TextUtils.isEmpty(selection)) {
+            rawQuery = DatabaseContracts.QUERY_OPENPEER_CONTACT_DETAIL
+                    + " where "
+                    + selection;
+        } else {
+            rawQuery = DatabaseContracts.QUERY_OPENPEER_CONTACT_DETAIL;
+        }
+        Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(
+                rawQuery,
+                selectionArgs);
+        return cursor;
+    }
 
-	Cursor queryContacts(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-		Cursor cursor = db.query(
-				DatabaseContracts.ContactsViewEntry.TABLE_NAME,
-				projection, // The columns to return from the query
-				selection, // The columns for the where clause
-				selectionArgs, // The values for the where clause
-				null, // don't group the rows
-				null, // don't filter by row groups
-				sortOrder // The sort order
-				);
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
-	}
+    @Override
+    public int update(Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
+        int result;
+        MatcherInfo value = MatcherInfo.values()[mUriMatcher.match(uri)];
+        StringBuilder stringBuilder = new StringBuilder();
 
-	Cursor queryMessages(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-		String finalWhere = COLUMN_NAME_WINDOW_ID + "=" + uri.getLastPathSegment();
-		if (selection != null) {
-			finalWhere = finalWhere + " AND " + selection;
-		}
-		Cursor cursor = db.query(
-				DatabaseContracts.MessageEntry.TABLE_NAME,
-				projection, // The columns to return from the query
-				finalWhere, // The columns for the where clause
-				selectionArgs, // The values for the where clause
-				null, // don't group the rows
-				null, // don't filter by row groups
-				sortOrder // The sort order
-				);
-		Log.d("test", "query uri for messages " + uri + " result " + cursor.getCount());
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
-	}
+        switch (value) {
+        case MESSAGES_WINDOW:
+            int windowId = Integer.parseInt(uri.getLastPathSegment());
+            stringBuilder.append(DatabaseContracts.COLUMN_CBC_ID + "="
+                    + windowId);
+            if (!TextUtils.isEmpty(selection)) {
+                stringBuilder.append(" and ").append(selection);
+            }
+            return updateMessages(uri, values, stringBuilder.toString(),
+                    selectionArgs);
+        case MESSAGES:
+            return updateMessage(uri, values, selection, selectionArgs);
+        default:
+            String table = uri.getLastPathSegment();
+            SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+            result = db.update(table, values, selection, selectionArgs);
+        }
+        return result;
+    }
 
-	private Cursor queryMessage(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+    private int updateMessages(Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
-		String finalWhere = MessageEntry._ID + "=" + uri.getLastPathSegment();
-		if (selection != null) {
-			finalWhere = finalWhere + " AND " + selection;
-		}
-		Cursor cursor = db.query(
-				DatabaseContracts.MessageEntry.TABLE_NAME,
-				projection, // The columns to return from the query
-				finalWhere, // The columns for the where clause
-				selectionArgs, // The values for the where clause
-				null, // don't group the rows
-				null, // don't filter by row groups
-				sortOrder // The sort order
-				);
-		Log.d("test", "query uri for message " + uri + " result " + cursor.getCount());
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
-	}
+        int result = db.update(MessageEntry.TABLE_NAME, values, selection,
+                selectionArgs);
+        if (result != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+            notifyChatHistoryChange();
+        }
+        return result;
+    }
 
-	Cursor queryWindows(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-		Cursor cursor = db.query(
-				DatabaseContracts.WindowViewEntry.TABLE_NAME,
-				projection, // The columns to return from the query
-				selection, // The columns for the where clause
-				selectionArgs, // The values for the where clause
-				null, // don't group the rows
-				null, // don't filter by row groups
-				sortOrder // The sort order
-				);
-		Log.d("test", "query uri " + uri + " result " + cursor.getCount());
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
-	}
+    private int updateMessage(Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
-	void notifyChatGroupChange() {
-		getContext().getContentResolver().notifyChange(getContentUri(WindowViewEntry.URI_PATH_INFO), null);
-	}
+        int result = db.update(MessageEntry.TABLE_NAME, values, selection,
+                selectionArgs);
+        if (result != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+            notifyChatHistoryChange();
+            Cursor cursor = db.query(
+                    MessageEntry.TABLE_NAME,
+                    null, // The columns to return from the query
+                    selection, // The columns for the where clause
+                    selectionArgs, // The values for the where clause
+                    null, // don't group the rows
+                    null, // don't filter by row groups
+                    null // The sort order
+                    );
+            if (cursor == null || cursor.getCount() == 0) {
+                return result;
+            }
+            switch (getGroupChatMode()) {
+            case ContactsBased:
+                cursor.moveToFirst();
+                long windowId = cursor
+                        .getLong(cursor
+                                .getColumnIndex(DatabaseContracts.COLUMN_CBC_ID));
+                long rowId = cursor.getLong(0);
+                String url = MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
+                        + windowId + "/" + rowId;
+                cursor.close();
+                getContext().getContentResolver().notifyChange(
+                        getContentUri(url), null);
+                break;
+            default:
+                break;
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public void shutdown() {
-		// TODO Auto-generated method stub
-		super.shutdown();
-		instance.mOpenHelper.close();
+    private int updateContacts(Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	}
+    void initMatcher() {
+        try {
+            ProviderInfo providers[] = this
+                    .getContext()
+                    .getPackageManager()
+                    .getPackageInfo(getContext().getPackageName(),
+                            PackageManager.GET_PROVIDERS).providers;
+            if (providers != null && providers.length > 0) {
+                String myName = OPContentProvider.class.getCanonicalName();
+                for (ProviderInfo provider : providers) {
+                    if (myName.equals(provider.name)) {
+                        sAuthority = provider.authority;
+                    }
+                }
+            }
+        } catch (NameNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-	public static void clear() {
-		instance.shutdown();
-		instance.getContext().deleteDatabase(OPDatabaseHelper.DATABASE_NAME);
-	}
+        for (MatcherInfo mi : MatcherInfo.values()) {
+            if (!TextUtils.isEmpty(mi.getPath())) {
+                mUriMatcher.addURI(sAuthority, mi.getPath(), mi.ordinal());
+            }
+        }
+    }
 
-	/**
-	 * @return
-	 */
-	public static OPContentProvider getInstance() {
-		// TODO Auto-generated method stub
-		return instance;
-	}
+    Cursor queryRolodexContacts(Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+        if (projection == null) {
+            projection = new String[] {
+                    RolodexContactEntry._ID,
+                    RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID,
+                    RolodexContactEntry.COLUMN_CONTACT_NAME,
+                    RolodexContactEntry.COLUMN_IDENTITY_URI };
+        }
+        String where = "associated_identity_id in (select _id from associated_identity where account_id=(select _id from account where logged_in=1))";
+        if (selection != null) {
+            where = where + " and " + selection;
+        }
+        Cursor cursor = db.query(
+                DatabaseContracts.RolodexContactEntry.TABLE_NAME,
+                projection, // The columns to return from the query
+                where, // The columns for the where clause
+                selectionArgs, // The values for the where clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                sortOrder // The sort order
+                );
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+    Cursor queryMessages(Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                DatabaseContracts.MessageEntry.TABLE_NAME,
+                projection, // The columns to return from the query
+                selection, // The columns for the where clause
+                selectionArgs, // The values for the where clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                sortOrder // The sort order
+                );
+        Log.d("test",
+                "query uri for messages " + uri + " result "
+                        + cursor.getCount());
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+    private Cursor queryMessage(Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+        String finalWhere = MessageEntry._ID + "=" + uri.getLastPathSegment();
+        if (selection != null) {
+            finalWhere = finalWhere + " AND " + selection;
+        }
+        Cursor cursor = db.query(
+                DatabaseContracts.MessageEntry.TABLE_NAME,
+                projection, // The columns to return from the query
+                finalWhere, // The columns for the where clause
+                selectionArgs, // The values for the where clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                sortOrder // The sort order
+                );
+        Log.d("test",
+                "query uri for message " + uri + " result " + cursor.getCount());
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+    Cursor queryWindows(Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        Cursor cursor = db.query(
+                DatabaseContracts.WindowViewEntry.TABLE_NAME,
+                projection, // The columns to return from the query
+                selection, // The columns for the where clause
+                selectionArgs, // The values for the where clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                sortOrder // The sort order
+                );
+        Log.d("test", "query uri " + uri + " result " + cursor.getCount());
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+    void notifyChatHistoryChange() {
+        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
+        case ContactsBased:
+            getContext().getContentResolver().notifyChange(
+                    getContentUri(WindowViewEntry.URI_PATH_INFO_CBC), null);
+            break;
+        case ContextBased:
+            getContext().getContentResolver().notifyChange(
+                    getContentUri(WindowViewEntry.URI_PATH_INFO_CONTEXT), null);
+        default:
+            break;
+        }
+
+    }
+
+    /**
+     * @return
+     */
+    public static OPContentProvider getInstance() {
+        // TODO Auto-generated method stub
+        return instance;
+    }
+
+    GroupChatMode getGroupChatMode() {
+        return GroupChatMode.ContactsBased;
+    }
+
+    static String getIdClause(Uri uri) {
+        return BaseColumns._ID + "=" + uri.getLastPathSegment();
+    }
+
+    static String combinedIdClause(String selection, Uri uri) {
+        if (TextUtils.isEmpty(selection)) {
+            selection = getIdClause(uri);
+        } else {
+            selection = selection + getIdClause(uri);
+        }
+        return selection;
+    }
 }

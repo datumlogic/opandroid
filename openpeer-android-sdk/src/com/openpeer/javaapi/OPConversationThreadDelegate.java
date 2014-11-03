@@ -35,10 +35,15 @@ public abstract class OPConversationThreadDelegate {
 
 	public abstract void onConversationThreadContactsChanged(OPConversationThread conversationThread);
 
-	public abstract void onConversationThreadContactStateChanged(
+	   public abstract void onConversationThreadContactConnectionStateChanged(
+               OPConversationThread conversationThread,
+               OPContact contact,
+               ContactConnectionStates state
+               );
+	   
+	public abstract void onConversationThreadContactStatusChanged(
 			OPConversationThread conversationThread,
-			OPContact contact,
-			ContactStates state
+			OPContact contact
 			);
 
 	public abstract void onConversationThreadMessage(

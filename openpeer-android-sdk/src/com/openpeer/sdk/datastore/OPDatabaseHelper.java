@@ -29,6 +29,10 @@
  *******************************************************************************/
 package com.openpeer.sdk.datastore;
 
+import java.io.IOException;
+
+import com.openpeer.sdk.utils.DbUtils;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -38,30 +42,66 @@ import android.util.Log;
  * 
  */
 public class OPDatabaseHelper extends SQLiteOpenHelper {
-	public static final int DATABASE_VERSION = 1;
-	public static final String DATABASE_NAME = "OpenPeer.db";
+    public static final int DATABASE_VERSION = 3;
+    public static final String DATABASE_NAME = "OpenPeer.db";
+    private static OPDatabaseHelper instance;
+    Context mContext;
 
-	public OPDatabaseHelper(Context context, String name,
-			SQLiteDatabase.CursorFactory factory, int version) {
-		super(context, name, factory, version);
-	}
+    public OPDatabaseHelper(Context context, String name,
+            SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, name, factory, version);
+        mContext = context;
+    }
 
-	@Override
-	public void onCreate(SQLiteDatabase db) {
-		for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
-			Log.d("test", "create statement" + sql);
-			db.execSQL(sql);
-		}
-	}
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // for (String sql : DatabaseContracts.CREATE_STATEMENTS) {
+        // Log.d("test", "create statement" + sql);
+        // db.execSQL(sql);
+        // }
+        try {
+            DbUtils.executeSqlScript(mContext, db, "main.sql");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 3) {
+            try {
+                DbUtils.executeSqlScript(mContext, db, "main.sql");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
-	}
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        super.onDowngrade(db, oldVersion, newVersion);
+    }
 
-	@Override
-	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		super.onDowngrade(db, oldVersion, newVersion);
-	}
+    /**
+     * @param context
+     * @return
+     */
+    public static OPDatabaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new OPDatabaseHelper(context,
+                    OPDatabaseHelper.DATABASE_NAME, // the name of the database)
+                    null, // uses the default SQLite cursor
+                    OPDatabaseHelper.DATABASE_VERSION);
+        }
+        return instance;
+    }
+
+    public void closeAndDeleteDB() {
+        instance.close();
+
+        mContext.deleteDatabase(DATABASE_NAME);
+    }
 
 }

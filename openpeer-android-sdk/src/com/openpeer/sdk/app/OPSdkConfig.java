@@ -30,188 +30,178 @@
 package com.openpeer.sdk.app;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.openpeer.javaapi.OPStack;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.provider.Settings.Secure;
+import android.text.TextUtils;
 import android.text.format.Time;
-import android.util.Log;
+
+import com.openpeer.javaapi.OPSettings;
+import com.openpeer.javaapi.OPStack;
+import com.openpeer.sdk.model.GroupChatMode;
+import com.openpeer.sdk.utils.AssetUtils;
 
 /**
  * 
- * Global SDK configurations. TODO: put them in a file like
- * openpeersdk.properties
+ * Global SDK configurations. TODO: put them in a file like openpeersdk.properties
  * 
- * All configurable items should have a default value and the value will be
- * overwritten if the configuration file exists
+ * All configurable items should have a default value and the value will be overwritten if the configuration file exists
  */
 public class OPSdkConfig {
 
-	private static final String PREF_NAME = "sdk.pref";
+    // TODO add configuration items in
+    private static final String KEY_GRANT_ID = "openpeer/calculated/grantId";
 
-	// TODO add configuration items in
-	private static final String PATH_CONFIG_FILE = "openpeersdk.properties";
-	private static final String KEY_GRANT_ID = "grantId";
+    private static final String PREFIX_APP_COMMON_SETTING = "openpeer/common/";
 
-	private static final String PREFIX_APP_COMMON_SETTING = "openpeer/common/";
-	private static final String PREFIX_APP_CALCULATED_SETTING = "openpeer/calculated/";
+    private static final String KEY_APP_NAME = PREFIX_APP_COMMON_SETTING
+            + "application-name";
+    private static final String KEY_APP_IMAGE_URL = PREFIX_APP_COMMON_SETTING
+            + "application-image-url";
+    private static final String KEY_APP_APPLICATION_URL = PREFIX_APP_COMMON_SETTING
+            + "application-url";
+    public static final String KEY_USER_AGENT = "openpeer/calculated/user-agent";
 
-	private static final String KEY_APP_NAME = "application-name";
-	private static final String KEY_APP_IMAGE_URL = "application-image-url";
-	private static final String KEY_APP_APPLICATION_URL = "application-url";
+    public static final String KEY_OUTER_FRAME_URL = "outerFrameURL";
+    public static final String KEY_IDENTITY_PROVIDE_DOMAIN = "identityProviderDomain";
+    public static final String KEY_IDENTITY_BASE_URI = "identityFederateBaseURI";
+    public static final String KEY_NAMESPACE_GRANT_SERVICE_URL = "namespaceGrantServiceURL";
+    public static final String KEY_LOCKBOX_SERVICE_DOMAIN = "lockBoxServiceDomain";
+    public static final String KEY_APP_ID = "applicationID";
+    public static final String KEY_APP_APPKEY = "applicationSharedSecret";
+    public static final String KEY_CHAT_MODE = "application/chatMode";
+    public static final String KEY_REDIRECT_UPON_LOGIN_URL = "redirectAfterLoginCompleteURL";
+    public static final String KEY_INSTANCE_ID = "openpeer/calculated/instance-id";
+    public static final String KEY_AUTHORIZED_APP_ID = "openpeer/calculated/authorized-application-id";
+    private static final String KEY_DEVICE_ID = "openpeer/calculated/device-id";
+    private static final String KEY_SYSTEM = "openpeer/calculated/system";
+    private static final String KEY_OS = "openpeer/calculated/os";
 
-	private static final String KEY_OUTER_FRAME_URL = "outerFrameURL";
-	private static final String KEY_IDENTITY_PROVIDE_DOMAIN = "identityProviderDomain";
-	private static final String KEY_IDENTITY_BASE_URI = "identityFederateBaseURI";
-	private static final String KEY_NAMESPACE_GRANT_SERVICE_URL = "namespaceGrantServiceURL";
-	private static final String KEY_LOCKBOX_SERVICE_DOMAIN = "lockBoxServiceDomain";
-	private static final String KEY_APP_ID = "appId";
-	private static final String KEY_APP_APPKEY = "appKey";
-	private static final Object KEY_USER_AGENT = "user-agent";
+    static final long DURATION_ONE_YEAR_IN_MILLIS = 12 * 30 * 24 * 60 * 60
+            * 1000l;
 
-	private static final long DURATION_ONE_MONTH_IN_MILLIS = 30 * 24 * 60 * 60
-			* 1000;
+    private static OPSdkConfig instance;
 
-	public static boolean debug = true;
-	private Context mContext;
-	private Properties mProperties = new Properties();
-	private static OPSdkConfig instance;
-	private static final String instanceId = java.util.UUID.randomUUID()
-			.toString();
+    public String getInstanceId() {
+        return OPHelper.getSettingsDelegate().getString(KEY_INSTANCE_ID);
+    }
 
+    private OPSdkConfig() {
 
-	public static String getInstanceid() {
-		return instanceId;
-	}
+    }
 
-	private OPSdkConfig() {
+    public String getAppId() {
+        return OPHelper.getSettingsDelegate().getString(KEY_APP_ID);
+    }
 
-	}
-	public String getAppId(){
-		return mProperties.getProperty(KEY_APP_ID);
-	}
+    public static OPSdkConfig getInstance() {
+        if (instance == null) {
+            instance = new OPSdkConfig();
+        }
+        return instance;
+    }
 
-	public static OPSdkConfig getInstance() {
-		if (instance == null) {
-			instance = new OPSdkConfig();
-		}
-		return instance;
-	}
+    public String getOuterFrameUrl() {
+        return OPHelper.getSettingsDelegate().getString(KEY_OUTER_FRAME_URL);
+    }
 
-	public String getOuterFrameUrl() {
-		return mProperties.getProperty(KEY_OUTER_FRAME_URL);
-	}
+    public String getRedirectUponCompleteUrl() {
+        return OPHelper.getSettingsDelegate().getString(
+                KEY_REDIRECT_UPON_LOGIN_URL);
+    }
 
-	public String getIdentityProviderDomain() {
-		return mProperties.getProperty(KEY_IDENTITY_PROVIDE_DOMAIN);
-	}
+    public String getIdentityProviderDomain() {
+        return OPHelper.getSettingsDelegate().getString(
+                KEY_IDENTITY_PROVIDE_DOMAIN);
+    }
 
-	public String getIdentityBaseUri() {
-		return mProperties.getProperty(KEY_IDENTITY_BASE_URI);
-	}
+    public String getIdentityBaseUri() {
+        return OPHelper.getSettingsDelegate().getString(KEY_IDENTITY_BASE_URI);
+    }
 
-	public String getNamespaceGrantServiceUrl() {
-		return mProperties.getProperty(KEY_NAMESPACE_GRANT_SERVICE_URL);
-	}
+    public String getNamespaceGrantServiceUrl() {
+        return OPHelper.getSettingsDelegate().getString(
+                KEY_NAMESPACE_GRANT_SERVICE_URL);
+    }
 
-	public String getLockboxServiceDomain() {
-		return mProperties.getProperty(KEY_LOCKBOX_SERVICE_DOMAIN);
-	}
+    public String getLockboxServiceDomain() {
+        return OPHelper.getSettingsDelegate().getString(
+                KEY_LOCKBOX_SERVICE_DOMAIN);
+    }
 
-	public String getGrantId() {
-		String id = mContext.getSharedPreferences(PREF_NAME,
-				Context.MODE_PRIVATE).getString(KEY_GRANT_ID, null);
-		if (id == null) {
-			id = java.util.UUID.randomUUID().toString();
-			saveGrantId(id);
-		}
-		return id;
-	}
+    public String getGrantId() {
+        String id = OPHelper.getSettingsDelegate().getString(KEY_GRANT_ID);// mContext.getSharedPreferences(PREF_NAME,
+        // Context.MODE_PRIVATE).getString(KEY_GRANT_ID, null);
+        if (id == null) {
+            id = java.util.UUID.randomUUID().toString();
+            OPHelper.getSettingsDelegate().setString(KEY_GRANT_ID, id);
+        }
+        return id;
+    }
 
-	public String getAPPSettingsString() {
-		try {
-			JSONObject parent = new JSONObject();
-			JSONObject jsonObject = new JSONObject();
+    /**
+     * This funciton need to be called on app launch to make sure device/os settings are up to date
+     * 
+     * @param context
+     */
+    public void applySystemSettings(Context context) {
+        OPSettings.setString(KEY_DEVICE_ID, Secure.getString(
+                context.getContentResolver(), Secure.ANDROID_ID));
+        OPSettings.setString(KEY_OS,
+                android.os.Build.VERSION.RELEASE);
+        OPSettings.setString(KEY_SYSTEM, android.os.Build.MODEL);
+    }
 
-			jsonObject.put(PREFIX_APP_COMMON_SETTING + KEY_APP_NAME,
-					mProperties.getProperty(KEY_APP_NAME));
-			jsonObject.put(PREFIX_APP_COMMON_SETTING + KEY_APP_IMAGE_URL,
-					mProperties.getProperty(KEY_APP_IMAGE_URL));
-			jsonObject.put(PREFIX_APP_COMMON_SETTING + KEY_APP_APPLICATION_URL,
-					mProperties.getProperty(KEY_APP_APPLICATION_URL));
+    /**
+     * This funciton need to be called on app launch or after switching application to make sure application settings are up to date
+     * 
+     * @param context
+     */
+    public void applyApplicationSettings() {
+        OPSettings.setString(OPSdkConfig.KEY_AUTHORIZED_APP_ID,
+                OPSdkConfig.generateAuthorizedAppId());
+        OPSettings.setString(OPSdkConfig.KEY_INSTANCE_ID,
+                java.util.UUID.randomUUID().toString());
+        OPSettings.setString(
+                KEY_USER_AGENT,
+                "user-agent-"
+                        + OPHelper.getSettingsDelegate().getString(KEY_APP_ID));
+    }
 
-			Time expires = new Time();
-			expires.set(System.currentTimeMillis()
-					+ DURATION_ONE_MONTH_IN_MILLIS);
-			jsonObject
-					.put("openpeer/calculated/authorizated-application-id",
-							OPStack.createAuthorizedApplicationID(
-									mProperties.getProperty(KEY_APP_ID),
-									mProperties.getProperty(KEY_APP_APPKEY),
-									expires));
+    private static String generateAuthorizedAppId() {
+        Time expires = new Time();
+        expires.set(System.currentTimeMillis() + DURATION_ONE_YEAR_IN_MILLIS);
 
-			jsonObject.put("openpeer/calculated/user-agent",
-					mProperties.get(KEY_USER_AGENT));
-			jsonObject.put("openpeer/calculated/device-id", Secure.getString(
-					mContext.getContentResolver(), Secure.ANDROID_ID));
-			jsonObject.put("openpeer/calculated/os",
-					android.os.Build.VERSION.RELEASE);
-			jsonObject
-					.put("openpeer/calculated/system", android.os.Build.MODEL);
-			jsonObject.put("openpeer/calculated/instance-id", instanceId);
-			parent.put("root", jsonObject);
-			return parent.toString(2);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return "";
-		}
+        String id = OPStack.createAuthorizedApplicationID(
+                OPHelper.getSettingsDelegate().getString(KEY_APP_ID),
+                OPHelper.getSettingsDelegate().getString(KEY_APP_APPKEY),
+                expires);
+        return id;
+    }
 
-	}
+    public void init(Context context) {
+        if (!TextUtils.isEmpty(OPSdkConfig.getInstance().getAppId())) {
+            return;
+        }
+        try {
+            byte[] bytes = AssetUtils.readAsset(context,
+                    "app_settings_opp_fb.json");
+            String str = new String(bytes, "UTF-8");
+            OPSettings.apply(str);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
-	public void init(Context context) {
-		// try {
-		/**
-		 * getAssets() Return an AssetManager instance for your application's package. AssetManager Provides access to an application's raw
-		 * asset files;
-		 */
-		instance.mContext = context;
-		AssetManager assetManager = context.getAssets();
-		/**
-		 * Open an asset using ACCESS_STREAMING mode. This
-		 */
-		InputStream inputStream;
-		try {
-			inputStream = assetManager.open(PATH_CONFIG_FILE);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
-		/**
-		 * Loads properties from the specified InputStream,
-		 */
-		try {
-			mProperties.load(inputStream);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    }
 
-	}
-
-	private void saveGrantId(String grantId) {
-		SharedPreferences sp = mContext.getSharedPreferences(PREF_NAME,
-				Context.MODE_PRIVATE);
-		sp.edit().putString(KEY_GRANT_ID, grantId).apply();
-
-	}
+    public GroupChatMode getGroupChatMode() {
+        String mode = OPHelper.getSettingsDelegate().getString(KEY_CHAT_MODE);
+        if (TextUtils.isEmpty(mode)) {
+            return GroupChatMode.ContactsBased;
+        } else {
+            return GroupChatMode.valueOf(mode);
+        }
+    }
 
 }
