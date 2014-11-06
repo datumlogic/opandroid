@@ -213,21 +213,22 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 //			}
 //
 //		}
-		switch (loaderID) {
-		case URL_LOADER:
-			// Returns a new CursorLoader
-			return new CursorLoader(getActivity(), // Parent activity context
-					OPContentProvider.getContentUri(RolodexContactEntry.URI_PATH_INFO),
+        switch (loaderID) {
+        case URL_LOADER:
+            // Returns a new CursorLoader
+            return new CursorLoader(getActivity(), // Parent activity context
+                    OPContentProvider
+                            .getContentUri(RolodexContactEntry.URI_PATH_INFO),
 
-					null, // Projection to return
-null,//					builder.toString(), // No selection clause
-null,//					slectionArgs, // No selection arguments
-					null // Default sort order
-			);
-		default:
-			// An invalid id was passed in
-			return null;
-		}
+                    null, // Projection to return
+                    null,// builder.toString(), // No selection clause
+                    null,// slectionArgs, // No selection arguments
+                    null // Default sort order
+            );
+        default:
+            // An invalid id was passed in
+            return null;
+        }
 	}
 
 	@Override
