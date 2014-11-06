@@ -45,11 +45,11 @@ public class OPMessage {
     public static class OPMessageType {
         public static final String TYPE_TEXT = "text/x-application-hookflash-message-text";
         public static final String TYPE_CONTROL = "text/x-application-hookflash-message-system";
-        public static final String TYPE_CALL = "text/x-application-hookflash-call";
+        public static final String TYPE_PARTICIPANTS_CHANGE = "text/x-application-hookflash-participants-change";
 
         // Used to record/show call record
-        public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
-        public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
+        public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-call-video";
+        public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-call-audio";
 
     }
 
