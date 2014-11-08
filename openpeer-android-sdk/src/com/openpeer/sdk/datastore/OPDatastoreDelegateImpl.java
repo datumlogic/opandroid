@@ -1310,6 +1310,10 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         case ContactsBased:
 
             sb.append(MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + cbcId);
+            mContext.getContentResolver()
+            .notifyChange(
+                    OPContentProvider
+                            .getContentUri(WindowViewEntry.URI_PATH_INFO_CBC),null);
             break;
         case ContextBased:
             sb.append(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + contextId);
@@ -1412,6 +1416,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                             OPContentProvider
                                     .getContentUri(RolodexContactEntry.URI_PATH_INFO),
                             null);
+
             return identityContactId;
 
         }

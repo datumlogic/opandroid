@@ -112,7 +112,7 @@ public class OPIdentityLoginWebViewClient extends WebViewClient {
         Log.d("login", "IdentityLoginWebview onPageFinished " + url);
         if (url.contains(OPSdkConfig.getInstance().getOuterFrameUrl())) {
             Log.d("login",
-                    "IdentityLoginWebview onPageFinished setting data encoding");
+                    "IdentityLoginWebview onPageFinished setting data encoding to hex");
             view.loadUrl("javascript:window.init({datapassEncoding: \"hex\"});");
         }
         if (!mInnerFrameLoaded) {
