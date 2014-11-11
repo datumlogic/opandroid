@@ -31,7 +31,7 @@ package com.openpeer.javaapi;
 
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
-import com.openpeer.sdk.model.MessageState;
+import com.openpeer.sdk.model.MessageEditState;
 import com.openpeer.sdk.model.OPUser;
 
 import android.database.Cursor;
@@ -45,11 +45,11 @@ public class OPMessage {
     public static class OPMessageType {
         public static final String TYPE_TEXT = "text/x-application-hookflash-message-text";
         public static final String TYPE_CONTROL = "text/x-application-hookflash-message-system";
-        public static final String TYPE_CALL_LOG = "text/x-application-hookflash-call-log";
+        public static final String TYPE_CALL = "text/x-application-hookflash-call";
 
         // Used to record/show call record
-        // public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
-        // public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
+        public static final String TYPE_INERNAL_CALL_VIDEO = "text/x-application-hookflash-message-call-video";
+        public static final String TYPE_INERNAL_CALL_AUDIO = "text/x-application-hookflash-message-call-audio";
 
     }
 
@@ -75,7 +75,7 @@ public class OPMessage {
     private long mSenderId;
     private String mMessageId;
     private boolean mRead;
-    private MessageState mState;// read time in millis
+    private MessageEditState mEditState;// read time in millis
     private MessageDeliveryStates mDeliveryStatus;
     private String mReplacesMessageId = "";
     private boolean mValidated;
@@ -104,15 +104,15 @@ public class OPMessage {
         this.mRead = read;
     }
 
-    public MessageState getState() {
-        if (mState == null) {
-            mState = MessageState.Normal;
+    public MessageEditState getEditState() {
+        if (mEditState == null) {
+            mEditState = MessageEditState.Normal;
         }
-        return mState;
+        return mEditState;
     }
 
-    public void setState(MessageState state) {
-        this.mState = state;
+    public void setEditState(MessageEditState state) {
+        this.mEditState = state;
     }
 
     public String getMessageId() {
@@ -135,8 +135,7 @@ public class OPMessage {
     }
 
     public OPMessage(long senderId, String mMessageType, String message,
-            long sendTime, String messageId, MessageState state,
-            int deliveryStatus) {
+            long sendTime, String messageId, MessageEditState state) {
         super();
         this.mSenderId = senderId;
         this.mMessageType = mMessageType;
@@ -144,14 +143,14 @@ public class OPMessage {
         this.mTime = new Time();
         mTime.set(sendTime);
         this.mMessageId = messageId;
-        this.mState = state;
-        this.mDeliveryStatus = MessageDeliveryStates.values()[deliveryStatus];
+        this.mEditState = state;
+
     }
 
     public OPMessage(long senderId, String mMessageType, String message,
             long sendTime, String messageId) {
         this(senderId, mMessageType, message, sendTime, messageId,
-                MessageState.Normal, 0);
+                MessageEditState.Normal);
     }
 
     public OPContact getFrom() {
@@ -192,24 +191,6 @@ public class OPMessage {
 
     public void setDeliveryStatus(MessageDeliveryStates status) {
         mDeliveryStatus = status;
-    }
-
-    public static OPMessage fromCursor(Cursor cursor) {
-        return new OPMessage(
-                cursor.getLong(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
-                cursor.getString(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
-                cursor.getString(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
-                cursor.getLong(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
-                cursor.getString(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
-                MessageState.values()[cursor.getInt(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_STATUS))],
-                cursor.getInt(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
     }
 
     public String toString() {

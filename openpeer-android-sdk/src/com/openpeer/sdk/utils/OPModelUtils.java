@@ -35,7 +35,6 @@ import java.util.List;
 
 import android.util.Log;
 
-import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.sdk.app.OPDataManager;
@@ -51,10 +50,15 @@ public class OPModelUtils {
      * @return
      */
     public static long getWindowId(long userIds[]) {
-        Arrays.sort(userIds);
-        String arr[] = new String[userIds.length];
-        for (int i = 0; i < userIds.length; i++) {
-            arr[i] = "" + userIds[i];
+        long tmp[] = new long[userIds.length + 1];
+        tmp[userIds.length] = OPDataManager.getDatastoreDelegate()
+                .getLoggedinUser()
+                .getUserId();
+        System.arraycopy(userIds, 0, tmp, 0, userIds.length);
+        Arrays.sort(tmp);
+        String arr[] = new String[tmp.length];
+        for (int i = 0; i < tmp.length; i++) {
+            arr[i] = "" + tmp[i];
         }
         long code = Arrays.deepHashCode(arr);
         Log.d("test",
@@ -84,15 +88,13 @@ public class OPModelUtils {
         List<OPContact> contacts = mConvThread.getContacts();
         List<OPUser> users = new ArrayList<OPUser>();
         for (OPContact contact : contacts) {
-            if (contact.isSelf()) {
-                continue;
+            if (!contact.isSelf()) {
+                OPUser user = OPDataManager.getDatastoreDelegate().getUser(
+                        contact,
+                        mConvThread.getIdentityContactList(contact));
+                // This function will also set the userId so don't worry
+                users.add(user);
             }
-            // new contact
-            OPUser user = new OPUser(contact,
-                    mConvThread.getIdentityContactList(contact));
-            user = OPDataManager.getDatastoreDelegate().saveUser(user);
-            // This function will also set the userId so don't worry
-            users.add(user);
         }
         return getWindowId(users);
     }

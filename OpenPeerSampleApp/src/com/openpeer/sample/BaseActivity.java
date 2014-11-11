@@ -29,22 +29,33 @@
  *******************************************************************************/
 package com.openpeer.sample;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.openpeer.javaapi.AccountStates;
+import com.openpeer.sample.login.LoginUIListenerImpl;
+import com.openpeer.sdk.app.LoginManager;
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
 
 public class BaseActivity extends BaseFragmentActivity {
 
     private static int mStack = 0;
-    BroadcastReceiver mSignoutReceiver;
 
     public static boolean isAppInBackground() {
         return mStack == 0;
     }
+
+    private BroadcastReceiver mSignoutReceiver;
+    private ProgressDialog mSignoutDialog;
 
     @Override
     public void onResume() {
@@ -55,18 +66,69 @@ public class BaseActivity extends BaseFragmentActivity {
         }
         mStack++;
 
-        mSignoutReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE
-                        .equals(intent.getAction())) {
-                    onSignoutComplete();
-                }
+        if (OPHelper.getInstance().isSigningOut()) {
+            registerSignoutReceiver();
+            showSignoutView();
+        } else if (OPDataManager.getInstance().getSharedAccount() == null
+                || OPDataManager.getInstance().getSharedAccount().getState() != AccountStates.AccountState_Ready) {
+
+            if (!LoginManager.getInstance().loginPerformed()) {
+                LoginManager.getInstance().registerListener(
+                        new LoginUIListenerImpl(this));
+                LoginManager.getInstance().startLogin(
+                        OPSessionManager.getInstance().getCallDelegate(),
+                        OPSessionManager.getInstance()
+                                .getConversationThreadDelegate());
+            } else if (!LoginManager.getInstance().isLoggingIn()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(
+                        "Looks like you're disconnected. Do you want to login?")
+                        .setPositiveButton("Yes",
+                                new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        LoginManager
+                                                .getInstance()
+                                                .registerListener(
+                                                        new LoginUIListenerImpl(
+                                                                BaseActivity.this));
+                                        LoginManager
+                                                .getInstance()
+                                                .startLogin(
+                                                        OPSessionManager
+                                                                .getInstance()
+                                                                .getCallDelegate(),
+                                                        OPSessionManager
+                                                                .getInstance()
+                                                                .getConversationThreadDelegate());
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .setNegativeButton("No",
+                                new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        dialog.dismiss();
+
+                                    }
+                                }).create().show();
+
             }
-        };
-        IntentFilter filter = new IntentFilter(
-                com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE);
-        registerReceiver(mSignoutReceiver, filter);
+        }
+
+    }
+
+    /**
+     * 
+     */
+    protected void showSignoutView() {
+        mSignoutDialog = new ProgressDialog(this);
+        mSignoutDialog.setMessage("Signing out...");
+        mSignoutDialog.show();
     }
 
     @Override
@@ -77,8 +139,22 @@ public class BaseActivity extends BaseFragmentActivity {
             OPHelper.getInstance().onEnteringBackground();
             BackgroundingManager.onEnteringBackground();
         }
-        unregisterReceiver(mSignoutReceiver);
+        if (mSignoutReceiver != null) {
+            unregisterReceiver(mSignoutReceiver);
+        }
 
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LoginManager.getInstance().unregisterListener();
     }
 
     public static void showInvalidStateWarning(Context context) {
@@ -86,8 +162,35 @@ public class BaseActivity extends BaseFragmentActivity {
                 .show();
     }
 
+    /**
+     * @return
+     */
+    public ViewGroup getLoginViewContainer() {
+        // TODO Auto-generated method stub
+        return (ViewGroup) findViewById(R.id.fragment_login);
+    }
+
     protected void onSignoutComplete() {
+        if (mSignoutDialog != null) {
+            mSignoutDialog.dismiss();
+            mSignoutDialog = null;
+        }
         MainActivity.cleanLaunch(this);
     }
 
+    protected void registerSignoutReceiver() {
+        mSignoutReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE
+                        .equals(intent.getAction())) {
+                    onSignoutComplete();
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(
+                com.openpeer.sdk.app.IntentData.ACTION_SIGNOUT_DONE);
+        registerReceiver(mSignoutReceiver, filter);
+    }
 }

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <Preference
+        android:defaultValue="false"
+        android:key="scan"
+        android:title="Scan Settings"/>
     <SwitchPreference
         android:defaultValue="true"
         android:key="notification_sound_switch"
@@ -21,24 +24,24 @@
 
     <SwitchPreference
         android:defaultValue="false"
-        android:key="logSwitch"
+        android:key="isLoggerEnabled"
         android:title="Enable Log"/>
 
     <PreferenceScreen
         android:key="debug_settings"
         android:title="@string/logger_settings">
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="out_telnet_logger"
             android:title="@string/out_telnet_logger"/>
 
         <EditTextPreference
             android:defaultValue="log.opp.me:8115"
-            android:key="log_server_url"
+            android:key="defaultOutgoingTelnetServer"
             android:title="Server url"/>
 
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="local_telnet_logger"
             android:title="@string/local_telnet_logger"/>
         <SwitchPreference

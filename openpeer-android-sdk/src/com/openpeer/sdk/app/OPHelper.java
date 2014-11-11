@@ -53,6 +53,7 @@ import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
+import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
 
@@ -94,8 +95,9 @@ public class OPHelper {
                 url = DEFAULT_LOG_SERVER;
             }
 
-            String deviceId = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
-            String instanceId = OPSdkConfig.getInstanceid();
+            String deviceId = Secure.getString(mContext.getContentResolver(),
+                    Secure.ANDROID_ID);
+            String instanceId = OPSdkConfig.getInstance().getInstanceId();
             String telnetLogString = deviceId + "-" + instanceId + "\n";
             OPLogger.installOutgoingTelnetLogger(url, true, telnetLogString);
         } else {
@@ -131,11 +133,14 @@ public class OPHelper {
         OPMediaEngine.getInstance().setMuteEnabled(false);
         OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
         OPMediaEngine.getInstance().setContinuousVideoCapture(true);
-        OPMediaEngine.getInstance().setDefaultVideoOrientation(VideoOrientations.VideoOrientation_Portrait);
-        OPMediaEngine.getInstance().setRecordVideoOrientation(VideoOrientations.VideoOrientation_LandscapeRight);
+        OPMediaEngine.getInstance().setDefaultVideoOrientation(
+                VideoOrientations.VideoOrientation_Portrait);
+        OPMediaEngine.getInstance().setRecordVideoOrientation(
+                VideoOrientations.VideoOrientation_LandscapeRight);
         OPMediaEngine.getInstance().setFaceDetection(false);
 
-        Log.d("performance", "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
+        Log.d("performance",
+                "initMediaEngine time " + (SystemClock.uptimeMillis() - start));
     }
 
     /**
@@ -158,41 +163,49 @@ public class OPHelper {
      * @param stackDelegate
      * @param mediaengineDelegate
      */
-    public void init(Context context, OPDatastoreDelegate datastoreDelegate, OPCacheDelegate cacheDelegate,
-            OPSettingsDelegate settingsDelegate, OPStackDelegate stackDelegate, OPMediaEngineDelegate mediaengineDelegate) {
+    public void init(Context context, OPDatastoreDelegate datastoreDelegate,
+            OPCacheDelegate cacheDelegate,
+            OPSettingsDelegate settingsDelegate, OPStackDelegate stackDelegate,
+            OPMediaEngineDelegate mediaengineDelegate) {
         mCacheDelegate = cacheDelegate;
         mSettingsDelegate = settingsDelegate;
-        long start = SystemClock.uptimeMillis();
 
         mContext = context;
 
-
         mStackMessageQueue = OPStackMessageQueue.singleton();
-        mStackMessageQueue.interceptProcessing(OPStackMessageQueueDelegateImpl.getInstance());
-        
+        mStackMessageQueue.interceptProcessing(OPStackMessageQueueDelegateImpl
+                .getInstance());
+
         if (mSettingsDelegate == null) {
             mSettingsDelegate = OPSettingsDelegateImpl.getInstance(mContext);
         }
         OPSettings.setup(mSettingsDelegate);
-        OPSdkConfig.getInstance().init(mContext);
+
+        OPSdkConfig.getInstance().init(context);
+
+        OPSdkConfig.getInstance().applySystemSettings(context);
+        OPSdkConfig.getInstance().applyApplicationSettings();
+        OPSettings
+                .setUInt(
+                        "openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds",
+                        0);
         if (mCacheDelegate == null) {
             mCacheDelegate = OPCacheDelegateImpl.getInstance(mContext);
         }
         OPCache.setup(mCacheDelegate);
-        
+
         OPMediaEngine.init(mContext);
 
         OPStack stack = OPStack.singleton();
 
-//        OPSettings.applyDefaults();
-        OPSettings.setUInt("openpeer/stack/finder-connection-send-ping-keep-alive-after-in-seconds", 0);
-
+        // OPSettings.applyDefaults();
 
         stack.setup(stackDelegate, mediaengineDelegate);
         if (datastoreDelegate != null) {
             OPDataManager.getInstance().init(datastoreDelegate);
         } else {
-            OPDataManager.getInstance().init(OPDatastoreDelegateImpl.getInstance().init(mContext));
+            OPDataManager.getInstance().init(
+                    OPDatastoreDelegateImpl.getInstance().init(mContext));
         }
     }
 
@@ -201,8 +214,12 @@ public class OPHelper {
             JSONObject parent = new JSONObject();
             JSONObject jsonObject = new JSONObject();
 
-            jsonObject.put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http", true);
-            jsonObject.put("openpeer/stack/bootstrapper-force-well-known-using-post", true);
+            jsonObject
+                    .put("openpeer/stack/bootstrapper-force-well-known-over-insecure-http",
+                            true);
+            jsonObject.put(
+                    "openpeer/stack/bootstrapper-force-well-known-using-post",
+                    true);
             parent.put("root", jsonObject);
             return parent.toString(2);
         } catch (JSONException e) {
@@ -216,7 +233,8 @@ public class OPHelper {
             JSONObject parent = new JSONObject();
             JSONObject jsonObject = new JSONObject();
 
-            jsonObject.put("openpeer/core/authorized-application-id-split-char", "-");
+            jsonObject.put(
+                    "openpeer/core/authorized-application-id-split-char", "-");
             parent.put("root", jsonObject);
             return parent.toString(2);
         } catch (JSONException e) {
@@ -255,6 +273,10 @@ public class OPHelper {
         OPDataManager.getInstance().onSignOut();
     }
 
+    public boolean isSigningOut() {
+        return isSigningOut;
+    }
+
     /**
      * @ExcludeFromJavadoc
      */
@@ -263,7 +285,10 @@ public class OPHelper {
         if (isSigningOut) {
             mCacheDelegate.clear(null);
             intent.setAction(IntentData.ACTION_SIGNOUT_DONE);
+            OPDataManager.getInstance().afterSignout();
+            LoginManager.getInstance().afterSignout();
         } else {
+            LoginManager.getInstance().onAccountShutdown();
             intent.setAction(IntentData.ACTION_ACCOUNT_SHUTDOWN);
         }
         mContext.sendBroadcast(intent);

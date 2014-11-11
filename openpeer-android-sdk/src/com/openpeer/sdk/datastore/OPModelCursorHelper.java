@@ -31,9 +31,11 @@
 package com.openpeer.sdk.datastore;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 
+import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.sdk.model.MessageState;
+import com.openpeer.sdk.model.MessageEditState;
 
 import static com.openpeer.sdk.datastore.DatabaseContracts.*;
 
@@ -46,21 +48,29 @@ import static com.openpeer.sdk.datastore.DatabaseContracts.*;
 public class OPModelCursorHelper {
 
     public static OPMessage messageFromCursor(Cursor cursor) {
+
         OPMessage message = new OPMessage(
                 cursor.getLong(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID)),
+                        .getColumnIndex(MessageEntry.COLUMN_SENDER_ID)),
                 cursor.getString(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TYPE)),
+                        .getColumnIndex(MessageEntry.COLUMN_MESSAGE_TYPE)),
                 cursor.getString(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TEXT)),
+                        .getColumnIndex(MessageEntry.COLUMN_MESSAGE_TEXT)),
                 cursor.getLong(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_TIME)),
+                        .getColumnIndex(MessageEntry.COLUMN_MESSAGE_TIME)),
                 cursor.getString(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_ID)),
-                MessageState.values()[cursor.getInt(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_READ))],
-                cursor.getInt(cursor
-                        .getColumnIndex(MessageEntry.COLUMN_NAME_MESSAGE_DELIVERY_STATUS)));
+                        .getColumnIndex(MessageEntry.COLUMN_MESSAGE_ID)),
+                MessageEditState.values()[cursor.getInt(cursor
+                        .getColumnIndex(MessageEntry.COLUMN_EDIT_STATUS))]);
+
+        String deliveryStateStr = cursor.getString(cursor
+                .getColumnIndex(MessageEntry.COLUMN_MESSAGE_DELIVERY_STATUS));
+        MessageDeliveryStates deliveryState;
+
+        if (!(TextUtils.isEmpty(deliveryStateStr))) {
+            deliveryState = MessageDeliveryStates.valueOf(deliveryStateStr);
+            message.setDeliveryStatus(deliveryState);
+        }
 
         return message;
     }

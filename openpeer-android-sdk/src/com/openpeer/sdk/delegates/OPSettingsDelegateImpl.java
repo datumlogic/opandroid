@@ -35,6 +35,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.openpeer.javaapi.OPSettings;
 import com.openpeer.javaapi.OPSettingsDelegate;
 
 /**
@@ -44,7 +45,6 @@ import com.openpeer.javaapi.OPSettingsDelegate;
 public class OPSettingsDelegateImpl extends OPSettingsDelegate {
     private final static String TAG = OPSettingsDelegateImpl.class
             .getSimpleName();
-    private static final String PREF_CACHE_NAME = "core_setting";
     private Context mContext;
     private static OPSettingsDelegateImpl instance;
     private static final String TABLE_SETTINGS = "settings";
@@ -92,7 +92,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
             }
             cursor.close();
         }
-        // Log.d(TAG, "simpleQueryForString key " + key + " value " + defaultValue);
+         Log.d(TAG, "simpleQueryForString key " + key + " value " + defaultValue);
         return defaultValue;
     }
 
@@ -170,6 +170,7 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
      */
     @Override
     public void setString(String key, String value) {
+        Log.d(TAG, "setString key " + key + " value " + value);
         save(key, value);
 
     }
@@ -240,7 +241,8 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
         mDBHelper.getWritableDB().delete(TABLE_SETTINGS, where, args);
     }
 
-    public static void loadDefaultSettings(SQLiteDatabase db) {
+    public static void onDatabaseCreated(SQLiteDatabase db) {
+        OPSettings.applyDefaults();
         loadSettings(db, DEFAULT_VALUES);
 
         loadSettings(db, V3_SETTINGS);
@@ -256,9 +258,11 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
             db.insertWithOnConflict(TABLE_SETTINGS, null, values,
                     SQLiteDatabase.CONFLICT_REPLACE);
         }
+
     }
 
-    public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public static void onUpgrade(SQLiteDatabase db, int oldVersion,
+            int newVersion) {
         if (oldVersion < 2) {
             loadSettings(db, DEFAULT_VALUES);
         }
@@ -283,22 +287,25 @@ public class OPSettingsDelegateImpl extends OPSettingsDelegate {
                     , "600", "int" } };
 
     static final String DEFAULT_VALUES[][] = {
-            {
-                    "outerFrameURL",
-                    "http://jsouter-v1-rel-lespaul-i.hcs.io/identity.html?view=choose?reload=true",
-                    "string" },
-            { "identityProviderDomain", "identity-v1-rel-lespaul-i.hcs.io",
-                    "string" },
-            { "identityFederateBaseURI",
-                    "identity://identity-v1-rel-lespaul-i.hcs.io/", "string" },
-            { "namespaceGrantServiceURL",
-                    "http://jsouter-v1-rel-lespaul-i.hcs.io/grant.html",
-                    "string" },
-            // { "lockBoxServiceDomain", "lockbox-v1-rel-lespaul-i.hcs.io", "string" },
-            { "lockBoxServiceDomain", "identity-v1-rel-lespaul-i.hcs.io",
-                    "string" },
+//            {
+//                    "outerFrameURL",
+//                    "http://identity.opp.me:5005/outer-new.html",
+//                    "string" },
+//            { "redirectAfterLoginCompleteURL",
+//                    "http://identity.opp.me:5005/outer-new.html?reload=true",
+//                    "string" },
+//
+//            { "identityProviderDomain", "bruce1-test-com.app.opp.me",
+//                    "string" },
+//            { "identityFederateBaseURI",
+//                    "identity://bruce1.test.com/", "string" },
+//            { "namespaceGrantServiceURL",
+//                    "http://jsouter-v1-rel-lespaulinst2-i.hcs.io/grant.html",
+//                    "string" },
+//            { "lockBoxServiceDomain", "opp.me",
+//                    "string" },
 
-            { "defaultOutgoingTelnetServer", "log.opp.me:8115", "string" },
+//            { "defaultOutgoingTelnetServer", "log.opp.me:8115", "string" },
             { "localTelnetLoggerPort", "59999", "string" },
             { "applicationSettingsBackgroundingPhaseRichPush", "4", "int" },
             { "openpeer/core/core-thread-priority", "normal", "string" },

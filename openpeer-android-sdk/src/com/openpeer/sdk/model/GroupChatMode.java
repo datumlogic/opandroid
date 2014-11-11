@@ -33,5 +33,6 @@ package com.openpeer.sdk.model;
  */
 public enum GroupChatMode {
     ContactsBased,
-    PermGroup
+    ContextBased,
+    RoomBased
 }

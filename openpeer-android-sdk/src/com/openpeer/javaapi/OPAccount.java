@@ -35,157 +35,179 @@ import java.util.List;
 import com.openpeer.sdk.app.OPSdkConfig;
 
 public class OPAccount {
-	/**
-	 * 
-	 * @return Current account state
-	 */
-	public AccountStates getState() {
-		return getState(0, "");
-	}
+    /*
+     * Database record id
+     */
+    private long mAccountId;
+    private long mSelfContactId;
 
-	/**
-	 * Get the primary identity,e.g. the identity used to login
-	 * 
-	 * @return
-	 */
-	public OPIdentity getPrimaryIdentity() {
-		List<OPIdentity> identities = getAssociatedIdentities();
+    public long getSelfContactId() {
+        return mSelfContactId;
+    }
 
-		// TODO: proper logic to define primary identity
-		return identities.get(0);
-	}
+    public void setSelfContactId(long id) {
+        this.mSelfContactId = id;
+    }
 
-	/**
-	 * Convenience method to get the peerURI of the account
-	 * 
-	 * @return
-	 */
-	public String getPeerUri() {
-		return OPContact.getForSelf(this).getPeerURI();
-	}
+    public long getAccountId() {
+        return mAccountId;
+    }
 
-	/**
-	 * Log in and return a valid OPAccount instance
-	 * 
-	 * @param accountDelegate
-	 *            Account delegate instance. This instance need to be kept valid throughout the app lifecycle.
-	 * @param conversationThreadDelegate
-	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
-	 * @param callDelegate
-	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
-	 * @return
-	 */
-	public static OPAccount login(OPAccountDelegate accountDelegate, OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate) {
-		return login(accountDelegate,
-				conversationThreadDelegate,
-				callDelegate,
-				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(),
-				OPSdkConfig.getInstance().getGrantId(),
-				OPSdkConfig.getInstance().getLockboxServiceDomain(),
-				false);
-	}
+    public void setAccountId(long id) {
+        this.mAccountId = id;
+    }
 
-	/**
-	 * Relogin and return a valid OPAccount instance
-	 * 
-	 * @param accountDelegate
-	 *            Account delegate instance. This instance need to be kept valid throughout the app lifecycel.
-	 * @param conversationThreadDelegate
-	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
-	 * @param callDelegate
-	 *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
-	 * @param reloginInformation
-	 *            valid relogin string cached from last session
-	 * @return
-	 */
-	public static OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate, String reloginInformation) {
-		return relogin(delegate,
-				conversationThreadDelegate,
-				callDelegate,
-				OPSdkConfig.getInstance().getNamespaceGrantServiceUrl(), reloginInformation);
+    /**
+     * 
+     * @return Current account state
+     */
+    public AccountStates getState() {
+        return getState(0, "");
+    }
 
-	}
+    /**
+     * Convenience method to get the peerURI of the account
+     * 
+     * @return
+     */
+    public String getPeerUri() {
+        return OPContact.getForSelf(this).getPeerURI();
+    }
 
-	// Beginning of JNI -- BE CAREFUL WITH ANY SIGNATUR CHANGES!!!!
-	private long nativeClassPointer;
-	private long nativeDelegatePointer;
+    /**
+     * Log in and return a valid OPAccount instance
+     * 
+     * @param accountDelegate
+     *            Account delegate instance. This instance need to be kept valid throughout the app lifecycle.
+     * @param conversationThreadDelegate
+     *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
+     * @param callDelegate
+     *            Call delegate instance. This instance need to be kept valid throughout the app lifecycle.
+     * @return
+     */
+    public static OPAccount login(OPAccountDelegate accountDelegate,
+            OPConversationThreadDelegate conversationThreadDelegate,
+            OPCallDelegate callDelegate) {
+        return login(accountDelegate,
+                conversationThreadDelegate,
+                callDelegate,
+                OPSdkConfig.getInstance().getOuterFrameUrl(),
+                OPSdkConfig.getInstance().getGrantId(),
+                OPSdkConfig.getInstance().getIdentityProviderDomain(),
+                false);
+    }
 
-	public static native String toString(AccountStates state);
+    /**
+     * Relogin and return a valid OPAccount instance
+     * 
+     * @param accountDelegate
+     *            Account delegate instance. This instance need to be kept valid throughout the app lifecycel.
+     * @param conversationThreadDelegate
+     *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
+     * @param callDelegate
+     *            Call delegate instance. This instance need to be kept valid throughout the app lifecycel.
+     * @param reloginInformation
+     *            valid relogin string cached from last session
+     * @return
+     */
+    public static OPAccount relogin(OPAccountDelegate delegate,
+            OPConversationThreadDelegate conversationThreadDelegate,
+            OPCallDelegate callDelegate, String reloginInformation) {
+        return relogin(delegate,
+                conversationThreadDelegate,
+                callDelegate,
+                OPSdkConfig.getInstance().getOuterFrameUrl(),
+                reloginInformation);
 
-	public static native String toDebugString(OPAccount account, boolean includeCommaPrefix);
+    }
 
-	private static native OPAccount login(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String grantID, String lockboxServiceDomain,
-			boolean forceCreateNewLockboxAccount);
+    // Beginning of JNI -- BE CAREFUL WITH ANY SIGNATUR CHANGES!!!!
+    private long nativeClassPointer;
+    private long nativeDelegatePointer;
 
-	private static native OPAccount relogin(OPAccountDelegate delegate, OPConversationThreadDelegate conversationThreadDelegate,
-			OPCallDelegate callDelegate, String namespaceGrantOuterFrameURLUponReload, String reloginInformation);
+    public static native String toString(AccountStates state);
 
-	/**
-	 * Get the core object PUID
-	 * 
-	 * @return object PUID
-	 */
-	public native long getID();
+    public static native String toDebugString(OPAccount account,
+            boolean includeCommaPrefix);
 
-	/**
-	 * Get account's lockbox key
-	 * 
-	 * @return
-	 */
-	public native String getStableID();
+    private static native OPAccount login(OPAccountDelegate delegate,
+            OPConversationThreadDelegate conversationThreadDelegate,
+            OPCallDelegate callDelegate,
+            String namespaceGrantOuterFrameURLUponReload, 
+            String grantID,
+            String lockboxServiceDomain,
+            boolean forceCreateNewLockboxAccount);
 
-	public native AccountStates getState(int outErrorCode, String outErrorReason);
+    private static native OPAccount relogin(OPAccountDelegate delegate,
+            OPConversationThreadDelegate conversationThreadDelegate,
+            OPCallDelegate callDelegate,
+            String namespaceGrantOuterFrameURLUponReload,
+            String reloginInformation);
 
-	public native String getReloginInformation(); // NOTE: will return ElementPtr() is relogin information is not available yet
+    /**
+     * Get the core object PUID
+     * 
+     * @return object PUID
+     */
+    public native long getID();
 
-	public native String getLocationID();
+    /**
+     * Get account's lockbox key
+     * 
+     * @return
+     */
+    public native String getStableID();
 
-	/**
-	 * This function should be called during logout. This is Asynchronorous call, application should handle the SHUTDOWN state change
-	 * {@link com.openpeer.javaapi.OPAccountDeleget}
-	 */
-	public native void shutdown();
+    public native AccountStates getState(int outErrorCode, String outErrorReason);
 
-	private native String getPeerFilePrivate();
+    public native String getReloginInformation(); // NOTE: will return ElementPtr() is relogin information is not available yet
 
-	private native byte[] getPeerFilePrivateSecret();
+    public native String getLocationID();
 
-	/**
-	 * 
-	 * @return Identity list associated with this account
-	 */
+    /**
+     * This function should be called during logout. This is Asynchronorous call, application should handle the SHUTDOWN state change
+     * {@link com.openpeer.javaapi.OPAccountDeleget}
+     */
+    public native void shutdown();
 
-	public native List<OPIdentity> getAssociatedIdentities();
+    private native String getPeerFilePrivate();
 
-	/**
-	 * TODO Clarify its usage
-	 * 
-	 * @param identitiesToRemove
-	 */
-	public native void removeIdentities(List<OPIdentity> identitiesToRemove);
+    private native byte[] getPeerFilePrivateSecret();
 
-	public native String getInnerBrowserWindowFrameURL();
+    /**
+     * 
+     * @return Identity list associated with this account
+     */
 
-	public native void notifyBrowserWindowVisible();
+    public native List<OPIdentity> getAssociatedIdentities();
 
-	public native void notifyBrowserWindowClosed();
+    /**
+     * TODO Clarify its usage
+     * 
+     * @param identitiesToRemove
+     */
+    public native void removeIdentities(List<OPIdentity> identitiesToRemove);
 
-	public native String getNextMessageForInnerBrowerWindowFrame();
+    public native String getInnerBrowserWindowFrameURL();
 
-	public native void handleMessageFromInnerBrowserWindowFrame(String unparsedMessage);
+    public native void notifyBrowserWindowVisible();
 
-	private native void releaseCoreObjects();
+    public native void notifyBrowserWindowClosed();
 
-	protected void finalize() throws Throwable {
+    public native String getNextMessageForInnerBrowerWindowFrame();
 
-		if (nativeClassPointer != 0 || nativeDelegatePointer != 0) {
-			releaseCoreObjects();
-		}
+    public native void handleMessageFromInnerBrowserWindowFrame(
+            String unparsedMessage);
 
-		super.finalize();
-	}
-	// END of JNI
+    private native void releaseCoreObjects();
+
+    protected void finalize() throws Throwable {
+
+        if (nativeClassPointer != 0 || nativeDelegatePointer != 0) {
+            releaseCoreObjects();
+        }
+
+        super.finalize();
+    }
+    // END of JNI
 }

@@ -35,6 +35,12 @@ else
 	read Input
 	echo "You entered:$Input"
 fi
+if [[ $2 == *clean* ]]; then
+	echo "------cleaning old build----------"
+	rm -rf libs/op/libs/build
+	rm -rf libs/op/libs/ortc-lib/libs/build/
+fi
+
 
 #Set path
 echo "----------------- Exporting the android-ndk path ----------------"
@@ -57,7 +63,7 @@ popd
 
 #curl build -- 3
 pushd `pwd`
-cd libs/op/libs/ortc-lib/libs/curl/projects/android
+cd libs/op/libs/ortc-lib/libs/curl-build-scripts/
 ./build_curl_android.sh $Input
 popd
 

@@ -43,6 +43,7 @@ import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.OPPushNotificationBuilder;
 import com.openpeer.sample.push.PushIntentReceiver;
 import com.openpeer.sample.util.SettingsHelper;
+import com.openpeer.sdk.app.LoginManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.urbanairship.AirshipConfigOptions;
 import com.urbanairship.Logger;
@@ -54,6 +55,7 @@ public class OPApplication extends Application {
     private static OPApplication instance;
     BroadcastReceiver mReceiver;
     boolean DEVELOPER_MODE = false;
+    private BroadcastReceiver mSignoutReceiver;
 
     static {
         try {
@@ -85,6 +87,37 @@ public class OPApplication extends Application {
                     .build());
         }
 
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("OPApplication", "shutdown received now shutdown");
+                OPStack.singleton().shutdown();
+                unregisterReceiver(mReceiver);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
+        filter.addAction(Intent.ACTION_REBOOT);
+        registerReceiver(mReceiver, filter);
+        init();
+    }
+
+    public static OPApplication getInstance() {
+        // TODO Auto-generated method stub
+        return instance;
+    }
+
+    public void signout() {
+
+        OPSessionManager.getInstance().onSignOut();
+        OPPushManager.onSignOut();
+        CookieManager.getInstance().removeAllCookie();
+        OPNotificationBuilder.cancelAllUponSignout();
+        UAirship.land();
+        OPHelper.getInstance().onSignOut();
+    }
+
+    private void init() {
         AirshipConfigOptions options = AirshipConfigOptions
                 .loadDefaultOptions(this);
         UAirship.takeOff(this, options);
@@ -98,29 +131,6 @@ public class OPApplication extends Application {
         // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
         OPSessionManager.getInstance().init();
         SettingsHelper.getInstance().initLoggers();
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.d("OPApplication", "shutdown received now shutdown");
-                OPStack.singleton().shutdown();
-                unregisterReceiver(mReceiver);
-            }
-        };
-        IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-        filter.addAction(Intent.ACTION_REBOOT);
-        registerReceiver(mReceiver, filter);
     }
 
-    public static OPApplication getInstance() {
-        // TODO Auto-generated method stub
-        return instance;
-    }
-
-    public static void signout() {
-        OPSessionManager.getInstance().onSignOut();
-        OPPushManager.onSignOut();
-        OPHelper.getInstance().onSignOut();
-        CookieManager.getInstance().removeAllCookie();
-        OPNotificationBuilder.cancelAllUponSignout();
-    }
 }

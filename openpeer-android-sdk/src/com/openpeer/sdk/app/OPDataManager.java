@@ -33,13 +33,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import android.util.Log;
-
 import com.openpeer.javaapi.AccountStates;
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPDownloadedRolodexContacts;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -49,6 +45,7 @@ import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
+import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityLookupDelegateImpl;
 import com.openpeer.sdk.model.OPUser;
 
@@ -65,18 +62,27 @@ public class OPDataManager {
     private OPDatastoreDelegate mDatastoreDelegate;
 
     private OPAccount mAccount;
-    private List<OPIdentity> mIdentities;
+    private Hashtable<Long, OPIdentity> mIdentities;
     private List<OPIdentityContact> mSelfContacts;
-    Hashtable<String, OPIdentityLookup> mIdentityLookups = new Hashtable<String, OPIdentityLookup>();
-
-    private boolean mAccountReady;
+    Hashtable<String, OPIdentityLookup> mIdentityLookups;
 
     public static OPDatastoreDelegate getDatastoreDelegate() {
         return getInstance().mDatastoreDelegate;
     }
 
-    public List<OPIdentity> getIdentities() {
-        return mIdentities;
+    public void addIdentity(OPIdentity identity) {
+        if (mIdentities == null) {
+            mIdentities = new Hashtable<Long, OPIdentity>();
+        }
+        mIdentities.put(identity.getID(), identity);
+    }
+
+    public OPIdentity getStoredIdentityById(long id) {
+        if (mIdentities == null) {
+            return null;
+        } else {
+            return mIdentities.get(id);
+        }
     }
 
     public String getReloginInfo() {
@@ -111,47 +117,39 @@ public class OPDataManager {
     }
 
     public void saveAccount() {
-        mDatastoreDelegate.saveOrUpdateAccount(mAccount);
+        mDatastoreDelegate.saveAccount(mAccount);
     }
 
     public OPAccount getSharedAccount() {
         return mAccount;
     }
 
-    public void setIdentities(List<OPIdentity> identities) {
-        mIdentities = identities;
+    public List<OPIdentityContact> getSelfContacts() {
+        List<OPIdentity> identities = mAccount.getAssociatedIdentities();
         mSelfContacts = new ArrayList<OPIdentityContact>();
         for (OPIdentity identity : identities) {
             mSelfContacts.add(identity.getSelfIdentityContact());
         }
-        mDatastoreDelegate
-                .saveOrUpdateIdentities(mIdentities, mAccount.getID());
-    }
-
-    public List<OPIdentityContact> getSelfContacts() {
         return mSelfContacts;
     }
 
     public void onDownloadedRolodexContacts(OPIdentity identity) {
         OPDownloadedRolodexContacts downloaded = identity
                 .getDownloadedRolodexContacts();
-        long identityId = identity.getStableID();
-        String contactsVersion = downloaded.getVersionDownloaded();
-
         List<OPRolodexContact> contacts = downloaded.getRolodexContacts();
-
-        for (OPRolodexContact contact : contacts) {
-            switch (contact.getDisposition()) {
-            case Disposition_Remove:
-                mDatastoreDelegate.deleteContact(contact.getIdentityURI());
-                break;
-            case Disposition_Update:
-                // break;
-            default:
-                mDatastoreDelegate.saveOrUpdateContact(contact, identityId);
-            }
+        if (contacts == null) {
+            OPLogger.error(OPLogLevel.LogLevel_Detail,
+                    "download rolodex contacts is null for identity "
+                            + identity.getIdentityURI());
+            return;
+        } else if (contacts.isEmpty()) {
+            OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                    "download rolodex contacts is empty for identity "
+                            + identity.getIdentityURI());
+            return;
         }
-        mDatastoreDelegate.notifyContactsChanged();
+        contacts = mDatastoreDelegate.saveDownloadedRolodexContacts(identity,
+                contacts, downloaded.getVersionDownloaded());
         identityLookup(identity, contacts);
     }
 
@@ -173,19 +171,19 @@ public class OPDataManager {
                 inputLookupList, OPSdkConfig.getInstance()
                         .getIdentityProviderDomain());// "identity-v1-rel-lespaul-i.hcs.io");
         if (identityLookup != null) {
+            if (mIdentityLookups == null) {
+                mIdentityLookups = new Hashtable<String, OPIdentityLookup>();
+            }
             mIdentityLookups.put(identity.getIdentityURI(), identityLookup);
         }
-    }
-
-    public String getContactsVersionForIdentity(long id) {
-        return mDatastoreDelegate.getDownloadedContactsVersion(id);
     }
 
     public void updateIdentityContacts(String identityUri,
             List<OPIdentityContact> iContacts) {
 
         // Each IdentityContact represents a user. Update user info
-        mDatastoreDelegate.saveOrUpdateUsers(iContacts, identityUri.hashCode());
+        mDatastoreDelegate.saveIdentityContact(iContacts,
+                identityUri.hashCode());
     }
 
     public void refreshContacts() {
@@ -211,23 +209,6 @@ public class OPDataManager {
         return mDatastoreDelegate.getUserByPeerUri(uri);
     }
 
-    public OPUser getPeerUserForCall(OPCall call) {
-        OPContact contact = call.getPeer();
-        OPUser user = mDatastoreDelegate.getUserByPeerUri(contact.getPeerURI());
-        if (user == null) {
-            List<OPIdentityContact> identityContacts = call
-                    .getIdentityContactList(contact);
-            if (identityContacts == null || identityContacts.isEmpty()) {
-                OPLogger.error(OPLogLevel.LogLevel_Basic,
-                        "getIdentityContactList returns empty in call for contact "
-                                + contact.getPeerURI());
-            }
-            user = new OPUser(contact, identityContacts);
-            user = mDatastoreDelegate.saveUser(user);
-        }
-        return user;
-    }
-
     /**
      * @param url
      * @param lookup
@@ -237,30 +218,9 @@ public class OPDataManager {
         if (iContacts != null) {
             updateIdentityContacts(url, iContacts);
         }
-        mIdentityLookups.remove(url);
-    }
-
-    /**
-     * @param from
-     * @param opConversationThread
-     * @return
-     */
-    public OPUser getUserForMessage(OPContact from, OPConversationThread thread) {
-        OPUser user = getUserByPeerUri(from.getPeerURI());
-        if (user == null) {
-            Log.d(TAG,
-                    "getUserForMessage User not found for " + from.getPeerURI());
-            List<OPIdentityContact> contacts = thread
-                    .getIdentityContactList(from);
-            if (contacts == null) {
-                Log.e(TAG,
-                        "getUserForMessage no identity contacts for "
-                                + from.getPeerURI());
-            }
-            user = new OPUser(from, contacts);
-            user = mDatastoreDelegate.saveUser(user);
+        if (mIdentityLookups != null) {
+            mIdentityLookups.remove(url);
         }
-        return user;
     }
 
     public OPUser getUserById(long id) {
@@ -278,12 +238,16 @@ public class OPDataManager {
         for (OPIdentity identity : identities) {
             identity.cancel();
         }
-        mIdentities = null;
-        mSelfContacts = null;
-        mAccount.shutdown();
-        mAccount = null;
-        mDatastoreDelegate.onSignOut();
 
+        mAccount.shutdown();
+        mDatastoreDelegate.onSignOut();
     }
 
+    /**
+     * 
+     */
+    public void afterSignout() {
+        OPDataManager.getDatastoreDelegate().onSignOut();
+        OPIdentityDelegateImpl.clearAfterSignout();
+    }
 }

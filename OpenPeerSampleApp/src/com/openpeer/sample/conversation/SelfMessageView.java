@@ -40,13 +40,13 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
-import com.openpeer.sdk.model.MessageState;
-import com.openpeer.sdk.model.OPSession;
+import com.openpeer.sdk.model.MessageEditState;
+import com.openpeer.sdk.model.OPConversation;
 
 public class SelfMessageView extends RelativeLayout {
     private static final long FREEZING_PERIOD = 60 * 60 * 1000l;
     OPMessage mMessage;
-    OPSession mSession;
+    OPConversation mSession;
     TextView title;
 
     TextView time;
@@ -84,7 +84,7 @@ public class SelfMessageView extends RelativeLayout {
         time.setText(DateFormatUtils.getSameDayTime(data.getTime()
                 .toMillis(true)));
 
-        switch (data.getState()) {
+        switch (data.getEditState()) {
         case Deleted:
             text.setText(R.string.msg_deleted);
             text.setEnabled(false);
@@ -131,7 +131,7 @@ public class SelfMessageView extends RelativeLayout {
     /**
      * @param session
      */
-    public void setSession(OPSession session) {
+    public void setSession(OPConversation session) {
         mSession = session;
     }
 
@@ -152,7 +152,7 @@ public class SelfMessageView extends RelativeLayout {
     public boolean canEditMessage() {
         return mMessage.getTime().toMillis(false) > System.currentTimeMillis()
                 - FREEZING_PERIOD
-                && mMessage.getState() != MessageState.Deleted;
+                && mMessage.getEditState() != MessageEditState.Deleted;
     }
 
 }

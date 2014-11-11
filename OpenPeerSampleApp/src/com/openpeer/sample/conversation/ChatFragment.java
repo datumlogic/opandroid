@@ -30,7 +30,6 @@
 package com.openpeer.sample.conversation;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,12 +38,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -57,7 +58,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -78,42 +78,45 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
-import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts;
+import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
-import com.openpeer.sdk.datastore.OPContentProvider;
-import com.openpeer.sdk.model.MessageState;
-import com.openpeer.sdk.model.OPSession;
+import com.openpeer.sdk.datastore.OPModelCursorHelper;
+import com.openpeer.sdk.model.OPConversation;
+import com.openpeer.sdk.model.OPConversationEvent;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.NoDuplicateArrayList;
 import com.openpeer.sdk.utils.OPModelUtils;
 
 public class ChatFragment extends BaseFragment implements
-        LoaderManager.LoaderCallbacks<Cursor>, SessionListener {
+    LoaderManager.LoaderCallbacks<Cursor>, SessionListener {
 
     private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
     private static final DateFormat dateFormat = DateFormat
-            .getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        .getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
     private static final String TAG = ChatFragment.class.getSimpleName();
     private ListView mMessagesList;
     private TextView mComposeBox;
     private View mSendButton;
     private MessagesAdaptor mAdapter;
+    Loader mLoader;
 
     private long mWindowId;
-    private OPSession mSession;
+
+    private OPConversation mSession;
     long[] mUserIDs;
     List<OPUser> participants;
     private CallInfoView mCallInfoView;
     boolean mTyping;
     private OPMessage mEditingMessage;
 
-    public static ChatFragment newInstance(long[] userIdList) {
+    public static ChatFragment newInstance(long[] userIdList, String contextId) {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putLongArray(IntentData.ARG_PEER_USER_IDS, userIdList);
+        args.putString(IntentData.ARG_CONTEXT_ID, contextId);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -135,12 +138,16 @@ public class ChatFragment extends BaseFragment implements
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+        String contextId;
         if (savedInstanceState == null) {
             Bundle args = getArguments();
             mUserIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+            contextId = args.getString(IntentData.ARG_CONTEXT_ID);
         } else {
             mUserIDs = savedInstanceState
-                    .getLongArray(IntentData.ARG_PEER_USER_IDS);
+                .getLongArray(IntentData.ARG_PEER_USER_IDS);
+            contextId = savedInstanceState.getString(IntentData.ARG_CONTEXT_ID);
+
         }
         participants = OPDataManager.getDatastoreDelegate().getUsers(mUserIDs);
 
@@ -149,27 +156,27 @@ public class ChatFragment extends BaseFragment implements
         // mSelfContact = OPDataManager.getInstance().getSelfContacts().get(0);
         this.setHasOptionsMenu(true);
         // TODO:remove this call and use lazy loading.
-        getSession();
-    }
-
-    /**
-     * Lazy creating session. Call this when user sends message
-     * 
-     * @return
-     */
-    private OPSession getSession() {
-        mSession = OPSessionManager.getInstance().getSessionForUsers(mUserIDs);
-        if (mSession == null) {
-            // this is user intiiated session
-            mSession = new OPSession(participants);
-            OPSessionManager.getInstance().addSession(mSession);
+        switch (OPSdkConfig.getInstance().getGroupChatMode()){
+        case ContactsBased:
+            mSession = OPSessionManager.getInstance().getSessionForUsers(
+                participants);
+            break;
+        case ContextBased:
+            mSession = OPSessionManager.getInstance().getSessionOfContext(
+                participants, contextId);
+            break;
+        default:
+            break;
         }
-        return mSession;
+
+        if (TextUtils.isEmpty(mSession.getContextId())) {
+            mSession.setContextId(contextId);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         View view = inflater.inflate(R.layout.fragment_chat, null);
         return setupView(view);
@@ -188,9 +195,9 @@ public class ChatFragment extends BaseFragment implements
         String peerUri = mSession.getParticipants().get(0).getPeerUri();
         // OPCall call = mSession.getCurrentCall();
         OPCall call = OPSessionManager.getInstance().getOngoingCallForPeer(
-                peerUri);
+            peerUri);
         if (call != null && (call.getState() == CallStates.CallState_Open
-                || call.getState() == CallStates.CallState_Active)) {
+            || call.getState() == CallStates.CallState_Active)) {
             Log.d(TAG, "now show call info");
             mCallInfoView.setVisibility(View.VISIBLE);
             mCallInfoView.bindCall(call);
@@ -205,7 +212,7 @@ public class ChatFragment extends BaseFragment implements
         OPConversationThread thread = mSession.getThread();
         if (thread != null) {
             thread.setStatusInThread(
-                    ComposingStates.ComposingState_Active);
+                ComposingStates.ComposingState_Active);
             thread.markAllMessagesRead();
         }
 
@@ -223,11 +230,20 @@ public class ChatFragment extends BaseFragment implements
             return;
         }
         mSession.getThread().setStatusInThread(
-                ComposingStates.ComposingState_Inactive);
+            ComposingStates.ComposingState_Inactive);
     }
 
     void updateUsersView(List<OPUser> users) {
-        getActivity().getActionBar().setTitle(users.get(0).getName());
+        if (users.size() == 1) {
+            getActivity().getActionBar().setTitle(users.get(0).getName());
+        } else {
+            String names[] = new String[users.size()];
+            for (int i = 0; i < users.size(); i++) {
+                names[i] = users.get(i).getName();
+            }
+            getActivity().getActionBar().setTitle(
+                TextUtils.join(",", names));
+        }
     }
 
     View setupView(View view) {
@@ -238,20 +254,20 @@ public class ChatFragment extends BaseFragment implements
 
         registerForContextMenu(mMessagesList);
         mMessagesList
-                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> arg0, View arg1,
-                            int arg2,
-                            long arg3) {
-                        if (arg1 instanceof SelfMessageView
-                                && ((SelfMessageView) arg1).canEditMessage()) {
-                            mEditingMessage = ((SelfMessageView) arg1)
-                                    .getMessage();
+            .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1,
+                                        int arg2,
+                                        long arg3) {
+                    if (arg1 instanceof SelfMessageView
+                        && ((SelfMessageView) arg1).canEditMessage()) {
+                        mEditingMessage = ((SelfMessageView) arg1)
+                            .getMessage();
 
-                            mComposeBox.setText(mEditingMessage.getMessage());
-                        }
+                        mComposeBox.setText(mEditingMessage.getMessage());
                     }
-                });
+                }
+            });
         mAdapter = new MessagesAdaptor(getActivity(), null);
         mMessagesList.setAdapter(mAdapter);
         View layout = view.findViewById(R.id.layout_compose);
@@ -269,16 +285,18 @@ public class ChatFragment extends BaseFragment implements
                 }
                 Log.d("TODO", "call actual send function");
                 if (mComposeBox.getText() == null
-                        || mComposeBox.getText().length() == 0) {
+                    || mComposeBox.getText().length() == 0) {
                     return;
                 }
                 OPMessage msg = null;
                 // we use 0 for home user
-                msg = new OPMessage(0,
-                        OPMessageType.TYPE_TEXT,
-                        mComposeBox.getText().toString(),
-                        System.currentTimeMillis(),
-                        OPMessage.generateUniqueId());
+                msg = new OPMessage(OPDataManager.getInstance()
+                                        .getSharedAccount().getSelfContactId(),
+                                    OPMessageType.TYPE_TEXT,
+                                    mComposeBox.getText().toString(),
+                                    System.currentTimeMillis(),
+                                    OPMessage.generateUniqueId()
+                );
 
                 if (mEditingMessage != null) {
                     msg.setReplacesMessageId(mEditingMessage.getMessageId());
@@ -286,10 +304,14 @@ public class ChatFragment extends BaseFragment implements
                 }
                 mComposeBox.setText("");
 
-                getSession().sendMessage(msg, false);
+                mSession.sendMessage(msg, false);
+                if (mLoader == null) {
+                    getLoaderManager().initLoader(URL_LOADER, null, ChatFragment.this);
+                }
                 mTyping = false;
+
                 mSession.getThread().setStatusInThread(
-                        ComposingStates.ComposingState_Active);
+                    ComposingStates.ComposingState_Active);
 
             }
         });
@@ -308,7 +330,7 @@ public class ChatFragment extends BaseFragment implements
                     public void run() {
                         mTyping = false;
                         mSession.getThread().setStatusInThread(
-                                ComposingStates.ComposingState_Paused);
+                            ComposingStates.ComposingState_Paused);
                     }
 
                 };
@@ -317,13 +339,13 @@ public class ChatFragment extends BaseFragment implements
 
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1,
-                    int arg2, int arg3) {
+                                          int arg2, int arg3) {
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before,
-                    int count) {
+                                      int count) {
                 if (pauseTimer != null) {
 
                     pauseTimer.cancel();
@@ -334,13 +356,15 @@ public class ChatFragment extends BaseFragment implements
                     mTyping = true;
 
                     mSession.getThread().setStatusInThread(
-                            ComposingStates.ComposingState_Composing);
+                        ComposingStates.ComposingState_Composing);
                 }
             }
 
         });
-
-        getLoaderManager().initLoader(URL_LOADER, null, this);
+        Uri uri = mSession.getMessagesUri();
+        if (uri != null) {
+            getLoaderManager().initLoader(URL_LOADER, null, this);
+        }
 
         return view;
     }
@@ -349,7 +373,8 @@ public class ChatFragment extends BaseFragment implements
         private final static int VIEWTYPE_SELF_MESSAGE_VIEW = 0;
         private final static int VIEWTYPE_RECIEVED_MESSAGE_VIEW = 1;
         private final static int VIEWTYPE_STATUS_VIEW = 2;
-        
+        private final static int VIEWTYPE_CALL_VIEW = 3;
+        private final static int VIEWTYPE_CONVERSATION_EVENT_VIEW = 4;
 
         int myLastReadMessagePosition = -1;
         int myLastDeliveredMessagePosition = -1;
@@ -412,20 +437,28 @@ public class ChatFragment extends BaseFragment implements
             }
 
             Cursor cursor = (Cursor) getItem(position);
-            long sender_id = cursor.getLong(cursor
-                    .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
-            if (sender_id == 0) {
-
-                return VIEWTYPE_SELF_MESSAGE_VIEW;
-            } else {
-                return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
-            }
+            return getItemViewType(cursor);
         }
 
         public int getItemViewType(Cursor cursor) {
+            String type = cursor.getString(cursor
+                                               .getColumnIndex(MessageEntry.COLUMN_MESSAGE_TYPE));
+            if (OPMessage.OPMessageType.TYPE_INERNAL_CALL_AUDIO.equals(type)
+                || OPMessage.OPMessageType.TYPE_INERNAL_CALL_VIDEO
+                .equals(type)) {
+                return VIEWTYPE_CALL_VIEW;
+            }
+            if (OPConversationEvent.EventTypes.ContactsAdded.name()
+                    .equals(type)
+                    || OPConversationEvent.EventTypes.ContactsRemoved.name()
+                            .equals(type)) {
+                return VIEWTYPE_CONVERSATION_EVENT_VIEW;
+            }
+
             long sender_id = cursor.getLong(cursor
-                    .getColumnIndex(MessageEntry.COLUMN_NAME_SENDER_ID));
-            if (sender_id == 0) {
+                                                .getColumnIndex(MessageEntry.COLUMN_SENDER_ID));
+            if (sender_id == OPDataManager.getInstance().getSharedAccount()
+                .getSelfContactId()) {
                 return VIEWTYPE_SELF_MESSAGE_VIEW;
             }
             return VIEWTYPE_RECIEVED_MESSAGE_VIEW;
@@ -434,7 +467,7 @@ public class ChatFragment extends BaseFragment implements
 
         @Override
         public int getViewTypeCount() {
-            return 3;
+            return 5;
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -443,29 +476,39 @@ public class ChatFragment extends BaseFragment implements
                     convertView = new ComposingStatusView(parent.getContext());
                 }
                 ((ComposingStatusView) convertView).update(
-                        (OPUser) getItem(position), null);
+                    (OPUser) getItem(position), null);
 
                 return convertView;
 
             } else {
                 Cursor cursor = (Cursor) getItem(position);
                 if (cursor != null) {
-                    OPMessage message = OPMessage.fromCursor(cursor);
+
                     if (convertView == null) {
                         convertView = newView(mContext, cursor, parent);
                     }
-                    if (convertView instanceof SelfMessageView) {
-                        if (position == myLastReadMessagePosition
+                    if (convertView instanceof CallItemView) {
+                        CallItem callItem = CallItem.fromCursor(cursor);
+                        ((CallItemView) convertView).update(callItem);
+                    } else {
+                        OPMessage message = OPModelCursorHelper
+                            .messageFromCursor(cursor);
+                        if (convertView instanceof SelfMessageView) {
+                            if (position == myLastReadMessagePosition
                                 || position == myLastDeliveredMessagePosition
                                 || position == myLastSentMessagePosition) {
-                            ((SelfMessageView) convertView).update(message,
-                                    true);
-                        } else {
-                            ((SelfMessageView) convertView).update(message,
-                                    false);
+                                ((SelfMessageView) convertView).update(message,
+                                                                       true);
+                            } else {
+                                ((SelfMessageView) convertView).update(message,
+                                                                       false);
+                            }
+                        } else if (convertView instanceof PeerMessageView) {
+                            ((PeerMessageView) convertView).update(message);
+                        } else if (convertView instanceof ConversationEventView) {
+                            ((ConversationEventView) convertView)
+                                    .update(message);
                         }
-                    } else if (convertView instanceof PeerMessageView) {
-                        ((PeerMessageView) convertView).update(message);
                     }
                 }
                 return convertView;
@@ -493,10 +536,10 @@ public class ChatFragment extends BaseFragment implements
         public View newView(Context context, Cursor cursor, ViewGroup arg2) {
             int viewType = getItemViewType(cursor);
             View view = null;
-            switch (viewType) {
+            switch (viewType){
             case VIEWTYPE_SELF_MESSAGE_VIEW:
                 view = (SelfMessageView) LayoutInflater.from(context).inflate(
-                        R.layout.item_message_self, null);
+                    R.layout.item_message_self, null);
                 ((SelfMessageView) view).setSession(mSession);
                 break;
             case VIEWTYPE_RECIEVED_MESSAGE_VIEW:
@@ -506,6 +549,14 @@ public class ChatFragment extends BaseFragment implements
                 break;
             case VIEWTYPE_STATUS_VIEW:
                 view = new ComposingStatusView(context);
+                break;
+            case VIEWTYPE_CALL_VIEW:
+                view = new CallItemView(context);
+                break;
+            case VIEWTYPE_CONVERSATION_EVENT_VIEW:
+                view = (ConversationEventView) LayoutInflater.from(context)
+                        .inflate(R.layout.item_conversation_event, null);
+                
                 break;
             }
 
@@ -520,30 +571,34 @@ public class ChatFragment extends BaseFragment implements
                 int position = cursor.getCount() - 1;
                 cursor.moveToLast();
                 while (!cursor.isBeforeFirst()) {
-                    int status = cursor
-                        .getInt(cursor
-                                    .getColumnIndex(MessageEntry
-                                                        .COLUMN_NAME_MESSAGE_DELIVERY_STATUS));
-                    MessageDeliveryStates messageState = MessageDeliveryStates
-                        .values()[status];
-                    if (messageState == MessageDeliveryStates.MessageDeliveryState_Read) {
-                        // if we found the first read message then break out of the loop
-                        myLastReadMessagePosition = position;
+                    String status = cursor
+                        .getString(cursor
+                                       .getColumnIndex(MessageEntry
+                                                           .COLUMN_MESSAGE_DELIVERY_STATUS));
+                    if (!TextUtils.isEmpty(status)) {
+                        MessageDeliveryStates messageState = MessageDeliveryStates
+                            .valueOf(status);
+                        if (messageState == MessageDeliveryStates.MessageDeliveryState_Read) {
+                            // if we found the first read message then break out of the loop
+                            myLastReadMessagePosition = position;
 
-                        break;
-                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Sent
-                        && myLastReadMessagePosition == -1
-                        && myLastDeliveredMessagePosition == -1
-                        && myLastSentMessagePosition == -1) {
-                        myLastSentMessagePosition = position;
-                    } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Delivered
-                        && myLastReadMessagePosition == -1
-                        && myLastDeliveredMessagePosition == -1) {
-                        // if this is the first delivered state we've encountered before we see a
-                        // read message, remember it
-                        // and keep looking for the first read message
-                        myLastDeliveredMessagePosition = position;
+                            break;
+                        } else if (messageState == MessageDeliveryStates.MessageDeliveryState_Sent
+                            && myLastReadMessagePosition == -1
+                            && myLastDeliveredMessagePosition == -1
+                            && myLastSentMessagePosition == -1) {
+                            myLastSentMessagePosition = position;
+                        } else if (messageState == MessageDeliveryStates
+                            .MessageDeliveryState_Delivered
+                            && myLastReadMessagePosition == -1
+                            && myLastDeliveredMessagePosition == -1) {
+                            // if this is the first delivered state we've encountered before we
+                            // see a
+                            // read message, remember it
+                            // and keep looking for the first read message
+                            myLastDeliveredMessagePosition = position;
 
+                        }
                     }
                     cursor.moveToPrevious();
                     position--;
@@ -561,28 +616,29 @@ public class ChatFragment extends BaseFragment implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        switch (item.getItemId()){
         case R.id.menu_call:
             if (OPDataManager.getInstance().getSharedAccount()
-                    .getState(0, null) != AccountStates.AccountState_Ready) {
+                .getState(0, null) != AccountStates.AccountState_Ready) {
                 BaseActivity.showInvalidStateWarning(getActivity());
                 return true;
             }
             if (mSession.getCurrentCall() != null) {
                 CallActivity.launchForCall(getActivity(), mSession
-                        .getCurrentCall().getPeer().getPeerURI());
+                    .getCurrentCall().getPeer().getPeerURI());
                 return true;
-            } else
+            } else {
                 return false;
+            }
         case R.id.menu_audio:
             makeCall(false);
             return true;
         case R.id.menu_video:
             makeCall(true);
             return true;
-            // case R.id.menu_add:
-            // addParticipant();
-            // return true;
+        case R.id.menu_add:
+            addParticipant();
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -599,18 +655,22 @@ public class ChatFragment extends BaseFragment implements
         }
         mUserIDs = _ids;
         List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(
-                userIds);
+            userIds);
         if (users != null) {
             mSession.addParticipant(users);
-            updateUsersView(mSession.getParticipants());
-            mWindowId = mSession.getCurrentWindowId();
-            getLoaderManager().restartLoader(URL_LOADER, null, this);
+            // updateUsersView(mSession.getParticipants());
+            // mWindowId = mSession.getCurrentWindowId();
+            // getLoaderManager().restartLoader(URL_LOADER, null, this);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putLongArray(IntentData.ARG_PEER_USER_IDS, mUserIDs);
+        if (mSession.getContextId() != null) {
+            outState.putString(IntentData.ARG_CONTEXT_ID,
+                               mSession.getContextId());
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -619,7 +679,7 @@ public class ChatFragment extends BaseFragment implements
         Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
         intent.putExtra(IntentData.ARG_PEER_USER_IDS, mUserIDs);
         startActivityForResult(intent,
-                ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS);
+                               ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS);
 
     }
 
@@ -627,13 +687,13 @@ public class ChatFragment extends BaseFragment implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onActivityResult requestCode " + requestCode
-                    + " resultCode " + resultCode);
+                + " resultCode " + resultCode);
         }
-        switch (requestCode) {
+        switch (requestCode){
         case ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS:
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
-                        .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
+                    .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
                 onDone(userIds);
             }
             break;
@@ -644,10 +704,11 @@ public class ChatFragment extends BaseFragment implements
     private void makeCall(boolean video) {
         String peerUri = mSession.getUserBySenderId(mUserIDs[0]).getPeerUri();
         if (null != OPSessionManager.getInstance().getOngoingCallForPeer(
-                peerUri)) {
+            peerUri)) {
             CallActivity.launchForCall(getActivity(), peerUri);
         } else {
-            CallActivity.launchForCall(getActivity(), mUserIDs, true, video);
+            CallActivity.launchForCall(getActivity(), mUserIDs,
+                                       mSession.getContextId(), true, video);
         }
     }
 
@@ -656,18 +717,21 @@ public class ChatFragment extends BaseFragment implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
-        switch (loaderID) {
+        switch (loaderID){
         case URL_LOADER:
+            Uri uri = mSession.getMessagesUri();
+            if (uri == null) {
+                return null;
+            }
             // Returns a new CursorLoader
-            return new CursorLoader(getActivity(), // Parent activity context
-                    OPContentProvider
-                            .getContentUri(DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
-                                    + mWindowId),
-                    null,
-                    null, // No selection clause
-                    null, // No selection arguments
-                    "time asc" // Default sort order
+            mLoader= new CursorLoader(getActivity(), // Parent activity context
+                                    uri,
+                                    null,
+                                    null, // No selection clause
+                                    null, // No selection arguments
+                                    "time asc" // Default sort order
             );
+            return mLoader;
         default:
             // An invalid id was passed in
             return null;
@@ -691,12 +755,12 @@ public class ChatFragment extends BaseFragment implements
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
-            ContextMenuInfo menuInfo) {
+                                    ContextMenuInfo menuInfo) {
         if (v == mMessagesList) {
             AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) menuInfo;
 
             if (acmi.targetView instanceof SelfMessageView
-                    && ((SelfMessageView) acmi.targetView).canEditMessage()) {
+                && ((SelfMessageView) acmi.targetView).canEditMessage()) {
                 menu.add(0, MENUID_DELETE_MESSAGE, Menu.NONE, "delete");
             }
         }
@@ -705,10 +769,10 @@ public class ChatFragment extends BaseFragment implements
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        switch (item.getItemId()){
         case MENUID_DELETE_MESSAGE:
             AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item
-                    .getMenuInfo();
+                .getMenuInfo();
             ((SelfMessageView) acmi.targetView).onDeleteSelected();
             break;
         }
@@ -717,7 +781,7 @@ public class ChatFragment extends BaseFragment implements
 
     @Override
     public void onContactComposingStateChanged(ComposingStates composingStates,
-            OPUser contact) {
+                                               OPUser contact) {
         mAdapter.notifyDataSetChanged(composingStates, contact);
     }
 
@@ -737,8 +801,13 @@ public class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public boolean onContactQuit(OPContact opContact) {
-        return false;
+    public boolean onContactsChanged() {
+        updateUsersView(mSession.getParticipants());
+        mWindowId = mSession.getCurrentWindowId();
+
+        getLoaderManager().restartLoader(URL_LOADER, null, this);
+
+        return true;
     }
 
     /*
