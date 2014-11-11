@@ -185,7 +185,7 @@ public class OPSdkConfig {
         }
         try {
             byte[] bytes = AssetUtils.readAsset(context,
-                    "app_settings_opp_fb.json");
+                    "app_settings.json");
             String str = new String(bytes, "UTF-8");
             OPSettings.apply(str);
         } catch (IOException e) {
