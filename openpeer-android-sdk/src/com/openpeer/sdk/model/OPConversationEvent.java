@@ -32,28 +32,38 @@ package com.openpeer.sdk.model;
  *
  */
 public class OPConversationEvent {
-    /**
-     * @param event
-     * @param description
-     * @param participants
-     * @param conversation_id
-     * @param contextId
-     */
-    public OPConversationEvent(EventTypes event, String description,
-            long participants, long conversation_id, String contextId) {
-        super();
-        this.event = event;
-        this.description = description;
-        this.participants = participants;
-        this.conversationId = conversation_id;
-        this.contextId = contextId;
+
+    public OPConversation getConversation() {
+        return mConversation;
     }
 
+    public void setConversation(OPConversation mConversation) {
+        this.mConversation = mConversation;
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
+    public void setDescription(String mDescription) {
+        this.mDescription = mDescription;
+    }
+
+    /**
+     * @param conversation TODO
+     * @param event
+     * @param description TODO
+     */
+    public OPConversationEvent(OPConversation conversation, EventTypes event, String description) {
+        super();
+        this.mConversation = conversation;
+        this.event = event;
+        this.mDescription = description;
+
+    }
+    private OPConversation mConversation;
     EventTypes event;
-    String description;
-    long participants;
-    long conversationId;
-    String contextId;
+    String mDescription;
     private long mId;
 
     public void setId(long id) {
@@ -75,27 +85,11 @@ public class OPConversationEvent {
     }
 
     public String getContent() {
-        return description;
+        return mDescription;
     }
 
     public void setContent(String content) {
-        this.description = content;
-    }
-
-    public long getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(long participants) {
-        this.participants = participants;
-    }
-
-    public long getConversation_id() {
-        return conversationId;
-    }
-
-    public void setConversationId(long id) {
-        this.conversationId = id;
+        this.mDescription = content;
     }
 
     /**

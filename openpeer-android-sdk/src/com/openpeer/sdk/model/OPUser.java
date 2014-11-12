@@ -62,7 +62,7 @@ public class OPUser {
     }
 
     /**
-     * Lazy insta
+     * Lazy instantiation
      * 
      * @return
      */

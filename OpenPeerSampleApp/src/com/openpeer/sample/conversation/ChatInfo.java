@@ -126,7 +126,7 @@ public class ChatInfo {
     public String getAvatarUri(int width, int height) {
         // todo: Support proper selection of avatar url
         long rolodexId = mRolodexIDs[0];
-        String uri = OPDataManager.getDatastoreDelegate().getAvatar(rolodexId,
+        String uri = OPDataManager.getDatastoreDelegate().getAvatarUri(rolodexId,
                 width, height);
         return uri;
     }

@@ -188,8 +188,8 @@ public class OPSessionManager {
             @Override
             public void onConversationThreadContactsChanged(
                     OPConversationThread conversationThread) {
-                 getSessionOfThread(conversationThread).onContactsChanged(
-                 conversationThread);
+                getSessionOfThread(conversationThread).onContactsChanged(
+                        conversationThread);
             }
 
             @Override
@@ -244,13 +244,9 @@ public class OPSessionManager {
                     OPConversationThread conversationThread, String messageID,
                     MessageDeliveryStates state) {
                 OPLogger.debug(OPLogLevel.LogLevel_Detail,
-                        "onConversationThreadMessageDeliveryStateChanged  "
-                                + messageID + " state "
+                        "onConversationThreadMessageDeliveryStateChanged  " + messageID + " state "
                                 + state);
-
-                OPDataManager.getDatastoreDelegate()
-                        .updateMessageDeliveryStatus(messageID, state,
-                                System.currentTimeMillis());
+                OPDataManager.getDatastoreDelegate().updateMessageDeliveryStatus(messageID, state);
             }
 
             @Override
@@ -280,8 +276,7 @@ public class OPSessionManager {
                                                         .getDatastoreDelegate()
                                                         .updateMessageDeliveryStatus(
                                                                 messageID,
-                                                                MessageDeliveryStates.MessageDeliveryState_Sent,
-                                                                System.currentTimeMillis());
+                                                                MessageDeliveryStates.MessageDeliveryState_Sent);
 
                                             }
 

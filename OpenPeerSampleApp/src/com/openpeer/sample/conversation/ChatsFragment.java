@@ -34,6 +34,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -49,8 +50,10 @@ import android.widget.ListView;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts;
 import com.openpeer.sdk.datastore.OPContentProvider;
+import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.sdk.model.OPConversation;
 
 public class ChatsFragment extends BaseFragment implements
@@ -176,7 +179,7 @@ public class ChatsFragment extends BaseFragment implements
             // Returns a new CursorLoader
             return new CursorLoader(
                     getActivity(), // Parent activity context
-                    OPDataManager.getDatastoreDelegate().getChatsUri(),
+                    getChatsUri(),
 
                     null,// LIST_PROJECTION, // Projection to return
                     null, // No selection clause
@@ -205,5 +208,16 @@ public class ChatsFragment extends BaseFragment implements
     public static interface ChatsViewListener {
         public void onChatsEmptyViewClick();
     }
-
+    public Uri getChatsUri() {
+        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
+        case ContactsBased:
+            return OPContentProvider
+                    .getContentUri(WindowViewEntry.URI_PATH_INFO_CBC);
+        case ContextBased:
+            return OPContentProvider
+                    .getContentUri(WindowViewEntry.URI_PATH_INFO_CONTEXT);
+        default:
+            return null;
+        }
+    }
 }

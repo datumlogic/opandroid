@@ -44,14 +44,14 @@ import com.openpeer.sdk.app.OPSdkConfig;
 
 public class OPIdentityDelegateImpl extends OPIdentityDelegate {
 
-    private static OPIdentityDelegateImpl instances;
+    private static OPIdentityDelegateImpl instance;
 
     public static OPIdentityDelegateImpl getInstance(OPIdentity identity) {
-        if (instances == null) {
-            instances = new OPIdentityDelegateImpl();
+        if (instance == null) {
+            instance = new OPIdentityDelegateImpl();
         }
 
-        return instances;
+        return instance;
     }
 
     private OPIdentityDelegateImpl() {

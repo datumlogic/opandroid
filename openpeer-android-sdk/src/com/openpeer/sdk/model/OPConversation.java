@@ -111,13 +111,9 @@ public class OPConversation extends Observable {
         mParticipants = users;
         mCbcId = OPModelUtils.getWindowId(mParticipants);
 
-        OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
-                mParticipants);
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
         mLastEvent = new OPConversationEvent(
-                OPConversationEvent.EventTypes.NewConversation, "",
-                mCbcId, mId,
-                mContextId);
+                this, OPConversationEvent.EventTypes.NewConversation, "");
         onNewEvent(mLastEvent);
     }
 
@@ -143,13 +139,9 @@ public class OPConversation extends Observable {
         }
         mCbcId = OPModelUtils.getWindowId(mParticipants);
 
-        OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
-                mParticipants);
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
         mLastEvent = new OPConversationEvent(
-                OPConversationEvent.EventTypes.NewConversation, "",
-                mCbcId, mId,
-                mContextId);
+                this, OPConversationEvent.EventTypes.NewConversation, "");
         onNewEvent(mLastEvent);
     }
 
@@ -191,12 +183,12 @@ public class OPConversation extends Observable {
                 message.getReplacesMessageId(),
                 message.getMessageType(), message.getMessage(), signMessage);
         if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
-            OPDataManager.getDatastoreDelegate().updateMessage(message,
-                    mCbcId, mContextId);
+            OPDataManager.getDatastoreDelegate().updateMessage(message, this);
         } else {
-            OPDataManager.getDatastoreDelegate().saveMessage(message,
-                    mCbcId, mContextId, getLastEvent().getId());
+            OPDataManager.getDatastoreDelegate().saveMessage(message, this);
         }
+        // TODO: Now notify observer
+
         return message;
     }
 
@@ -282,7 +274,7 @@ public class OPConversation extends Observable {
     }
 
     public void onNewEvent(OPConversationEvent event) {
-        OPDataManager.getDatastoreDelegate().saveConversationEvent(mId, event);
+        OPDataManager.getDatastoreDelegate().saveConversationEvent(event);
         mLastEvent = event;
 
     }
@@ -381,7 +373,7 @@ public class OPConversation extends Observable {
             message.setSenderId(user.getUserId());
             if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
                 OPDataManager.getDatastoreDelegate().updateMessage(message,
-                        mCbcId, mContextId);
+                        this);
             } else {
                 if (isWindowAttached()) {
                     message.setRead(true);
@@ -389,8 +381,8 @@ public class OPConversation extends Observable {
                 }
 
                 OPDataManager.getDatastoreDelegate().saveMessage(message,
-                        mCbcId, mContextId,
-                        getLastEvent().getId());
+                        this);
+                // TODO: Now notify observer
 
             }
         } else {
@@ -512,24 +504,17 @@ public class OPConversation extends Observable {
         if (!newContacts.isEmpty()) {
 
             OPConversationEvent event = new OPConversationEvent(
-                    OPConversationEvent.EventTypes.ContactsAdded,
-                    getContactsIdString(newContacts),
-                    mCbcId,
-                    mId,
-                    mContextId);
+                    this,
+                    OPConversationEvent.EventTypes.ContactsAdded, 
+                    "");
             onNewEvent(event);
         }
         if (!deletedContacts.isEmpty()) {
             OPConversationEvent event = new OPConversationEvent(
-                    OPConversationEvent.EventTypes.ContactsRemoved,
-                    getContactsIdString(deletedContacts),
-                    mCbcId,
-                    mId,
-                    mContextId);
+                    null,
+                    OPConversationEvent.EventTypes.ContactsRemoved, null);
             onNewEvent(event);
         }
-        OPDataManager.getDatastoreDelegate().saveParticipants(mCbcId,
-                mParticipants);
         synchronized (mSessionListeners) {
             for (SessionListener listener : mSessionListeners) {
                 listener.onContactsChanged();
@@ -587,12 +572,9 @@ public class OPConversation extends Observable {
         CallEvent event = new CallEvent(call.getCallID(), state,
                 System.currentTimeMillis());
         if (state == CallStates.CallState_Preparing) {
-            OPDataManager.getDatastoreDelegate().saveCall(call, mCbcId,
-                    mContextId,
-                    getLastEvent().getId());
+            OPDataManager.getDatastoreDelegate().saveCall(call, this);
         }
-        OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(),
-                event);
+        OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(), event);
     }
 
     public Uri getMessagesUri() {
@@ -606,8 +588,7 @@ public class OPConversation extends Observable {
                 return null;
             }
             return OPContentProvider
-                    .getContentUri(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE
-                            + mContextId);
+                    .getContentUri(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mContextId);
         default:
             return null;
         }

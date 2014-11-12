@@ -175,7 +175,7 @@ public class ProfilePickerFragment extends BaseFragment implements
             public void update(Cursor cursor) {
                 long rolodexId = cursor.getLong(0);
                 final long userId = cursor.getLong(1);
-                String avatar = OPDataManager.getDatastoreDelegate().getAvatar(
+                String avatar = OPDataManager.getDatastoreDelegate().getAvatarUri(
                         rolodexId, 48, 48);
                 String name = cursor
                         .getString(cursor

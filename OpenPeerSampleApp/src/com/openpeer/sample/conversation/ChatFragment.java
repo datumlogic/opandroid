@@ -187,7 +187,7 @@ public class ChatFragment extends BaseFragment implements
         super.onResume();
         mSession.setWindowAttached(true);
         mSession.registerListener(this);
-        OPDataManager.getDatastoreDelegate().markMessagesRead(mWindowId);
+        OPDataManager.getDatastoreDelegate().markMessagesRead(mSession);
 
         // All following stuff can only be done if the account is in ready state
 

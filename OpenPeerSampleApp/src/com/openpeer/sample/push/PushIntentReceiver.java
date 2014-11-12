@@ -126,7 +126,8 @@ public class PushIntentReceiver extends BroadcastReceiver {
                     .getUserId() });
 
             OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
-                    windowId, "", 0);
+                    null);
+            //TODO: Now notify observer
 
         } else if (action.equals(PushManager.ACTION_NOTIFICATION_OPENED)) {
 

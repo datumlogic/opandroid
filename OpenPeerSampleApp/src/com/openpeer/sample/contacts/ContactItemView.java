@@ -84,7 +84,7 @@ public class ContactItemView extends RelativeLayout {
         rolodexId = cursor.getLong(0);
         mUserId = cursor.getLong(1);
         mTitleView.setText(cursor.getString(2));
-        String avatar = OPDataManager.getDatastoreDelegate().getAvatar(
+        String avatar = OPDataManager.getDatastoreDelegate().getAvatarUri(
                 rolodexId, 48, 48);
         Picasso.with(getContext()).load(avatar).into(mImageView);
 
