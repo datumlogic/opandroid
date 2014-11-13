@@ -344,12 +344,18 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     }
 
     public OPUser getUserById(long id) {
+        OPUser user = mUsersById.get(id);
+        if(user!=null){
+            return user;
+        }
         Cursor cursor = mContext
                 .getContentResolver()
                 .query(OPContentProvider.getContentUri(OpenpeerContactEntry.URI_PATH_INFO_DETAIL
                         + "/" + id), null, null, null, null);
 
-        return fromDetailCursor(cursor);
+        user= fromDetailCursor(cursor);
+        cacheUser(user);
+        return user;
     }
 
     @Override

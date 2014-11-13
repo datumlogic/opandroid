@@ -37,16 +37,16 @@ public class OPConversationEvent {
         return mConversation;
     }
 
-    public void setConversation(OPConversation mConversation) {
-        this.mConversation = mConversation;
+    public void setConversation(OPConversation conversation) {
+        this.mConversation = conversation;
     }
 
     public String getDescription() {
         return mDescription;
     }
 
-    public void setDescription(String mDescription) {
-        this.mDescription = mDescription;
+    public void setDescription(String description) {
+        this.mDescription = description;
     }
 
     /**
