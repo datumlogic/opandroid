@@ -126,6 +126,30 @@ public interface OPDatastoreDelegate {
     public OPMessage getMessage(String messageId);
 
     /**
+     * Retrieve events associatedwith a conversation
+     * 
+     * @param conversation
+     * @return
+     */
+    public List<OPConversationEvent> getConversationEvents(OPConversation conversation);
+
+    /**
+     * Retrieve message change events
+     * 
+     * @param messageId
+     * @return
+     */
+    public List<MessageEvent> getMessageEvents(String messageId);
+
+    /**
+     * Retrieve call state change history
+     * 
+     * @param messageId
+     * @return
+     */
+    public List<CallEvent> getCallEvents(String messageId);
+
+    /**
      * Save or update the account information in database
      * 
      * @param account
@@ -208,7 +232,9 @@ public interface OPDatastoreDelegate {
 
     /**
      * Update delivery status of a message being sent.
-     * @param messageId TODO
+     * 
+     * @param messageId
+     *            TODO
      * @param deliveryStatus
      * @return
      */

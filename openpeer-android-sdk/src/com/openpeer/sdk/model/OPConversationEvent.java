@@ -32,6 +32,32 @@ package com.openpeer.sdk.model;
  *
  */
 public class OPConversationEvent {
+    private OPConversation mConversation;
+    private EventTypes event;
+    private String mDescription;
+    private long mId;
+    private long mTime;
+
+    /**
+     * @param conversation
+     *            TODO
+     * @param event
+     * @param description
+     *            TODO
+     */
+    public OPConversationEvent(OPConversation conversation, EventTypes event, String description) {
+        this(conversation, event, description, System.currentTimeMillis());
+    }
+
+    public OPConversationEvent(OPConversation conversation, EventTypes event, String description,
+            long time) {
+        super();
+        this.mConversation = conversation;
+        this.event = event;
+        this.mDescription = description;
+        this.mTime = time;
+
+    }
 
     public OPConversation getConversation() {
         return mConversation;
@@ -48,23 +74,6 @@ public class OPConversationEvent {
     public void setDescription(String description) {
         this.mDescription = description;
     }
-
-    /**
-     * @param conversation TODO
-     * @param event
-     * @param description TODO
-     */
-    public OPConversationEvent(OPConversation conversation, EventTypes event, String description) {
-        super();
-        this.mConversation = conversation;
-        this.event = event;
-        this.mDescription = description;
-
-    }
-    private OPConversation mConversation;
-    EventTypes event;
-    String mDescription;
-    private long mId;
 
     public void setId(long id) {
         this.mId = id;

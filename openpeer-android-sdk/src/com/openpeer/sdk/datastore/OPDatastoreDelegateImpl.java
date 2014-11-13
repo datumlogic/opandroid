@@ -345,7 +345,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     public OPUser getUserById(long id) {
         OPUser user = mUsersById.get(id);
-        if(user!=null){
+        if (user != null) {
             return user;
         }
         Cursor cursor = mContext
@@ -353,9 +353,98 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 .query(OPContentProvider.getContentUri(OpenpeerContactEntry.URI_PATH_INFO_DETAIL
                         + "/" + id), null, null, null, null);
 
-        user= fromDetailCursor(cursor);
+        user = fromDetailCursor(cursor);
         cacheUser(user);
         return user;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.openpeer.sdk.datastore.OPDatastoreDelegate#getConversationEvents(long)
+     */
+    @Override
+    public List<OPConversationEvent> getConversationEvents(OPConversation conversation) {
+        List<OPConversationEvent> events = null;
+        Cursor cursor = getWritableDB().query(ConversationEventEntry.TABLE_NAME, null,
+                ConversationEventEntry.COLUMN_CONVERSATION_ID + "=" + conversation.getId(), null, null,
+                null, null);
+        if (cursor.getCount() > 0) {
+            events = new ArrayList<OPConversationEvent>();
+            cursor.moveToFirst();
+            while (!cursor.isLast()) {
+                OPConversationEvent event = new OPConversationEvent(conversation,
+                        OPConversationEvent.EventTypes.valueOf(cursor.getString(cursor
+                                .getColumnIndex(ConversationEventEntry.COLUMN_EVENT))),
+                        cursor.getString(cursor
+                                .getColumnIndex(ConversationEventEntry.COLUMN_CONTENT)));
+                events.add(event);
+            }
+        }
+        cursor.close();
+        return events;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.openpeer.sdk.datastore.OPDatastoreDelegate#getMessageEvents(java.lang.String)
+     */
+    @Override
+    public List<MessageEvent> getMessageEvents(String messageId) {
+        List<MessageEvent> events = null;
+        // TODO: fix the message id being replaced when editting/deleting. This shouldn't be a problemm since we'll always be using the
+        // current message id
+        Cursor cursor = getWritableDB().query(
+                MessageEventEntry.TABLE_NAME,
+                null,
+                MessageEventEntry.COLUMN_MESSAGE_ID
+                        + "=(select _id from message where message_id=?)",
+                new String[] { messageId },
+                null,
+                null, null);
+        if (cursor.getCount() > 0) {
+            events = new ArrayList<MessageEvent>();
+            cursor.moveToFirst();
+            while (!cursor.isLast()) {
+                MessageEvent event = new MessageEvent(messageId,
+                        MessageEvent.EventType.valueOf(cursor.getString(cursor
+                                .getColumnIndex(MessageEventEntry.COLUMN_EVENT))),
+                        cursor.getString(cursor
+                                .getColumnIndex(MessageEventEntry.COLUMN_DESCRIPTION)),
+                        cursor.getLong(cursor.getColumnIndex(MessageEventEntry.COLUMN_TIME)));
+                events.add(event);
+            }
+        }
+        cursor.close();
+        return events;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.openpeer.sdk.datastore.OPDatastoreDelegate#getCallEvents(java.lang.String)
+     */
+    @Override
+    public List<CallEvent> getCallEvents(String callId) {
+        List<CallEvent> events = null;
+        Cursor cursor = getWritableDB().query(CallEventEntry.TABLE_NAME, null,
+                CallEventEntry.COLUMN_CALL_ID + "= (select _id from call where call_id=?)",
+                new String[] { callId },
+                null, null, null);
+        if (cursor.getCount() > 0) {
+            events = new ArrayList<CallEvent>();
+            cursor.moveToFirst();
+            while (!cursor.isLast()) {
+                CallEvent event = new CallEvent(callId,
+                        CallStates.valueOf(cursor.getString(cursor
+                                .getColumnIndex(CallEventEntry.COLUMN_EVENT))),
+                        cursor.getLong(cursor.getColumnIndex(CallEventEntry.COLUMN_TIME)));
+                events.add(event);
+            }
+        }
+        cursor.close();
+        return events;
     }
 
     @Override
