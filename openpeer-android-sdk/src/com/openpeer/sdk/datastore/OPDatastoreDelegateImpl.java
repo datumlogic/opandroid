@@ -294,7 +294,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         contactRecordId = DbUtils.simpleQueryForId(getWritableDB(),
                 OpenpeerContactEntry.TABLE_NAME,
                 where, args);
-        if (contactRecordId == 0) {
+        if (contactRecordId == 0) {// No existing op contact found
+            boolean isExisting = false;
             // look for the identity uri matches
             for (OPIdentityContact ic : identityContacts) {
 
@@ -305,17 +306,19 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                         RolodexContactEntry.COLUMN_IDENTITY_URI + "=?", params);
                 if (!TextUtils.isEmpty(opIdStr)) {
                     contactRecordId = Long.parseLong(opIdStr);
-                    // now update the openpeer_contact record
+                    // Found OP contact. now update the openpeer_contact record
                     if (contactRecordId > 0) {
                         user.setUserId(contactRecordId);
                         updateOPTable(contactRecordId, stableId, peerUri,
                                 contact.getPeerFilePublic());
-
-                        return user;
+                        isExisting = true;
+                        break;
                     }
                 }
             }
-            saveUser(user, 0);
+            if (!isExisting) {
+                saveUser(user, 0);
+            }
         } else {
             user.setUserId(contactRecordId);
             updateOPTable(contactRecordId, stableId, peerUri,
@@ -367,7 +370,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public List<OPConversationEvent> getConversationEvents(OPConversation conversation) {
         List<OPConversationEvent> events = null;
         Cursor cursor = getWritableDB().query(ConversationEventEntry.TABLE_NAME, null,
-                ConversationEventEntry.COLUMN_CONVERSATION_ID + "=" + conversation.getId(), null, null,
+                ConversationEventEntry.COLUMN_CONVERSATION_ID + "=" + conversation.getId(), null,
+                null,
                 null, null);
         if (cursor.getCount() > 0) {
             events = new ArrayList<OPConversationEvent>();
@@ -932,6 +936,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
             }
             user.setUserId(opId);
+            notifyContactsChanged();
             db.setTransactionSuccessful();
             return user;
         } catch (SQLiteException ex) {
