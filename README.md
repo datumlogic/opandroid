@@ -54,7 +54,7 @@ libs/op/libs/ortc-lib/libs/WebRTC           – android port of the webRTC media
 
 During development we use symbolic links to link the sdk source folder from sample app so we can invoke native application debugging in eclipse. You should not need to debug native libary but in case you do, executing setup-native-debug-proj.sh will setup all symbolic links so you can do native debugging, executing setup-library-proj.sh will clean all the links and use the sdk as library. You can also use gdb command line debugging that way you don't need this script.
 
-We're also aware many developers use Android Studio vs Eclipse. Due to constraint that Android studio doesn't have nice support for native debugging so we're doing our own development with eclipse. But we will explore the way to set up native debugging in Android studio and add project configuration for Android studio as well.
+If you use Android Studio, you can simply import from settings.gradle located at root. We're not using the default project structure since we want to be able to support eclipse users as well, but you can configure your project your way.
 
 Build with one script(ant 1.8 or newer is required):
 We have a simple script buillall.sh at root. The script will simply invoke the buildall_android.sh, then invoke ant to build the sample app. To use this script, you will need to export ANDROID_HOME and ANDROID_NDK_HOME
