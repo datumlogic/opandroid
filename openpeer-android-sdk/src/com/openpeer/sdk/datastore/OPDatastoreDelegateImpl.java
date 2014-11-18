@@ -98,6 +98,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     private Context mContext;
 
     private OPDatabaseHelper mOpenHelper;
+    OPUser mLoggedInUser;
     /**
      * Users cache using peer uri as index
      */
@@ -124,8 +125,16 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         return this;// fluent API
     }
 
+    public void setupForTest() {
+        mLoggedInUser = new OPUser();
+        mLoggedInUser.setUserId(1);
+    }
+
     @Override
     public OPUser getLoggedinUser() {
+        if (mLoggedInUser != null) {
+            return mLoggedInUser;
+        }
         SQLiteDatabase db = getWritableDB();
         String rawQuery = "select openpeer_contact_id from rolodex_contact where _id=(select self_contact_id from associated_identity where account_id =(select _id from account where logged_in=1))";
         Cursor cursor = db.rawQuery(rawQuery, null);
@@ -700,52 +709,67 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
             OPIdentity identity,
             List<OPRolodexContact> contacts, String contactsVersion) {
         SQLiteDatabase db = getWritableDB();
-        long identityId = DbUtils.simpleQueryForId(db,
-                AssociatedIdentityEntry.TABLE_NAME,
-                AssociatedIdentityEntry.COLUMN_IDENTITY_URI + "=?",
-                new String[] { identity.getIdentityURI() });
+        try {
+            db.beginTransaction();
+            long identityId = DbUtils.simpleQueryForId(db,
+                    AssociatedIdentityEntry.TABLE_NAME,
+                    AssociatedIdentityEntry.COLUMN_IDENTITY_URI + "=?",
+                    new String[] { identity.getIdentityURI() });
 
-        setDownloadedContactsVersion(
-                identity.getIdentityURI(), contactsVersion);
-        List<OPRolodexContact> contactsToLookup = new ArrayList<OPRolodexContact>();
-        for (OPRolodexContact contact : contacts) {
-            switch (contact.getDisposition()) {
-            case Disposition_Remove:
-                deleteContact(contact.getIdentityURI());
-                contactsToLookup.add(contact);
-                break;
-            case Disposition_Update:
-                // updateRolodexContactTable(contact, 0, 0, identityId);
-                // break;
-            default:
-                saveRolodexContactTable(contact, 0, 0, identityId);
+            setDownloadedContactsVersion(
+                    identity.getIdentityURI(), contactsVersion);
+            List<OPRolodexContact> contactsToLookup = new ArrayList<OPRolodexContact>();
+            for (OPRolodexContact contact : contacts) {
+                switch (contact.getDisposition()) {
+                case Disposition_Remove:
+                    deleteContact(contact.getIdentityURI());
+                    contactsToLookup.add(contact);
+                    break;
+                case Disposition_Update:
+                    // updateRolodexContactTable(contact, 0, 0, identityId);
+                    // break;
+                default:
+                    saveRolodexContactTable(contact, 0, 0, identityId);
+                }
             }
+            if (!contactsToLookup.isEmpty()) {
+                contacts.removeAll(contactsToLookup);
+            }
+            db.setTransactionSuccessful();
+            notifyContactsChanged();
+        } catch (SQLiteException exception) {
+            exception.printStackTrace();
+        } finally {
+            db.endTransaction();
         }
-        if (!contactsToLookup.isEmpty()) {
-            contacts.removeAll(contactsToLookup);
-        }
-
-        notifyContactsChanged();
         return contacts;
     }
 
     @Override
     public long saveConversation(OPConversation conversation) {
         SQLiteDatabase db = getWritableDB();
-        ContentValues values = new ContentValues();
-        values.put(ConversationEntry.COLUMN_TYPE, conversation.getType().name());
-        values.put(ConversationEntry.COLUMN_START_TIME,
-                System.currentTimeMillis());
-        values.put(ConversationEntry.COLUMN_PARTICIPANTS,
-                conversation.getCurrentWindowId());
-        values.put(ConversationEntry.COLUMN_CONTEXT_ID,
-                conversation.getContextId());
-        values.put(ConversationEntry.COLUMN_ACCOUNT_ID, OPDataManager
-                .getDatastoreDelegate().getLoggedinUser().getUserId());
-        long id = db.insert(ConversationEntry.TABLE_NAME, null, values);
-        conversation.setId(id);
+        long id = 0;
+        try {
+            db.beginTransaction();
+            ContentValues values = new ContentValues();
+            values.put(ConversationEntry.COLUMN_TYPE, conversation.getType().name());
+            values.put(ConversationEntry.COLUMN_START_TIME,
+                    System.currentTimeMillis());
+            values.put(ConversationEntry.COLUMN_PARTICIPANTS,
+                    conversation.getCurrentWindowId());
+            values.put(ConversationEntry.COLUMN_CONTEXT_ID,
+                    conversation.getContextId());
+            values.put(ConversationEntry.COLUMN_ACCOUNT_ID, getLoggedinUser().getUserId());
+            id = db.insert(ConversationEntry.TABLE_NAME, null, values);
+            conversation.setId(id);
 
-        saveParticipants(conversation.getCurrentWindowId(), conversation.getParticipants());
+            saveParticipants(conversation.getCurrentWindowId(), conversation.getParticipants());
+            db.setTransactionSuccessful();
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
         return id;
     }
 
@@ -760,8 +784,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 conversation.getCurrentWindowId());
         values.put(ConversationEntry.COLUMN_CONTEXT_ID,
                 conversation.getContextId());
-        values.put(ConversationEntry.COLUMN_ACCOUNT_ID, OPDataManager
-                .getDatastoreDelegate().getLoggedinUser().getUserId());
+        values.put(ConversationEntry.COLUMN_ACCOUNT_ID, getLoggedinUser().getUserId());
         long id = db.update(ConversationEntry.TABLE_NAME, values,
                 BaseColumns._ID + "=" + conversation.getId(), null);
 

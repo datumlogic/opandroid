@@ -92,29 +92,42 @@ public class OPConversation extends Observable {
 
     private OPConversationEvent mLastEvent;
 
+    public OPConversation() {
+    }
+
+    /**
+     * @param users
+     * @param contextId
+     */
+    public OPConversation(List<OPUser> users, String contextId) {
+        this(users, contextId, OPSdkConfig.getInstance().getGroupChatMode());
+    }
+
     /**
      * Constructor used when starting a new conversation
      * 
      * @param users
      */
     public OPConversation(List<OPUser> users) {
-        this(users, "");
+        this(users, "", OPSdkConfig.getInstance().getGroupChatMode());
 
     }
 
-    public OPConversation(List<OPUser> users, String contextId) {
+    public OPConversation(List<OPUser> users, String contextId, GroupChatMode mode) {
         mContextId = contextId;
-        mType = OPSdkConfig.getInstance().getGroupChatMode();
-
+        mType = mode;
         // TODO: decide if we need to keep selfcontacts in OPDataManager since
         // we can always get them through account
         mParticipants = users;
         mCbcId = OPModelUtils.getWindowId(mParticipants);
+    }
 
+    public long save() {
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
         mLastEvent = new OPConversationEvent(
                 this, OPConversationEvent.EventTypes.NewConversation, "");
         onNewEvent(mLastEvent);
+        return mId;
     }
 
     /**
@@ -138,11 +151,6 @@ public class OPConversation extends Observable {
             }
         }
         mCbcId = OPModelUtils.getWindowId(mParticipants);
-
-        mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
-        mLastEvent = new OPConversationEvent(
-                this, OPConversationEvent.EventTypes.NewConversation, "");
-        onNewEvent(mLastEvent);
     }
 
     public void registerListener(SessionListener listener) {
@@ -298,10 +306,6 @@ public class OPConversation extends Observable {
                 mConvThread.addContacts(contactProfiles);
             }
         }
-    }
-
-    public OPConversation() {
-        // TODO Auto-generated constructor stub
     }
 
     public OPCall placeCall(OPUser user,
@@ -505,7 +509,7 @@ public class OPConversation extends Observable {
 
             OPConversationEvent event = new OPConversationEvent(
                     this,
-                    OPConversationEvent.EventTypes.ContactsAdded, 
+                    OPConversationEvent.EventTypes.ContactsAdded,
                     "");
             onNewEvent(event);
         }
