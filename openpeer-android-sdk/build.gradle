@@ -1,0 +1,43 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "21.1.1"
+
+    defaultConfig {
+        applicationId "com.openpeer.sdk"
+        minSdkVersion 14
+        targetSdkVersion 17
+    }
+
+        sourceSets {
+            main {
+                manifest.srcFile 'AndroidManifest.xml'
+                java.srcDirs = ['src','../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_capture/android/java/src','../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/video_render/android/java/src','../libs/op/libs/ortc-lib/libs/webrtc/webrtc/modules/audio_device/android/java/src']
+                resources.srcDirs = ['src']
+                aidl.srcDirs = ['src']
+                renderscript.srcDirs = ['src']
+                res.srcDirs = ['res']
+                assets.srcDirs = ['assets']
+                jniLibs.srcDir 'libs'
+            }
+
+            androidTest.setRoot('tests')
+        }
+
+      lintOptions {
+          abortOnError false
+      }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(dir: 'jniLibs', include: ['*.so'])
+    }
