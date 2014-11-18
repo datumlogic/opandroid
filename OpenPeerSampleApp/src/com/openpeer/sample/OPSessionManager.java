@@ -104,6 +104,7 @@ public class OPSessionManager {
         }
         // No existing session for the thread
         OPConversation session = new OPConversation(thread);
+        session.save();
         addSession(session);
         return session;
     }
@@ -121,6 +122,7 @@ public class OPSessionManager {
             }
         }
         OPConversation session = new OPConversation(users);
+        session.save();
         addSession(session);
 
         return session;
@@ -134,6 +136,7 @@ public class OPSessionManager {
             }
         }
         OPConversation session = new OPConversation(users, contextId);
+        session.save();
         addSession(session);
         return session;
     }
