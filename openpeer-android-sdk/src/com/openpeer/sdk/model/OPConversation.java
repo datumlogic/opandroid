@@ -120,19 +120,25 @@ public class OPConversation extends Observable {
         // we can always get them through account
         mParticipants = users;
         mCbcId = OPModelUtils.getWindowId(mParticipants);
+        mLastEvent = new OPConversationEvent(
+            this, OPConversationEvent.EventTypes.NewConversation, "");
+    }
+
+    public void setNewEvent(OPConversationEvent event){
+        mLastEvent = event;
+        onNewEvent(mLastEvent);
     }
 
     public long save() {
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
-        mLastEvent = new OPConversationEvent(
-                this, OPConversationEvent.EventTypes.NewConversation, "");
+
         onNewEvent(mLastEvent);
         return mId;
     }
 
     /**
      * Constructor used for incoming conversation
-     * 
+     *
      * @param thread
      */
     public OPConversation(OPConversationThread thread) {
@@ -151,6 +157,8 @@ public class OPConversation extends Observable {
             }
         }
         mCbcId = OPModelUtils.getWindowId(mParticipants);
+        mLastEvent = new OPConversationEvent(
+            this, OPConversationEvent.EventTypes.NewConversation, "");
     }
 
     public void registerListener(SessionListener listener) {

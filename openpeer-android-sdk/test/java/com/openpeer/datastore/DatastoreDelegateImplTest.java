@@ -31,6 +31,7 @@ package com.openpeer.datastore;
 import android.app.Application;
 
 import com.openpeer.javaapi.OPAccount;
+import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPRolodexContact;
@@ -39,6 +40,7 @@ import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.utils.CoreTestObjectFactory;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -71,9 +73,10 @@ public class DatastoreDelegateImplTest {
         OPLogger.setIsUnitTest(true);
         OPDataManager.getInstance().init(delegate);
     }
+
     @After
-    public void teardown(){
-        
+    public void teardown() {
+
     }
 
     @Test
@@ -81,48 +84,42 @@ public class DatastoreDelegateImplTest {
         OPAccount account = Mockito.mock(OPAccount.class);
         Mockito.when(account.getPeerUri()).thenReturn("peer://hcs.io/1234567890");
         Mockito.when(account.getReloginInformation()).thenReturn(
-                "{\"reloginInfo\":\"peer://hcs.io/1234567890\"}");
+            "{\"reloginInfo\":\"peer://hcs.io/1234567890\"}");
         Mockito.when(account.getPeerUri()).thenReturn("peer://hcs.io/1234567890");
         // delegate.saveAccount(account);
 
     }
+
+    @Test
+    public void testSaveCall() {
+
+        OPCall call = CoreTestObjectFactory.getMockCall();
+        OPConversation conversation = CoreTestObjectFactory.getMockConversation();
+        long id = delegate.saveCall(call, conversation);
+        Assert.assertEquals(1, id);
+    }
+
     @Test
     public void testSaveDownloadedContacts() {
-        OPIdentity identity = Mockito.mock(OPIdentity.class);
-        Mockito.when(identity.getIdentityURI()).thenReturn("identity://facebook.com/0987654321");
+        OPIdentity identity = CoreTestObjectFactory.getMockHomeIdentity();
         List<OPRolodexContact> contacts = new ArrayList<>();
-        OPRolodexContact contact1 = Mockito.mock(OPRolodexContact.class);
-        Mockito.when(contact1.getIdentityURI()).thenReturn("identity://facebook.com/1234567890");
-        Mockito.when(contact1.getDisposition()).thenReturn(
-                OPRolodexContact.Dispositions.Disposition_Update);
-        Mockito.when(contact1.getName()).thenReturn("Test Name1");
-        Mockito.when(contact1.getIdentityProvider()).thenReturn("facebook.com");
-        Mockito.when(contact1.getAvatars()).thenReturn(new ArrayList<OPRolodexContact.OPAvatar>());
-        contacts.add(contact1);
-        
-        OPRolodexContact contact2 = Mockito.mock(OPRolodexContact.class);
-        Mockito.when(contact2.getIdentityURI()).thenReturn("identity://facebook.com/1234567891");
-        Mockito.when(contact2.getDisposition()).thenReturn(
-                OPRolodexContact.Dispositions.Disposition_Update);
-        Mockito.when(contact2.getName()).thenReturn("Test Name2");
-        Mockito.when(contact2.getIdentityProvider()).thenReturn("facebook.com");
-        Mockito.when(contact2.getAvatars()).thenReturn(new ArrayList<OPRolodexContact.OPAvatar>());
+        OPRolodexContact contact1 = CoreTestObjectFactory.getRolodexContact1();
+        OPRolodexContact contact2 = CoreTestObjectFactory.getRolodexContact2();
         contacts.add(contact2);
-    
-        List<OPRolodexContact> results =delegate.saveDownloadedRolodexContacts(identity, contacts, "abcdefg");
+
+        List<OPRolodexContact> results = delegate.saveDownloadedRolodexContacts(identity,
+                                                                                contacts,
+                                                                                "abcdefg");
         Assert.assertEquals(contact1, results.get(0));
         Assert.assertEquals(contact2, results.get(1));
-        
+
     }
-//    @Test
+
+    @Test
     public void testSaveConversation() {
         List<OPUser> users = new ArrayList<OPUser>();
-        OPUser user1 = Mockito.mock(OPUser.class);
-        user1.setUserId(2);
-        Mockito.when(user1.getPeerUri()).thenReturn("peer://hcs.io/12345678901");
-        OPUser user2 = Mockito.mock(OPUser.class);
-        user2.setUserId(3);
-        Mockito.when(user2.getPeerUri()).thenReturn("peer://hcs.io/12345678902");
+        OPUser user1 = CoreTestObjectFactory.getUser1();
+        OPUser user2 = CoreTestObjectFactory.getUser2();
         users.add(user1);
         users.add(user2);
         OPConversation conversation = new OPConversation(users, "123", GroupChatMode.ContactsBased);
@@ -130,5 +127,5 @@ public class DatastoreDelegateImplTest {
         Assert.assertEquals(id, 1);
     }
 
-   
+
 }
