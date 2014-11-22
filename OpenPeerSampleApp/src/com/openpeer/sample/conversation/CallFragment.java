@@ -29,6 +29,7 @@
  *******************************************************************************/
 package com.openpeer.sample.conversation;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.webrtc.videoengine.ViERenderer;
@@ -70,15 +71,14 @@ import com.squareup.picasso.Picasso;
 public class CallFragment extends BaseFragment {
     public static final String TAG = CallFragment.class.getSimpleName();
     // TextView mNameView;
-    ImageView mPeerAvatarView;
+    private ImageView mPeerAvatarView;
 
-    OPCall mCall;
+    private OPCall mCall;
     private SurfaceView mLocalSurface;
     private SurfaceView mRemoteSurface;
     private RelativeLayout mVideoView;
     private boolean mAudio, mVideo;
     private long[] userIDs;
-    private String peerUri;
     private String mContextId;
 
     private ImageView audioButton;
@@ -89,28 +89,15 @@ public class CallFragment extends BaseFragment {
     private CallStatus mCallStatus;
     private View mStatusOverlay;
     private View mCallView;
-    Ringtone mRingtone;
-
-    public static CallFragment newInstance(long[] peerContactId, boolean audio,
-            boolean video) {
-        CallFragment fragment = new CallFragment();
-        Bundle args = new Bundle();
-        args.putLongArray(IntentData.ARG_PEER_USER_IDS, peerContactId);
-        args.putBoolean(IntentData.ARG_AUDIO, audio);
-        args.putBoolean(IntentData.ARG_VIDEO, video);
-
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private Ringtone mRingtone;
+    private long mPeerId;
 
     public static CallFragment newInstance(long[] peerContactId,
-            String peerUri, String contextId, boolean audio, boolean video) {
+                                           String contextId, boolean audio, boolean video) {
         CallFragment fragment = new CallFragment();
         Bundle args = new Bundle();
         args.putLongArray(IntentData.ARG_PEER_USER_IDS, peerContactId);
         args.putString(IntentData.ARG_CONTEXT_ID, contextId);
-
-        args.putString(IntentData.ARG_PEER_URI, peerUri);
         args.putBoolean(IntentData.ARG_AUDIO, audio);
         args.putBoolean(IntentData.ARG_VIDEO, video);
         fragment.setArguments(args);
@@ -132,21 +119,12 @@ public class CallFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         // obtainCameraRatios();
-        peerUri = args.getString(IntentData.ARG_PEER_URI);
         userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
         mContextId = args.getString(IntentData.ARG_CONTEXT_ID);
 
-        if (peerUri != null) {
-            mCall = OPSessionManager.getInstance().getOngoingCallForPeer(
-                    peerUri);
-        } else if (userIDs != null) {
-            List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(
-                    userIDs);
-            if (users != null && users.size() > 0) {
-                peerUri = users.get(0).getPeerUri();
-                mCall = OPSessionManager.getInstance().getOngoingCallForPeer(
-                        peerUri);
-            }
+        if (userIDs != null && userIDs.length > 0) {
+            mPeerId = userIDs[0];
+            mCall = OPSessionManager.getInstance().getOngoingCallForPeer(mPeerId);
         } else {
             Log.e(TAG, "no peerUri nor userIDs");
         }
@@ -159,7 +137,7 @@ public class CallFragment extends BaseFragment {
         }
         mVideo = mVideo && AppConfig.FEATURE_CALL;
         getActivity().registerReceiver(receiver,
-                new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
+                                       new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
 
     }
 
@@ -365,7 +343,6 @@ public class CallFragment extends BaseFragment {
 
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
 
     }
 
@@ -449,26 +426,25 @@ public class CallFragment extends BaseFragment {
     boolean mVideoPreviewSwitched;
 
     void initMedia(View view) {
-        mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(
-                peerUri);
-
+        mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(mPeerId);
         OPMediaEngine.getInstance().setEcEnabled(true);
         OPMediaEngine.getInstance().setAgcEnabled(true);
         OPMediaEngine.getInstance().setNsEnabled(false);
         OPMediaEngine.getInstance().setMuteEnabled(false);
         OPMediaEngine.getInstance().setLoudspeakerEnabled(false);
         if (mVideo) {
-            if (mCallStatus.useFrontCamera())
+            if (mCallStatus.useFrontCamera()) {
                 OPMediaEngine.getInstance().setCameraType(
-                        CameraTypes.CameraType_Front);
-            else
+                    CameraTypes.CameraType_Front);
+            } else {
                 OPMediaEngine.getInstance().setCameraType(
-                        CameraTypes.CameraType_Back);
+                    CameraTypes.CameraType_Back);
+            }
 
             // This makes sure the video capture is stopped after call is stopped.
             OPMediaEngine.getInstance().setContinuousVideoCapture(false);
             OPMediaEngine.getInstance().setDefaultVideoOrientation(
-                    VideoOrientations.VideoOrientation_Portrait);
+                VideoOrientations.VideoOrientation_Portrait);
             // OPMediaEngine.getInstance().setRecordVideoOrientation(
             // VideoOrientations.VideoOrientation_LandscapeRight);
             OPMediaEngine.getInstance().setFaceDetection(false);
