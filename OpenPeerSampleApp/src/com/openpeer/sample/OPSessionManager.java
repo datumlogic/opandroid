@@ -52,7 +52,6 @@ import com.openpeer.javaapi.OPConversationThreadDelegate;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.conversation.CallStatus;
 import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.PushResult;
@@ -60,6 +59,7 @@ import com.openpeer.sample.push.PushToken;
 import com.openpeer.sample.push.UAPushProviderImpl;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSdkConfig;
+import com.openpeer.sdk.model.CallEvent;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 
@@ -67,7 +67,7 @@ public class OPSessionManager {
     static final String TAG = OPSessionManager.class.getSimpleName();
     List<OPConversation> mSessions;
 
-    Hashtable<String, OPCall> mCalls;
+    Hashtable<Long, OPCall> mCalls;
 
     private OPConversationThreadDelegate mThreadDelegate;
     private OPCallDelegate mCallDelegate;
@@ -88,7 +88,7 @@ public class OPSessionManager {
 
     /**
      * Look up existing session for thread. Uses thread id to look up
-     * 
+     *
      * @param thread
      * @return
      */
@@ -109,9 +109,30 @@ public class OPSessionManager {
         return session;
     }
 
+    private void cacheCall(OPCall call){
+        if(mCalls==null){
+            mCalls = new Hashtable<>();
+        }
+        mCalls.put(call.getPeerUser().getUserId(),call);
+    }
+
+    private void removeCallCache(OPCall call) {
+        long userId = call.getPeerUser().getUserId();
+        if (mCalls != null) {
+            mCalls.remove(userId);
+
+            if (mCallStates != null) {
+                mCallStates.remove(userId);
+            }
+            if (mCalls.isEmpty()) {
+                mCalls = null;
+                mCallStates = null;
+            }
+        }
+    }
     /**
      * Look up the session "for" users. This call use calculated window id to find the session.
-     * 
+     *
      * @param users
      * @return
      */
@@ -143,7 +164,7 @@ public class OPSessionManager {
 
     /**
      * Find existing session "including" the users
-     * 
+     *
      * @param ids
      *            user ids
      * @return
@@ -175,12 +196,11 @@ public class OPSessionManager {
         }
 
         OPCall call = session.placeCall(users.get(0), audio, video);
-        mCalls.put(call.getPeer().getPeerURI(), call);
+        cacheCall(call);
         return call;
     }
 
     void init() {
-        mCalls = new Hashtable<String, OPCall>();
         mThreadDelegate = new OPConversationThreadDelegate() {
 
             @Override
@@ -191,8 +211,8 @@ public class OPSessionManager {
             @Override
             public void onConversationThreadContactsChanged(
                     OPConversationThread conversationThread) {
-                getSessionOfThread(conversationThread).onContactsChanged(
-                        conversationThread);
+                getSessionOfThread(conversationThread).onContactsChanged(conversationThread);
+
             }
 
             @Override
@@ -320,31 +340,29 @@ public class OPSessionManager {
 
             @Override
             public void onCallStateChanged(OPCall call, CallStates state) {
-                OPConversationThread thread = call.getConversationThread();
-                getSessionOfThread(thread).onCallStateChanged(call, state);
+                if (state == CallStates.CallState_Preparing) {
+                    OPConversationThread thread = call.getConversationThread();
+                    OPDataManager.getDatastoreDelegate().saveCall(call, getSessionOfThread(thread));
+                }
+                CallEvent event = new CallEvent(call.getCallID(),
+                                                state,
+                                                System.currentTimeMillis());
+
+                OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(), event);
+                cacheCall(call);
                 Intent intent = new Intent();
-                intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
+                if(state==CallStates.CallState_Incoming){
+                    intent.setAction(IntentData.ACTION_CALL_INCOMING);
+                } else {
+                    intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
+                }
                 intent.putExtra(IntentData.ARG_CALL_STATE, state);
                 intent.putExtra(IntentData.ARG_CALL_ID, call.getCallID());
+                intent.putExtra(IntentData.ARG_PEER_USER_ID, call.getPeerUser().getUserId());
 
                 OPApplication.getInstance().sendBroadcast(intent);
-                switch (state) {
+                switch (state){
                 case CallState_Incoming:
-                    OPContact caller = call.getCaller();
-                    OPCall currentCall = getOngoingCallForPeer(caller
-                            .getPeerURI());
-                    if (currentCall != null) {
-                        // TODO: auto answer and swap calls
-                        Log.d("test", "found existing call.");
-                        // return;
-                    }
-
-                    OPUser user = getPeerUserForCall(call);
-                    Log.d("test", "found user for incoming call " + user);
-
-                    mCalls.put(caller.getPeerURI(), call);
-                    CallActivity.launchForIncomingCall(
-                            OPApplication.getInstance(), caller.getPeerURI());
                     break;
                 case CallState_Closing:
                 case CallState_Closed:
@@ -365,20 +383,19 @@ public class OPSessionManager {
         return mCallDelegate;
     }
 
-    public OPCall getOngoingCallForPeer(String peerUri) {
-        return mCalls.get(peerUri);
+    public OPCall getOngoingCallForPeer(long userId) {
+        if (mCalls == null) {
+            return null;
+        }
+        return mCalls.get(userId);
     }
 
     public void onCallEnd(OPCall mCall) {
-        String peerUri = mCall.getPeer().getPeerURI();
-        mCalls.remove(peerUri);
-        mCallStates.remove(peerUri);
+        removeCallCache(mCall);
         OPNotificationBuilder.cancelNotificationForCall(mCall);
-        if (BackgroundingManager.isBackgroundingPending()) {
+        if (!hasCalls() && BackgroundingManager.isBackgroundingPending()) {
             BackgroundingManager.onEnteringBackground();
         }
-        // save call log
-        // OPDataManager.getInstance().saveCallRecord();
     }
 
     public void hangupCall(OPCall mCall, CallClosedReasons reason) {
@@ -386,28 +403,19 @@ public class OPSessionManager {
         onCallEnd(mCall);
     }
 
-    public OPUser getPeerUserForCall(OPCall call) {
-        OPContact contact = call.getPeer();
+    private Hashtable<Long, CallStatus> mCallStates;
 
-        OPUser user = OPDataManager.getDatastoreDelegate().getUser(contact,
-                call.getConversationThread()
-                        .getIdentityContactList(contact));
-        return user;
-    }
-
-    Hashtable<String, CallStatus> mCallStates = new Hashtable<String, CallStatus>();
-
-    public CallStatus getMediaStateForCall(String peerUri) {
+    public CallStatus getMediaStateForCall(long userId) {
         CallStatus state = null;
         if (mCallStates == null) {
-            mCallStates = new Hashtable<String, CallStatus>();
+            mCallStates = new Hashtable<>();
 
         } else {
-            state = mCallStates.get(peerUri);
+            state = mCallStates.get(userId);
         }
         if (state == null) {
             state = new CallStatus();
-            mCallStates.put(peerUri, state);
+            mCallStates.put(userId, state);
         }
         return state;
 
