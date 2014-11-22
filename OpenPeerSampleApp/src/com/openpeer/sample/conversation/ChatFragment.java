@@ -29,11 +29,6 @@
  *******************************************************************************/
 package com.openpeer.sample.conversation;
 
-import java.text.DateFormat;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -67,12 +62,10 @@ import com.openpeer.javaapi.ComposingStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseActivity;
 import com.openpeer.sample.BaseFragment;
-import com.openpeer.sample.BuildConfig;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.OPSessionManager;
@@ -81,6 +74,7 @@ import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
+import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.datastore.OPModelCursorHelper;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPConversationEvent;
@@ -89,12 +83,16 @@ import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.NoDuplicateArrayList;
 import com.openpeer.sdk.utils.OPModelUtils;
 
+import java.text.DateFormat;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class ChatFragment extends BaseFragment implements
     LoaderManager.LoaderCallbacks<Cursor>, SessionListener {
 
     private static final int DEFAULT_NUM_MESSAGES_TO_LOAD = 30;
-    private static final DateFormat dateFormat = DateFormat
-        .getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+
     private static final String TAG = ChatFragment.class.getSimpleName();
     private ListView mMessagesList;
     private TextView mComposeBox;
@@ -102,11 +100,7 @@ public class ChatFragment extends BaseFragment implements
     private MessagesAdaptor mAdapter;
     Loader mLoader;
 
-    private long mWindowId;
-
     private OPConversation mSession;
-    long[] mUserIDs;
-    List<OPUser> participants;
     private CallInfoView mCallInfoView;
     boolean mTyping;
     private OPMessage mEditingMessage;
@@ -139,31 +133,29 @@ public class ChatFragment extends BaseFragment implements
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         String contextId;
+        long[] userIDs;
         if (savedInstanceState == null) {
             Bundle args = getArguments();
-            mUserIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+            userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
             contextId = args.getString(IntentData.ARG_CONTEXT_ID);
         } else {
-            mUserIDs = savedInstanceState
+            userIDs = savedInstanceState
                 .getLongArray(IntentData.ARG_PEER_USER_IDS);
             contextId = savedInstanceState.getString(IntentData.ARG_CONTEXT_ID);
-
         }
-        participants = OPDataManager.getDatastoreDelegate().getUsers(mUserIDs);
+        List<OPUser> participants = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
 
-        mWindowId = OPModelUtils.getWindowId(mUserIDs);
+        long mWindowId = OPModelUtils.getWindowId(userIDs);
         OPNotificationBuilder.cancelNotificationForChat((int) mWindowId);
         // mSelfContact = OPDataManager.getInstance().getSelfContacts().get(0);
         this.setHasOptionsMenu(true);
         // TODO:remove this call and use lazy loading.
         switch (OPSdkConfig.getInstance().getGroupChatMode()){
         case ContactsBased:
-            mSession = OPSessionManager.getInstance().getSessionForUsers(
-                participants);
+            mSession = OPSessionManager.getInstance().getSessionForUsers(participants);
             break;
         case ContextBased:
-            mSession = OPSessionManager.getInstance().getSessionOfContext(
-                participants, contextId);
+            mSession = OPSessionManager.getInstance().getSessionOfContext(participants, contextId);
             break;
         default:
             break;
@@ -172,6 +164,14 @@ public class ChatFragment extends BaseFragment implements
         if (TextUtils.isEmpty(mSession.getContextId())) {
             mSession.setContextId(contextId);
         }
+        mSession.registerListener(this);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSession.unregisterListener(this);
     }
 
     @Override
@@ -185,17 +185,15 @@ public class ChatFragment extends BaseFragment implements
     @Override
     public void onResume() {
         super.onResume();
-        mSession.setWindowAttached(true);
-        mSession.registerListener(this);
-        OPDataManager.getDatastoreDelegate().markMessagesRead(mSession);
 
+        if (!OPDataManager.getInstance().isAccountReady()) {
+            return;
+        }
         // All following stuff can only be done if the account is in ready state
 
         // TODO: proper look up
-        String peerUri = mSession.getParticipants().get(0).getPeerUri();
         // OPCall call = mSession.getCurrentCall();
-        OPCall call = OPSessionManager.getInstance().getOngoingCallForPeer(
-            peerUri);
+        OPCall call = OPSessionManager.getInstance().getOngoingCallForPeer(mSession.getParticipants().get(0).getUserId());
         if (call != null && (call.getState() == CallStates.CallState_Open
             || call.getState() == CallStates.CallState_Active)) {
             Log.d(TAG, "now show call info");
@@ -206,31 +204,19 @@ public class ChatFragment extends BaseFragment implements
             mCallInfoView.setVisibility(View.GONE);
         }
 
-        if (!OPDataManager.getInstance().isAccountReady()) {
-            return;
-        }
-        OPConversationThread thread = mSession.getThread();
-        if (thread != null) {
-            thread.setStatusInThread(
-                ComposingStates.ComposingState_Active);
-            thread.markAllMessagesRead();
-        }
-
+        mSession.setComposingStatus(ComposingStates.ComposingState_Active);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSession.setWindowAttached(false);
-        mSession.unregisterListener(this);
         if (mCallInfoView.isShown()) {
             mCallInfoView.unbind();
         }
         if (!OPDataManager.getInstance().isAccountReady()) {
             return;
         }
-        mSession.getThread().setStatusInThread(
-            ComposingStates.ComposingState_Inactive);
+        mSession.setComposingStatus(ComposingStates.ComposingState_Inactive);
     }
 
     void updateUsersView(List<OPUser> users) {
@@ -241,8 +227,7 @@ public class ChatFragment extends BaseFragment implements
             for (int i = 0; i < users.size(); i++) {
                 names[i] = users.get(i).getName();
             }
-            getActivity().getActionBar().setTitle(
-                TextUtils.join(",", names));
+            getActivity().getActionBar().setTitle(TextUtils.join(",", names));
         }
     }
 
@@ -310,8 +295,7 @@ public class ChatFragment extends BaseFragment implements
                 }
                 mTyping = false;
 
-                mSession.getThread().setStatusInThread(
-                    ComposingStates.ComposingState_Active);
+                mSession.setComposingStatus(ComposingStates.ComposingState_Active);
 
             }
         });
@@ -329,8 +313,7 @@ public class ChatFragment extends BaseFragment implements
                     @Override
                     public void run() {
                         mTyping = false;
-                        mSession.getThread().setStatusInThread(
-                            ComposingStates.ComposingState_Paused);
+                        mSession.setComposingStatus(ComposingStates.ComposingState_Paused);
                     }
 
                 };
@@ -355,16 +338,13 @@ public class ChatFragment extends BaseFragment implements
                 if (!mTyping) {
                     mTyping = true;
 
-                    mSession.getThread().setStatusInThread(
-                        ComposingStates.ComposingState_Composing);
+                    mSession.setComposingStatus(ComposingStates.ComposingState_Composing);
                 }
             }
 
         });
-        Uri uri = mSession.getMessagesUri();
-        if (uri != null) {
-            getLoaderManager().initLoader(URL_LOADER, null, this);
-        }
+
+        getLoaderManager().initLoader(URL_LOADER, null, this);
 
         return view;
     }
@@ -624,92 +604,100 @@ public class ChatFragment extends BaseFragment implements
                 return true;
             }
             if (mSession.getCurrentCall() != null) {
-                CallActivity.launchForCall(getActivity(), mSession
-                    .getCurrentCall().getPeer().getPeerURI());
+                CallActivity.launchForCall(getActivity(),
+                                           new long[]{mSession.getCurrentCall().getPeerUser().getUserId()});
                 return true;
             } else {
                 return false;
             }
         case R.id.menu_audio:
-            makeCall(false);
+            onCallMenuSelected(false);
             return true;
         case R.id.menu_video:
-            makeCall(true);
+            onCallMenuSelected(true);
             return true;
         case R.id.menu_add:
-            addParticipant();
+            onProfilePickerClick();
             return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
 
-    public void onDone(long[] userIds) {
-
-        long _ids[] = new long[mUserIDs.length + userIds.length];
-        for (int i = 0; i < mUserIDs.length; i++) {
-            _ids[i] = mUserIDs[i];
+    void onParticipantsChanged(long[] userIdsToAdd,long[] userIdsToRemove) {
+        if (userIdsToAdd != null) {
+            List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIdsToAdd);
+            if (users != null) {
+                mSession.addParticipants(users);
+            }
         }
-        for (int i = 0; i < userIds.length; i++) {
-            _ids[i + mUserIDs.length] = userIds[i];
-        }
-        mUserIDs = _ids;
-        List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(
-            userIds);
-        if (users != null) {
-            mSession.addParticipant(users);
-            // updateUsersView(mSession.getParticipants());
-            // mWindowId = mSession.getCurrentWindowId();
-            // getLoaderManager().restartLoader(URL_LOADER, null, this);
+        if (userIdsToRemove != null) {
+            List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIdsToRemove);
+            if (users != null) {
+                mSession.removeParticipants(users);
+            }
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putLongArray(IntentData.ARG_PEER_USER_IDS, mUserIDs);
+        outState.putLongArray(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
         if (mSession.getContextId() != null) {
-            outState.putString(IntentData.ARG_CONTEXT_ID,
-                               mSession.getContextId());
+            outState.putString(IntentData.ARG_CONTEXT_ID, mSession.getContextId());
         }
         super.onSaveInstanceState(outState);
     }
 
     // After adding a new participant we'll have to switch chat window
-    private void addParticipant() {
+    private void onProfilePickerClick() {
         Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
-        intent.putExtra(IntentData.ARG_PEER_USER_IDS, mUserIDs);
+        intent.putExtra(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
         startActivityForResult(intent,
                                ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS);
 
     }
 
+    //this is stupid. There must be a better way to persist this state;
+    boolean mVideo;
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onActivityResult requestCode " + requestCode
-                + " resultCode " + resultCode);
-        }
         switch (requestCode){
         case ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS:
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                onDone(userIds);
+                onParticipantsChanged(userIds,null);
+            }
+            break;
+        case ProfilePickerActivity.REQUEST_CODE_GET_CALLEE:
+            if (resultCode == Activity.RESULT_OK) {
+                long userIds[] = data
+                    .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
+                makeCall(mSession.getParticipantIDs(),mVideo);
             }
             break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void makeCall(boolean video) {
-        String peerUri = mSession.getUserBySenderId(mUserIDs[0]).getPeerUri();
-        if (null != OPSessionManager.getInstance().getOngoingCallForPeer(
-            peerUri)) {
-            CallActivity.launchForCall(getActivity(), peerUri);
+    void onCallMenuSelected(boolean video){
+        String peerUri = null;
+        if (mSession.getParticipants().size() == 1) {
+           makeCall(mSession.getParticipantIDs(),video);
         } else {
-            CallActivity.launchForCall(getActivity(), mUserIDs,
-                                       mSession.getContextId(), true, video);
+            //TODO: launch profile picker
+            mVideo =video;
+            Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
+            intent.putExtra(IntentData.ARG_USER_IDS_INCLUDE, mSession.getParticipantIDs());
+            startActivityForResult(intent,
+                                   ProfilePickerActivity.REQUEST_CODE_GET_CALLEE);
         }
+    }
+    private void makeCall(long[] userIds,boolean video) {
+        CallActivity.launchForCall(getActivity(),
+                                   userIds,
+                                   mSession.getContextId(),
+                                   true, video);
     }
 
     // Begin: CursorCallback implementation
@@ -719,7 +707,7 @@ public class ChatFragment extends BaseFragment implements
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
         switch (loaderID){
         case URL_LOADER:
-            Uri uri = mSession.getMessagesUri();
+            Uri uri = getMessagesUri();
             if (uri == null) {
                 return null;
             }
@@ -742,7 +730,7 @@ public class ChatFragment extends BaseFragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.d("test", "ChatFragment onLoadFinished" + cursor);
         mAdapter.changeCursor(cursor);
-
+        mSession.markAllMessagesRead();
     }
 
     @Override
@@ -750,6 +738,25 @@ public class ChatFragment extends BaseFragment implements
         mAdapter.changeCursor(null);
     }
 
+    /**
+     * This function
+     * @return
+     */
+    public Uri getMessagesUri() {
+        switch (mSession.getType()){
+        case ContactsBased:
+            return OPContentProvider.getContentUri(
+                MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + mSession.getCurrentWindowId());
+        case ContextBased:
+            if (TextUtils.isEmpty(mSession.getContextId())) {
+                return null;
+            }
+            return OPContentProvider.getContentUri(
+                MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mSession.getContextId());
+        default:
+            return null;
+        }
+    }
     // Beginning of SessionListener implementation
     static final int MENUID_DELETE_MESSAGE = 10000;
 
@@ -803,8 +810,6 @@ public class ChatFragment extends BaseFragment implements
     @Override
     public boolean onContactsChanged() {
         updateUsersView(mSession.getParticipants());
-        mWindowId = mSession.getCurrentWindowId();
-
         getLoaderManager().restartLoader(URL_LOADER, null, this);
 
         return true;
