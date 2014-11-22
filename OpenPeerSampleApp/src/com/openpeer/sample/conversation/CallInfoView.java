@@ -79,7 +79,7 @@ public class CallInfoView extends LinearLayout {
 
 	public void bindCall(OPCall call) {
 		mCall = call;
-		mState = OPSessionManager.getInstance().getMediaStateForCall(call.getPeer().getPeerURI());
+		mState = OPSessionManager.getInstance().getMediaStateForCall(call.getPeerUser().getUserId());
 		mDelegate = new BroadcastReceiver(){
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -96,7 +96,7 @@ public class CallInfoView extends LinearLayout {
 			@Override
 			public void onClick(View v) {
 
-				CallActivity.launchForCall(getContext(), mCall.getPeer().getPeerURI());
+				CallActivity.launchForCall(getContext(), new long[]{mCall.getPeerUser().getUserId()});
 			}
 		});
 		startShowDuration();
