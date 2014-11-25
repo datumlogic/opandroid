@@ -44,7 +44,7 @@ android {
     defaultConfig {
         applicationId "com.openpeer.sample"
         minSdkVersion 14
-        targetSdkVersion 17
+        targetSdkVersion 21
 
         sourceSets {
             main {

@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "com.openpeer.sdk"
         minSdkVersion 14
-        targetSdkVersion 17
+        targetSdkVersion 21
 
         // TODO: Try and find a way to automate testBuildType to reflect the selected build variant. No support at this time.
         testBuildType "debug"
