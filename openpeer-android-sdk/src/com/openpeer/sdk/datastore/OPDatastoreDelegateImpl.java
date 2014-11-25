@@ -1190,7 +1190,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 contacts.add(contactFromCursor(cursor));
                 cursor.moveToNext();
             }
-            user.setIdentityContact(contacts);
+            user.setIdentityContacts(contacts);
             return user;
         }
         return null;
