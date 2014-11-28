@@ -218,7 +218,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     public List<OPAvatar> getAvatars(long contactId) {
         Cursor cursor = query(AvatarEntry.TABLE_NAME, null,
-                "_ID=" + contactId, null);
+                "rolodex_id=" + contactId, null);
         if (cursor != null) {
             List<OPAvatar> avatars = new ArrayList<OPAvatar>();
             cursor.moveToFirst();
