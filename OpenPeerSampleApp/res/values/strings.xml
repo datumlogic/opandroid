@@ -74,5 +74,6 @@
     <string name="msg_identity_login_started">Identity Login Started, please don\'t close the app!</string>
     <string name="msg_identity_login_completed">Identity login completed! </string>
     <!-- End of login strings -->
-
+    <string name="label_participants">Participants</string>
+    <string name="msg_no_contacts_found">No contacts found</string>
 </resources>
