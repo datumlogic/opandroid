@@ -40,10 +40,6 @@ import android.util.Log;
 import android.view.MenuItem;
 
 public class ProfilePickerActivity extends BaseActivity {
-
-	public static final int REQUEST_CODE_ADD_CONTACTS = 10000;
-	public static final int REQUEST_CODE_GET_CALLEE = 10001;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -64,11 +60,6 @@ public class ProfilePickerActivity extends BaseActivity {
 			this.setContentFragment(ProfilePickerFragment
 					.newInstance(excludeIds, includeIds));
 		}
-	}
-
-	public static void launch(Context context) {
-		Intent intent = new Intent(context, ProfilePickerActivity.class);
-		context.startActivity(intent);
 	}
 
 	@Override

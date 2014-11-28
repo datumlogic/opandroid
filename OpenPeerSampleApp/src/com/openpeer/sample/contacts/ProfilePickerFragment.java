@@ -297,14 +297,19 @@ public class ProfilePickerFragment extends BaseFragment implements
         switch (item.getItemId()) {
         case R.id.menu_done:
 
-            Intent data = new Intent();
-            long[] ids = new long[chosenUserIds.size()];
-            for (int i = 0; i < ids.length; i++) {
-                ids[i] = chosenUserIds.get(i);
+            if(chosenUserIds!=null&& !chosenUserIds.isEmpty()) {
+                Intent data = new Intent();
+                long[] ids = new long[chosenUserIds.size()];
+                for (int i = 0; i < ids.length; i++) {
+                    ids[i] = chosenUserIds.get(i);
+                }
+                data.putExtra(IntentData.ARG_PEER_USER_IDS, ids);
+                this.getActivity().setResult(Activity.RESULT_OK, data);
+                getActivity().finish();
+            }else{
+                getActivity().setResult(Activity.RESULT_CANCELED);
+                getActivity().finish();
             }
-            data.putExtra(IntentData.ARG_PEER_USER_IDS, ids);
-            this.getActivity().setResult(Activity.RESULT_OK, data);
-            getActivity().finish();
 
             return true;
         }
