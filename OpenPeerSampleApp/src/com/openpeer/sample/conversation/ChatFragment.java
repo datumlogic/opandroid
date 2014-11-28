@@ -83,7 +83,6 @@ import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.NoDuplicateArrayList;
 import com.openpeer.sdk.utils.OPModelUtils;
 
-import java.text.DateFormat;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -173,12 +172,12 @@ public class ChatFragment extends BaseFragment implements
         super.onDestroy();
         mSession.unregisterListener(this);
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         View view = inflater.inflate(R.layout.fragment_chat, null);
+
         return setupView(view);
     }
 
@@ -497,13 +496,13 @@ public class ChatFragment extends BaseFragment implements
 
         @Override
         protected void onContentChanged() {
-            setupDelvieryStatuses(mCursor);
+            setupDeliveryStatuses(mCursor);
             super.onContentChanged();
         }
 
         @Override
         public void changeCursor(Cursor cursor) {
-            setupDelvieryStatuses(cursor);
+            setupDeliveryStatuses(cursor);
             super.changeCursor(cursor);
         }
 
@@ -536,14 +535,14 @@ public class ChatFragment extends BaseFragment implements
             case VIEWTYPE_CONVERSATION_EVENT_VIEW:
                 view = (ConversationEventView) LayoutInflater.from(context)
                         .inflate(R.layout.item_conversation_event, null);
-                
+
                 break;
             }
 
             return view;
         }
 
-        private void setupDelvieryStatuses(Cursor cursor) {
+        private void setupDeliveryStatuses(Cursor cursor) {
             myLastReadMessagePosition = -1;
             myLastDeliveredMessagePosition = -1;
             myLastSentMessagePosition = -1;
@@ -592,6 +591,16 @@ public class ChatFragment extends BaseFragment implements
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_chat, menu);
+//        MenuItem participantsItem = menu.findItem(R.id.menu_add);
+//        participantsView.setUserRemoveListener(new ParticipantsView.UserRemoveListener() {
+//            @Override
+//            public void onUserRemoved(OPUser user) {
+//                List<OPUser> users=new ArrayList<OPUser>();
+//                users.add(user);
+//                mSession.removeParticipants(users);
+//            }
+//        });
+//        participantsItem.setActionView(participantsView);
     }
 
     @Override
@@ -618,6 +627,7 @@ public class ChatFragment extends BaseFragment implements
             return true;
         case R.id.menu_add:
             onProfilePickerClick();
+
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -650,11 +660,17 @@ public class ChatFragment extends BaseFragment implements
 
     // After adding a new participant we'll have to switch chat window
     private void onProfilePickerClick() {
-        Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
-        intent.putExtra(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
-        startActivityForResult(intent,
-                               ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS);
-
+        List<OPUser> users = mSession.getParticipants();
+        if (users.size() == 1) {
+            Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
+            intent.putExtra(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
+            startActivityForResult(intent,
+                                   IntentData.REQUEST_CODE_ADD_CONTACTS);
+        } else {
+            Intent intent = new Intent(getActivity(), ParticipantsManagementActivity_.class);
+            intent.putExtra(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
+            startActivityForResult(intent, IntentData.REQUEST_CODE_PARTICIPANTS);
+        }
     }
 
     //this is stupid. There must be a better way to persist this state;
@@ -662,14 +678,22 @@ public class ChatFragment extends BaseFragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
-        case ProfilePickerActivity.REQUEST_CODE_ADD_CONTACTS:
+        case IntentData.REQUEST_CODE_ADD_CONTACTS:
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                onParticipantsChanged(userIds,null);
+                onParticipantsChanged(userIds, null);
             }
             break;
-        case ProfilePickerActivity.REQUEST_CODE_GET_CALLEE:
+        case IntentData.REQUEST_CODE_PARTICIPANTS:
+            if(resultCode==Activity.RESULT_OK) {
+                long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
+                List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIds);
+                mSession.onContactsChanged(users);
+                onContactsChanged();
+            }
+            break;
+        case IntentData.REQUEST_CODE_GET_CALLEE:
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
@@ -690,7 +714,7 @@ public class ChatFragment extends BaseFragment implements
             Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
             intent.putExtra(IntentData.ARG_USER_IDS_INCLUDE, mSession.getParticipantIDs());
             startActivityForResult(intent,
-                                   ProfilePickerActivity.REQUEST_CODE_GET_CALLEE);
+                                   IntentData.REQUEST_CODE_GET_CALLEE);
         }
     }
     private void makeCall(long[] userIds,boolean video) {
@@ -738,11 +762,7 @@ public class ChatFragment extends BaseFragment implements
         mAdapter.changeCursor(null);
     }
 
-    /**
-     * This function
-     * @return
-     */
-    public Uri getMessagesUri() {
+    Uri getMessagesUri() {
         switch (mSession.getType()){
         case ContactsBased:
             return OPContentProvider.getContentUri(
