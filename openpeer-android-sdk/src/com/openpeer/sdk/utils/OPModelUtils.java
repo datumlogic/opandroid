@@ -37,6 +37,7 @@ import android.util.Log;
 
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
 
@@ -74,13 +75,8 @@ public class OPModelUtils {
      * @return
      */
     public static long getWindowId(List<OPUser> users) {
-        long userIds[] = new long[users.size()];
-        for (int i = 0; i < userIds.length; i++) {
-            OPUser user = users.get(i);
-            userIds[i] = user.getUserId();
-        }
-        // TODO Auto-generated method stub
-        return getWindowId(userIds);
+
+        return getWindowId(getUserIdsArray(users));
     }
 
     public static long getWindowIdForThread(OPConversationThread mConvThread) {
@@ -97,5 +93,31 @@ public class OPModelUtils {
             }
         }
         return getWindowId(users);
+    }
+
+    public static long[] getUserIdsArray(List<OPUser> users){
+        long userIds[] = new long[users.size()];
+        for (int i = 0; i < userIds.length; i++) {
+            OPUser user = users.get(i);
+            userIds[i] = user.getUserId();
+        }
+        return userIds;
+    }
+
+    public static void findChangedUsers(List<OPUser> mParticipants,
+                                        List<OPUser> currentParticipants,
+                                        List<OPUser> newContacts,
+                                        List<OPUser> deletedContacts){
+
+        for (OPUser user : mParticipants) {
+            if (!currentParticipants.contains(user)) {
+                deletedContacts.add(user);
+            }
+        }
+        for (OPUser user : currentParticipants) {
+            if (!mParticipants.contains(user)) {
+                newContacts.add(user);
+            }
+        }
     }
 }
