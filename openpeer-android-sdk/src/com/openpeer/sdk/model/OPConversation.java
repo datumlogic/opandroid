@@ -180,7 +180,7 @@ public class OPConversation extends Observable {
     public OPMessage sendMessage(OPMessage message, boolean signMessage) {
         Log.d("test", "sending messge " + message);
         message.setRead(true);
-        getThread().sendMessage(message.getMessageId(),
+        getThread(true).sendMessage(message.getMessageId(),
                                 message.getReplacesMessageId(),
                                 message.getMessageType(), message.getMessage(), signMessage);
         if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
@@ -228,7 +228,7 @@ public class OPConversation extends Observable {
         mConvThread = thread;
     }
 
-    public OPConversationThread getThread() {
+    public OPConversationThread getThread(boolean createIfNo) {
         if (mConvThread == null) {
             mConvThread = OPConversationThread.create(
                 OPDataManager.getInstance().getSharedAccount(),
@@ -296,7 +296,7 @@ public class OPConversation extends Observable {
 
         OPContact newContact = user.getOPContact();
 
-        OPCall call = OPCall.placeCall(getThread(), newContact, includeAudio,
+        OPCall call = OPCall.placeCall(getThread(true), newContact, includeAudio,
                                        includeVideo);
         return call;
     }

@@ -210,9 +210,15 @@ public class OPSessionManager {
 
             @Override
             public void onConversationThreadContactsChanged(
-                    OPConversationThread conversationThread) {
-                getSessionOfThread(conversationThread).onContactsChanged(conversationThread);
-
+                    OPConversationThread thread) {
+                for (OPConversation conversation : mSessions) {
+                    OPConversationThread mConvThread = conversation.getThread(false);
+                    if (mConvThread != null
+                        && thread.getThreadID().equals(mConvThread.getThreadID())) {
+                        conversation.onContactsChanged(thread);
+                        return;
+                    }
+                }
             }
 
             @Override
