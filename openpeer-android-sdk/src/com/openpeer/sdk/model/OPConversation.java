@@ -2,16 +2,16 @@
  *
  *  Copyright (c) 2014 , Hookflash Inc.
  *  All rights reserved.
- *  
+ *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *  
+ *
  *  1. Redistributions of source code must retain the above copyright notice, this
  *  list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *  this list of conditions and the following disclaimer in the documentation
  *  and/or other materials provided with the distribution.
- *  
+ *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -22,7 +22,7 @@
  *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  The views and conclusions contained in the software and documentation are those
  *  of the authors and should not be interpreted as representing official policies,
  *  either expressed or implied, of the FreeBSD Project.
@@ -52,8 +52,6 @@ import java.util.Observable;
 
 /**
  * A session represents exact state of a conversation thread.
- * 
- * 
  */
 public class OPConversation extends Observable {
     private static final String TAG = OPConversation.class.getSimpleName();
@@ -64,7 +62,7 @@ public class OPConversation extends Observable {
     // restart,
     private List<OPUser> mParticipants = new ArrayList<OPUser>();
     private OPConversationThread mConvThread;// the active thread being used
-    private Hashtable<String ,OPConversationThread> mThreadList=new Hashtable<>();
+    private Hashtable<String, OPConversationThread> mThreadList = new Hashtable<>();
     private OPCall mCurrentCall;
 
     private boolean isRedial;
@@ -101,7 +99,7 @@ public class OPConversation extends Observable {
 
     /**
      * Constructor used when starting a new conversation
-     * 
+     *
      * @param users
      */
     public OPConversation(List<OPUser> users) {
@@ -118,6 +116,7 @@ public class OPConversation extends Observable {
                                              OPConversationEvent.EventTypes.NewConversation,
                                              "");
     }
+
     public long save() {
         mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
 
@@ -139,8 +138,8 @@ public class OPConversation extends Observable {
         for (OPContact contact : contacts) {
             if (!contact.isSelf()) {
                 OPUser user = OPDataManager.getDatastoreDelegate().getUser(
-                        contact,
-                        mConvThread.getIdentityContactList(contact));
+                    contact,
+                    mConvThread.getIdentityContactList(contact));
                 // This function will also set the userId so don't worry
                 mParticipants.add(user);
             }
@@ -150,16 +149,19 @@ public class OPConversation extends Observable {
             this,
             OPConversationEvent.EventTypes.NewConversation,
             "");
+        ConversationManager.getInstance().cacheThread(mCbcId,thread);
     }
 
     public void registerListener(SessionListener listener) {
         synchronized (mSessionListeners) {
+            Log.d(TAG, "registerListener " + listener);
             mSessionListeners.add(listener);
         }
     }
 
     public void unregisterListener(SessionListener listener) {
         synchronized (mSessionListeners) {
+            Log.d(TAG, "unregisterListener " + listener);
             mSessionListeners.remove(listener);
         }
     }
@@ -179,8 +181,8 @@ public class OPConversation extends Observable {
         Log.d("test", "sending messge " + message);
         message.setRead(true);
         getThread().sendMessage(message.getMessageId(),
-                message.getReplacesMessageId(),
-                message.getMessageType(), message.getMessage(), signMessage);
+                                message.getReplacesMessageId(),
+                                message.getMessageType(), message.getMessage(), signMessage);
         if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
             OPDataManager.getDatastoreDelegate().updateMessage(message, this);
         } else {
@@ -196,7 +198,7 @@ public class OPConversation extends Observable {
 
     /**
      * Get the message that's displayed. Used to decide from which message to display
-     * 
+     *
      * @return
      */
     private String getReadMessageId() {
@@ -219,7 +221,7 @@ public class OPConversation extends Observable {
 
     /**
      * If an session existed for an incoming message and thread is null, set thread.
-     * 
+     *
      * @param thread
      */
     public void setThread(OPConversationThread thread) {
@@ -229,13 +231,14 @@ public class OPConversation extends Observable {
     public OPConversationThread getThread() {
         if (mConvThread == null) {
             mConvThread = OPConversationThread.create(
-                    OPDataManager.getInstance().getSharedAccount(),
-                    OPDataManager.getInstance().getSelfContacts());
+                OPDataManager.getInstance().getSharedAccount(),
+                OPDataManager.getInstance().getSelfContacts());
             addContactsToThread(mParticipants);
             if (TextUtils.isEmpty(mContextId)) {
                 mContextId = mConvThread.getThreadID();
                 OPDataManager.getDatastoreDelegate().updateConversation(this);
             }
+            ConversationManager.getInstance().cacheThread(mCbcId, mConvThread);
         }
         return mConvThread;
     }
@@ -289,12 +292,12 @@ public class OPConversation extends Observable {
     }
 
     public OPCall placeCall(OPUser user,
-            boolean includeAudio, boolean includeVideo) {
+                            boolean includeAudio, boolean includeVideo) {
 
         OPContact newContact = user.getOPContact();
 
         OPCall call = OPCall.placeCall(getThread(), newContact, includeAudio,
-                includeVideo);
+                                       includeVideo);
         return call;
     }
 
@@ -320,7 +323,7 @@ public class OPConversation extends Observable {
     }
 
     private void onMessageDeliveryStateChanged(String MessageId,
-            OPContact contact) {
+                                               OPContact contact) {
 
     }
 
@@ -330,7 +333,7 @@ public class OPConversation extends Observable {
 
     private interface MessageDeliveryCallback {
         public void onMessageDeliveryStateChange(String messageId,
-                MessageDeliveryStates state);
+                                                 MessageDeliveryStates state);
     }
 
     boolean hasOPContact(OPContact contact) {
@@ -351,7 +354,6 @@ public class OPConversation extends Observable {
         if (mConvThread != null) {
             addContactsToThread(users);
         } else {
-
             mCbcId = OPModelUtils.getWindowId(mParticipants);
 
             OPConversationEvent event = new OPConversationEvent(
@@ -366,16 +368,18 @@ public class OPConversation extends Observable {
     public void removeParticipants(List<OPUser> users) {
         mParticipants.removeAll(users);
         List<OPContact> contacts = new ArrayList<>();
-        if(mConvThread!=null) {
+        if (mConvThread != null) {
             for (OPUser user : users) {
                 contacts.add(user.getOPContact());
             }
             mConvThread.removeContacts(contacts);
         } else {
-                OPConversationEvent event = new OPConversationEvent(
-                    null,
-                    OPConversationEvent.EventTypes.ContactsRemoved, null);
-                onNewEvent(event);
+            mCbcId = OPModelUtils.getWindowId(mParticipants);
+            OPConversationEvent event = new OPConversationEvent(
+                this,
+                OPConversationEvent.EventTypes.ContactsRemoved,
+                null);
+            onNewEvent(event);
 
             notifyContactsChanged();
         }
@@ -383,17 +387,17 @@ public class OPConversation extends Observable {
 
     public void onMessageReceived(OPConversationThread thread, OPMessage message) {
         if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
-            OPContact opContact= message.getFrom();
+            OPContact opContact = message.getFrom();
             OPUser user = OPDataManager.getDatastoreDelegate().
                 getUserByPeerUri(opContact.getPeerURI());
-            if(user==null){
+            if (user == null) {
                 List<OPIdentityContact> contacts = thread.getIdentityContactList(opContact);
-                user = OPDataManager.getDatastoreDelegate().getUser(opContact,contacts);
+                user = OPDataManager.getDatastoreDelegate().getUser(opContact, contacts);
             }
             message.setSenderId(user.getUserId());
             if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
                 OPDataManager.getDatastoreDelegate().updateMessage(message,
-                        this);
+                                                                   this);
             } else {
                 if (!mSessionListeners.isEmpty()) {
                     message.setRead(true);
@@ -413,7 +417,6 @@ public class OPConversation extends Observable {
     }
 
     /**
-     *
      * @return ID array of the participants, excluding yourself
      */
     public long[] getParticipantIDs() {
@@ -428,11 +431,11 @@ public class OPConversation extends Observable {
     public boolean isForThread(OPConversationThread thread) {
         // TODO: create appropriate logic,e.g. based on windowId
         long cbcId = OPModelUtils
-                .getWindowIdForThread(thread);
-        switch (mType) {
+            .getWindowIdForThread(thread);
+        switch (mType){
         case ContextBased:
             if (mConvThread != null
-                    && thread.getThreadID().equals(mConvThread.getThreadID())) {
+                && thread.getThreadID().equals(mConvThread.getThreadID())) {
 
                 return true;
             } else if (mCbcId == cbcId) {
@@ -443,7 +446,7 @@ public class OPConversation extends Observable {
             }
         case ContactsBased:
             if (mConvThread != null
-                    && thread.getThreadID().equals(mConvThread.getThreadID())) {
+                && thread.getThreadID().equals(mConvThread.getThreadID())) {
 
                 return true;
             } else if (mCbcId == cbcId) {
@@ -460,9 +463,45 @@ public class OPConversation extends Observable {
 
     }
 
+    public void onContactsChanged(List<OPUser> users) {
+        switch (mType){
+        case ContactsBased:
+            long cbcId = OPModelUtils.getWindowId(users);
+            OPConversationThread thread = ConversationManager.getInstance().findThreadByCbcId
+                (cbcId);
+            if (thread != null) {
+                mConvThread = thread;
+                mParticipants = users;
+                mCbcId = cbcId;
+            } else {
+                if (mConvThread != null) {
+                    if(mCbcId!=cbcId) {
+                        ConversationManager.getInstance().removeThread(mCbcId);
+                        List<OPUser> addedUsers = new ArrayList<>();
+                        List<OPUser> removedUsers = new ArrayList<>();
+                        OPModelUtils.findChangedUsers(mParticipants, users, addedUsers, removedUsers);
+
+                        if (!addedUsers.isEmpty()) {
+                            addParticipants(addedUsers);
+                        }
+                        if (!removedUsers.isEmpty()) {
+                            removeParticipants(removedUsers);
+                        }
+                        mParticipants = users;
+                        mCbcId = cbcId;
+                    }
+                } else {
+                    mCbcId = cbcId;
+                    mParticipants = users;
+                }
+            }
+            break;
+        }
+    }
+
     /**
      * Find the added/deleted contacts and inform listener.
-     * 
+     *
      * @param conversationThread
      */
     public boolean onContactsChanged(OPConversationThread conversationThread) {
@@ -483,9 +522,9 @@ public class OPConversation extends Observable {
             }
             if (!hasOPContact(contact)) {
                 List<OPIdentityContact> iContacts = mConvThread
-                        .getIdentityContactList(contact);
+                    .getIdentityContactList(contact);
                 OPUser user = OPDataManager.getDatastoreDelegate().getUser(
-                        contact, iContacts);
+                    contact, iContacts);
                 newContacts.add(user);
             }
         }
@@ -506,30 +545,31 @@ public class OPConversation extends Observable {
         if (!newContacts.isEmpty()) {
 
             OPConversationEvent event = new OPConversationEvent(
-                    this,
-                    OPConversationEvent.EventTypes.ContactsAdded,
-                    "");
+                this,
+                OPConversationEvent.EventTypes.ContactsAdded,
+                "");
             onNewEvent(event);
         }
         if (!deletedContacts.isEmpty()) {
             OPConversationEvent event = new OPConversationEvent(
-                    null,
-                    OPConversationEvent.EventTypes.ContactsRemoved, null);
+                this,
+                OPConversationEvent.EventTypes.ContactsRemoved, null);
             onNewEvent(event);
         }
         notifyContactsChanged();
         return true;
     }
 
-    void notifyContactsChanged(){
+    void notifyContactsChanged() {
         synchronized (mSessionListeners) {
             for (SessionListener listener : mSessionListeners) {
                 listener.onContactsChanged();
             }
         }
     }
+
     public void onContactComposingStateChanged(ComposingStates state,
-            OPContact contact) {
+                                               OPContact contact) {
         OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(contact.getPeerURI());
         if (user == null) {
             Log.e(TAG, "onContactComposingStateChanged couldn't find user");
@@ -561,7 +601,7 @@ public class OPConversation extends Observable {
 
     /**
      * This is currently the thread id.
-     * 
+     *
      * @return
      */
     public String getContextId() {
@@ -578,7 +618,7 @@ public class OPConversation extends Observable {
      */
     public void onCallStateChanged(OPCall call, CallStates state) {
         CallEvent event = new CallEvent(call.getCallID(), state,
-                System.currentTimeMillis());
+                                        System.currentTimeMillis());
         if (state == CallStates.CallState_Preparing) {
             OPDataManager.getDatastoreDelegate().saveCall(call, this);
         }
@@ -604,9 +644,9 @@ public class OPConversation extends Observable {
      * function should be call on chat view starts and when a new message received when the chat
      * view is open
      */
-    public void markAllMessagesRead(){
+    public void markAllMessagesRead() {
         OPDataManager.getDatastoreDelegate().markMessagesRead(this);
-        if(mConvThread!=null){
+        if (mConvThread != null) {
             mConvThread.markAllMessagesRead();
         }
     }
@@ -617,8 +657,8 @@ public class OPConversation extends Observable {
      *
      * @param status
      */
-    public void setComposingStatus(ComposingStates status){
-        if(mConvThread!=null){
+    public void setComposingStatus(ComposingStates status) {
+        if (mConvThread != null) {
             mConvThread.setStatusInThread(status);
         }
     }
