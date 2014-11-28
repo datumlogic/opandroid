@@ -61,6 +61,8 @@ import android.widget.TextView;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
+import com.openpeer.sample.view.ProgressEmptyView;
+import com.openpeer.sample.view.ProgressEmptyView_;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
@@ -80,7 +82,7 @@ public class ProfilePickerFragment extends BaseFragment implements
     // Used for picking a user already in a conversation
     long[] mIdsInclude;
     MenuItem mDoneMenu;
-
+    ProgressEmptyView emptyView;
     public static ProfilePickerFragment newInstance(long idsExclude[], long[] idsInclude) {
         Bundle bundle = new Bundle();
         if(idsExclude!=null) {
@@ -114,7 +116,7 @@ public class ProfilePickerFragment extends BaseFragment implements
 
     private View setupView(View view) {
         mListView = (ListView) view.findViewById(R.id.listview);
-        View emptyView = view.findViewById(R.id.empty_view);
+        emptyView = (ProgressEmptyView)view.findViewById(R.id.empty_view);
         mListView.setEmptyView(emptyView);
         mRootLayout = (SwipeRefreshLayout) view;
         mRootLayout.setOnRefreshListener(this);
@@ -258,7 +260,7 @@ public class ProfilePickerFragment extends BaseFragment implements
                     slectionArgs = new String[]{"%" + query + "%"};
                 }
             }
-
+            emptyView.showProgress();
             return new CursorLoader(getActivity(), // Parent activity context
                                     OPContentProvider
                                         .getContentUri(RolodexContactEntry.URI_PATH_INFO),
@@ -274,10 +276,13 @@ public class ProfilePickerFragment extends BaseFragment implements
         }
     }
 
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mAdapter.changeCursor(cursor);
-
+        if(cursor.getCount()==0){
+            emptyView.showText();
+        }
     }
 
     @Override
