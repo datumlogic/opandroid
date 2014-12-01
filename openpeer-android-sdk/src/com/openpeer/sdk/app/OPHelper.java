@@ -56,6 +56,9 @@ import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
+import com.openpeer.sdk.model.CallManager;
+import com.openpeer.sdk.model.ConversationManager;
+import com.openpeer.sdk.model.ThreadManager;
 
 /**
  * 
@@ -283,6 +286,9 @@ public class OPHelper {
     public void onAccountShutdown() {
         Intent intent = new Intent();
         if (isSigningOut) {
+            CallManager.clearOnSignout();
+            ThreadManager.clearOnSignout();
+            ConversationManager.clearOnSignout();
             mCacheDelegate.clear(null);
             intent.setAction(IntentData.ACTION_SIGNOUT_DONE);
             OPDataManager.getInstance().afterSignout();

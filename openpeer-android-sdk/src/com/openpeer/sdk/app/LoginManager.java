@@ -46,6 +46,8 @@ import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sdk.delegates.OPAccountDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
+import com.openpeer.sdk.model.CallManager;
+import com.openpeer.sdk.model.ThreadManager;
 
 public class LoginManager {
 
@@ -75,15 +77,14 @@ public class LoginManager {
     private LoginManager() {
     }
 
-    public void startLogin(OPCallDelegate callDelegate,
-            OPConversationThreadDelegate conversationThreadDelegate) {
+    public void startLogin() {
         String reloginInfo = OPDataManager.getInstance().getReloginInfo();
         if (reloginInfo == null || reloginInfo.length() == 0) {
-            login(callDelegate,
-                    conversationThreadDelegate);
+            login(CallManager.getInstance(),
+                    ThreadManager.getInstance());
         } else {
-            relogin(callDelegate,
-                    conversationThreadDelegate,
+            relogin(CallManager.getInstance(),
+                    ThreadManager.getInstance(),
                     reloginInfo);
         }
         mLoginPerformed = true;

@@ -32,12 +32,18 @@
 
 package com.openpeer.sdk.model;
 
+import android.text.TextUtils;
+
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.sdk.utils.OPModelUtils;
 
 import java.util.Hashtable;
+import java.util.List;
 
 public class ConversationManager {
-    static ConversationManager instance;
+    private static ConversationManager instance;
+    private Hashtable<Long, OPConversation> cbcIdToConversationTable;
+    private Hashtable<String, OPConversation> threadToConversationTable;
 
     public static ConversationManager getInstance() {
         if (instance == null) {
@@ -46,23 +52,110 @@ public class ConversationManager {
         return instance;
     }
 
-    private Hashtable<Long, OPConversationThread> cbcIdToThreadsTable;
+    private ConversationManager() {
+    }
 
-    public OPConversationThread findThreadByCbcId(long id) {
-        if (cbcIdToThreadsTable == null) {
+    OPConversation findConversationOfThread(String threadId) {
+        if (threadToConversationTable == null) {
             return null;
+        } else {
+            return threadToConversationTable.get(threadId);
         }
-        return cbcIdToThreadsTable.get(id);
     }
 
-    public void cacheThread(long cbcId, OPConversationThread thread) {
-        if (cbcIdToThreadsTable == null) {
-            cbcIdToThreadsTable = new Hashtable<>();
+    void cacheCbcToConversation(long cbcId, OPConversation conversation) {
+        if (cbcIdToConversationTable == null) {
+            cbcIdToConversationTable = new Hashtable<>();
         }
-        cbcIdToThreadsTable.put(cbcId, thread);
+        cbcIdToConversationTable.put(cbcId, conversation);
+
     }
 
-    public void removeThread(long cbcId) {
-        cbcIdToThreadsTable.remove(cbcId);
+    void cacheThreadToConversation(String threadId, OPConversation conversation) {
+        if (threadToConversationTable == null) {
+            threadToConversationTable = new Hashtable<>();
+        }
+        threadToConversationTable.put(threadId, conversation);
+    }
+
+    void onConversationThreadChange(OPConversation conversation, String oldThreadId,
+                                    String newThreadId) {
+        if (!TextUtils.isEmpty(oldThreadId) && threadToConversationTable != null) {
+            threadToConversationTable.remove(oldThreadId);
+        }
+        cacheThreadToConversation(newThreadId, conversation);
+    }
+
+    void onConversationParticipantsChange(OPConversation conversation, long oldCbcId,
+                                          long newCbcId) {
+        if (oldCbcId != 0 && cbcIdToConversationTable != null) {
+            cbcIdToConversationTable.remove(oldCbcId);
+        }
+        cacheCbcToConversation(newCbcId, conversation);
+    }
+
+    OPConversation getConversationOfThread(OPConversationThread thread, boolean createIfNo) {
+        OPConversation conversation = null;
+        if (threadToConversationTable != null) {
+            conversation = threadToConversationTable.get(thread.getThreadID());
+        }
+        if (conversation == null && cbcIdToConversationTable != null) {
+            conversation = cbcIdToConversationTable.get(OPModelUtils.getWindowIdForThread(thread));
+            if (conversation != null) {
+                conversation.setThread(thread);
+                cacheThreadToConversation(thread.getThreadID(), conversation);
+            }
+        }
+        if (conversation == null && createIfNo) {
+            conversation = new OPConversation(thread);
+            conversation.save();
+            cacheThreadToConversation(thread.getThreadID(), conversation);
+        }
+        return conversation;
+    }
+
+    public OPConversation getConversationById(long id) {
+        if (cbcIdToConversationTable != null) {
+            for (OPConversation conversation : cbcIdToConversationTable.values()) {
+                if (id == conversation.getId()) {
+                    return conversation;
+                }
+            }
+        }
+        return null;
+    }
+
+    public OPConversation getConversationByContextId(List<OPUser> participants, String contextId) {
+        return null;
+    }
+
+    /**
+     * Look up the conversation "for" users. This call use calculated window id to find the
+     * conversation.
+     *
+     * @param users
+     * @param create A new thread will be created if true
+     * @return
+     */
+    public OPConversation getConversationForUsers(List<OPUser> users, boolean create) {
+        OPConversation conversation = null;
+        long cbcId = OPModelUtils.getWindowId(users);
+        if (cbcIdToConversationTable != null) {
+            conversation = cbcIdToConversationTable.get(cbcId);
+        }
+        if (conversation == null && create) {
+            conversation = new OPConversation(users);
+            cacheCbcToConversation(cbcId, conversation);
+            conversation.save();
+
+        }
+        return conversation;
+    }
+
+    public static void clearOnSignout() {
+        if (instance != null) {
+            instance.cbcIdToConversationTable = null;
+            instance.threadToConversationTable = null;
+        }
     }
 }
