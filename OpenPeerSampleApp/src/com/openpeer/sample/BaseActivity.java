@@ -75,10 +75,7 @@ public class BaseActivity extends BaseFragmentActivity {
             if (!LoginManager.getInstance().loginPerformed()) {
                 LoginManager.getInstance().registerListener(
                         new LoginUIListenerImpl(this));
-                LoginManager.getInstance().startLogin(
-                        OPSessionManager.getInstance().getCallDelegate(),
-                        OPSessionManager.getInstance()
-                                .getConversationThreadDelegate());
+                LoginManager.getInstance().startLogin();
             } else if (!LoginManager.getInstance().isLoggingIn()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(
@@ -94,15 +91,7 @@ public class BaseActivity extends BaseFragmentActivity {
                                                 .registerListener(
                                                         new LoginUIListenerImpl(
                                                                 BaseActivity.this));
-                                        LoginManager
-                                                .getInstance()
-                                                .startLogin(
-                                                        OPSessionManager
-                                                                .getInstance()
-                                                                .getCallDelegate(),
-                                                        OPSessionManager
-                                                                .getInstance()
-                                                                .getConversationThreadDelegate());
+                                        LoginManager.getInstance().startLogin();
                                         dialog.dismiss();
                                     }
                                 })

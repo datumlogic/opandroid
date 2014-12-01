@@ -68,7 +68,6 @@ import com.openpeer.sample.BaseActivity;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sdk.app.OPDataManager;
@@ -76,6 +75,7 @@ import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.datastore.OPModelCursorHelper;
+import com.openpeer.sdk.model.ConversationManager;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPConversationEvent;
 import com.openpeer.sdk.model.OPUser;
@@ -151,10 +151,11 @@ public class ChatFragment extends BaseFragment implements
         // TODO:remove this call and use lazy loading.
         switch (OPSdkConfig.getInstance().getGroupChatMode()){
         case ContactsBased:
-            mSession = OPSessionManager.getInstance().getSessionForUsers(participants);
+            mSession = ConversationManager.getInstance().getConversationForUsers(participants, true);
             break;
         case ContextBased:
-            mSession = OPSessionManager.getInstance().getSessionOfContext(participants, contextId);
+            mSession = ConversationManager.getInstance().getConversationByContextId(participants,
+                                                                                    contextId);
             break;
         default:
             break;
@@ -192,7 +193,7 @@ public class ChatFragment extends BaseFragment implements
 
         // TODO: proper look up
         // OPCall call = mSession.getCurrentCall();
-        OPCall call = OPSessionManager.getInstance().getOngoingCallForPeer(mSession.getParticipants().get(0).getUserId());
+        OPCall call = mSession.getCurrentCall();
         if (call != null && (call.getState() == CallStates.CallState_Open
             || call.getState() == CallStates.CallState_Active)) {
             Log.d(TAG, "now show call info");
@@ -606,19 +607,22 @@ public class ChatFragment extends BaseFragment implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-        case R.id.menu_call:
+        case R.id.menu_call:{
             if (OPDataManager.getInstance().getSharedAccount()
                 .getState(0, null) != AccountStates.AccountState_Ready) {
                 BaseActivity.showInvalidStateWarning(getActivity());
                 return true;
             }
+            OPCall call = mSession.getCurrentCall();
             if (mSession.getCurrentCall() != null) {
-                CallActivity.launchForCall(getActivity(),
-                                           new long[]{mSession.getCurrentCall().getPeerUser().getUserId()});
+                Intent intent = new Intent(getActivity(), CallActivity.class);
+                intent.putExtra(IntentData.ARG_CALL_ID, call.getCallID());
+                startActivity(intent);
                 return true;
             } else {
                 return false;
             }
+        }
         case R.id.menu_audio:
             onCallMenuSelected(false);
             return true;
@@ -690,7 +694,6 @@ public class ChatFragment extends BaseFragment implements
                 long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
                 List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIds);
                 mSession.onContactsChanged(users);
-                onContactsChanged();
             }
             break;
         case IntentData.REQUEST_CODE_GET_CALLEE:
@@ -718,10 +721,12 @@ public class ChatFragment extends BaseFragment implements
         }
     }
     private void makeCall(long[] userIds,boolean video) {
-        CallActivity.launchForCall(getActivity(),
-                                   userIds,
-                                   mSession.getContextId(),
-                                   true, video);
+        Intent intent = new Intent(getActivity(), CallActivity.class);
+        intent.putExtra(IntentData.ARG_PEER_USER_IDS, userIds);
+        intent.putExtra(IntentData.ARG_VIDEO, video);
+        intent.putExtra(IntentData.ARG_CONVERSATION_ID,mSession.getId());
+
+        startActivity(intent);
     }
 
     // Begin: CursorCallback implementation

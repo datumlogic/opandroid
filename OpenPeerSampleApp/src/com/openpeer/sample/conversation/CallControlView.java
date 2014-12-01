@@ -29,29 +29,16 @@
  *******************************************************************************/
 package com.openpeer.sample.conversation;
 
-import java.util.List;
-
 import android.content.Context;
-import android.database.Cursor;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPIdentityContact;
-import com.openpeer.javaapi.OPRolodexContact;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
-import com.openpeer.sample.util.DateFormatUtils;
-import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
-import com.squareup.picasso.Picasso;
 
 public class CallControlView extends LinearLayout {
 	private OPCall mCall;
@@ -83,7 +70,7 @@ public class CallControlView extends LinearLayout {
 		mEndButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				OPSessionManager.getInstance().hangupCall(mCall, CallClosedReasons.CallClosedReason_User);
+                mCall.hangup(CallClosedReasons.CallClosedReason_User);
 				if (mListener != null) {
 					mListener.onEndClick();
 				}

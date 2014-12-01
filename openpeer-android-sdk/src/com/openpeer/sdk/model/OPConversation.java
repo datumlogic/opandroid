@@ -134,22 +134,12 @@ public class OPConversation extends Observable {
 
         mConvThread = thread;
         mContextId = mConvThread.getThreadID();
-        List<OPContact> contacts = this.mConvThread.getContacts();
-        for (OPContact contact : contacts) {
-            if (!contact.isSelf()) {
-                OPUser user = OPDataManager.getDatastoreDelegate().getUser(
-                    contact,
-                    mConvThread.getIdentityContactList(contact));
-                // This function will also set the userId so don't worry
-                mParticipants.add(user);
-            }
-        }
+        mParticipants = OPModelUtils.getParticipantsOfThread(thread);
         mCbcId = OPModelUtils.getWindowId(mParticipants);
         mLastEvent = new OPConversationEvent(
             this,
             OPConversationEvent.EventTypes.NewConversation,
             "");
-        ConversationManager.getInstance().cacheThread(mCbcId,thread);
     }
 
     public void registerListener(SessionListener listener) {
@@ -181,8 +171,8 @@ public class OPConversation extends Observable {
         Log.d("test", "sending messge " + message);
         message.setRead(true);
         getThread(true).sendMessage(message.getMessageId(),
-                                message.getReplacesMessageId(),
-                                message.getMessageType(), message.getMessage(), signMessage);
+                                    message.getReplacesMessageId(),
+                                    message.getMessageType(), message.getMessage(), signMessage);
         if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
             OPDataManager.getDatastoreDelegate().updateMessage(message, this);
         } else {
@@ -212,11 +202,7 @@ public class OPConversation extends Observable {
     // @property (strong) NSMutableSet* sessionIdsHistory;
     // @property (strong) NSMutableArray* arrayMergedConversationThreads;
     public OPCall getCurrentCall() {
-        return mCurrentCall;
-    }
-
-    public void setCurrentCall(OPCall mCurrentCall) {
-        this.mCurrentCall = mCurrentCall;
+        return CallManager.getInstance().findCallByCbcId(mCbcId);
     }
 
     /**
@@ -230,15 +216,30 @@ public class OPConversation extends Observable {
 
     public OPConversationThread getThread(boolean createIfNo) {
         if (mConvThread == null) {
-            mConvThread = OPConversationThread.create(
-                OPDataManager.getInstance().getSharedAccount(),
-                OPDataManager.getInstance().getSelfContacts());
-            addContactsToThread(mParticipants);
-            if (TextUtils.isEmpty(mContextId)) {
-                mContextId = mConvThread.getThreadID();
-                OPDataManager.getDatastoreDelegate().updateConversation(this);
+            mConvThread = ThreadManager.getInstance().findThreadByCbcId(mCbcId);
+            if (mConvThread == null) {
+                if (createIfNo) {
+                    mConvThread = OPConversationThread.create(
+                        OPDataManager.getInstance().getSharedAccount(),
+                        OPDataManager.getInstance().getSelfContacts());
+                    addContactsToThread(mParticipants);
+                    ConversationManager.getInstance().cacheThreadToConversation(
+                        mConvThread.getThreadID(),
+                        this);
+                    if (TextUtils.isEmpty(mContextId)) {
+                        mContextId = mConvThread.getThreadID();
+                        OPDataManager.getDatastoreDelegate().updateConversation(this);
+                    }
+                }
+            } else {
+                ConversationManager.getInstance().cacheThreadToConversation(
+                    mConvThread.getThreadID(),
+                    this);
+                if (TextUtils.isEmpty(mContextId)) {
+                    mContextId = mConvThread.getThreadID();
+                    OPDataManager.getDatastoreDelegate().updateConversation(this);
+                }
             }
-            ConversationManager.getInstance().cacheThread(mCbcId, mConvThread);
         }
         return mConvThread;
     }
@@ -248,10 +249,7 @@ public class OPConversation extends Observable {
         if (mConvThread == null) {
             mConvThread = newThread;
         } else {
-            if (mConvThread.getThreadID().equals(newThread.getThreadID())) {
-                return mConvThread;
-            } else {
-                mThreadList.put(mConvThread.getThreadID(), mConvThread);
+            if (!mConvThread.getThreadID().equals(newThread.getThreadID())) {
                 mConvThread = newThread;
             }
         }
@@ -272,7 +270,6 @@ public class OPConversation extends Observable {
     public void onNewEvent(OPConversationEvent event) {
         OPDataManager.getDatastoreDelegate().saveConversationEvent(event);
         mLastEvent = event;
-
     }
 
     private void addContactsToThread(List<OPUser> users) {
@@ -350,11 +347,13 @@ public class OPConversation extends Observable {
     }
 
     public void addParticipants(List<OPUser> users) {
-        mParticipants.addAll(users);
         if (mConvThread != null) {
             addContactsToThread(users);
         } else {
+            mParticipants.addAll(users);
+            long oldCbcId = mCbcId;
             mCbcId = OPModelUtils.getWindowId(mParticipants);
+            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId,mCbcId);
 
             OPConversationEvent event = new OPConversationEvent(
                 this,
@@ -366,7 +365,6 @@ public class OPConversation extends Observable {
     }
 
     public void removeParticipants(List<OPUser> users) {
-        mParticipants.removeAll(users);
         List<OPContact> contacts = new ArrayList<>();
         if (mConvThread != null) {
             for (OPUser user : users) {
@@ -374,7 +372,10 @@ public class OPConversation extends Observable {
             }
             mConvThread.removeContacts(contacts);
         } else {
+            mParticipants.removeAll(users);
+            long oldCbcId = mCbcId;
             mCbcId = OPModelUtils.getWindowId(mParticipants);
+            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId,mCbcId);
             OPConversationEvent event = new OPConversationEvent(
                 this,
                 OPConversationEvent.EventTypes.ContactsRemoved,
@@ -463,23 +464,39 @@ public class OPConversation extends Observable {
 
     }
 
+    /**
+     *  This function should be called when user is added/removed from UI.
+     *
+     * @param users new users list
+     */
     public void onContactsChanged(List<OPUser> users) {
         switch (mType){
         case ContactsBased:
             long cbcId = OPModelUtils.getWindowId(users);
-            OPConversationThread thread = ConversationManager.getInstance().findThreadByCbcId
-                (cbcId);
+            if (cbcId == mCbcId) {
+                return;
+            }
+            //if there's existing thread that matches the participants we'll reuse that thread.
+            OPConversationThread thread = ThreadManager.getInstance().findThreadByCbcId(cbcId);
             if (thread != null) {
+                //TODO: Merge conversation of that thread
+                String oldThreadId = mConvThread == null ? null : mConvThread.getThreadID();
+                ConversationManager.getInstance().onConversationThreadChange(this, oldThreadId,
+                                                                             thread.getThreadID());
+                ConversationManager.getInstance().onConversationParticipantsChange(this, mCbcId,
+                                                                                   cbcId);
                 mConvThread = thread;
                 mParticipants = users;
                 mCbcId = cbcId;
+                //make sure UI call back gets fired
+                notifyContactsChanged();
             } else {
                 if (mConvThread != null) {
-                    if(mCbcId!=cbcId) {
-                        ConversationManager.getInstance().removeThread(mCbcId);
+                    if (mCbcId != cbcId) {
                         List<OPUser> addedUsers = new ArrayList<>();
                         List<OPUser> removedUsers = new ArrayList<>();
-                        OPModelUtils.findChangedUsers(mParticipants, users, addedUsers, removedUsers);
+                        OPModelUtils.findChangedUsers(mParticipants, users, addedUsers,
+                                                      removedUsers);
 
                         if (!addedUsers.isEmpty()) {
                             addParticipants(addedUsers);
@@ -487,12 +504,13 @@ public class OPConversation extends Observable {
                         if (!removedUsers.isEmpty()) {
                             removeParticipants(removedUsers);
                         }
-                        mParticipants = users;
-                        mCbcId = cbcId;
+//                        mParticipants = users;
+//                        mCbcId = cbcId;
                     }
                 } else {
                     mCbcId = cbcId;
                     mParticipants = users;
+                    notifyContactsChanged();
                 }
             }
             break;
@@ -663,4 +681,10 @@ public class OPConversation extends Observable {
         }
     }
 
+    public void onMessagePushed(String messageId,OPUser user){
+
+    }
+    public void onMessagePushFailure(String messageId,OPUser user){
+
+    }
 }

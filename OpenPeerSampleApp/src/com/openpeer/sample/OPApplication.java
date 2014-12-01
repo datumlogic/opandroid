@@ -30,31 +30,23 @@
 package com.openpeer.sample;
 
 import android.app.Application;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.StrictMode;
 import android.util.Log;
 import android.webkit.CookieManager;
 
-import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPStack;
-import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.OPPushNotificationBuilder;
 import com.openpeer.sample.push.PushIntentReceiver;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
-import com.openpeer.sdk.model.OPUser;
 import com.urbanairship.AirshipConfigOptions;
 import com.urbanairship.Logger;
 import com.urbanairship.UAirship;
 import com.urbanairship.push.PushManager;
 
 import org.androidannotations.annotations.EApplication;
-import org.androidannotations.annotations.EReceiver;
-import org.androidannotations.annotations.ReceiverAction;
 
 @EApplication
 public class OPApplication extends Application {
@@ -94,7 +86,7 @@ public class OPApplication extends Application {
         }
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-        filter.addAction(IntentData.ACTION_CALL_INCOMING);
+        filter.addAction(IntentData.ACTION_CALL_STATE_CHANGE);
         filter.addAction(Intent.ACTION_REBOOT);
         registerReceiver(mReceiver, filter);
         init();
@@ -107,7 +99,6 @@ public class OPApplication extends Application {
 
     public void signout() {
 
-        OPSessionManager.getInstance().onSignOut();
         OPPushManager.onSignOut();
         CookieManager.getInstance().removeAllCookie();
         OPNotificationBuilder.cancelAllUponSignout();
@@ -127,7 +118,7 @@ public class OPApplication extends Application {
 
         OPHelper.getInstance().init(this, null);
         // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
-        OPSessionManager.getInstance().init();
+//        OPSessionManager.getInstance().init();
         SettingsHelper.getInstance().initLoggers();
     }
 }

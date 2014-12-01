@@ -40,6 +40,7 @@ import android.util.Log;
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.OPStack;
 import com.openpeer.sample.conversation.CallActivity;
+import com.openpeer.sdk.model.CallManager;
 
 import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.EReceiver;
@@ -56,10 +57,32 @@ public class AppReceiver extends BroadcastReceiver {
         OPStack.singleton().shutdown();
     }
 
-    @ReceiverAction(IntentData.ACTION_CALL_INCOMING)
-    void onIncomingCall(Intent intent) {
-        long userId = intent.getLongExtra(IntentData.ARG_PEER_USER_ID, 0);
-        CallActivity.launchForIncomingCall(app, userId);
+    @ReceiverAction(IntentData.ACTION_CALL_STATE_CHANGE)
+    void onCallStateChanged(Intent intent) {
+        String callStateStr = intent.getStringExtra(com.openpeer.sdk.app.IntentData.ARG_CALL_STATE);
+        CallStates callState = CallStates.valueOf(callStateStr);
+        switch (callState){
+        case CallState_Incoming:{
+            String callId = intent.getStringExtra(IntentData.ARG_CALL_ID);
+
+            Intent callIntent = new Intent(app, CallActivity.class);
+            callIntent.putExtra(IntentData.ARG_CALL_ID, callId);
+            callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            app.startActivity(callIntent);
+        }
+        break;
+        case CallState_Closed:{
+            String callId = intent.getStringExtra(com.openpeer.sdk.app.IntentData.ARG_CALL_ID);
+            OPNotificationBuilder.cancelNotificationForCall(callId);
+
+            if (!CallManager.getInstance().hasCalls() &&
+                BackgroundingManager.isBackgroundingPending()) {
+                BackgroundingManager.onEnteringBackground();
+            }
+        }
+        break;
+        }
     }
 
     @Override

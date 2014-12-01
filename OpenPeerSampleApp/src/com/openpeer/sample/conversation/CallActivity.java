@@ -44,21 +44,11 @@ public class CallActivity extends BaseActivity {
 
     private static final String TAG = CallActivity.class.getSimpleName();
 
-    public static void launchForCall(Context context, long[] peerContactId,
-                                     String contextId, boolean audio, boolean video) {
-        Intent intent = new Intent(context, CallActivity.class);
-        intent.putExtra(IntentData.ARG_PEER_USER_IDS, peerContactId);
-        intent.putExtra(IntentData.ARG_CONTEXT_ID, contextId);
-        intent.putExtra(IntentData.ARG_AUDIO, audio);
-        intent.putExtra(IntentData.ARG_VIDEO, video);
-        context.startActivity(intent);
-    }
     public static void launchForCall(Context context, long[] peerContactId) {
         Intent intent = new Intent(context, CallActivity.class);
         intent.putExtra(IntentData.ARG_PEER_USER_IDS, peerContactId);
         context.startActivity(intent);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +65,9 @@ public class CallActivity extends BaseActivity {
         Intent intent = getIntent();
 
         getActionBar().setTitle(R.string.hint_call);
-        CallFragment cFragment =
-            CallFragment.newInstance(intent.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS),
-                                     intent.getStringExtra(IntentData.ARG_CONTEXT_ID),
-                                     intent.getBooleanExtra(IntentData.ARG_AUDIO, true),
-                                     intent.getBooleanExtra(IntentData.ARG_VIDEO, false));
+        CallFragment cFragment = new CallFragment();
+        cFragment.setArguments(intent.getExtras());
+
         setContentFragment(cFragment);
 
     }

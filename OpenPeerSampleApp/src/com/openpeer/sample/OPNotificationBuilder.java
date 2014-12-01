@@ -79,7 +79,7 @@ public class OPNotificationBuilder {
 
 		builder.setContentIntent(contentIntent);
 
-		int notificationId = (int) (call.getStableID() + NOTIFICATION_ID_BASE_CALL);
+		int notificationId = (int) (call.getCallID().hashCode() + NOTIFICATION_ID_BASE_CALL);
 		Notification notification = builder.build();
 
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -133,10 +133,10 @@ public class OPNotificationBuilder {
 		notificationManager.cancel(NOTIFICATION_ID_BASE_MESSAGE + windowId);
 	}
 
-	public static void cancelNotificationForCall(OPCall call) {
+	public static void cancelNotificationForCall(String callId) {
 		NotificationManager notificationManager = (NotificationManager) OPApplication.getInstance().getSystemService(
 				Context.NOTIFICATION_SERVICE);
-		notificationManager.cancel(NOTIFICATION_ID_BASE_CALL + (int) call.getStableID());
+		notificationManager.cancel(NOTIFICATION_ID_BASE_CALL + (int) callId.hashCode());
 	}
     public static void cancelAllUponSignout(){
         NotificationManager notificationManager = (NotificationManager) OPApplication.getInstance().getSystemService(

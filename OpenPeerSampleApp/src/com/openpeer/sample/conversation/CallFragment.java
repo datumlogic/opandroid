@@ -29,11 +29,6 @@
  *******************************************************************************/
 package com.openpeer.sample.conversation;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.webrtc.videoengine.ViERenderer;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -59,14 +54,21 @@ import com.openpeer.sample.AppConfig;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.OPNotificationBuilder;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.CallUtil;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sample.util.ViewUtils;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.CallManager;
+import com.openpeer.sdk.model.CallStatus;
+import com.openpeer.sdk.model.ConversationManager;
+import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 import com.squareup.picasso.Picasso;
+
+import org.webrtc.videoengine.ViERenderer;
+
+import java.util.List;
 
 public class CallFragment extends BaseFragment {
     public static final String TAG = CallFragment.class.getSimpleName();
@@ -77,9 +79,10 @@ public class CallFragment extends BaseFragment {
     private SurfaceView mLocalSurface;
     private SurfaceView mRemoteSurface;
     private RelativeLayout mVideoView;
-    private boolean mAudio, mVideo;
+    private boolean mVideo;
     private long[] userIDs;
     private String mContextId;
+    OPConversation mConversation;
 
     private ImageView audioButton;
     private ImageView videoButton;
@@ -91,18 +94,6 @@ public class CallFragment extends BaseFragment {
     private View mCallView;
     private Ringtone mRingtone;
     private long mPeerId;
-
-    public static CallFragment newInstance(long[] peerContactId,
-                                           String contextId, boolean audio, boolean video) {
-        CallFragment fragment = new CallFragment();
-        Bundle args = new Bundle();
-        args.putLongArray(IntentData.ARG_PEER_USER_IDS, peerContactId);
-        args.putString(IntentData.ARG_CONTEXT_ID, contextId);
-        args.putBoolean(IntentData.ARG_AUDIO, audio);
-        args.putBoolean(IntentData.ARG_VIDEO, video);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,10 +112,16 @@ public class CallFragment extends BaseFragment {
         // obtainCameraRatios();
         userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
         mContextId = args.getString(IntentData.ARG_CONTEXT_ID);
+        String callId = args.getString(IntentData.ARG_CALL_ID);
+        long conversationId = args.getLong(IntentData.ARG_CONVERSATION_ID,0);
+        mConversation = ConversationManager.getInstance().getConversationById(conversationId);
 
-        if (userIDs != null && userIDs.length > 0) {
+        if(callId!=null){
+            mCall=CallManager.getInstance().findCallById(callId);
+            mPeerId = mCall.getPeerUser().getUserId();
+        } else if (userIDs != null && userIDs.length > 0) {
             mPeerId = userIDs[0];
-            mCall = OPSessionManager.getInstance().getOngoingCallForPeer(mPeerId);
+            mCall = CallManager.getInstance().findCallForPeer(mPeerId);
         } else {
             Log.e(TAG, "no peerUri nor userIDs");
         }
@@ -132,7 +129,6 @@ public class CallFragment extends BaseFragment {
             mVideo = mCall.hasVideo();
         } else {
 
-            mAudio = args.getBoolean(IntentData.ARG_AUDIO, true);
             mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
         }
         mVideo = mVideo && AppConfig.FEATURE_CALL;
@@ -199,9 +195,8 @@ public class CallFragment extends BaseFragment {
         }
         initMedia(view);
         if (mCall == null) {
-
-            mCall = OPSessionManager.getInstance().placeCall(userIDs, mAudio,
-                    mVideo, mContextId);
+            OPUser user = OPDataManager.getDatastoreDelegate().getUserById(mPeerId);
+            mCall = mConversation.placeCall(user, true, mVideo);
 
         } else {
             if (mCall.getState() == CallStates.CallState_Incoming
@@ -209,7 +204,7 @@ public class CallFragment extends BaseFragment {
 
                 playRingtone();
             } else if (mCall.getState() == CallStates.CallState_Open) {
-                OPNotificationBuilder.cancelNotificationForCall(mCall);
+                OPNotificationBuilder.cancelNotificationForCall(mCall.getCallID());
                 startShowDuration();
                 if (mVideo) {
                     mCallView.setVisibility(View.GONE);
@@ -369,8 +364,8 @@ public class CallFragment extends BaseFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String callId = intent.getStringExtra(IntentData.ARG_CALL_ID);
-            CallStates state = (CallStates) intent
-                    .getSerializableExtra(IntentData.ARG_CALL_STATE);
+            CallStates state = CallStates.valueOf(intent
+                                                      .getStringExtra(IntentData.ARG_CALL_STATE));
             if (callId.equals(mCall.getCallID())) {
                 onCallStateChanged(mCall, state);
             }
@@ -426,7 +421,7 @@ public class CallFragment extends BaseFragment {
     boolean mVideoPreviewSwitched;
 
     void initMedia(View view) {
-        mCallStatus = OPSessionManager.getInstance().getMediaStateForCall(mPeerId);
+        mCallStatus = CallManager.getInstance().getMediaStateForCall(mPeerId);
         OPMediaEngine.getInstance().setEcEnabled(true);
         OPMediaEngine.getInstance().setAgcEnabled(true);
         OPMediaEngine.getInstance().setNsEnabled(false);
@@ -566,7 +561,7 @@ public class CallFragment extends BaseFragment {
                     }
                 }
             }
-            
+
             OPMediaEngine.getInstance().setCameraType(cameraType);
 
             OPMediaEngine.getInstance().setCaptureCapability(

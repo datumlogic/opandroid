@@ -27,42 +27,55 @@
  *  of the authors and should not be interpreted as representing official policies,
  *  either expressed or implied, of the FreeBSD Project.
  *******************************************************************************/
-package com.openpeer.javaapi;
+package com.openpeer.sdk.model;
 
-public abstract class OPConversationThreadDelegate {
+public class CallStatus {
+	long answerTime;
+	boolean Muted;
+	boolean Capturing = true;
+	boolean SpeakerOn;
+	private boolean mFrontCamera = true;
 
-	public abstract void onConversationThreadNew(OPConversationThread conversationThread);
+	public void setAnswerTime(long time) {
+		answerTime = time;
+	}
 
-	public abstract void onConversationThreadContactsChanged(OPConversationThread conversationThread);
+	public long getDuration() {
+		return System.currentTimeMillis() - answerTime;
+	}
 
-	   public abstract void onConversationThreadContactConnectionStateChanged(
-               OPConversationThread conversationThread,
-               OPContact contact,
-               ContactConnectionStates state);
+	public boolean isMuted() {
+		return Muted;
+	}
 
-    public abstract void onConversationThreadContactStatusChanged(
-			OPConversationThread conversationThread,
-			OPContact contact);
+	public void setMuted(boolean muted) {
+		Muted = muted;
+	}
 
-	public abstract void onConversationThreadMessage(
-			OPConversationThread conversationThread,
-			String messageID);
+	public boolean isCapturing() {
+		return Capturing;
+	}
 
-	public abstract void onConversationThreadMessageDeliveryStateChanged(
-			OPConversationThread conversationThread,
-			String messageID,
-			MessageDeliveryStates state);
+	public void setCapturing(boolean capturing) {
+		Capturing = capturing;
+	}
 
-	/**
-	 * Core has failed to deliver the message and deciced the application should try to send it through push.
-	 * 
-	 * @param conversationThread
-	 * @param messageID
-	 * @param contact
-	 *            The message recipient
-	 */
-	public abstract void onConversationThreadPushMessage(
-			OPConversationThread conversationThread,
-			String messageID,
-			OPContact contact);
+	public boolean isSpeakerOn() {
+		return SpeakerOn;
+	}
+
+	public void setSpeakerOn(boolean speakerOn) {
+		SpeakerOn = speakerOn;
+	}
+
+	public boolean useFrontCamera() {
+		// TODO Auto-generated method stub
+		return mFrontCamera;
+
+	}
+
+	public void setUseFrontCamera(boolean useFront) {
+		mFrontCamera = useFront;
+	}
+
 }

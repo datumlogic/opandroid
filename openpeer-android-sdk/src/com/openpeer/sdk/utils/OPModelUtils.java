@@ -120,4 +120,19 @@ public class OPModelUtils {
             }
         }
     }
+
+    public static List<OPUser> getParticipantsOfThread(OPConversationThread thread){
+        List<OPUser> users = new ArrayList<>();
+        List<OPContact> contacts = thread.getContacts();
+        for (OPContact contact : contacts) {
+            if (!contact.isSelf()) {
+                OPUser user = OPDataManager.getDatastoreDelegate().getUser(
+                    contact,
+                    thread.getIdentityContactList(contact));
+                // This function will also set the userId so don't worry
+                users.add(user);
+            }
+        }
+        return users;
+    }
 }
