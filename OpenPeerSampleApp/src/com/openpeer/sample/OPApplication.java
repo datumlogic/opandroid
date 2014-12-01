@@ -39,6 +39,7 @@ import android.webkit.CookieManager;
 import com.openpeer.sample.push.OPPushManager;
 import com.openpeer.sample.push.OPPushNotificationBuilder;
 import com.openpeer.sample.push.PushIntentReceiver;
+import com.openpeer.sample.push.UAPushService;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
 import com.urbanairship.AirshipConfigOptions;
@@ -102,7 +103,6 @@ public class OPApplication extends Application {
         OPPushManager.onSignOut();
         CookieManager.getInstance().removeAllCookie();
         OPNotificationBuilder.cancelAllUponSignout();
-        UAirship.land();
         OPHelper.getInstance().onSignOut();
     }
 
@@ -115,6 +115,7 @@ public class OPApplication extends Application {
         PushManager.shared().setNotificationBuilder(
                 new OPPushNotificationBuilder());
         PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
+        OPHelper.registerPushServiceProvider(UAPushService.getInstance());
 
         OPHelper.getInstance().init(this, null);
         // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);

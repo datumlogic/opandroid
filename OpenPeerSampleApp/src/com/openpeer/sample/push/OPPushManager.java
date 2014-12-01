@@ -2,6 +2,7 @@ package com.openpeer.sample.push;
 
 import android.text.TextUtils;
 
+import com.openpeer.sdk.app.OPHelper;
 import com.urbanairship.UAirship;
 import com.urbanairship.push.PushManager;
 import com.urbanairship.push.PushPreferences;
@@ -112,7 +113,8 @@ public class OPPushManager {
     }
     public static void onSignOut(){
         PushManager.disablePush();
-
+        UAirship.land();
+        OPHelper.unregisterPushServiceProvider();
     }
 
 }
