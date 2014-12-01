@@ -63,7 +63,8 @@ public class UAPushService implements PushServiceInterface {
     }
 
     @Override
-    public void onConversationThreadPushMessage(OPConversation conversation, final OPMessage message, OPUser contact) {
+    public void onConversationThreadPushMessage(final OPConversation conversation,
+                                                final OPMessage message, OPUser contact) {
         OPPushManager.getInstance().getDeviceToken(
             contact.getPeerUri(), new Callback<PushToken>() {
 
@@ -73,8 +74,9 @@ public class UAPushService implements PushServiceInterface {
                     OPLogger.debug(OPLogLevel.LogLevel_Detail,
                                    "onConversationThreadPushMessage push message "
                                        + message);
-                    new UAPushProviderImpl().pushMessage(message,
-                                                         token, new Callback<PushResult>() {
+                    new UAPushProviderImpl().pushMessage(conversation,
+                                                         message, token,
+                                                         new Callback<PushResult>() {
                             @Override
                             public void success(
                                 PushResult pushResult,

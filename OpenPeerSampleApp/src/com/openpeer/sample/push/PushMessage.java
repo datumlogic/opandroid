@@ -29,30 +29,42 @@
  *******************************************************************************/
 package com.openpeer.sample.push;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.OPConversation;
+import com.openpeer.sdk.model.OPUser;
+
+import java.util.List;
 
 public class PushMessage {
     // "{\"audience\" : {\"device_token\" : \"%@\"}, \"device_types\" : [ \"ios\" ], \"notification\" : {\"ios\" : {\"sound\":\"message-received\",\"alert\": \"%@\",\"content-available\": true,\"priority\": 10}}, \"message\" : {\"title\" : \"%@\", \"body\" : \"%@\", \"content_type\" : \"text/html\"} }"
-    final static String extraFormatStr = "{\"peerURI\":\"%s\",\"messageId\":\"%s\",\"replacesMessageId\":\"%s\",\"message\":\"%s\",\"location\":\"%s\",\"date\":\"%d\"}";
+    final static String extraFormatStr = "{\"peerURI\":\"%s\",\"peerURIs\":[%s],\"messageId\":\"%s\",\"replacesMessageId\":\"%s\",\"message\":\"%s\",\"location\":\"%s\",\"date\":\"%d\"}";
     Object audience;
     Notification notification;
     RichMessage message;
     String device_types[] = new String[]{"android"};
 
-    public static PushMessage fromOPMessage(OPMessage opMessage, PushToken token) {
+    public static PushMessage fromOPMessage(OPConversation conversation, OPMessage opMessage, PushToken token) {
 
         PushMessage pushMessage = new PushMessage();
         Log.d("test", "pushing message " + opMessage);
+        List<OPUser> participants = conversation.getParticipants();
+        String peerUris[] = new String[participants.size()+1];
+        peerUris[0] = OPDataManager.getInstance().getDatastoreDelegate().getLoggedinUser().getPeerUri();
+        for (int i = 0; i < participants.size(); i++) {
+            peerUris[i+1] = participants.get(i).getPeerUri();
+        }
         if (token.getType().equals(PushToken.TYPE_APID)) {
             AndroidNotification notification = new AndroidNotification();
             notification.alert = opMessage.getMessage();
             notification.android = new AndroidOverride();
             notification.android.extra = new AndroidExtra(
                     OPDataManager.getInstance().getSharedAccount().getPeerUri(),
+                    peerUris,
                     opMessage.getMessageId(),
                     opMessage.getReplacesMessageId(),
                     OPDataManager.getInstance().getSharedAccount().getLocationID(),
@@ -69,6 +81,7 @@ public class PushMessage {
             msg.body = String
                     .format(extraFormatStr,
                             OPDataManager.getInstance().getSharedAccount().getPeerUri(),
+                            TextUtils.join(",",peerUris),
                             opMessage.getMessageId(),
                             opMessage.getReplacesMessageId(),
                             opMessage.getMessage(),
@@ -161,6 +174,7 @@ public class PushMessage {
 
     static class AndroidExtra {
         String peerURI;
+        String peerURIs[];
         String location;
         String messageId;
         String replacesMessageId;
@@ -170,9 +184,10 @@ public class PushMessage {
         AndroidExtra() {
         }
 
-        AndroidExtra(String peerUri, String messageId,
+        AndroidExtra(String peerUri, String peerUris[],String messageId,
                      String replacesMessageId, String location, String timeInMillis) {
             this.peerURI = peerUri;
+            this.peerURIs = peerUris;
             this.messageId = messageId;
             this.replacesMessageId = replacesMessageId;
             this.date = timeInMillis;
