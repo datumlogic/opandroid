@@ -115,7 +115,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
                         + senderUri);
                 return;
             }
-            String peerURIs[] = intent.getStringArrayExtra("peerURIs");
+            String peerURIs[] = TextUtils.split(intent.getStringExtra("peerURIs"),",");
             List<OPUser> users = new ArrayList<>();
             for(String uri:peerURIs) {
                 OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(uri);

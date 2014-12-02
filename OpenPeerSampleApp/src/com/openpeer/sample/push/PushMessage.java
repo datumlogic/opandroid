@@ -42,7 +42,7 @@ import java.util.List;
 
 public class PushMessage {
     // "{\"audience\" : {\"device_token\" : \"%@\"}, \"device_types\" : [ \"ios\" ], \"notification\" : {\"ios\" : {\"sound\":\"message-received\",\"alert\": \"%@\",\"content-available\": true,\"priority\": 10}}, \"message\" : {\"title\" : \"%@\", \"body\" : \"%@\", \"content_type\" : \"text/html\"} }"
-    final static String extraFormatStr = "{\"peerURI\":\"%s\",\"peerURIs\":[%s],\"messageId\":\"%s\",\"replacesMessageId\":\"%s\",\"message\":\"%s\",\"location\":\"%s\",\"date\":\"%d\"}";
+    final static String extraFormatStr = "{\"peerURI\":\"%s\",\"peerURIs\":\"%s\",\"messageId\":\"%s\",\"replacesMessageId\":\"%s\",\"message\":\"%s\",\"location\":\"%s\",\"date\":\"%d\"}";
     Object audience;
     Notification notification;
     RichMessage message;
@@ -64,7 +64,7 @@ public class PushMessage {
             notification.android = new AndroidOverride();
             notification.android.extra = new AndroidExtra(
                     OPDataManager.getInstance().getSharedAccount().getPeerUri(),
-                    peerUris,
+                    TextUtils.join(",",peerUris),
                     opMessage.getMessageId(),
                     opMessage.getReplacesMessageId(),
                     OPDataManager.getInstance().getSharedAccount().getLocationID(),
@@ -174,7 +174,7 @@ public class PushMessage {
 
     static class AndroidExtra {
         String peerURI;
-        String peerURIs[];
+        String peerURIs;
         String location;
         String messageId;
         String replacesMessageId;
@@ -184,7 +184,7 @@ public class PushMessage {
         AndroidExtra() {
         }
 
-        AndroidExtra(String peerUri, String peerUris[],String messageId,
+        AndroidExtra(String peerUri, String peerUris,String messageId,
                      String replacesMessageId, String location, String timeInMillis) {
             this.peerURI = peerUri;
             this.peerURIs = peerUris;
