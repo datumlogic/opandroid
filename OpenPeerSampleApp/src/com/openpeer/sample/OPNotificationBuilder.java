@@ -36,6 +36,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPCall;
@@ -100,13 +102,14 @@ public class OPNotificationBuilder {
 		Intent launchIntent = null;
 		// TODO build proper strings
 		String title = OPApplication.getInstance().getString(R.string.label_new_message_received, message.getFromUser().getName());
-
-		Notification.Builder builder = new Notification.Builder(context)
-				.setAutoCancel(true)
-				.setContentTitle(title)
-				.setContentText(message.getMessage())
-				.setSmallIcon(R.drawable.ic_launcher);
-		if (SettingsHelper.isSoundNotificationOnForNewMessage()) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
+        Notification.Builder builder = new Notification.Builder(context)
+            .setAutoCancel(true)
+            .setContentTitle(title)
+            .setContentText(message.getMessage())
+            .setSmallIcon(R.drawable.ic_action_chat)
+            .setLargeIcon(bitmap);
+        if (SettingsHelper.isSoundNotificationOnForNewMessage()) {
 			builder.setSound(SettingsHelper.getNotificationSound());
 		}
 		// Create the notification
