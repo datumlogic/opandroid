@@ -11,5 +11,5 @@
         android:layout_width="@dimen/profile_image_size_in_list"
         android:layout_height="@dimen/profile_image_size_in_list"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_action_add_person"/>
+        android:src="@drawable/ic_plus"/>
 </LinearLayout>
