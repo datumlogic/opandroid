@@ -1,3 +1,5 @@
+ln -s ../../openpeer-android-sdk/assets/openpeer_database.sql openpeer_database.sql
+
 rm src/com/openpeer/javaapi
 rm src/com/openpeer/sdk
 rm jni
