@@ -199,7 +199,9 @@ public class OPUser {
     public boolean isSame(OPContact contact) {
         return contact.getPeerURI().equals(getOPContact().getPeerURI());
     }
-
+    public boolean isSelf() {
+        return getOPContact().isSelf();
+    }
     @Override
     public boolean equals(Object o) {
         return o instanceof OPUser && ((OPUser) o).getUserId() == this.mUserId;
