@@ -83,6 +83,7 @@ import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.NoDuplicateArrayList;
 import com.openpeer.sdk.utils.OPModelUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -154,8 +155,8 @@ public class ChatFragment extends BaseFragment implements
             mSession = ConversationManager.getInstance().getConversationForUsers(participants, true);
             break;
         case ContextBased:
-            mSession = ConversationManager.getInstance().getConversationByContextId(participants,
-                                                                                    contextId);
+//            mSession = ConversationManager.getInstance().getConversationByContextId(participants,
+//                                                                                    contextId);
             break;
         default:
             break;
@@ -686,14 +687,21 @@ public class ChatFragment extends BaseFragment implements
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                onParticipantsChanged(userIds, null);
+                List<OPUser> newParticipants = new ArrayList<>();
+                newParticipants.addAll(mSession.getParticipants());
+                newParticipants.addAll(OPDataManager.getDatastoreDelegate().getUsers(userIds));
+                mSession = ConversationManager.getInstance().getConversationForUsers(newParticipants,true);
+                onContactsChanged();
+//                onParticipantsChanged(userIds, null);
             }
             break;
         case IntentData.REQUEST_CODE_PARTICIPANTS:
             if(resultCode==Activity.RESULT_OK) {
                 long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIds);
-                mSession.onContactsChanged(users);
+                List<OPUser> newParticipants = OPDataManager.getDatastoreDelegate().getUsers(userIds);
+                mSession = ConversationManager.getInstance().getConversationForUsers(newParticipants,true);
+                onContactsChanged();
+//                mSession.onContactsChanged(users);
             }
             break;
         case IntentData.REQUEST_CODE_GET_CALLEE:

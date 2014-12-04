@@ -55,14 +55,6 @@ public class ConversationManager {
     private ConversationManager() {
     }
 
-    OPConversation findConversationOfThread(String threadId) {
-        if (threadToConversationTable == null) {
-            return null;
-        } else {
-            return threadToConversationTable.get(threadId);
-        }
-    }
-
     void cacheCbcToConversation(long cbcId, OPConversation conversation) {
         if (cbcIdToConversationTable == null) {
             cbcIdToConversationTable = new Hashtable<>();
@@ -96,10 +88,11 @@ public class ConversationManager {
 
     OPConversation getConversationOfThread(OPConversationThread thread, boolean createIfNo) {
         OPConversation conversation = null;
-        if (threadToConversationTable != null) {
-            conversation = threadToConversationTable.get(thread.getThreadID());
-        }
-        if (conversation == null && cbcIdToConversationTable != null) {
+//        if (threadToConversationTable != null) {
+//            conversation = threadToConversationTable.get(thread.getThreadID());
+//        }
+//        if (conversation == null && cbcIdToConversationTable != null) {
+        if (cbcIdToConversationTable != null) {
             conversation = cbcIdToConversationTable.get(OPModelUtils.getWindowIdForThread(thread));
             if (conversation != null) {
                 conversation.setThread(thread);
@@ -125,7 +118,14 @@ public class ConversationManager {
         return null;
     }
 
-    public OPConversation getConversationByContextId(List<OPUser> participants, String contextId) {
+    public OPConversation getConversationByCbcId(long id) {
+        if (cbcIdToConversationTable != null) {
+            return cbcIdToConversationTable.get(id);
+        }
+        return null;
+    }
+
+    private OPConversation getConversationByContextId(List<OPUser> participants, String contextId) {
         return null;
     }
 

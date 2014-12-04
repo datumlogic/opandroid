@@ -41,6 +41,15 @@ public class OPConversationThread {
     private static final String TAG = OPConversationThread.class
             .getSimpleName();
 
+    long mCbcId;
+
+    public long getCbcId() {
+        return mCbcId;
+    }
+
+    public void setCbcId(long cbcId) {
+        mCbcId = cbcId;
+    }
     /**
      * Helper function to make sure required fields are populated.
      * 

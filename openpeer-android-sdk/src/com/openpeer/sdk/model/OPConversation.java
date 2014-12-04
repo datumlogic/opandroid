@@ -62,12 +62,7 @@ public class OPConversation extends Observable {
     // restart,
     private List<OPUser> mParticipants = new ArrayList<OPUser>();
     private OPConversationThread mConvThread;// the active thread being used
-    private Hashtable<String, OPConversationThread> mThreadList = new Hashtable<>();
-    private OPCall mCurrentCall;
 
-    private boolean isRedial;
-    private List<OPMessage> mMessages;
-    private Hashtable<String, OPMessage> undeliveredMessages;
     private String lastReadMessageId;
     private OPMessage mLastMessage;
     private Hashtable<String, OPMessage> mMessageDeliveryQueue;
@@ -181,11 +176,6 @@ public class OPConversation extends Observable {
         return message;
     }
 
-    private OPMessage addMessage(OPMessage message) {
-        mMessages.add(message);
-        return message;
-    }
-
     /**
      * Get the message that's displayed. Used to decide from which message to display
      *
@@ -199,8 +189,6 @@ public class OPConversation extends Observable {
         this.lastReadMessageId = readMessageId;
     }
 
-    // @property (strong) NSMutableSet* sessionIdsHistory;
-    // @property (strong) NSMutableArray* arrayMergedConversationThreads;
     public OPCall getCurrentCall() {
         return CallManager.getInstance().findCallByCbcId(mCbcId);
     }
@@ -215,33 +203,42 @@ public class OPConversation extends Observable {
     }
 
     public OPConversationThread getThread(boolean createIfNo) {
-        if (mConvThread == null) {
-            mConvThread = ThreadManager.getInstance().findThreadByCbcId(mCbcId);
-            if (mConvThread == null) {
-                if (createIfNo) {
-                    mConvThread = OPConversationThread.create(
-                        OPDataManager.getInstance().getSharedAccount(),
-                        OPDataManager.getInstance().getSelfContacts());
-                    addContactsToThread(mParticipants);
-                    ConversationManager.getInstance().cacheThreadToConversation(
-                        mConvThread.getThreadID(),
-                        this);
-                    if (TextUtils.isEmpty(mContextId)) {
-                        mContextId = mConvThread.getThreadID();
-                        OPDataManager.getDatastoreDelegate().updateConversation(this);
-                    }
-                }
-            } else {
-                ConversationManager.getInstance().cacheThreadToConversation(
-                    mConvThread.getThreadID(),
-                    this);
-                if (TextUtils.isEmpty(mContextId)) {
-                    mContextId = mConvThread.getThreadID();
-                    OPDataManager.getDatastoreDelegate().updateConversation(this);
-                }
-            }
+        mConvThread = ThreadManager.getInstance().findThreadByCbcId(mCbcId);
+        if (mConvThread == null && createIfNo) {
+            mConvThread = OPConversationThread.create(
+                OPDataManager.getInstance().getSharedAccount(),
+                OPDataManager.getInstance().getSelfContacts());
+            addContactsToThread(mParticipants);
+
         }
         return mConvThread;
+//        if (mConvThread == null) {
+//            mConvThread = ThreadManager.getInstance().findThreadByCbcId(mCbcId);
+//            if (mConvThread == null) {
+//                if (createIfNo) {
+//                    mConvThread = OPConversationThread.create(
+//                        OPDataManager.getInstance().getSharedAccount(),
+//                        OPDataManager.getInstance().getSelfContacts());
+//                    addContactsToThread(mParticipants);
+//                    ConversationManager.getInstance().cacheThreadToConversation(
+//                        mConvThread.getThreadID(),
+//                        this);
+//                    if (TextUtils.isEmpty(mContextId)) {
+//                        mContextId = mConvThread.getThreadID();
+//                        OPDataManager.getDatastoreDelegate().updateConversation(this);
+//                    }
+//                }
+//            } else {
+//                ConversationManager.getInstance().cacheThreadToConversation(
+//                    mConvThread.getThreadID(),
+//                    this);
+//                if (TextUtils.isEmpty(mContextId)) {
+//                    mContextId = mConvThread.getThreadID();
+//                    OPDataManager.getDatastoreDelegate().updateConversation(this);
+//                }
+//            }
+//        }
+//        return mConvThread;
     }
 
     private OPConversationThread selectActiveThread(OPConversationThread newThread) {
@@ -429,7 +426,7 @@ public class OPConversation extends Observable {
         return IDs;
     }
 
-    public boolean isForThread(OPConversationThread thread) {
+    private boolean isForThread(OPConversationThread thread) {
         // TODO: create appropriate logic,e.g. based on windowId
         long cbcId = OPModelUtils
             .getWindowIdForThread(thread);
@@ -559,7 +556,10 @@ public class OPConversation extends Observable {
             Log.e(TAG, "onContactsChanged called when no contacts change");
             return false;
         }
+
+        long oldCbcId = mCbcId;
         mCbcId = OPModelUtils.getWindowId(mParticipants);
+        ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId,mCbcId);
         if (!newContacts.isEmpty()) {
 
             OPConversationEvent event = new OPConversationEvent(
