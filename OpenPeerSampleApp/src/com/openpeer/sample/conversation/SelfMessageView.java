@@ -40,6 +40,7 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.MessageEditState;
 import com.openpeer.sdk.model.OPConversation;
 
@@ -140,7 +141,7 @@ public class SelfMessageView extends RelativeLayout {
     }
 
     public void onDeleteSelected() {
-        OPMessage message = new OPMessage(0,
+        OPMessage message = new OPMessage(OPDataManager.getInstance().getSharedAccount().getSelfContactId(),
                 OPMessageType.TYPE_TEXT,
                 "",
                 System.currentTimeMillis(),
