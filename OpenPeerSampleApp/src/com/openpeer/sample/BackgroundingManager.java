@@ -33,6 +33,7 @@ import java.util.TimerTask;
 
 import com.openpeer.javaapi.OPBackgrounding;
 import com.openpeer.sample.delegates.BackgroundingCompletionDelegateImpl;
+import com.openpeer.sdk.model.CallManager;
 
 /**
  *
@@ -62,7 +63,7 @@ public class BackgroundingManager {
     }
 
     public static void onEnteringBackground() {
-        if (OPSessionManager.getInstance().hasCalls()) {
+        if (CallManager.getInstance().hasCalls()) {
             mBackgroundingPending = true;
         } else {
             mBackgroundingPending = false;

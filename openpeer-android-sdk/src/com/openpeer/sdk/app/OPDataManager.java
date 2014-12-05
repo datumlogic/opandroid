@@ -194,12 +194,6 @@ public class OPDataManager {
         }
     }
 
-    public long getUserIdForContact(OPContact contact,
-            OPIdentityContact iContact) {
-        // TODO implement proper userId querying and gereration
-        return contact.getPeerURI().hashCode();
-    }
-
     public boolean isAccountReady() {
         return mAccount != null
                 && mAccount.getState() == AccountStates.AccountState_Ready;

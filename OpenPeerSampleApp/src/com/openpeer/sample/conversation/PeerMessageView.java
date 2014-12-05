@@ -40,6 +40,7 @@ import android.widget.TextView;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 
@@ -78,16 +79,14 @@ public class PeerMessageView extends RelativeLayout {
     public void update(OPMessage data) {
         mMessage = data;
 
-        OPUser user = mSession
-                .getUserBySenderId(data.getSenderId());
+        OPUser user = OPDataManager.getDatastoreDelegate().getUserById(data.getSenderId());
         if (user != null) {
             if (user.getName() != null) {
                 title.setText(user.getName());
             }
         }
 
-        time.setText(DateFormatUtils.getSameDayTime(data.getTime()
-                .toMillis(true)));
+        time.setText(DateFormatUtils.getSameDayTime(data.getTime().toMillis(true)));
         switch (data.getEditState()) {
         case Deleted:
             text.setText(R.string.msg_deleted);

@@ -42,7 +42,10 @@ import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPHelper;
+import com.openpeer.sdk.model.ConversationManager;
 import com.openpeer.sdk.model.MessageEditState;
+import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
 import com.urbanairship.actions.DeepLinkAction;
@@ -51,6 +54,7 @@ import com.urbanairship.actions.OpenExternalUrlAction;
 import com.urbanairship.push.GCMMessageHandler;
 import com.urbanairship.push.PushManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +115,23 @@ public class PushIntentReceiver extends BroadcastReceiver {
                         + senderUri);
                 return;
             }
+            List<OPUser> users = new ArrayList<>();
+            users.add(sender);
+
+            String peerURIsString = intent.getStringExtra("peerURIs");
+            if(!TextUtils.isEmpty(peerURIsString)) {
+                String peerURIs[] = TextUtils.split(peerURIsString, ",");
+                for (String uri : peerURIs) {
+                    OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(uri);
+                    if (user == null) {
+                        //TODO: error handling
+                        Log.e(logTag, "peerUri user not found " + uri);
+                        return;
+                    } else {
+                        users.add(user);
+                    }
+                }
+            }
 
             OPMessage opMessage = new OPMessage(
                     sender.getUserId(),
@@ -122,11 +143,11 @@ public class PushIntentReceiver extends BroadcastReceiver {
             if (replacesMessageId != null) {
                 opMessage.setReplacesMessageId(replacesMessageId);
             }
-            long windowId = OPModelUtils.getWindowId(new long[] { sender
-                    .getUserId() });
+
+            OPConversation conversation = ConversationManager.getInstance().getConversationForUsers(users,true);
 
             OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
-                    null);
+                                                             conversation);
             //TODO: Now notify observer
 
         } else if (action.equals(PushManager.ACTION_NOTIFICATION_OPENED)) {

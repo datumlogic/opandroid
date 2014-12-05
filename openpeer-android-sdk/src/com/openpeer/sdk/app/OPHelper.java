@@ -56,6 +56,10 @@ import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
+import com.openpeer.sdk.model.CallManager;
+import com.openpeer.sdk.model.ConversationManager;
+import com.openpeer.sdk.model.PushServiceInterface;
+import com.openpeer.sdk.model.ThreadManager;
 
 /**
  * 
@@ -77,7 +81,6 @@ public class OPHelper {
     private OPStackMessageQueue mStackMessageQueue;
     private OPCacheDelegate mCacheDelegate;
     private OPSettingsDelegate mSettingsDelegate;
-
     public Context getApplicationContext() {
         return mContext;
     }
@@ -283,6 +286,9 @@ public class OPHelper {
     public void onAccountShutdown() {
         Intent intent = new Intent();
         if (isSigningOut) {
+            CallManager.clearOnSignout();
+            ThreadManager.clearOnSignout();
+            ConversationManager.clearOnSignout();
             mCacheDelegate.clear(null);
             intent.setAction(IntentData.ACTION_SIGNOUT_DONE);
             OPDataManager.getInstance().afterSignout();
@@ -297,6 +303,14 @@ public class OPHelper {
 
     public static OPSettingsDelegate getSettingsDelegate() {
         return instance.mSettingsDelegate;
+    }
+
+    public static void registerPushServiceProvider(PushServiceInterface pushService) {
+        ThreadManager.getInstance().registerPushService(pushService);
+    }
+
+    public static void unregisterPushServiceProvider() {
+        ThreadManager.getInstance().unregisterPushService();
     }
 
 }

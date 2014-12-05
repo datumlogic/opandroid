@@ -37,6 +37,15 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
 
 public class OPCall {
+    public long getCbcId() {
+        return mCbcId;
+    }
+
+    public void setCbcId(long cbcId) {
+        this.mCbcId = cbcId;
+    }
+
+    long mCbcId;
     /**
      * Helper function. Get the caller/callee OPContact.
      * 

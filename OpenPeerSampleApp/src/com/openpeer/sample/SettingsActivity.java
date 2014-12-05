@@ -65,6 +65,7 @@ import com.openpeer.sample.settings.SettingsDownloader;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.app.OPSdkConfig;
+import com.openpeer.sdk.model.CallManager;
 
 public class SettingsActivity extends BaseActivity {
     static final String KEY_LOCAL_TELNET_LOGGER = "local_telnet_logger";
@@ -371,7 +372,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     void doSignout() {
-        if (OPSessionManager.getInstance().hasCalls()) {
+        if (CallManager.getInstance().hasCalls()) {
             Toast.makeText(SettingsActivity.this,
                     R.string.msg_cannot_signout_with_call, Toast.LENGTH_LONG)
                     .show();

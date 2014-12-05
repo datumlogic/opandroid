@@ -42,11 +42,11 @@ import android.widget.TextView;
 
 import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sample.IntentData;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
+import com.openpeer.sdk.model.CallManager;
+import com.openpeer.sdk.model.CallStatus;
 
 public class CallInfoView extends LinearLayout {
 	private OPRolodexContact mContact;
@@ -78,29 +78,33 @@ public class CallInfoView extends LinearLayout {
 	}
 
 	public void bindCall(OPCall call) {
-		mCall = call;
-		mState = OPSessionManager.getInstance().getMediaStateForCall(call.getPeer().getPeerURI());
-		mDelegate = new BroadcastReceiver(){
+        mCall = call;
+        mState = CallManager.getInstance().getMediaStateForCall(call.getPeerUser().getUserId());
+        mDelegate = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String callId = intent.getStringExtra(IntentData.ARG_CALL_ID);
-                CallStates state = (CallStates) intent.getSerializableExtra(IntentData.ARG_CALL_STATE);
+                CallStates state = CallStates.valueOf(intent.getStringExtra(IntentData
+                                                                                .ARG_CALL_STATE));
                 if (callId.equals(mCall.getCallID())) {
                     onCallStateChanged(mCall, state);
                 }
             }
         };
-        getContext().registerReceiver(mDelegate,new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
-		this.setOnClickListener(new View.OnClickListener() {
+        getContext().registerReceiver(mDelegate, new IntentFilter(IntentData
+                                                                      .ACTION_CALL_STATE_CHANGE));
+        this.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
 
-				CallActivity.launchForCall(getContext(), mCall.getPeer().getPeerURI());
-			}
-		});
-		startShowDuration();
-	}
+                Intent intent = new Intent(getContext(), CallActivity.class);
+                intent.putExtra(IntentData.ARG_CALL_ID, mCall.getCallID());
+                getContext().startActivity(intent);
+            }
+        });
+        startShowDuration();
+    }
 
 	public void unbind() {
         getContext().unregisterReceiver(mDelegate);
@@ -128,12 +132,7 @@ public class CallInfoView extends LinearLayout {
 		}
 	};
     public void onCallStateChanged(OPCall call, final CallStates state) {
-        if (!call.getCallID().equals(mCall.getCallID())) {
-            return;
-        }
-
         switch (state) {
-            case CallState_Closing:
             case CallState_Closed:
                 post(new Runnable() {
                     public void run() {

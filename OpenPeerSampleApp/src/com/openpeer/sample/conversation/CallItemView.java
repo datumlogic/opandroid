@@ -29,27 +29,16 @@
  *******************************************************************************/
 package com.openpeer.sample.conversation;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.openpeer.javaapi.CallStates;
-import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPRolodexContact;
-import com.openpeer.sample.IntentData;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
-import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 
 public class CallItemView extends LinearLayout {
     private OPRolodexContact mContact;

@@ -30,11 +30,9 @@
 package com.openpeer.sample.contacts;
 
 import com.openpeer.sample.BaseActivity;
-import com.openpeer.sample.BaseFragmentActivity;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,9 +40,6 @@ import android.util.Log;
 import android.view.MenuItem;
 
 public class ProfilePickerActivity extends BaseActivity {
-
-	public static final int REQUEST_CODE_ADD_CONTACTS = 10000;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -59,15 +54,12 @@ public class ProfilePickerActivity extends BaseActivity {
 		} else {
 			long excludeIds[] = getIntent().getLongArrayExtra(
 					IntentData.ARG_PEER_USER_IDS);
+            long includeIds[] = getIntent().getLongArrayExtra(
+					IntentData.ARG_USER_IDS_INCLUDE);
 
 			this.setContentFragment(ProfilePickerFragment
-					.newInstance(excludeIds));
+					.newInstance(excludeIds, includeIds));
 		}
-	}
-
-	public static void launch(Context context) {
-		Intent intent = new Intent(context, ProfilePickerActivity.class);
-		context.startActivity(intent);
 	}
 
 	@Override

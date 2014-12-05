@@ -29,35 +29,18 @@
  *******************************************************************************/
 package com.openpeer.sample.conversation;
 
-import java.util.List;
-
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.openpeer.javaapi.CallStates;
-import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPCallDelegate;
 import com.openpeer.javaapi.OPMessage;
-import com.openpeer.javaapi.OPRolodexContact;
-import com.openpeer.sample.IntentData;
-import com.openpeer.sample.OPSessionManager;
 import com.openpeer.sample.R;
 import com.openpeer.sample.util.DateFormatUtils;
 import com.openpeer.sample.util.ModelUtil;
-import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.model.OPConversationEvent;
-import com.openpeer.sdk.model.OPUser;
 
 public class ConversationEventView extends LinearLayout {
 

@@ -38,24 +38,20 @@ public abstract class OPConversationThreadDelegate {
 	   public abstract void onConversationThreadContactConnectionStateChanged(
                OPConversationThread conversationThread,
                OPContact contact,
-               ContactConnectionStates state
-               );
-	   
-	public abstract void onConversationThreadContactStatusChanged(
+               ContactConnectionStates state);
+
+    public abstract void onConversationThreadContactStatusChanged(
 			OPConversationThread conversationThread,
-			OPContact contact
-			);
+			OPContact contact);
 
 	public abstract void onConversationThreadMessage(
 			OPConversationThread conversationThread,
-			String messageID
-			);
+			String messageID);
 
 	public abstract void onConversationThreadMessageDeliveryStateChanged(
 			OPConversationThread conversationThread,
 			String messageID,
-			MessageDeliveryStates state
-			);
+			MessageDeliveryStates state);
 
 	/**
 	 * Core has failed to deliver the message and deciced the application should try to send it through push.
@@ -68,6 +64,5 @@ public abstract class OPConversationThreadDelegate {
 	public abstract void onConversationThreadPushMessage(
 			OPConversationThread conversationThread,
 			String messageID,
-			OPContact contact
-			);
+			OPContact contact);
 }

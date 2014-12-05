@@ -36,6 +36,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPCall;
@@ -79,7 +81,7 @@ public class OPNotificationBuilder {
 
 		builder.setContentIntent(contentIntent);
 
-		int notificationId = (int) (call.getStableID() + NOTIFICATION_ID_BASE_CALL);
+		int notificationId = (int) (call.getCallID().hashCode() + NOTIFICATION_ID_BASE_CALL);
 		Notification notification = builder.build();
 
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -100,13 +102,14 @@ public class OPNotificationBuilder {
 		Intent launchIntent = null;
 		// TODO build proper strings
 		String title = OPApplication.getInstance().getString(R.string.label_new_message_received, message.getFromUser().getName());
-
-		Notification.Builder builder = new Notification.Builder(context)
-				.setAutoCancel(true)
-				.setContentTitle(title)
-				.setContentText(message.getMessage())
-				.setSmallIcon(R.drawable.ic_launcher);
-		if (SettingsHelper.isSoundNotificationOnForNewMessage()) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
+        Notification.Builder builder = new Notification.Builder(context)
+            .setAutoCancel(true)
+            .setContentTitle(title)
+            .setContentText(message.getMessage())
+            .setSmallIcon(R.drawable.ic_action_chat)
+            .setLargeIcon(bitmap);
+        if (SettingsHelper.isSoundNotificationOnForNewMessage()) {
 			builder.setSound(SettingsHelper.getNotificationSound());
 		}
 		// Create the notification
@@ -133,10 +136,10 @@ public class OPNotificationBuilder {
 		notificationManager.cancel(NOTIFICATION_ID_BASE_MESSAGE + windowId);
 	}
 
-	public static void cancelNotificationForCall(OPCall call) {
+	public static void cancelNotificationForCall(String callId) {
 		NotificationManager notificationManager = (NotificationManager) OPApplication.getInstance().getSystemService(
 				Context.NOTIFICATION_SERVICE);
-		notificationManager.cancel(NOTIFICATION_ID_BASE_CALL + (int) call.getStableID());
+		notificationManager.cancel(NOTIFICATION_ID_BASE_CALL + (int) callId.hashCode());
 	}
     public static void cancelAllUponSignout(){
         NotificationManager notificationManager = (NotificationManager) OPApplication.getInstance().getSystemService(

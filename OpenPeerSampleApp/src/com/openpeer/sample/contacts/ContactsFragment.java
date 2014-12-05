@@ -55,6 +55,7 @@ import android.widget.SearchView;
 
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.R;
+import com.openpeer.sample.view.ProgressEmptyView;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
@@ -68,6 +69,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 	private ContactsAdapter mAdapter;
 	private boolean mTest;
 	private DataChangeReceiver mReceiver;
+    private ProgressEmptyView emptyView;
 
 	public static android.support.v4.app.Fragment newInstance() {
 		return new ContactsFragment();
@@ -95,7 +97,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 
 	private View setupView(View view) {
 		mListView = (ListView) view.findViewById(R.id.listview);
-		View emptyView = view.findViewById(R.id.empty_view);
+		emptyView = (ProgressEmptyView)view.findViewById(R.id.empty_view);
 		mListView.setEmptyView(emptyView);
 		mRootLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
 		mRootLayout.setOnRefreshListener(this);
@@ -215,7 +217,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 //		}
         switch (loaderID) {
         case URL_LOADER:
-            // Returns a new CursorLoader
+            emptyView.showProgress();
             return new CursorLoader(getActivity(), // Parent activity context
                     OPContentProvider
                             .getContentUri(RolodexContactEntry.URI_PATH_INFO),
@@ -234,6 +236,9 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		mAdapter.changeCursor(cursor);
+        if(cursor.getCount()==0){
+            emptyView.showProgress();
+        }
 
 	}
 

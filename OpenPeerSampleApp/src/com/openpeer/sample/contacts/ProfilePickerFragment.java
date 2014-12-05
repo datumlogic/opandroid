@@ -61,6 +61,8 @@ import android.widget.TextView;
 import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
+import com.openpeer.sample.view.ProgressEmptyView;
+import com.openpeer.sample.view.ProgressEmptyView_;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
@@ -71,17 +73,24 @@ public class ProfilePickerFragment extends BaseFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
 
     static final String PARAM_IDS_EXCLUDE = "exclude";
+    static final String PARAM_IDS_INCLUDE = "include";
     private SwipeRefreshLayout mRootLayout;
     private ListView mListView;
     private ContactsAdapter mAdapter;
     List<Long> chosenUserIds = new ArrayList<Long>();
     long[] mIdsExclude;
-    ProfilePickerListener mListener;
+    // Used for picking a user already in a conversation
+    long[] mIdsInclude;
     MenuItem mDoneMenu;
-
-    public static ProfilePickerFragment newInstance(long idsExclude[]) {
+    ProgressEmptyView emptyView;
+    public static ProfilePickerFragment newInstance(long idsExclude[], long[] idsInclude) {
         Bundle bundle = new Bundle();
-        bundle.putLongArray(PARAM_IDS_EXCLUDE, idsExclude);
+        if(idsExclude!=null) {
+            bundle.putLongArray(PARAM_IDS_EXCLUDE, idsExclude);
+        }
+        if(idsInclude!=null){
+            bundle.putLongArray(PARAM_IDS_INCLUDE, idsExclude);
+        }
         ProfilePickerFragment fragment = new ProfilePickerFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -91,6 +100,7 @@ public class ProfilePickerFragment extends BaseFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         this.setHasOptionsMenu(true);
+        mIdsInclude = getArguments().getLongArray(PARAM_IDS_INCLUDE);
         mIdsExclude = getArguments().getLongArray(PARAM_IDS_EXCLUDE);
         return setupView(inflater.inflate(R.layout.fragment_profile_picker,
                 null));
@@ -106,7 +116,7 @@ public class ProfilePickerFragment extends BaseFragment implements
 
     private View setupView(View view) {
         mListView = (ListView) view.findViewById(R.id.listview);
-        View emptyView = view.findViewById(R.id.empty_view);
+        emptyView = (ProgressEmptyView)view.findViewById(R.id.empty_view);
         mListView.setEmptyView(emptyView);
         mRootLayout = (SwipeRefreshLayout) view;
         mRootLayout.setOnRefreshListener(this);
@@ -215,17 +225,28 @@ public class ProfilePickerFragment extends BaseFragment implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle arg1) {
-        switch (loaderID) {
+        switch (loaderID){
         case URL_LOADER:
-            // Returns a new CursorLoader
-            StringBuilder builder = new StringBuilder(
-                    RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID
-                            + " not in (0,");
-            for (int i = 0; i < mIdsExclude.length; i++) {
-                if (i == mIdsExclude.length - 1) {
-                    builder.append(mIdsExclude[i] + ")");
-                } else {
-                    builder.append(mIdsExclude[i] + ",");
+            StringBuilder builder = null;
+            if (mIdsInclude != null) {
+                builder = new StringBuilder(
+                    RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID + "  in (");
+                for (int i = 0; i < mIdsInclude.length; i++) {
+                    if (i == mIdsInclude.length - 1) {
+                        builder.append(mIdsInclude[i] + ")");
+                    } else {
+                        builder.append(mIdsInclude[i] + ",");
+                    }
+                }
+            } else {
+                builder = new StringBuilder(
+                    RolodexContactEntry.COLUMN_OPENPEER_CONTACT_ID + " not in (0,");
+                for (int i = 0; i < mIdsExclude.length; i++) {
+                    if (i == mIdsExclude.length - 1) {
+                        builder.append(mIdsExclude[i] + ")");
+                    } else {
+                        builder.append(mIdsExclude[i] + ",");
+                    }
                 }
             }
 
@@ -236,18 +257,18 @@ public class ProfilePickerFragment extends BaseFragment implements
                 if (!TextUtils.isEmpty(query)) {
                     // Note: instr is available from sqlite 3.7.15
                     builder.append("and name like ?");
-                    slectionArgs = new String[] { "%" + query + "%" };
+                    slectionArgs = new String[]{"%" + query + "%"};
                 }
             }
-
+            emptyView.showProgress();
             return new CursorLoader(getActivity(), // Parent activity context
-                    OPContentProvider
-                            .getContentUri(RolodexContactEntry.URI_PATH_INFO),
+                                    OPContentProvider
+                                        .getContentUri(RolodexContactEntry.URI_PATH_INFO),
 
-                    null, // Projection to return
-                    builder.toString(), 
-                    slectionArgs, 
-                    null // Default sort order
+                                    null, // Projection to return
+                                    builder.toString(),
+                                    slectionArgs,
+                                    null // Default sort order
             );
         default:
             // An invalid id was passed in
@@ -255,10 +276,13 @@ public class ProfilePickerFragment extends BaseFragment implements
         }
     }
 
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mAdapter.changeCursor(cursor);
-
+        if(cursor.getCount()==0){
+            emptyView.showText();
+        }
     }
 
     @Override
@@ -278,24 +302,24 @@ public class ProfilePickerFragment extends BaseFragment implements
         switch (item.getItemId()) {
         case R.id.menu_done:
 
-            Intent data = new Intent();
-            long[] ids = new long[chosenUserIds.size()];
-            for (int i = 0; i < ids.length; i++) {
-                ids[i] = chosenUserIds.get(i);
+            if(chosenUserIds!=null&& !chosenUserIds.isEmpty()) {
+                Intent data = new Intent();
+                long[] ids = new long[chosenUserIds.size()];
+                for (int i = 0; i < ids.length; i++) {
+                    ids[i] = chosenUserIds.get(i);
+                }
+                data.putExtra(IntentData.ARG_PEER_USER_IDS, ids);
+                this.getActivity().setResult(Activity.RESULT_OK, data);
+                getActivity().finish();
+            }else{
+                getActivity().setResult(Activity.RESULT_CANCELED);
+                getActivity().finish();
             }
-            data.putExtra(IntentData.ARG_PEER_USER_IDS, ids);
-            this.getActivity().setResult(Activity.RESULT_OK, data);
-            getActivity().finish();
 
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
-    public static interface ProfilePickerListener {
-        public void onDone(List<Long> userIds);
-    }
-
     // BEGINNING OF INTERFACE IMPLEMENTATION
     static String oldQuery;
 
