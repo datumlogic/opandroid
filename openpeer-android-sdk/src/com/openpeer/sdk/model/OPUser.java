@@ -29,10 +29,8 @@
  *******************************************************************************/
 package com.openpeer.sdk.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.sdk.app.OPDataManager;
@@ -41,6 +39,8 @@ public class OPUser {
     private long mUserId;// locally maintained user id
     private List<OPIdentityContact> mIdentityContacts;
     private OPContact mOPContact;
+
+    private String mPeerUri;
 
     /**
      * If the user is a contact, or a stranger. This is determined by checking if the contact is
@@ -99,18 +99,10 @@ public class OPUser {
     public OPUser(OPContact contact, List<OPIdentityContact> iContacts) {
         this.mOPContact = contact;
         this.mIdentityContacts = iContacts;
+        mPeerUri=mOPContact.getPeerURI();
     }
 
     public OPUser() {
-    }
-
-    public static OPUser fromIdentityContact(OPAccount account,
-            OPIdentityContact iContact) {
-        List<OPIdentityContact> identities = new ArrayList<OPIdentityContact>();
-        OPContact contact = OPContact.createFromPeerFilePublic(account,
-                iContact.getPeerFilePublic().getPeerFileString());
-
-        return new OPUser(contact, identities);
     }
 
     /**
@@ -132,15 +124,18 @@ public class OPUser {
      * @return User peer uri
      */
     public String getPeerUri() {
-        return getOPContact().getPeerURI();
+        return mPeerUri;
     }
 
+    public void setPeerUri(String peerUri) {
+        this.mPeerUri = peerUri;
+    }
     /**
      * Wrapper function to return the peer file public
      * @return
      */
     public String getPeerFilePublic(){
-        return getOPContact().getPeerFilePublic();
+        return getPreferredContact().getPeerFilePublic().getPeerFileString();
     }
 
     /**
@@ -199,9 +194,15 @@ public class OPUser {
     public boolean isSame(OPContact contact) {
         return contact.getPeerURI().equals(getOPContact().getPeerURI());
     }
-    public boolean isSelf() {
-        return getOPContact().isSelf();
-    }
+
+//    public boolean isSelf() {
+//        if(OPDataManager.getInstance().isAccountReady()) {
+//            return mUserId == OPDataManager.getInstance().getSharedAccount().getSelfContactId();
+//        } else {
+//            return false;
+//        }
+//    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof OPUser && ((OPUser) o).getUserId() == this.mUserId;

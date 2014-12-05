@@ -364,9 +364,10 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 .getContentResolver()
                 .query(OPContentProvider.getContentUri(OpenpeerContactEntry.URI_PATH_INFO_DETAIL
                         + "/" + id), null, null, null, null);
-
-        user = fromDetailCursor(cursor);
-        cacheUser(user);
+        if(cursor.getCount()>0) {
+            user = fromDetailCursor(cursor);
+            cacheUser(user);
+        }
         return user;
     }
 
@@ -489,6 +490,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         int count = 0;
         SQLiteDatabase db = getWritableDB();
         try {
+            db.beginTransaction();
             MessageEvent event = null;
             if (TextUtils.isEmpty(message.getMessage())) {
 
@@ -1186,6 +1188,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
             cursor.moveToFirst();
 
             user.setUserId(cursor.getLong(cursor.getColumnIndex(BaseColumns._ID)));
+            user.setPeerUri(cursor.getString(cursor.getColumnIndex(OpenpeerContactEntry.COLUMN_PEERURI)));
             while (!cursor.isAfterLast()) {
                 contacts.add(contactFromCursor(cursor));
                 cursor.moveToNext();

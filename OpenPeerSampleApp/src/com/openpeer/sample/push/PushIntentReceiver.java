@@ -115,19 +115,23 @@ public class PushIntentReceiver extends BroadcastReceiver {
                         + senderUri);
                 return;
             }
-            String peerURIs[] = TextUtils.split(intent.getStringExtra("peerURIs"),",");
             List<OPUser> users = new ArrayList<>();
-            for(String uri:peerURIs) {
-                OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(uri);
-                if (user == null) {
-                    //TODO: error handling
-                    Log.e(logTag, "peerUri user not found " + uri);
-                    return;
-                } else if (!user.isSelf()) {
-                    users.add(user);
+            users.add(sender);
+
+            String peerURIsString = intent.getStringExtra("peerURIs");
+            if(!TextUtils.isEmpty(peerURIsString)) {
+                String peerURIs[] = TextUtils.split(peerURIsString, ",");
+                for (String uri : peerURIs) {
+                    OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(uri);
+                    if (user == null) {
+                        //TODO: error handling
+                        Log.e(logTag, "peerUri user not found " + uri);
+                        return;
+                    } else {
+                        users.add(user);
+                    }
                 }
             }
-
 
             OPMessage opMessage = new OPMessage(
                     sender.getUserId(),
@@ -143,7 +147,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
             OPConversation conversation = ConversationManager.getInstance().getConversationForUsers(users,true);
 
             OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
-                    conversation);
+                                                             conversation);
             //TODO: Now notify observer
 
         } else if (action.equals(PushManager.ACTION_NOTIFICATION_OPENED)) {
