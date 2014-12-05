@@ -48,23 +48,17 @@ public class PushMessage {
     RichMessage message;
     String device_types[] = new String[]{"android"};
 
-    public static PushMessage fromOPMessage(OPConversation conversation, OPMessage opMessage, PushToken token) {
+    public static PushMessage fromOPMessage(String peerUrisOfOtherParticipants, OPMessage opMessage, PushToken token) {
 
         PushMessage pushMessage = new PushMessage();
         Log.d("test", "pushing message " + opMessage);
-        List<OPUser> participants = conversation.getParticipants();
-        String peerUris[] = new String[participants.size()+1];
-        peerUris[0] = OPDataManager.getInstance().getDatastoreDelegate().getLoggedinUser().getPeerUri();
-        for (int i = 0; i < participants.size(); i++) {
-            peerUris[i+1] = participants.get(i).getPeerUri();
-        }
         if (token.getType().equals(PushToken.TYPE_APID)) {
             AndroidNotification notification = new AndroidNotification();
             notification.alert = opMessage.getMessage();
             notification.android = new AndroidOverride();
             notification.android.extra = new AndroidExtra(
                     OPDataManager.getInstance().getSharedAccount().getPeerUri(),
-                    TextUtils.join(",",peerUris),
+                    peerUrisOfOtherParticipants,
                     opMessage.getMessageId(),
                     opMessage.getReplacesMessageId(),
                     OPDataManager.getInstance().getSharedAccount().getLocationID(),
@@ -81,7 +75,7 @@ public class PushMessage {
             msg.body = String
                     .format(extraFormatStr,
                             OPDataManager.getInstance().getSharedAccount().getPeerUri(),
-                            TextUtils.join(",",peerUris),
+                            peerUrisOfOtherParticipants,
                             opMessage.getMessageId(),
                             opMessage.getReplacesMessageId(),
                             opMessage.getMessage(),

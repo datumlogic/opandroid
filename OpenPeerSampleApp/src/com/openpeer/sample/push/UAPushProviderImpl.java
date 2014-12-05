@@ -61,8 +61,8 @@ public class UAPushProviderImpl {
 
     }
 
-    public void pushMessage(OPConversation conversation, OPMessage message, PushToken token, Callback<PushResult> callback) {
-        PushMessage msg = PushMessage.fromOPMessage(conversation, message, token);
+    public void pushMessage(String peerUrisOfOtherParticipants, OPMessage message, PushToken token, Callback<PushResult> callback) {
+        PushMessage msg = PushMessage.fromOPMessage(peerUrisOfOtherParticipants, message, token);
         service.push(msg, callback);
     }
 

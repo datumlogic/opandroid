@@ -32,6 +32,8 @@
 
 package com.openpeer.sample.push;
 
+import android.text.TextUtils;
+
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPLogLevel;
 import com.openpeer.javaapi.OPLogger;
@@ -40,6 +42,8 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.PushServiceInterface;
+
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -64,7 +68,7 @@ public class UAPushService implements PushServiceInterface {
 
     @Override
     public void onConversationThreadPushMessage(final OPConversation conversation,
-                                                final OPMessage message, OPUser contact) {
+                                                final OPMessage message, final OPUser contact) {
         OPPushManager.getInstance().getDeviceToken(
             contact.getPeerUri(), new Callback<PushToken>() {
 
@@ -74,33 +78,49 @@ public class UAPushService implements PushServiceInterface {
                     OPLogger.debug(OPLogLevel.LogLevel_Detail,
                                    "onConversationThreadPushMessage push message "
                                        + message);
-                    new UAPushProviderImpl().pushMessage(conversation,
+                    List<OPUser> participants = conversation.getParticipants();
+                    String peerURIs = "";
+
+                    String peerUris[] = new String[participants.size() - 1];
+                    //We only put the peerURIs other than myself and the recipient
+                    if (participants.size() > 1) {
+                        int i = 0;
+                        for (OPUser user : participants) {
+                            if (!user.equals(contact)) {
+                                peerUris[i] = user.getPeerUri();
+                                i++;
+                            }
+                        }
+                        peerURIs = TextUtils.join(",", peerUris);
+                    }
+                    new UAPushProviderImpl().pushMessage(peerURIs,
                                                          message, token,
                                                          new Callback<PushResult>() {
-                            @Override
-                            public void success(
-                                PushResult pushResult,
-                                Response response) {
-                                OPDataManager
-                                    .getDatastoreDelegate()
-                                    .updateMessageDeliveryStatus(
-                                        message.getMessageId(),
-                                        MessageDeliveryStates.MessageDeliveryState_Sent);
+                                                             @Override
+                                                             public void success(
+                                                                 PushResult pushResult,
+                                                                 Response response) {
+                                                                 OPDataManager
+                                                                     .getDatastoreDelegate()
+                                                                     .updateMessageDeliveryStatus(
+                                                                         message.getMessageId(),
+                                                                         MessageDeliveryStates
+                                                                             .MessageDeliveryState_Sent);
 
-                            }
+                                                             }
 
-                            @Override
-                            public void failure(
-                                RetrofitError error) {
+                                                             @Override
+                                                             public void failure(
+                                                                 RetrofitError error) {
 
-                                if (error != null) {
-                                    OPLogger.debug(
-                                        OPLogLevel.LogLevel_Basic,
-                                        "eror pushing message "
-                                            + error.getMessage());
-                                }
-                            }
-                        });
+                                                                 if (error != null) {
+                                                                     OPLogger.debug(
+                                                                         OPLogLevel.LogLevel_Basic,
+                                                                         "eror pushing message "
+                                                                             + error.getMessage());
+                                                                 }
+                                                             }
+                                                         });
                 }
 
                 @Override
