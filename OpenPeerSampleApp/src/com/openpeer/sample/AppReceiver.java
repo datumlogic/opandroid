@@ -42,22 +42,12 @@ import com.openpeer.javaapi.OPStack;
 import com.openpeer.sample.conversation.CallActivity;
 import com.openpeer.sdk.model.CallManager;
 
-import org.androidannotations.annotations.App;
-import org.androidannotations.annotations.EReceiver;
-import org.androidannotations.annotations.ReceiverAction;
-
-@EReceiver
 public class AppReceiver extends BroadcastReceiver {
-    @App
-    OPApplication app;
-
-    @ReceiverAction(Intent.ACTION_SHUTDOWN)
     void onShutdown() {
         Log.d("OPApplication", "shutdown received now shutdown");
         OPStack.singleton().shutdown();
     }
 
-    @ReceiverAction(IntentData.ACTION_CALL_STATE_CHANGE)
     void onCallStateChanged(Intent intent) {
         String callStateStr = intent.getStringExtra(com.openpeer.sdk.app.IntentData.ARG_CALL_STATE);
         CallStates callState = CallStates.valueOf(callStateStr);
@@ -65,11 +55,11 @@ public class AppReceiver extends BroadcastReceiver {
         case CallState_Incoming:{
             String callId = intent.getStringExtra(IntentData.ARG_CALL_ID);
 
-            Intent callIntent = new Intent(app, CallActivity.class);
+            Intent callIntent = new Intent(OPApplication.getInstance(), CallActivity.class);
             callIntent.putExtra(IntentData.ARG_CALL_ID, callId);
             callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            app.startActivity(callIntent);
+            OPApplication.getInstance().startActivity(callIntent);
         }
         break;
         case CallState_Closed:{
@@ -87,6 +77,13 @@ public class AppReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // empty, will be overridden in generated subclass
+        switch (intent.getAction()){
+        case Intent.ACTION_SHUTDOWN:
+            onShutdown();
+            break;
+        case IntentData.ACTION_CALL_STATE_CHANGE:
+            onCallStateChanged(intent);
+            break;
+        }
     }
 }

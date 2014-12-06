@@ -43,27 +43,23 @@ import com.openpeer.sample.R;
 import com.openpeer.sdk.model.OPUser;
 import com.squareup.picasso.Picasso;
 
-import org.androidannotations.annotations.EViewGroup;
-import org.androidannotations.annotations.ViewById;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
-@EViewGroup(R.layout.item_avatar_with_name)
 public class UserItemView extends FrameLayout implements ItemViewInterface {
     OPUser mUser;
-    @ViewById
+    @InjectView(R.id.imageView)
     ImageView imageView;
-    @ViewById
+    @InjectView(R.id.textView)
     TextView textView;
-    @ViewById
+    @InjectView(R.id.removeView)
     View removeView;
     boolean mDeleteMode;
-
-    public boolean isDeleteMode() {
-        return mDeleteMode;
-    }
 
     public void setDeleteMode(boolean deleteMode) {
         this.mDeleteMode = deleteMode;
     }
+
 
     public UserItemView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -71,10 +67,12 @@ public class UserItemView extends FrameLayout implements ItemViewInterface {
 
     public UserItemView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        inflate(context, R.layout.item_avatar_with_name, this);
+        ButterKnife.inject(this);
     }
 
     public UserItemView(Context context) {
-        super(context, null, 0);
+        this(context, null, 0);
     }
 
     @Override

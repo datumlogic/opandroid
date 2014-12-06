@@ -62,11 +62,13 @@ import com.openpeer.sample.BaseFragment;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
 import com.openpeer.sample.view.ProgressEmptyView;
-import com.openpeer.sample.view.ProgressEmptyView_;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
 import com.squareup.picasso.Picasso;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 public class ProfilePickerFragment extends BaseFragment implements
         SwipeRefreshLayout.OnRefreshListener,
@@ -75,13 +77,15 @@ public class ProfilePickerFragment extends BaseFragment implements
     static final String PARAM_IDS_EXCLUDE = "exclude";
     static final String PARAM_IDS_INCLUDE = "include";
     private SwipeRefreshLayout mRootLayout;
-    private ListView mListView;
+    @InjectView(R.id.listview)
+    ListView mListView;
     private ContactsAdapter mAdapter;
     List<Long> chosenUserIds = new ArrayList<Long>();
     long[] mIdsExclude;
     // Used for picking a user already in a conversation
     long[] mIdsInclude;
     MenuItem mDoneMenu;
+    @InjectView(R.id.empty_view)
     ProgressEmptyView emptyView;
     public static ProfilePickerFragment newInstance(long idsExclude[], long[] idsInclude) {
         Bundle bundle = new Bundle();
@@ -115,8 +119,7 @@ public class ProfilePickerFragment extends BaseFragment implements
     }
 
     private View setupView(View view) {
-        mListView = (ListView) view.findViewById(R.id.listview);
-        emptyView = (ProgressEmptyView)view.findViewById(R.id.empty_view);
+        ButterKnife.inject(this,view);
         mListView.setEmptyView(emptyView);
         mRootLayout = (SwipeRefreshLayout) view;
         mRootLayout.setOnRefreshListener(this);

@@ -34,6 +34,8 @@ package com.openpeer.sample.conversation;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -44,48 +46,50 @@ import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sample.view.UserItemView;
-import com.openpeer.sample.view.UserItemView_;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.utils.OPModelUtils;
-
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ItemClick;
-import org.androidannotations.annotations.ViewById;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-@EFragment(R.layout.fragment_participants)
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
+
 public class ParticipantsManagementFragment extends BaseFragment {
 
-    @FragmentArg
     long participantIds[];
-    @Bean
     ParticipantsAdapter mAdapter;
 
-    @ViewById
+    @InjectView(R.id.participantsView)
     GridView participantsView;
 
-    @ItemClick(R.id.participantsView)
-    void onItemClick(Object object) {
-        mAdapter.onItemClick(object);
+    @OnItemClick(R.id.participantsView)
+    void onItemClick(int position) {
+        mAdapter.onItemClick(position);
     }
 
-    @AfterInject
-    void setup() {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        participantIds = getArguments().getLongArray(IntentData.ARG_PEER_USER_IDS);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+        savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_participants, null);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        ButterKnife.inject(this,view);
+        mAdapter = new ParticipantsAdapter();
         mAdapter.mUserList = OPDataManager.getDatastoreDelegate().getUsers(participantIds);
         mAdapter.participantsView = new WeakReference<>(this);
-    }
-
-    @AfterViews
-    void setupView() {
         participantsView.setAdapter(mAdapter);
     }
 
@@ -93,13 +97,13 @@ public class ParticipantsManagementFragment extends BaseFragment {
         return mAdapter.mUserList;
     }
 
-    @EBean
     static class ParticipantsAdapter extends BaseAdapter {
         boolean mDeleteMode;
         List<OPUser> mUserList;
         WeakReference<ParticipantsManagementFragment> participantsView;
 
-        public void onItemClick(Object object) {
+        public void onItemClick(int position) {
+            Object object = getItem(position);
             if (object instanceof OPUser) {
                 if (mDeleteMode) {
                     List<OPUser> users = new ArrayList<>();
@@ -157,7 +161,7 @@ public class ParticipantsManagementFragment extends BaseFragment {
             Object object = getItem(position);
             if (convertView == null) {
                 if (object instanceof OPUser) {
-                    convertView = UserItemView_.build(parent.getContext());
+                    convertView = new UserItemView(parent.getContext());
                 } else if (object instanceof DummyAddAction) {
                     return View.inflate(parent.getContext(), R.layout.view_add, null);
                 } else if (object instanceof DummyRemoveAction) {
@@ -206,11 +210,11 @@ public class ParticipantsManagementFragment extends BaseFragment {
         }
     }
 
-    void setActivityResult(){
+    void setActivityResult() {
         Intent intent = new Intent();
 
         List<OPUser> users = getParticipants();
-        if(users!=null && !users.isEmpty()) {
+        if (users != null && !users.isEmpty()) {
             intent.putExtra(IntentData.ARG_PEER_USER_IDS, OPModelUtils.getUserIdsArray(users));
             getActivity().setResult(Activity.RESULT_OK, intent);
         }

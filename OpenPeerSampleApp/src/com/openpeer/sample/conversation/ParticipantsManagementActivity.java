@@ -32,8 +32,6 @@
 
 package com.openpeer.sample.conversation;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -41,9 +39,6 @@ import com.openpeer.sample.BaseActivity;
 import com.openpeer.sample.IntentData;
 import com.openpeer.sample.R;
 
-import org.androidannotations.annotations.EActivity;
-
-@EActivity(R.layout.activity_container)
 
 public class ParticipantsManagementActivity extends BaseActivity {
     ParticipantsManagementFragment fragment;
@@ -51,12 +46,14 @@ public class ParticipantsManagementActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_container);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         long participantIds[] = getIntent().getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
         long conversationId = getIntent().getLongExtra(IntentData.ARG_CONVERSATION_ID, 0l);
-        fragment = ParticipantsManagementFragment_.builder()
-            .participantIds(participantIds)
-            .build();
+        Bundle args = new Bundle();
+        args.putLongArray(IntentData.ARG_PEER_USER_IDS, participantIds);
+        fragment = new ParticipantsManagementFragment();
+        fragment.setArguments(args);
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.fragment_container, fragment).commit();
     }

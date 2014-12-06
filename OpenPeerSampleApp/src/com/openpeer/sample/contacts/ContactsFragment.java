@@ -60,16 +60,21 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 
 public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor>,
 		SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
-	private SwipeRefreshLayout mRootLayout;
-	private ListView mListView;
+	SwipeRefreshLayout mRootLayout;
+    @InjectView(R.id.listview)
+	ListView mListView;
 	private ContactsAdapter mAdapter;
 	private boolean mTest;
 	private DataChangeReceiver mReceiver;
-    private ProgressEmptyView emptyView;
+    @InjectView(R.id.empty_view)
+    ProgressEmptyView emptyView;
 
 	public static android.support.v4.app.Fragment newInstance() {
 		return new ContactsFragment();
@@ -84,20 +89,19 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mReceiver = new DataChangeReceiver();
-		return setupView(inflater.inflate(R.layout.fragment_contacts, null));
+		return inflater.inflate(R.layout.fragment_contacts, null);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onViewCreated(view, savedInstanceState);
+        setupView(view);
 		getLoaderManager().initLoader(URL_LOADER, null, this);
 
 	}
 
 	private View setupView(View view) {
-		mListView = (ListView) view.findViewById(R.id.listview);
-		emptyView = (ProgressEmptyView)view.findViewById(R.id.empty_view);
+        ButterKnife.inject(this,view);
 		mListView.setEmptyView(emptyView);
 		mRootLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
 		mRootLayout.setOnRefreshListener(this);

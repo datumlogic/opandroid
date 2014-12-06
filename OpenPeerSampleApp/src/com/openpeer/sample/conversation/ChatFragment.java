@@ -672,7 +672,7 @@ public class ChatFragment extends BaseFragment implements
             startActivityForResult(intent,
                                    IntentData.REQUEST_CODE_ADD_CONTACTS);
         } else {
-            Intent intent = new Intent(getActivity(), ParticipantsManagementActivity_.class);
+            Intent intent = new Intent(getActivity(), ParticipantsManagementActivity.class);
             intent.putExtra(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
             startActivityForResult(intent, IntentData.REQUEST_CODE_PARTICIPANTS);
         }

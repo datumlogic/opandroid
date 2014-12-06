@@ -47,14 +47,11 @@ import com.urbanairship.Logger;
 import com.urbanairship.UAirship;
 import com.urbanairship.push.PushManager;
 
-import org.androidannotations.annotations.EApplication;
-
-@EApplication
 public class OPApplication extends Application {
     private static final String TAG = OPApplication.class.getSimpleName();
     private static OPApplication instance;
     boolean DEVELOPER_MODE = false;
-    private AppReceiver_ mReceiver = new AppReceiver_();
+    private AppReceiver mReceiver = new AppReceiver();
 
     static {
         try {

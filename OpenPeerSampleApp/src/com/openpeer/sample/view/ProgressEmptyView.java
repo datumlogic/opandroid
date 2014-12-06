@@ -34,20 +34,20 @@ package com.openpeer.sample.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.openpeer.sample.R;
 
-import org.androidannotations.annotations.EViewGroup;
-import org.androidannotations.annotations.ViewById;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
-@EViewGroup(R.layout.layout_progress_empty_view)
 public class ProgressEmptyView extends LinearLayout{
-    @ViewById
+    @InjectView(R.id.progressBar)
     View progressBar;
-    @ViewById
+    @InjectView(R.id.messageView)
     TextView messageView;
 
     public ProgressEmptyView(Context context) {
@@ -60,6 +60,8 @@ public class ProgressEmptyView extends LinearLayout{
 
     public ProgressEmptyView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        LayoutInflater.from(context).inflate(R.layout.layout_progress_empty_view, this);
+        ButterKnife.inject(this);
     }
 
     public void setMessage(String message) {
