@@ -58,7 +58,7 @@
     <!-- endo fo UA permissions -->
 
     <application
-        android:name="com.openpeer.sample.OPApplication_"
+        android:name="com.openpeer.sample.OPApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -96,7 +96,7 @@
             android:exported="true" >
         </activity>
         <activity
-            android:name=".conversation.ParticipantsManagementActivity_"
+            android:name=".conversation.ParticipantsManagementActivity"
             android:exported="true"
             android:label="@string/label_participants"
             android:launchMode="singleTop" >
