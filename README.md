@@ -24,22 +24,37 @@ This repository will yield the Android Java SDK, Native sample application and d
 + Android NDK  Android NDK r8e (http://dl.google.com/android/ndk/android-ndk-r10c-darwin-x86_64.bin for mac) is required. Path to the NDK is mandatory for building 3rd party libraries. 
 + [ninja](http://martine.github.io/ninja/) build sysytem required for WebRTC library build. You can install ninja using MacPorts or Homebrew.
 
+
 ###Build the core C++ library:
-You can build the core C++ library yourself but it's recommended you download the prebuilt library since building the C++ library takes long time(between 40minutes and 80mins depending on your network and hardware). Download [latest library here](https://s3.amazonaws.com/assets.hookflash.me/github.com-openpeer-opandroid/opcore.zip)
+You can build the core C++ library yourself but it's recommended you download the prebuilt library since building the C++ library takes long time (between 40minutes and 80mins depending on your network and hardware). Download [latest library here](https://s3.amazonaws.com/assets.hookflash.me/github.com-openpeer-opandroid/opcore.zip)
 
 If you want build the core library yourself, go to the root of repository, run:
 
 `./buildall_android.sh {PATH_TO_NDK}`
 
+This will take a long time but should only need to be done whenever there's change in the `libs/op` repository. Use `buildall_android.sh` to build the C++ libraries first. The libraries' binary files are placed in `libs/op/libs/build` and `libs/op/libs/ortc-lib/libs/build/` and are linked into library project.
+
+
 ###Using Android Studio:
 If you use Android Studio, you can simply import from settings.gradle located at root. We're not using the default project structure since we want to be able to support eclipse users as well, but you can configure your project your way.
 
+
 ###Using Eclipse:
-* From Eclipse ADT, import sdk project and configure NDK in eclipse: `opandroid/openpeer-android-sdk` (Android Java SDK project),then import sample project: `opandroid/OpenPeerSampleApp`.
-* Go to OpenPeerSampleApp and run `./setup-library-proj.sh`, this will set up the required project configurations.
-* Follow the instruction to setup [butterknife for eclipse](http://jakewharton.github.io/butterknife/ide-eclipse.html)
+
+1) From Eclipse ADT, import the SDK project:
+
+    opandroid/openpeer—android-sdk (Android Java SDK project)
+
+Then import the sample project:
+
+    opandroid/OpenPeerSampleApp
+
+2) Go to OpenPeerSampleApp and run `./setup-library-proj.sh`, this will set up the required project configurations.
+
+3) Build the imported project using Eclipse with ADT plugin. Follow the instruction to setup [butterknife for eclipse](http://jakewharton.github.io/butterknife/ide-eclipse.html)
 
 During development we use symbolic links to link the SDK source folder from sample app so we can invoke native application debugging in Eclipse. You should not need to debug native libaries but in case you do, executing `setup-native-debug-proj.sh` will set up all symbolic links so you can do native debugging. Executing `setup-library-proj.sh` will clean all the links and use the SDK as library. You can also use gdb command line debugging that way you don't need this script.
+
 
 ###Build with ant(ant 1.8 or newer is required):
 We have a simple script `buillall.sh` at root. The script will simply invoke the `buildall_android.sh`, then invoke `ant` to build the sample app. To use this script, you will need to export `ANDROID_HOME` and `ANDROID_NDK_HOME`
@@ -50,25 +65,6 @@ We have a simple script `buillall.sh` at root. The script will simply invoke the
 
 For convenience you can put these settings in your `.bash_profile` (assuming you're using Mac OS or Linux).
 
-###Building step by step:
-
-1) Download and build required native 3rd party libraries by running the `buildall_android.sh` script from your terminal:
-
-    pushd opandroid/
-    ./buildall_android.sh {PATH_TO_NDK}
-    popd
-
-This will take a long time but should only need to be done whenever there's change in the `libs/op` repository. Use `buildall_android.sh` to build the C++ libraries first. The libraries' binary files are placed in `libs/op/libs/build` and `libs/op/libs/ortc-lib/libs/build/` and are linked into library project.
-
-2) From Eclipse ADT, import the SDK project:
-
-    opandroid/openpeer—android-sdk (Android Java SDK project)
-
-Then import the sample project:
-
-    opandroid/OpenPeerSampleApp
-
-3) Build the imported project using Eclipse with ADT plugin
 
 ##Exploring the dependency libraries:
 + `libs/op/libs/ortc-lib/libs/zsLib` - asynchronous communication library for C++
