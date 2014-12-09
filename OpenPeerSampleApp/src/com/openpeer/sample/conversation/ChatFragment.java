@@ -30,6 +30,7 @@
 package com.openpeer.sample.conversation;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -632,8 +633,9 @@ public class ChatFragment extends BaseFragment implements
             return true;
         case R.id.menu_add:
             onProfilePickerClick();
-
             return true;
+        case R.id.menu_topic:
+            return onTopicMenuSelected();
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -728,6 +730,9 @@ public class ChatFragment extends BaseFragment implements
                                    IntentData.REQUEST_CODE_GET_CALLEE);
         }
     }
+    void onTopicMenuSelected(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    }
     private void makeCall(long[] userIds,boolean video) {
         Intent intent = new Intent(getActivity(), CallActivity.class);
         intent.putExtra(IntentData.ARG_PEER_USER_IDS, userIds);
@@ -816,6 +821,7 @@ public class ChatFragment extends BaseFragment implements
             ((SelfMessageView) acmi.targetView).onDeleteSelected();
             break;
         }
+
         return super.onContextItemSelected(item);
     }
 
