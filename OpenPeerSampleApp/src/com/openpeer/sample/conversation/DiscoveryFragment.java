@@ -99,7 +99,7 @@ public class DiscoveryFragment extends BaseFragment implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
-                ((ContactItemView) view).onClick();
+                ((ContactItemView) view).click();
             }
         });
 

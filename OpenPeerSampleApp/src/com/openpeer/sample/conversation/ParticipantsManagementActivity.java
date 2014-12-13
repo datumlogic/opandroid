@@ -49,7 +49,7 @@ public class ParticipantsManagementActivity extends BaseActivity {
         setContentView(R.layout.activity_container);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         long participantIds[] = getIntent().getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-        long conversationId = getIntent().getLongExtra(IntentData.ARG_CONVERSATION_ID, 0l);
+        String conversationId = getIntent().getStringExtra(IntentData.ARG_CONVERSATION_ID);
         Bundle args = new Bundle();
         args.putLongArray(IntentData.ARG_PEER_USER_IDS, participantIds);
         fragment = new ParticipantsManagementFragment();

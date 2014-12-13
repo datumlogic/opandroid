@@ -71,25 +71,24 @@ public class ChatInfoItemView extends RelativeLayout {
     }
 
     public void updateData(final ChatInfo chatInfo) {
-        mTitleView.setText(chatInfo.getmNameString());
-        String msg = chatInfo.getmLastMessage();
-        Long time = chatInfo.getmLastMessageTime();
+        mTitleView.setText(chatInfo.getNameString());
+        String msg = chatInfo.getLastMessage();
+        Long time = chatInfo.getLastMessageTime();
 
-        int unreadCount = chatInfo.getmUnreadCount();
+        int unreadCount = chatInfo.getUnreadCount();
 
         this.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 ConversationActivity.launchForChat(getContext(),
-                        chatInfo.getUserIDs(), chatInfo.getContextId());
+                        chatInfo.getType(), chatInfo.getConversationId(),chatInfo.getUserIDs());
             }
         });
-        if (chatInfo.getUserIDs().length == 1) {
             Picasso.with(getContext()).load(chatInfo.getAvatarUri(48, 48))
                     .into(mImageView);
 
-        }
+
 
         if (msg != null) {
             mLastMessageView.setText(msg);

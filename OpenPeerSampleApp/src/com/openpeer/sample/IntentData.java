@@ -51,7 +51,7 @@ public class IntentData {
     public static final String ARG_PEER_URI = "peerUri";
     public static final String ARG_CALL_STATE = "callState";
     public static final String ARG_CALL_ID = "callId";
-    public static final String ARG_CONTEXT_ID = "contextId";
     public static final String ARG_CONVERSATION_ID = "conversationId";
+    public static final String ARG_CONVERSATION_TYPE = "ARG_CONVERSATION_TYPE";
 
 }

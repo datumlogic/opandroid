@@ -32,6 +32,7 @@ package com.openpeer.sample.conversation;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -54,6 +55,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -72,14 +75,15 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.datastore.OPModelCursorHelper;
 import com.openpeer.sdk.model.ConversationManager;
+import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPConversationEvent;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.model.ParticipantInfo;
 import com.openpeer.sdk.model.SessionListener;
 import com.openpeer.sdk.utils.NoDuplicateArrayList;
 import com.openpeer.sdk.utils.OPModelUtils;
@@ -106,11 +110,11 @@ public class ChatFragment extends BaseFragment implements
     boolean mTyping;
     private OPMessage mEditingMessage;
 
-    public static ChatFragment newInstance(long[] userIdList, String contextId) {
+    public static ChatFragment newInstance(long[] userIdList, String conversationId) {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putLongArray(IntentData.ARG_PEER_USER_IDS, userIdList);
-        args.putString(IntentData.ARG_CONTEXT_ID, contextId);
+        args.putString(IntentData.ARG_CONVERSATION_ID, conversationId);
 
         fragment.setArguments(args);
         return fragment;
@@ -133,41 +137,34 @@ public class ChatFragment extends BaseFragment implements
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        String contextId;
+        String conversationId;
+        String type;
         long[] userIDs;
+        long cbcId;
         if (savedInstanceState == null) {
             Bundle args = getArguments();
             userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
-            contextId = args.getString(IntentData.ARG_CONTEXT_ID);
+            conversationId = args.getString(IntentData.ARG_CONVERSATION_ID);
+            type = args.getString(IntentData.ARG_CONVERSATION_TYPE);
         } else {
             userIDs = savedInstanceState
                 .getLongArray(IntentData.ARG_PEER_USER_IDS);
-            contextId = savedInstanceState.getString(IntentData.ARG_CONTEXT_ID);
+            conversationId = savedInstanceState.getString(IntentData.ARG_CONVERSATION_ID);
+            type = savedInstanceState.getString(IntentData.ARG_CONVERSATION_TYPE);
         }
         List<OPUser> participants = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
+        cbcId = OPModelUtils.getWindowId(participants);
+        OPNotificationBuilder.cancelNotificationForChat((int) cbcId);
+        setHasOptionsMenu(true);
+        ParticipantInfo participantInfo = new ParticipantInfo(cbcId,participants);
+        mSession = ConversationManager.getInstance().getConversation(GroupChatMode.valueOf(type),
+                                                                     participantInfo,
+                                                                     conversationId, true);
 
-        long mWindowId = OPModelUtils.getWindowId(userIDs);
-        OPNotificationBuilder.cancelNotificationForChat((int) mWindowId);
-        // mSelfContact = OPDataManager.getInstance().getSelfContacts().get(0);
-        this.setHasOptionsMenu(true);
-        // TODO:remove this call and use lazy loading.
-        switch (OPSdkConfig.getInstance().getGroupChatMode()){
-        case ContactsBased:
-            mSession = ConversationManager.getInstance().getConversationForUsers(participants, true);
-            break;
-        case ContextBased:
-//            mSession = ConversationManager.getInstance().getConversationByContextId(participants,
-//                                                                                    contextId);
-            break;
-        default:
-            break;
-        }
-
-        if (TextUtils.isEmpty(mSession.getContextId())) {
-            mSession.setContextId(contextId);
+        if (TextUtils.isEmpty(mSession.getConversationId())) {
+            mSession.setConversationId(conversationId);
         }
         mSession.registerListener(this);
-
     }
 
     @Override
@@ -594,16 +591,6 @@ public class ChatFragment extends BaseFragment implements
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_chat, menu);
-//        MenuItem participantsItem = menu.findItem(R.id.menu_add);
-//        participantsView.setUserRemoveListener(new ParticipantsView.UserRemoveListener() {
-//            @Override
-//            public void onUserRemoved(OPUser user) {
-//                List<OPUser> users=new ArrayList<OPUser>();
-//                users.add(user);
-//                mSession.removeParticipants(users);
-//            }
-//        });
-//        participantsItem.setActionView(participantsView);
     }
 
     @Override
@@ -635,7 +622,8 @@ public class ChatFragment extends BaseFragment implements
             onProfilePickerClick();
             return true;
         case R.id.menu_topic:
-            return onTopicMenuSelected();
+            onTopicMenuSelected();
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -659,9 +647,11 @@ public class ChatFragment extends BaseFragment implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putLongArray(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
-        if (mSession.getContextId() != null) {
-            outState.putString(IntentData.ARG_CONTEXT_ID, mSession.getContextId());
+        if (mSession.getConversationId() != null) {
+            outState.putString(IntentData.ARG_CONVERSATION_ID, mSession.getConversationId());
         }
+        outState.putString(IntentData.ARG_CONVERSATION_TYPE, mSession.getType().name());
+        outState.putLong(IntentData.ARG_CONVERSATION_TYPE, mSession.getCurrentWindowId());
         super.onSaveInstanceState(outState);
     }
 
@@ -730,14 +720,40 @@ public class ChatFragment extends BaseFragment implements
                                    IntentData.REQUEST_CODE_GET_CALLEE);
         }
     }
-    void onTopicMenuSelected(){
+    void onTopicMenuSelected() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View view = View.inflate(getActivity(), R.layout.layout_set_topic, null);
+        final EditText editText = (EditText) view.findViewById(R.id.text);
+        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
+        builder.setView(view).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (editText.getText() != null) {
+
+                    String topic = editText.getText().toString();
+                    if (checkBox.isChecked()) {
+                        //TODO: create new session
+                        mSession = new OPConversation(mSession.getParticipants());
+                        mSession.setTopic(topic);
+                    } else {
+                        mSession.setTopic(topic);
+                    }
+                }
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+
     }
     private void makeCall(long[] userIds,boolean video) {
         Intent intent = new Intent(getActivity(), CallActivity.class);
         intent.putExtra(IntentData.ARG_PEER_USER_IDS, userIds);
         intent.putExtra(IntentData.ARG_VIDEO, video);
-        intent.putExtra(IntentData.ARG_CONVERSATION_ID,mSession.getId());
+        intent.putExtra(IntentData.ARG_CONVERSATION_ID,mSession.getConversationId());
 
         startActivity(intent);
     }
@@ -786,11 +802,11 @@ public class ChatFragment extends BaseFragment implements
             return OPContentProvider.getContentUri(
                 MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + mSession.getCurrentWindowId());
         case ContextBased:
-            if (TextUtils.isEmpty(mSession.getContextId())) {
+            if (TextUtils.isEmpty(mSession.getConversationId())) {
                 return null;
             }
             return OPContentProvider.getContentUri(
-                MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mSession.getContextId());
+                MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mSession.getConversationId());
         default:
             return null;
         }
@@ -854,11 +870,14 @@ public class ChatFragment extends BaseFragment implements
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.support.v4.widget.CursorAdapter#bindView(android.view.View, android.content.Context, android.database.Cursor)
-     */
+    @Override
+    public boolean onConversationTopicChanged(String newTopic) {
+        setTitle(newTopic);
+        return true;
+    }
 
+    void setTitle(String title) {
+        getActivity().getActionBar().setTitle(title);
+    }
     // End of SessionListener implementation
 }

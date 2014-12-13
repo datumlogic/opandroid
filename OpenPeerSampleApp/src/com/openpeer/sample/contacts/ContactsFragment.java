@@ -35,14 +35,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -111,7 +109,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				((ContactItemView) view).onClick();
+				((ContactItemView) view).click();
 			}
 		});
 

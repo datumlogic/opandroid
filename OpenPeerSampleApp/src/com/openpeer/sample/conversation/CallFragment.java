@@ -81,7 +81,6 @@ public class CallFragment extends BaseFragment {
     private RelativeLayout mVideoView;
     private boolean mVideo;
     private long[] userIDs;
-    private String mContextId;
     OPConversation mConversation;
 
     private ImageView audioButton;
@@ -111,9 +110,8 @@ public class CallFragment extends BaseFragment {
         Bundle args = getArguments();
         // obtainCameraRatios();
         userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
-        mContextId = args.getString(IntentData.ARG_CONTEXT_ID);
         String callId = args.getString(IntentData.ARG_CALL_ID);
-        long conversationId = args.getLong(IntentData.ARG_CONVERSATION_ID,0);
+        String conversationId = args.getString(IntentData.ARG_CONVERSATION_ID);
         mConversation = ConversationManager.getInstance().getConversationById(conversationId);
 
         if(callId!=null){
