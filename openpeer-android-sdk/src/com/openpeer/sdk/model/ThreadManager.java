@@ -45,6 +45,7 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.utils.OPModelUtils;
 
 import java.util.Hashtable;
+import java.util.List;
 
 public class ThreadManager extends OPConversationThreadDelegate {
     PushServiceInterface mPushService;
@@ -96,7 +97,7 @@ public class ThreadManager extends OPConversationThreadDelegate {
         if (mThreads != null) {
             OPConversationThread thread = mThreads.get(threadId);
             if (thread != null) {
-                return thread.getCbcId();
+                return thread.getParticipantInfo().getCbcId();
             }
         }
         return 0l;
@@ -111,31 +112,53 @@ public class ThreadManager extends OPConversationThreadDelegate {
         }
     }
 
+    public OPConversationThread getThread(GroupChatMode mode, String conversationId, long cbcId) {
+        OPConversationThread thread = null;
+        switch (mode){
+        case ContactsBased:{
+            thread = findThreadByCbcId(cbcId);
+        }
+        case ContextBased:{
+            if (mThreads != null) {
+                thread = mThreads.get(conversationId);
+            }
+        }
+        }
+        return thread;
+    }
+
 
     //Beginning of OPConversationThreadDelegate
 
     @Override
     public void onConversationThreadNew(
-        OPConversationThread conversationThread) {
-        long cbcId = OPModelUtils.getWindowIdForThread(conversationThread);
-        conversationThread.setCbcId(cbcId);
-        cacheThread(conversationThread);
-        cacheCbcToThread(cbcId, conversationThread);
+        OPConversationThread thread) {
+        List<OPUser> participants = OPModelUtils.getParticipantsOfThread(thread);
+        long cbcId = OPModelUtils.getWindowId(participants);
+        thread.setParticipantInfo(new ParticipantInfo(cbcId,participants));
+
+        OPDataManager.getDatastoreDelegate().saveParticipants(cbcId, participants);
+        cacheThread(thread);
+        cacheCbcToThread(cbcId, thread);
     }
 
     @Override
     public void onConversationThreadContactsChanged(OPConversationThread thread) {
         long oldCbcId = getCbcIdOfThread(thread.getThreadID());
         OPConversation conversation = ConversationManager.getInstance().
-            getConversationByCbcId(oldCbcId);
+            getConversation(getCachedThread(thread), false);
         if (conversation != null) {
             conversation.onContactsChanged(thread);
         }
         if (oldCbcId != 0) {
             mCbcToThreads.remove(oldCbcId);
         }
-        long newCbcId = OPModelUtils.getWindowIdForThread(thread);
-        thread.setCbcId(newCbcId);
+
+        List<OPUser> participants = OPModelUtils.getParticipantsOfThread(thread);
+        long newCbcId = OPModelUtils.getWindowId(participants);
+        thread.setParticipantInfo(new ParticipantInfo(newCbcId,participants));
+
+        OPDataManager.getDatastoreDelegate().saveParticipants(newCbcId, participants);
         cacheThread(thread);
         cacheCbcToThread(newCbcId, thread);
     }
@@ -153,7 +176,7 @@ public class ThreadManager extends OPConversationThreadDelegate {
             .getContactComposingStatus(contact);
         if (state != null) {
             OPConversation conversation = ConversationManager.getInstance()
-                .getConversationByCbcId(getCbcIdOfThread(conversationThread.getThreadID()));
+                .getConversation(getCachedThread(conversationThread), true);
             if (conversation != null) {
                 conversation.onContactComposingStateChanged(state, contact);
             }
@@ -177,7 +200,7 @@ public class ThreadManager extends OPConversationThreadDelegate {
 
             return;
         }
-        OPConversation conversation = ConversationManager.getInstance().getConversationOfThread
+        OPConversation conversation = ConversationManager.getInstance().getConversation
             (getCachedThread(conversationThread), true);
         conversation.onMessageReceived(conversationThread, message);
     }
@@ -199,7 +222,7 @@ public class ThreadManager extends OPConversationThreadDelegate {
                 .getMessageById(messageID);
 
             OPConversation conversation = ConversationManager.getInstance()
-                .getConversationOfThread(conversationThread, true);
+                .getConversation(conversationThread, true);
             OPUser user = OPDataManager.getInstance().getUserByPeerUri(contact.getPeerURI());
             mPushService.onConversationThreadPushMessage(conversation, message, user);
         }
@@ -210,6 +233,7 @@ public class ThreadManager extends OPConversationThreadDelegate {
         OPConversationThread conversationThread, OPContact contact,
         ContactConnectionStates state) {
     }
+
 
     //End of OPConversationThreadDelegate
     public static void clearOnSignout() {

@@ -79,6 +79,7 @@ public interface OPDatastoreDelegate {
      * @return
      */
     public List<OPUser> getUsers(long[] userIDs);
+    public List<OPUser> getUsersByCbcId(long cbcId);
 
     /**
      * Retrieve OPUser by the peerUri
@@ -149,6 +150,8 @@ public interface OPDatastoreDelegate {
      */
     public List<CallEvent> getCallEvents(String messageId);
 
+    public OPConversation getConversation(String conversationId) ;
+    public OPConversation getConversation(long cbcId) ;
     /**
      * Save or update the account information in database
      * 
@@ -178,6 +181,8 @@ public interface OPDatastoreDelegate {
     List<OPRolodexContact> saveDownloadedRolodexContacts(OPIdentity identity,
             List<OPRolodexContact> contacts, String contactsVersion);
 
+    public void saveParticipants(long windowId, List<OPUser> userList);
+
     /**
      * Save a new conversation object into database.
      * 
@@ -196,7 +201,6 @@ public interface OPDatastoreDelegate {
     /**
      * Save a new event for message
      * 
-     * @param messageId
      * @param event
      */
     long saveMessageEvent(MessageEvent event);

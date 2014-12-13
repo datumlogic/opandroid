@@ -77,7 +77,7 @@ public class CallManager extends OPCallDelegate {
             call.setCbcId(OPModelUtils.getWindowIdForThread(thread));
             OPDataManager.getDatastoreDelegate().saveCall(
                 call,
-                ConversationManager.getInstance().getConversationOfThread(thread, true));
+                ConversationManager.getInstance().getConversation(thread, true));
             cacheCall(call);
         }
 

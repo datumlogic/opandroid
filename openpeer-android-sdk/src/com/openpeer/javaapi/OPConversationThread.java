@@ -34,21 +34,27 @@ import java.util.List;
 import android.util.Log;
 
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.model.ParticipantInfo;
 
 public class OPConversationThread {
 
     private static final String TAG = OPConversationThread.class
             .getSimpleName();
 
-    long mCbcId;
+    ParticipantInfo mParticipantInfo;
 
-    public long getCbcId() {
-        return mCbcId;
+    public ParticipantInfo getParticipantInfo() {
+        return mParticipantInfo;
     }
 
-    public void setCbcId(long cbcId) {
-        mCbcId = cbcId;
+    public void setParticipantInfo(ParticipantInfo mParticipants) {
+        this.mParticipantInfo = mParticipants;
+    }
+
+    public GroupChatMode getConverationType(){
+        return GroupChatMode.ContextBased;
     }
     /**
      * Helper function to make sure required fields are populated.
@@ -176,6 +182,8 @@ public class OPConversationThread {
     private native void setStatusInThread(OPElement contactStatusInThreadOfSelf);
 
     public native void markAllMessagesRead();
+
+    public String getConversationId(){return getThreadID();}
 
     private native void releaseCoreObjects();
 

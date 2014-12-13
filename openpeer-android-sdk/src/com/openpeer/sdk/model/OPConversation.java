@@ -66,30 +66,30 @@ public class OPConversation extends Observable {
     private String lastReadMessageId;
     private OPMessage mLastMessage;
     private Hashtable<String, OPMessage> mMessageDeliveryQueue;
-    private long mCbcId;
-    private GroupChatMode mType;
-
-    public void setType(GroupChatMode type) {
-        this.mType = type;
-    }
-
-    private List<SessionListener> mSessionListeners = new ArrayList<SessionListener>();
-
-    private long mId;// database id
-
-    private String mContextId = "";
-
     private OPConversationEvent mLastEvent;
 
+
+    private List<SessionListener> mSessionListeners = new ArrayList<SessionListener>();
+    //try to keep the data fields correspond to database columns
+    private long _id;// database id
+    private String conversationId = "";
+    private String topic;
+    private long cbcId;
+    private GroupChatMode type;
+
+//    public static enum ConversationType{
+//        ContactsBased,
+//        ContextBased
+//    }
     public OPConversation() {
     }
 
     /**
      * @param users
-     * @param contextId
+     * @param conversationId
      */
-    public OPConversation(List<OPUser> users, String contextId) {
-        this(users, contextId, OPSdkConfig.getInstance().getGroupChatMode());
+    public OPConversation(List<OPUser> users, String conversationId) {
+        this(users, conversationId, OPSdkConfig.getInstance().getGroupChatMode());
     }
 
     /**
@@ -102,21 +102,39 @@ public class OPConversation extends Observable {
 
     }
 
-    public OPConversation(List<OPUser> users, String contextId, GroupChatMode mode) {
-        mContextId = contextId;
-        mType = mode;
+    public OPConversation(GroupChatMode mode, long cbcId, String conversationId) {
+        this.conversationId = conversationId;
+        type = mode;
+        this.cbcId = cbcId;
+        mParticipants = OPDataManager.getDatastoreDelegate().getUsersByCbcId(cbcId);
+        mLastEvent = new OPConversationEvent(this,
+                                             OPConversationEvent.EventTypes.NewConversation,
+                                             "");
+    }
+    public OPConversation(ParticipantInfo participantInfo, String conversationId, GroupChatMode mode) {
+        this.conversationId = conversationId;
+        type = mode;
+        mParticipants = participantInfo.getParticipants();
+        cbcId = participantInfo.getCbcId();
+        mLastEvent = new OPConversationEvent(this,
+                                             OPConversationEvent.EventTypes.NewConversation,
+                                             "");
+    }
+    public OPConversation(List<OPUser> users, String conversationId, GroupChatMode mode) {
+        this.conversationId = conversationId;
+        type = mode;
         mParticipants = users;
-        mCbcId = OPModelUtils.getWindowId(mParticipants);
+        cbcId = OPModelUtils.getWindowId(mParticipants);
         mLastEvent = new OPConversationEvent(this,
                                              OPConversationEvent.EventTypes.NewConversation,
                                              "");
     }
 
     public long save() {
-        mId = OPDataManager.getDatastoreDelegate().saveConversation(this);
+        _id = OPDataManager.getDatastoreDelegate().saveConversation(this);
 
         onNewEvent(mLastEvent);
-        return mId;
+        return _id;
     }
 
     /**
@@ -125,12 +143,12 @@ public class OPConversation extends Observable {
      * @param thread
      */
     public OPConversation(OPConversationThread thread) {
-        mType = OPSdkConfig.getInstance().getGroupChatMode();
+        type = OPSdkConfig.getInstance().getGroupChatMode();
 
         mConvThread = thread;
-        mContextId = mConvThread.getThreadID();
-        mParticipants = OPModelUtils.getParticipantsOfThread(thread);
-        mCbcId = OPModelUtils.getWindowId(mParticipants);
+        conversationId = mConvThread.getConversationId();
+        cbcId = thread.getParticipantInfo().getCbcId();
+        mParticipants = thread.getParticipantInfo().getParticipants();
         mLastEvent = new OPConversationEvent(
             this,
             OPConversationEvent.EventTypes.NewConversation,
@@ -151,8 +169,21 @@ public class OPConversation extends Observable {
         }
     }
 
+    public void setType(GroupChatMode type) {
+        this.type = type;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+        sendSystemMessage(topic);
+    }
+
     public long getId() {
-        return mId;
+        return _id;
     }
 
     private Hashtable<String, OPMessage> getMessageDeliveryQueue() {
@@ -176,6 +207,10 @@ public class OPConversation extends Observable {
         return message;
     }
 
+    void sendSystemMessage(String message){
+
+    }
+
     /**
      * Get the message that's displayed. Used to decide from which message to display
      *
@@ -190,7 +225,7 @@ public class OPConversation extends Observable {
     }
 
     public OPCall getCurrentCall() {
-        return CallManager.getInstance().findCallByCbcId(mCbcId);
+        return CallManager.getInstance().findCallByCbcId(cbcId);
     }
 
     /**
@@ -203,42 +238,14 @@ public class OPConversation extends Observable {
     }
 
     public OPConversationThread getThread(boolean createIfNo) {
-        mConvThread = ThreadManager.getInstance().findThreadByCbcId(mCbcId);
+        mConvThread = ThreadManager.getInstance().getThread(type, conversationId, cbcId);
         if (mConvThread == null && createIfNo) {
             mConvThread = OPConversationThread.create(
                 OPDataManager.getInstance().getSharedAccount(),
                 OPDataManager.getInstance().getSelfContacts());
             addContactsToThread(mParticipants);
-
         }
         return mConvThread;
-//        if (mConvThread == null) {
-//            mConvThread = ThreadManager.getInstance().findThreadByCbcId(mCbcId);
-//            if (mConvThread == null) {
-//                if (createIfNo) {
-//                    mConvThread = OPConversationThread.create(
-//                        OPDataManager.getInstance().getSharedAccount(),
-//                        OPDataManager.getInstance().getSelfContacts());
-//                    addContactsToThread(mParticipants);
-//                    ConversationManager.getInstance().cacheThreadToConversation(
-//                        mConvThread.getThreadID(),
-//                        this);
-//                    if (TextUtils.isEmpty(mContextId)) {
-//                        mContextId = mConvThread.getThreadID();
-//                        OPDataManager.getDatastoreDelegate().updateConversation(this);
-//                    }
-//                }
-//            } else {
-//                ConversationManager.getInstance().cacheThreadToConversation(
-//                    mConvThread.getThreadID(),
-//                    this);
-//                if (TextUtils.isEmpty(mContextId)) {
-//                    mContextId = mConvThread.getThreadID();
-//                    OPDataManager.getDatastoreDelegate().updateConversation(this);
-//                }
-//            }
-//        }
-//        return mConvThread;
     }
 
     private OPConversationThread selectActiveThread(OPConversationThread newThread) {
@@ -257,7 +264,7 @@ public class OPConversation extends Observable {
     }
 
     public long getCurrentWindowId() {
-        return mCbcId;
+        return cbcId;
     }
 
     public OPConversationEvent getLastEvent() {
@@ -301,7 +308,13 @@ public class OPConversation extends Observable {
      * @return
      */
     public List<OPUser> getParticipants() {
+        if (mParticipants == null) {
+            mParticipants = OPDataManager.getDatastoreDelegate().getUsersByCbcId(cbcId);
+        }
         return mParticipants;
+    }
+    public void setParticipants(List<OPUser> participants){
+        mParticipants = participants;
     }
 
     private OPMessage getLastMessage() {
@@ -348,15 +361,16 @@ public class OPConversation extends Observable {
             addContactsToThread(users);
         } else {
             mParticipants.addAll(users);
-            long oldCbcId = mCbcId;
-            mCbcId = OPModelUtils.getWindowId(mParticipants);
-            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId,mCbcId);
+            long oldCbcId = cbcId;
+            cbcId = OPModelUtils.getWindowId(mParticipants);
+            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId, cbcId);
 
             OPConversationEvent event = new OPConversationEvent(
                 this,
                 OPConversationEvent.EventTypes.ContactsAdded,
                 "");
             onNewEvent(event);
+            OPDataManager.getDatastoreDelegate().updateConversation(this);
             notifyContactsChanged();
         }
     }
@@ -370,14 +384,15 @@ public class OPConversation extends Observable {
             mConvThread.removeContacts(contacts);
         } else {
             mParticipants.removeAll(users);
-            long oldCbcId = mCbcId;
-            mCbcId = OPModelUtils.getWindowId(mParticipants);
-            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId,mCbcId);
+            long oldCbcId = cbcId;
+            cbcId = OPModelUtils.getWindowId(mParticipants);
+            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId, cbcId);
             OPConversationEvent event = new OPConversationEvent(
                 this,
                 OPConversationEvent.EventTypes.ContactsRemoved,
                 null);
             onNewEvent(event);
+            OPDataManager.getDatastoreDelegate().updateConversation(this);
 
             notifyContactsChanged();
         }
@@ -430,13 +445,13 @@ public class OPConversation extends Observable {
         // TODO: create appropriate logic,e.g. based on windowId
         long cbcId = OPModelUtils
             .getWindowIdForThread(thread);
-        switch (mType){
+        switch (type){
         case ContextBased:
             if (mConvThread != null
                 && thread.getThreadID().equals(mConvThread.getThreadID())) {
 
                 return true;
-            } else if (mCbcId == cbcId) {
+            } else if (this.cbcId == cbcId) {
                 mConvThread = thread;
                 return true;
             } else {
@@ -447,7 +462,7 @@ public class OPConversation extends Observable {
                 && thread.getThreadID().equals(mConvThread.getThreadID())) {
 
                 return true;
-            } else if (mCbcId == cbcId) {
+            } else if (this.cbcId == cbcId) {
                 mConvThread = thread;
                 return true;
             } else {
@@ -467,10 +482,10 @@ public class OPConversation extends Observable {
      * @param users new users list
      */
     public void onContactsChanged(List<OPUser> users) {
-        switch (mType){
+        switch (type){
         case ContactsBased:
             long cbcId = OPModelUtils.getWindowId(users);
-            if (cbcId == mCbcId) {
+            if (cbcId == this.cbcId) {
                 return;
             }
             //if there's existing thread that matches the participants we'll reuse that thread.
@@ -480,16 +495,16 @@ public class OPConversation extends Observable {
                 String oldThreadId = mConvThread == null ? null : mConvThread.getThreadID();
                 ConversationManager.getInstance().onConversationThreadChange(this, oldThreadId,
                                                                              thread.getThreadID());
-                ConversationManager.getInstance().onConversationParticipantsChange(this, mCbcId,
+                ConversationManager.getInstance().onConversationParticipantsChange(this, this.cbcId,
                                                                                    cbcId);
                 mConvThread = thread;
                 mParticipants = users;
-                mCbcId = cbcId;
+                this.cbcId = cbcId;
                 //make sure UI call back gets fired
                 notifyContactsChanged();
             } else {
                 if (mConvThread != null) {
-                    if (mCbcId != cbcId) {
+                    if (this.cbcId != cbcId) {
                         List<OPUser> addedUsers = new ArrayList<>();
                         List<OPUser> removedUsers = new ArrayList<>();
                         OPModelUtils.findChangedUsers(mParticipants, users, addedUsers,
@@ -502,10 +517,10 @@ public class OPConversation extends Observable {
                             removeParticipants(removedUsers);
                         }
 //                        mParticipants = users;
-//                        mCbcId = cbcId;
+//                        cbcId = cbcId;
                     }
                 } else {
-                    mCbcId = cbcId;
+                    this.cbcId = cbcId;
                     mParticipants = users;
                     notifyContactsChanged();
                 }
@@ -557,9 +572,9 @@ public class OPConversation extends Observable {
             return false;
         }
 
-        long oldCbcId = mCbcId;
-        mCbcId = OPModelUtils.getWindowId(mParticipants);
-        ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId,mCbcId);
+        long oldCbcId = cbcId;
+        cbcId = OPModelUtils.getWindowId(mParticipants);
+        ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId, cbcId);
         if (!newContacts.isEmpty()) {
 
             OPConversationEvent event = new OPConversationEvent(
@@ -574,6 +589,7 @@ public class OPConversation extends Observable {
                 OPConversationEvent.EventTypes.ContactsRemoved, null);
             onNewEvent(event);
         }
+        OPDataManager.getDatastoreDelegate().updateConversation(this);
         notifyContactsChanged();
         return true;
     }
@@ -605,7 +621,7 @@ public class OPConversation extends Observable {
      */
     public GroupChatMode getType() {
         // TODO Auto-generated method stub
-        return mType;
+        return type;
     }
 
     /**
@@ -614,20 +630,23 @@ public class OPConversation extends Observable {
      * @param id
      */
     public void setId(long id) {
-        mId = id;
+        _id = id;
     }
 
     /**
-     * This is currently the thread id.
+     * This is the conversationId used to identify a unique conversation
      *
      * @return
      */
-    public String getContextId() {
-        return mContextId;
+    public String getConversationId() {
+        if(conversationId==null && mConvThread!=null){
+            conversationId = mConvThread.getConversationId();
+        }
+        return conversationId;
     }
 
-    public void setContextId(String id) {
-        this.mContextId = id;
+    public void setConversationId(String id) {
+        this.conversationId = id;
     }
 
     /**
