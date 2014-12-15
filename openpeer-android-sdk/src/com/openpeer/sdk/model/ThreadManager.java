@@ -108,21 +108,32 @@ public class ThreadManager extends OPConversationThreadDelegate {
             return mThreads.get(thread.getThreadID());
         } else {
             OPLogger.error(OPLogLevel.LogLevel_Basic, "getCachedThread Weird! thread not cached");
-            return thread;
+            return null;
         }
     }
 
-    public OPConversationThread getThread(GroupChatMode mode, String conversationId, long cbcId) {
+    public OPConversationThread getThread(GroupChatMode mode, String conversationId,
+                                          ParticipantInfo participantInfo, boolean createNew) {
         OPConversationThread thread = null;
         switch (mode){
         case ContactsBased:{
-            thread = findThreadByCbcId(cbcId);
+            thread = findThreadByCbcId(participantInfo.getCbcId());
+            break;
         }
         case ContextBased:{
             if (mThreads != null) {
                 thread = mThreads.get(conversationId);
             }
+            break;
         }
+        }
+        if (thread == null && createNew) {
+            thread = OPConversationThread.create(
+                OPDataManager.getInstance().getSharedAccount(),
+                OPDataManager.getInstance().getSelfContacts());
+            thread.setParticipantInfo(participantInfo);
+            cacheThread(thread);
+            cacheCbcToThread(participantInfo.getCbcId(), thread);
         }
         return thread;
     }
@@ -135,30 +146,40 @@ public class ThreadManager extends OPConversationThreadDelegate {
         OPConversationThread thread) {
         List<OPUser> participants = OPModelUtils.getParticipantsOfThread(thread);
         long cbcId = OPModelUtils.getWindowId(participants);
-        thread.setParticipantInfo(new ParticipantInfo(cbcId,participants));
+        thread.setParticipantInfo(new ParticipantInfo(cbcId, participants));
 
         OPDataManager.getDatastoreDelegate().saveParticipants(cbcId, participants);
+        OPLogger.debug(OPLogLevel.LogLevel_Detail, "onConversationThreadNew caching new thread id" +
+            " " + thread.getThreadID() + " cbcId " + cbcId);
         cacheThread(thread);
         cacheCbcToThread(cbcId, thread);
     }
 
     @Override
     public void onConversationThreadContactsChanged(OPConversationThread thread) {
-        long oldCbcId = getCbcIdOfThread(thread.getThreadID());
-        OPConversation conversation = ConversationManager.getInstance().
-            getConversation(getCachedThread(thread), false);
-        if (conversation != null) {
-            conversation.onContactsChanged(thread);
-        }
-        if (oldCbcId != 0) {
-            mCbcToThreads.remove(oldCbcId);
-        }
-
         List<OPUser> participants = OPModelUtils.getParticipantsOfThread(thread);
         long newCbcId = OPModelUtils.getWindowId(participants);
-        thread.setParticipantInfo(new ParticipantInfo(newCbcId,participants));
-
+        thread.setParticipantInfo(new ParticipantInfo(newCbcId, participants));
         OPDataManager.getDatastoreDelegate().saveParticipants(newCbcId, participants);
+
+        OPConversationThread oldThread = getCachedThread(thread);
+        if (oldThread != null) {
+            long oldCbcId = oldThread.getParticipantInfo().getCbcId();
+            OPConversation conversation = ConversationManager.getInstance().
+                getConversation(oldThread, false);
+            OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                           "onConversationThreadContactsChanged find old thread cbcId " + oldCbcId);
+            if (conversation != null) {
+                conversation.onContactsChanged(thread);
+            }
+            if (oldCbcId != 0) {
+                mCbcToThreads.remove(oldCbcId);
+            }
+        } else {
+            OPLogger.debug(OPLogLevel.LogLevel_Detail, "onConversationThreadContactsChanged " +
+                "couldn't find cached thread for " + thread.getThreadID());
+        }
+
         cacheThread(thread);
         cacheCbcToThread(newCbcId, thread);
     }

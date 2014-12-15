@@ -56,10 +56,10 @@ CREATE TABLE "call" (
 	 "time" integer,
 	 "answer_time" integer default 0,
 	 "end_time" integer default 0,
-	 "context_id" integer NOT NULL,
+	 "conversation_id" integer NOT NULL,
 	 "conversation_event_id" long,
 	 "cbc_id" INTEGER,
-	CONSTRAINT "fk_call_context_id" FOREIGN KEY ("context_id") REFERENCES "conversation" ("context_id") ON DELETE RESTRICT,
+	CONSTRAINT "fk_call_conversation_id" FOREIGN KEY ("conversation_id") REFERENCES "conversation" ("conversation_id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_call_caller_id" FOREIGN KEY ("peer_id") REFERENCES "openpeer_contact" ("_id") ON DELETE RESTRICT
 );
 
@@ -72,7 +72,7 @@ CREATE TABLE "call_event" (
 	 "call_id" integer NOT NULL,
 	 "event" TEXT NOT NULL,
 	 "time" integer NOT NULL,
-	CONSTRAINT "fk_call_event_call_id" FOREIGN KEY ("call_id") REFERENCES "call" ("_id") ON DELETE RESTRICT	
+	CONSTRAINT "fk_call_event_call_id" FOREIGN KEY ("call_id") REFERENCES "call" ("_id") ON DELETE RESTRICT
 );
 
 -- ----------------------------
@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS "conversation";
 CREATE TABLE "conversation" (
 	 "_id" INTEGER PRIMARY KEY,
 	 "type" TEXT NOT NULL,
-	 "context_id" TEXT NOT NULL,
+	 "conversation_id" TEXT UNIQUE NOT NULL,
 	 "account_id" integer NOT NULL,
 	 "start_time" integer NOT NULL,
 	 "participants" integer NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE "conversation_event" (
 	 "time" integer NOT NULL,
 	 "participants" INTEGER,
 	 "conversation_id" INTEGER NOT NULL,
-	 
+
 	CONSTRAINT "fk_conversation_event_conversation_id" FOREIGN KEY ("conversation_id") REFERENCES "conversation" ("_id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_conversation_event_participants" FOREIGN KEY ("participants") REFERENCES "participants" ("cbc_id") ON DELETE RESTRICT
 );
@@ -136,7 +136,7 @@ CREATE TABLE "message" (
 	 "_id" INTEGER PRIMARY KEY,
 	 "message_id" TEXT NOT NULL UNIQUE,
 	 "cbc_id" INTEGER,
-	 "context_id" integer,
+	 "conversation_id" integer,
 	 "conversation_event_id" INTEGER,
 	 "type" TEXT NOT NULL,
 	 "sender_id" INTEGER NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE "message" (
 	 "incoming_message_status" INTEGER NOT NULL DEFAULT 0,
 	 "outgoing_message_status" TEXT,
 	 "edit_status" integer DEFAULT 0,
-	CONSTRAINT "fk_message_context_id" FOREIGN KEY ("context_id") REFERENCES "conversation" ("context_id") ON DELETE RESTRICT,
+	CONSTRAINT "fk_message_conversation_id" FOREIGN KEY ("conversation_id") REFERENCES "conversation" ("conversation_id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_message_cbc_id" FOREIGN KEY ("cbc_id") REFERENCES "participants" ("cbc_id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_message_sender_id" FOREIGN KEY ("sender_id") REFERENCES "openpeer_contact" ("_id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_message_conversation_event_id" FOREIGN KEY ("conversation_event_id") REFERENCES "conversation_event" ("_id") ON DELETE RESTRICT
@@ -162,7 +162,7 @@ CREATE TABLE "message_event" (
 	 "event" TEXT NOT NULL,
 	 "description" TEXT,
 	 "time" INTEGER NOT NULL,
-	 
+
 	CONSTRAINT "fk_message_change_record_message_id" FOREIGN KEY ("message_id") REFERENCES "message" ("_id") ON DELETE RESTRICT
 );
 
@@ -213,7 +213,7 @@ CREATE TABLE "rolodex_contact" (
 	 "readyForDeletion" integer,
 	 "openpeer_contact_id" integer DEFAULT 0,
 	 "identity_contact_id" INTEGER DEFAULT 0,
-	 "is_primary" integer default 1,	 
+	 "is_primary" integer default 1,
 	CONSTRAINT "fk_rolodex_identity_provider_id" FOREIGN KEY ("identity_provider_id") REFERENCES "identity_provider" ("_id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_rolodex_contact_associated_identity_id" FOREIGN KEY ("associated_identity_id") REFERENCES "associated_identity" ("_id") ON DELETE RESTRICT
 );
@@ -248,7 +248,7 @@ CREATE INDEX "idx_avatar_rolodex_id" ON avatar ("rolodex_id");
 CREATE INDEX "idx_call_peer_id" ON call ("peer_id" );
 CREATE INDEX "idx_call_direction" ON call ("direction" );
 CREATE INDEX "idx_call_cbc_id" ON call ("cbc_id" );
-CREATE INDEX "idx_call_context_id" ON call ("context_id" );
+CREATE INDEX "idx_call_conversation_id" ON call ("conversation_id" );
 CREATE INDEX "idx_call_conversation_event_id" ON call ("conversation_event_id" );
 
 -- ----------------------------
@@ -270,7 +270,7 @@ CREATE INDEX "idx_conversation_event_conversation_id" ON conversation_event ("co
 --  Indexes structure for table message
 -- ----------------------------
 CREATE INDEX "idx_message_cbc_id" ON message ("cbc_id" );
-CREATE INDEX "idx_message_context_id" ON message ("context_id" );
+CREATE INDEX "idx_message_conversation_id" ON message ("conversation_id" );
 CREATE INDEX "idx_message_time" ON message ("time" );
 
 

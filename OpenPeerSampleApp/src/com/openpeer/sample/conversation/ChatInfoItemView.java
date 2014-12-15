@@ -82,12 +82,13 @@ public class ChatInfoItemView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 ConversationActivity.launchForChat(getContext(),
-                        chatInfo.getType(), chatInfo.getConversationId(),chatInfo.getUserIDs());
+                                                   chatInfo.getType(),
+                                                   chatInfo.getConversationId(),
+                                                   chatInfo.getUserIDs());
             }
         });
-            Picasso.with(getContext()).load(chatInfo.getAvatarUri(48, 48))
-                    .into(mImageView);
-
+        Picasso.with(getContext()).load(chatInfo.getAvatarUri(48, 48))
+            .into(mImageView);
 
 
         if (msg != null) {

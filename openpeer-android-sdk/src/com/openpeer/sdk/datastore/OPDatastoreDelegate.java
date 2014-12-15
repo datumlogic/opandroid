@@ -42,10 +42,12 @@ import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.model.CallEvent;
+import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.MessageEvent;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPConversationEvent;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.model.ParticipantInfo;
 
 public interface OPDatastoreDelegate {
 
@@ -149,9 +151,8 @@ public interface OPDatastoreDelegate {
      * @return
      */
     public List<CallEvent> getCallEvents(String messageId);
+    public OPConversation getConversation(GroupChatMode type,ParticipantInfo participantInfo,String conversationId) ;
 
-    public OPConversation getConversation(String conversationId) ;
-    public OPConversation getConversation(long cbcId) ;
     /**
      * Save or update the account information in database
      * 

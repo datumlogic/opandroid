@@ -31,6 +31,10 @@ package com.openpeer.javaapi;
 
 public abstract class OPConversationThreadDelegate {
 
+    /**
+     * Callback when new thread created from peer request. *Not* called when creating thread locally
+     * @param conversationThread
+     */
 	public abstract void onConversationThreadNew(OPConversationThread conversationThread);
 
 	public abstract void onConversationThreadContactsChanged(OPConversationThread conversationThread);

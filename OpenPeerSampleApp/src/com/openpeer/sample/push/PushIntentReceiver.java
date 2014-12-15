@@ -44,9 +44,11 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.model.ConversationManager;
+import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.MessageEditState;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.model.ParticipantInfo;
 import com.openpeer.sdk.utils.OPModelUtils;
 import com.urbanairship.actions.DeepLinkAction;
 import com.urbanairship.actions.LandingPageAction;
@@ -144,7 +146,10 @@ public class PushIntentReceiver extends BroadcastReceiver {
                 opMessage.setReplacesMessageId(replacesMessageId);
             }
 
-            OPConversation conversation = ConversationManager.getInstance().getConversationForUsers(users,true);
+            OPConversation conversation = ConversationManager.getInstance().
+                getConversation(GroupChatMode.ContactsBased,
+                     new ParticipantInfo(OPModelUtils.getWindowId(users), users),
+                     null, true);
 
             OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
                                                              conversation);
@@ -194,7 +199,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
     /**
      * Log the values sent in the payload's "extra" dictionary.
-     * 
+     *
      * @param intent
      *            A PushManager.ACTION_NOTIFICATION_OPENED or ACTION_PUSH_RECEIVED intent.
      */

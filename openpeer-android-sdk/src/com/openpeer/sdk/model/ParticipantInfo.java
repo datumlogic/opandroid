@@ -4,12 +4,14 @@ import java.util.List;
 
 public class ParticipantInfo {
     long cbcId;
-    List<OPUser> user;
+    List<OPUser> particpants;
 
-    public ParticipantInfo(){}
+    public ParticipantInfo() {
+    }
+
     public ParticipantInfo(long cbcId, List<OPUser> user) {
         this.cbcId = cbcId;
-        this.user = user;
+        this.particpants = user;
     }
 
     public long getCbcId() {
@@ -21,10 +23,18 @@ public class ParticipantInfo {
     }
 
     public List<OPUser> getParticipants() {
-        return user;
+        return particpants;
     }
 
     public void setUsers(List<OPUser> user) {
-        this.user = user;
+        this.particpants = user;
+    }
+
+    public void addUsers(List<OPUser> users) {
+        particpants.addAll(users);
+    }
+
+    public void removeUsers(List<OPUser> users) {
+        particpants.removeAll(users);
     }
 }

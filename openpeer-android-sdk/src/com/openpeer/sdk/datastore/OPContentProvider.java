@@ -272,7 +272,7 @@ public class OPContentProvider extends ContentProvider {
             stringBuilder
                     .append(" union "
                             + DatabaseContracts.QUERY_CONVERSATION_EVENT)
-                    .append(" and ").append("c.context_id=?");
+                    .append(" and ").append("c.conversation_id=?");
             stringBuilder.append(" order by time");
 
             String contextId = uri.getLastPathSegment();

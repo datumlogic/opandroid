@@ -38,6 +38,7 @@ import com.openpeer.sdk.utils.OPModelUtils;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.UUID;
 
 public class ConversationManager {
     private static ConversationManager instance;
@@ -61,11 +62,11 @@ public class ConversationManager {
         cbcIdToConversationTable.put(cbcId, conversation);
     }
 
-    void cacheThreadToConversation(String conversationId, OPConversation conversation) {
+    void cacheConversation(OPConversation conversation) {
         if (conversationTable == null) {
             conversationTable = new Hashtable<>();
         }
-        conversationTable.put(conversationId, conversation);
+        conversationTable.put(conversation.getConversationId(), conversation);
     }
 
     void onConversationThreadChange(OPConversation conversation, String oldThreadId,
@@ -86,28 +87,46 @@ public class ConversationManager {
                                                       thread.getConversationId(), false);
         if (conversation == null && createNew) {
             conversation = new OPConversation(thread);
+            cacheCbcToConversation(thread.getParticipantInfo().getCbcId(), conversation);
+            cacheConversation(conversation);
             conversation.save();
         }
         return conversation;
     }
 
-    public OPConversation getConversation(GroupChatMode type,ParticipantInfo participantInfo,
+    public OPConversation getConversation(GroupChatMode type, ParticipantInfo participantInfo,
                                           String conversationId,
                                           boolean createNew) {
-        OPConversation conversation;
+        OPConversation conversation = null;
         switch (type){
         case ContactsBased:{
             long cbcId = participantInfo.getCbcId();
             conversation = getConversationByCbcId(cbcId);
             if (conversation == null) {
-                conversation = OPDataManager.getDatastoreDelegate().getConversation(cbcId);
+                conversation = OPDataManager.getDatastoreDelegate().getConversation
+                    (type,participantInfo,conversationId);
+                if (conversation != null) {
+                    conversation.setParticipants(participantInfo.getParticipants());
+                    conversation.getThread(true);
+                }
             }
         }
         break;
         case ContextBased:{
-            conversation = getConversationById(conversationId);
-            if (conversation == null) {
-                conversation = OPDataManager.getDatastoreDelegate().getConversation(conversationId);
+            if (conversationId != null) {
+                conversation = getConversationById(conversationId);
+
+                if (conversation == null) {
+                    conversation = OPDataManager.getDatastoreDelegate().getConversation
+                        (type,participantInfo,conversationId);
+                    if (conversation != null) {
+                        if (conversation.getCurrentWindowId() != participantInfo.getCbcId()) {
+                            conversation.setCbcId(participantInfo.getCbcId());
+                            conversation.setParticipants(participantInfo.getParticipants());
+                            conversation.getThread(true);
+                        }
+                    }
+                }
             }
         }
         break;
@@ -115,7 +134,12 @@ public class ConversationManager {
             return null;
         }
         if (conversation == null && createNew) {
+            if (conversationId == null) {
+                conversationId = UUID.randomUUID().toString();
+            }
             conversation = new OPConversation(participantInfo, conversationId, type);
+            cacheCbcToConversation(participantInfo.getCbcId(), conversation);
+            cacheConversation(conversation);
             conversation.save();
         }
         return conversation;
@@ -133,29 +157,6 @@ public class ConversationManager {
             return cbcIdToConversationTable.get(id);
         }
         return null;
-    }
-
-    /**
-     * Look up the conversation "for" users. This call use calculated window id to find the
-     * conversation.
-     *
-     * @param users
-     * @param create A new thread will be created if true
-     * @return
-     */
-    public OPConversation getConversationForUsers(List<OPUser> users, boolean create) {
-        OPConversation conversation = null;
-        long cbcId = OPModelUtils.getWindowId(users);
-        if (cbcIdToConversationTable != null) {
-            conversation = cbcIdToConversationTable.get(cbcId);
-        }
-        if (conversation == null && create) {
-            conversation = new OPConversation(users);
-            cacheCbcToConversation(cbcId, conversation);
-            conversation.save();
-
-        }
-        return conversation;
     }
 
     public static void clearOnSignout() {

@@ -153,7 +153,7 @@ public class ChatFragment extends BaseFragment implements
             type = savedInstanceState.getString(IntentData.ARG_CONVERSATION_TYPE);
         }
         List<OPUser> participants = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
-        cbcId = OPModelUtils.getWindowId(participants);
+        cbcId = OPModelUtils.getWindowId(userIDs);
         OPNotificationBuilder.cancelNotificationForChat((int) cbcId);
         setHasOptionsMenu(true);
         ParticipantInfo participantInfo = new ParticipantInfo(cbcId,participants);
@@ -682,16 +682,25 @@ public class ChatFragment extends BaseFragment implements
                 List<OPUser> newParticipants = new ArrayList<>();
                 newParticipants.addAll(mSession.getParticipants());
                 newParticipants.addAll(OPDataManager.getDatastoreDelegate().getUsers(userIds));
-                mSession = ConversationManager.getInstance().getConversationForUsers(newParticipants,true);
+                mSession = ConversationManager.getInstance().
+                    getConversation(GroupChatMode.ContactsBased,
+                                    new ParticipantInfo(OPModelUtils.getWindowId(newParticipants)
+                                        , newParticipants), null, true);
                 onContactsChanged();
 //                onParticipantsChanged(userIds, null);
             }
             break;
         case IntentData.REQUEST_CODE_PARTICIPANTS:
-            if(resultCode==Activity.RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                List<OPUser> newParticipants = OPDataManager.getDatastoreDelegate().getUsers(userIds);
-                mSession = ConversationManager.getInstance().getConversationForUsers(newParticipants,true);
+                List<OPUser> newParticipants = OPDataManager.getDatastoreDelegate().getUsers
+                    (userIds);
+                mSession = ConversationManager.getInstance().
+                    getConversation(GroupChatMode.ContactsBased,
+                                    new ParticipantInfo
+                                        (OPModelUtils.getWindowId(newParticipants),
+                                         newParticipants), null, true);
+                ;
                 onContactsChanged();
 //                mSession.onContactsChanged(users);
             }
@@ -700,26 +709,26 @@ public class ChatFragment extends BaseFragment implements
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                makeCall(mSession.getParticipantIDs(),mVideo);
+                makeCall(mSession.getParticipantIDs(), mVideo);
             }
             break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    void onCallMenuSelected(boolean video){
-        String peerUri = null;
+    void onCallMenuSelected(boolean video) {
         if (mSession.getParticipants().size() == 1) {
-           makeCall(mSession.getParticipantIDs(),video);
+            makeCall(mSession.getParticipantIDs(), video);
         } else {
             //TODO: launch profile picker
-            mVideo =video;
+            mVideo = video;
             Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
             intent.putExtra(IntentData.ARG_USER_IDS_INCLUDE, mSession.getParticipantIDs());
             startActivityForResult(intent,
                                    IntentData.REQUEST_CODE_GET_CALLEE);
         }
     }
+
     void onTopicMenuSelected() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = View.inflate(getActivity(), R.layout.layout_set_topic, null);
@@ -733,7 +742,10 @@ public class ChatFragment extends BaseFragment implements
                     String topic = editText.getText().toString();
                     if (checkBox.isChecked()) {
                         //TODO: create new session
-                        mSession = new OPConversation(mSession.getParticipants());
+                        mSession = ConversationManager.getInstance().
+                            getConversation(GroupChatMode.ContextBased,
+                                            mSession.getParticipantInfo(),
+                                            null, true);
                         mSession.setTopic(topic);
                     } else {
                         mSession.setTopic(topic);
@@ -746,8 +758,6 @@ public class ChatFragment extends BaseFragment implements
                 dialog.dismiss();
             }
         });
-
-
     }
     private void makeCall(long[] userIds,boolean video) {
         Intent intent = new Intent(getActivity(), CallActivity.class);

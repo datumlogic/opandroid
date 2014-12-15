@@ -78,11 +78,13 @@ import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ThreadEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.sdk.model.CallEvent;
+import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.MessageEditState;
 import com.openpeer.sdk.model.MessageEvent;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPConversationEvent;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.model.ParticipantInfo;
 import com.openpeer.sdk.utils.DbUtils;
 
 /**
@@ -362,17 +364,21 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                                  new String[]{ParticipantEntry.COLUMN_CONTACT_ID},
                                  ParticipantEntry.COLUMN_CBC_ID + "=" + cbcId,
                                  null, null, null, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            List<OPUser> users = new ArrayList<>(cursor.getCount());
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                long userId = cursor.getLong(0);
-                OPUser user = getUserById(userId);
-                if (user != null) {
-                    users.add(user);
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                List<OPUser> users = new ArrayList<>(cursor.getCount());
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    long userId = cursor.getLong(0);
+                    OPUser user = getUserById(userId);
+                    if (user != null) {
+                        users.add(user);
+                    }
+                    cursor.moveToNext();
                 }
+                cursor.close();
+                return users;
             }
-            return users;
         }
         return null;
     }
@@ -394,47 +400,39 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     }
 
     @Override
-    public OPConversation getConversation(String conversationId) {
+    public OPConversation getConversation(GroupChatMode type,ParticipantInfo participantInfo,String conversationId) {
+        String where = null;
+        String args[] = null;
+        switch (type){
+        case ContactsBased:{
+            where = ConversationEntry.COLUMN_PARTICIPANTS + "=" + participantInfo.getCbcId();
+            break;
+        }
+        case ContextBased:{
+            where = ConversationEntry.COLUMN_CONVERSATION_ID + "=?";
+            args = new String[]{conversationId};
+            break;
+        }
+        default:
+            break;
+        }
         Cursor cursor = getWritableDB().query(ConversationEntry.TABLE_NAME, null,
-                                              ConversationEntry.COLUMN_CONVERSATION_ID + "=?",
-                                              new String[]{conversationId},
+                                              where,
+                                              args,
                                               null,
                                               null, null);
         OPConversation conversation = null;
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
-            conversation = new OPConversation();
+            conversation = new OPConversation(participantInfo, conversationId, type);
             conversation.setId(cursor.getLong(0));
-            conversation.setConversationId(conversationId);
-            long cbcId = cursor.getLong(cursor.getColumnIndex(ConversationEntry
-                                                                  .COLUMN_PARTICIPANTS));
-
-            conversation.setParticipants(getUsersByCbcId(cbcId));
-
-            cursor.close();
+            conversation.setCbcId(cursor.getLong(cursor.getColumnIndex(ConversationEntry
+                                                                           .COLUMN_PARTICIPANTS)));
         }
+        cursor.close();
         return conversation;
     }
 
-    @Override
-    public OPConversation getConversation(long cbcId) {
-        Cursor cursor = getWritableDB().query(ConversationEntry.TABLE_NAME, null,
-                                              ConversationEntry.COLUMN_CONVERSATION_ID + "=" +
-                                                  cbcId,
-                                              null, null, null, null);
-        OPConversation conversation = null;
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            String conversationId = cursor.getString(
-                cursor.getColumnIndex(ConversationEntry.COLUMN_CONVERSATION_ID));
-            conversation = new OPConversation();
-            conversation.setId(cursor.getLong(0));
-            conversation.setConversationId(conversationId);
-            conversation.setParticipants(getUsersByCbcId(cbcId));
-            cursor.close();
-        }
-        return conversation;
-    }
 
     /*
      * (non-Javadoc)
@@ -623,7 +621,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         values.put(MessageEntry.COLUMN_CONVERSATION_EVENT_ID, conversation.getLastEvent().getId());
         long id = db.insert(MessageEntry.TABLE_NAME, null, values);
 
-        Uri uri = notifyMessageChanged(conversation.getConversationId(),
+        Uri uri = notifyMessageChanged(conversation.getType(),conversation.getConversationId(),
                 conversation.getCurrentWindowId(), id);
 
         return uri;
@@ -816,8 +814,17 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public long saveConversation(OPConversation conversation) {
         SQLiteDatabase db = getWritableDB();
         long id = 0;
+        String where =conversation.getType()== GroupChatMode.ContactsBased?ConversationEntry.COLUMN_PARTICIPANTS+"="+conversation.getCurrentWindowId():
+            ConversationEntry.COLUMN_CONVERSATION_ID+"=?";
+        String args[] = conversation.getType()== GroupChatMode.ContactsBased?null:new String[]{conversation.getConversationId()};
+        id = DbUtils.simpleQueryForId(db,ConversationEntry.TABLE_NAME,where,args);
+        if(id!=0){
+            conversation.setId(id);
+            return id;
+        }
         try {
             db.beginTransaction();
+
             ContentValues values = new ContentValues();
             values.put(ConversationEntry.COLUMN_TYPE, conversation.getType().name());
             values.put(ConversationEntry.COLUMN_START_TIME,
