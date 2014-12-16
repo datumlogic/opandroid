@@ -35,18 +35,13 @@ public class IntentData {
     public static final int REQUEST_CODE_PARTICIPANTS = BASE_REQUEST_CODE + 2;
     public static final int REQUEST_CODE_GET_CALLEE = BASE_REQUEST_CODE + 3;
     public static final String ACTION_CALL_STATE_CHANGE = "com.openpeer.CALL_STATE";
-    public static final String ACTION_CALL_INCOMING = "com.openpeer.CALL_INCOMING";
 
-    public static final String ARG_IDENTITY_CONTACT_ID = "icId";
     public static final String ARG_PEER_CONTACT_ID = "peerId";
     public static final String ARG_CONVERSATION_ACTION = "action";
     public static final String ACTION_CALL = "call";
     public static final String ACTION_CHAT = "chat";
     public static final String ARG_PEER_USER_IDS = "userIds";
-    public static final String ARG_PEER_USER_ID = "userId";
     public static final String ARG_USER_IDS_INCLUDE = "userIdsInclude";
-    public static final String ARG_USER_IDS_EXCLUDE = "userIdsExclude";
-    public static final String ARG_AUDIO = "audio";
     public static final String ARG_VIDEO = "video";
     public static final String ARG_PEER_URI = "peerUri";
     public static final String ARG_CALL_STATE = "callState";

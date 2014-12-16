@@ -807,19 +807,12 @@ public class ChatFragment extends BaseFragment implements
     }
 
     Uri getMessagesUri() {
-        switch (mSession.getType()){
-        case ContactsBased:
-            return OPContentProvider.getContentUri(
-                MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + mSession.getCurrentWindowId());
-        case ContextBased:
-            if (TextUtils.isEmpty(mSession.getConversationId())) {
-                return null;
-            }
-            return OPContentProvider.getContentUri(
-                MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mSession.getConversationId());
-        default:
+
+        if (TextUtils.isEmpty(mSession.getConversationId())) {
             return null;
         }
+        return OPContentProvider.getContentUri(
+            MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mSession.getConversationId());
     }
     // Beginning of SessionListener implementation
     static final int MENUID_DELETE_MESSAGE = 10000;

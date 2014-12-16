@@ -189,38 +189,19 @@ public class DatabaseContracts {
         public static final String COLUMN_CONTENT = "content";
     }
 
-    public static abstract class ThreadEntry implements BaseColumns {
-        static final String TABLE_NAME = "thread";
-        public static final String URI_PATH_INFO = "/" + TABLE_NAME;
-        public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
-        public static final String COLUMN_THREAD_ID = "trhead_id";
-        public static final String COLUMN_TIME = "start_time";
-        public static final String COLUMN_PARTICIPANTS = "participants";
-        public static final String COLUMN_CONVERSATION_ID = "conversation_id";
-    }
-
     public static abstract class MessageEntry implements BaseColumns {
         public static final String TABLE_NAME = "message";
-        public static final String URI_PATH_INFO_WINDOW = "/" + TABLE_NAME
-                + "/window/#";
         public static final String URI_PATH_INFO_CONTEXT = "/" + TABLE_NAME
-                + "/context/*";
+                + "/conversation/*";//URI used for matcher
         public static final String URI_PATH_INFO_CONTEXT_URI_BASE = "/"
-                + TABLE_NAME + "/context/";
+                + TABLE_NAME + "/conversation/";//URL used to construct query URI
 
-        public static final String URI_PATH_INFO_WINDOW_ID = "/" + TABLE_NAME
-                + "/window/#/#";
-        public static final String URI_PATH_INFO_CONTEXT_ID = "/" + TABLE_NAME
-                + "/context/*/#";
+        public static final String URI_PATH_INFO_CONTEXT_ID = URI_PATH_INFO_CONTEXT+"/#";
 
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 
-        public static final String URI_PATH_WINDOW_ID_URI_BASE = "/"
-                + TABLE_NAME + "/window/";
-
         // for content provider insert() call
         public static final String COLUMN_MESSAGE_ID = "message_id";
-        public static final String COLUMN_CONVERSATION_EVENT_ID = "conversation_event_id";
         public static final String COLUMN_CONTEXT_ID = "conversation_id";
         public static final String COLUMN_CBC_ID = DatabaseContracts.COLUMN_CBC_ID;
 
@@ -295,10 +276,9 @@ public class DatabaseContracts {
     }
 
     public static abstract class WindowViewEntry implements BaseColumns {
-        public static final String TABLE_NAME = "cbc_chats";
-        public static final String URI_PATH_INFO_CBC = "/" + TABLE_NAME;
+        public static final String TABLE_NAME = "conversations";
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
-        public static final String URI_PATH_INFO_CONTEXT = "/context";
+        public static final String URI_PATH_INFO_CONTEXT = "/" + TABLE_NAME;
 
         public static final int INFO_ID_PATH_POSITION = 1;
         public static final String COLUMN_CONVERSATION_TYPE="type";

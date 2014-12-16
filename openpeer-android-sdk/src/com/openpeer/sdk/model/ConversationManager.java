@@ -32,7 +32,15 @@
 
 package com.openpeer.sdk.model;
 
+import com.openpeer.javaapi.ComposingStates;
+import com.openpeer.javaapi.ContactConnectionStates;
+import com.openpeer.javaapi.MessageDeliveryStates;
+import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.javaapi.OPConversationThreadDelegate;
+import com.openpeer.javaapi.OPLogLevel;
+import com.openpeer.javaapi.OPLogger;
+import com.openpeer.javaapi.OPMessage;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.utils.OPModelUtils;
 
@@ -40,7 +48,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.UUID;
 
-public class ConversationManager {
+public class ConversationManager extends OPConversationThreadDelegate {
     private static ConversationManager instance;
     private Hashtable<Long, OPConversation> cbcIdToConversationTable;
     private Hashtable<String, OPConversation> conversationTable;//conversationId to conversation
@@ -82,11 +90,18 @@ public class ConversationManager {
     }
 
     OPConversation getConversation(OPConversationThread thread, boolean createNew) {
+        OPConversationThread t = getCachedThread(thread);
+        thread = t == null ? thread : t;
         OPConversation conversation = getConversation(thread.getConverationType(),
                                                       thread.getParticipantInfo(),
                                                       thread.getConversationId(), false);
+
         if (conversation == null && createNew) {
-            conversation = new OPConversation(thread);
+            conversation = new OPConversation(thread.getParticipantInfo(),
+                                              thread.getConversationId(),
+                                              thread.getConverationType()
+            );
+            conversation.setThread(thread);
             cacheCbcToConversation(thread.getParticipantInfo().getCbcId(), conversation);
             cacheConversation(conversation);
             conversation.save();
@@ -102,12 +117,14 @@ public class ConversationManager {
         case ContactsBased:{
             long cbcId = participantInfo.getCbcId();
             conversation = getConversationByCbcId(cbcId);
-            if (conversation == null) {
+            if (conversation == null || conversation.getType() != GroupChatMode.ContactsBased) {
                 conversation = OPDataManager.getDatastoreDelegate().getConversation
-                    (type,participantInfo,conversationId);
+                    (type, participantInfo, conversationId);
                 if (conversation != null) {
                     conversation.setParticipants(participantInfo.getParticipants());
                     conversation.getThread(true);
+                    cacheCbcToConversation(participantInfo.getCbcId(), conversation);
+                    cacheConversation(conversation);
                 }
             }
         }
@@ -118,13 +135,15 @@ public class ConversationManager {
 
                 if (conversation == null) {
                     conversation = OPDataManager.getDatastoreDelegate().getConversation
-                        (type,participantInfo,conversationId);
+                        (type, participantInfo, conversationId);
                     if (conversation != null) {
                         if (conversation.getCurrentWindowId() != participantInfo.getCbcId()) {
                             conversation.setCbcId(participantInfo.getCbcId());
                             conversation.setParticipants(participantInfo.getParticipants());
                             conversation.getThread(true);
                         }
+                        cacheCbcToConversation(participantInfo.getCbcId(), conversation);
+                        cacheConversation(conversation);
                     }
                 }
             }
@@ -158,6 +177,195 @@ public class ConversationManager {
         }
         return null;
     }
+
+    //Start of thread management
+    PushServiceInterface mPushService;
+    private Hashtable<Long, OPConversationThread> mCbcToThreads;
+    private Hashtable<String, OPConversationThread> mThreads;
+
+    public void registerPushService(PushServiceInterface pushService) {
+        mPushService = pushService;
+    }
+
+    public void unregisterPushService() {
+        mPushService = null;
+    }
+
+    OPConversationThread findThreadByCbcId(long id) {
+        if (mCbcToThreads == null) {
+            return null;
+        }
+        return mCbcToThreads.get(id);
+    }
+
+    void cacheCbcToThread(long cbcId, OPConversationThread thread) {
+        if (mCbcToThreads == null) {
+            mCbcToThreads = new Hashtable<>();
+        }
+        mCbcToThreads.put(cbcId, thread);
+    }
+
+    void cacheThread(OPConversationThread thread) {
+        if (mThreads == null) {
+            mThreads = new Hashtable<>();
+        }
+        mThreads.put(thread.getThreadID(), thread);
+    }
+
+    OPConversationThread getCachedThread(OPConversationThread thread) {
+        if (mThreads != null) {
+            return mThreads.get(thread.getThreadID());
+        } else {
+            OPLogger.error(OPLogLevel.LogLevel_Basic, "getCachedThread Weird! thread not cached");
+            return null;
+        }
+    }
+
+    public OPConversationThread getThread(GroupChatMode mode, String conversationId,
+                                          ParticipantInfo participantInfo, boolean createNew) {
+        OPConversationThread thread = null;
+        switch (mode){
+        case ContactsBased:{
+            thread = findThreadByCbcId(participantInfo.getCbcId());
+            break;
+        }
+        case ContextBased:{
+            if (mThreads != null) {
+                thread = mThreads.get(conversationId);
+            }
+            break;
+        }
+        }
+        if (thread == null && createNew) {
+            thread = OPConversationThread.create(
+                OPDataManager.getInstance().getSharedAccount(),
+                OPDataManager.getInstance().getSelfContacts());
+            thread.setParticipantInfo(participantInfo);
+            cacheThread(thread);
+            cacheCbcToThread(participantInfo.getCbcId(), thread);
+        }
+        return thread;
+    }
+
+
+    //Beginning of OPConversationThreadDelegate
+
+    @Override
+    public void onConversationThreadNew(
+        OPConversationThread thread) {
+        List<OPUser> participants = OPModelUtils.getParticipantsOfThread(thread);
+        long cbcId = OPModelUtils.getWindowId(participants);
+        thread.setParticipantInfo(new ParticipantInfo(cbcId, participants));
+
+        OPDataManager.getDatastoreDelegate().saveParticipants(cbcId, participants);
+        OPLogger.debug(OPLogLevel.LogLevel_Detail, "onConversationThreadNew caching new thread id" +
+            " " + thread.getThreadID() + " cbcId " + cbcId);
+        cacheThread(thread);
+        cacheCbcToThread(cbcId, thread);
+    }
+
+    @Override
+    public void onConversationThreadContactsChanged(OPConversationThread thread) {
+
+        OPDataManager.getDatastoreDelegate().
+            saveParticipants(thread.getParticipantInfo().getCbcId(),
+                             thread.getParticipantInfo().getParticipants());
+
+        OPConversationThread oldThread = getCachedThread(thread);
+        if (oldThread != null) {
+            long oldCbcId = oldThread.getParticipantInfo().getCbcId();
+            OPConversation conversation = ConversationManager.getInstance().
+                getConversation(oldThread, false);
+            OPLogger.debug(OPLogLevel.LogLevel_Detail,
+                           "onConversationThreadContactsChanged find old thread cbcId " + oldCbcId);
+            if (conversation != null) {
+                conversation.onContactsChanged(thread);
+            }
+            if (oldCbcId != 0) {
+                mCbcToThreads.remove(oldCbcId);
+            }
+        } else {
+            OPLogger.debug(OPLogLevel.LogLevel_Detail, "onConversationThreadContactsChanged " +
+                "couldn't find cached thread for " + thread.getThreadID());
+        }
+
+        cacheThread(thread);
+    }
+
+    @Override
+    public void onConversationThreadContactStatusChanged(
+        OPConversationThread conversationThread, OPContact contact) {
+        if (contact.isSelf()) {
+            OPLogger.error(OPLogLevel.LogLevel_Basic,
+                           "weird! onConversationThreadContactStatusChanged for self " + contact
+                               .getPeerURI());
+        }
+
+        ComposingStates state = conversationThread
+            .getContactComposingStatus(contact);
+        if (state != null) {
+            OPConversation conversation = ConversationManager.getInstance()
+                .getConversation(conversationThread, true);
+            if (conversation != null) {
+                conversation.onContactComposingStateChanged(state, contact);
+            }
+        }
+    }
+
+    @Override
+    public void onConversationThreadMessage(
+        OPConversationThread conversationThread, String messageID) {
+        OPMessage message = conversationThread
+            .getMessageById(messageID);
+
+        if (message.getFrom().isSelf()) {
+            OPLogger.debug(
+                OPLogLevel.LogLevel_Basic,
+                "Weird! received message from myself!"
+                    + message.getMessageId()
+                    + " messageId "
+                    + messageID + " type "
+                    + message.getMessageType());
+
+            return;
+        }
+        OPConversation conversation = ConversationManager.getInstance().getConversation
+            (conversationThread, true);
+        conversation.onMessageReceived(conversationThread, message);
+    }
+
+    @Override
+    public void onConversationThreadMessageDeliveryStateChanged(
+        OPConversationThread conversationThread, String messageID,
+        MessageDeliveryStates state) {
+        OPDataManager.getDatastoreDelegate().
+            updateMessageDeliveryStatus(messageID,
+                                        conversationThread.getConversationId(),
+                                        state);
+    }
+
+    @Override
+    public void onConversationThreadPushMessage(
+        OPConversationThread conversationThread,
+        final String messageID,
+        OPContact contact) {
+        if (mPushService != null) {
+            final OPMessage message = conversationThread
+                .getMessageById(messageID);
+
+            OPConversation conversation = ConversationManager.getInstance()
+                .getConversation(conversationThread, true);
+            OPUser user = OPDataManager.getInstance().getUserByPeerUri(contact.getPeerURI());
+            mPushService.onConversationThreadPushMessage(conversation, message, user);
+        }
+    }
+
+    @Override
+    public void onConversationThreadContactConnectionStateChanged(
+        OPConversationThread conversationThread, OPContact contact,
+        ContactConnectionStates state) {
+    }
+    //End of OPConversationThreadDelegate
 
     public static void clearOnSignout() {
         if (instance != null) {

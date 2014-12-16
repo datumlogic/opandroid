@@ -114,7 +114,6 @@ public class OPPushManager {
     public static void onSignOut(){
         PushManager.disablePush();
         UAirship.land();
-        OPHelper.unregisterPushServiceProvider();
     }
 
 }

@@ -29,7 +29,6 @@
  *******************************************************************************/
 package com.openpeer.sdk.app;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -47,7 +46,7 @@ import com.openpeer.javaapi.OPLogger;
 import com.openpeer.sdk.delegates.OPAccountDelegateImpl;
 import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.model.CallManager;
-import com.openpeer.sdk.model.ThreadManager;
+import com.openpeer.sdk.model.ConversationManager;
 
 public class LoginManager {
 
@@ -81,10 +80,10 @@ public class LoginManager {
         String reloginInfo = OPDataManager.getInstance().getReloginInfo();
         if (reloginInfo == null || reloginInfo.length() == 0) {
             login(CallManager.getInstance(),
-                    ThreadManager.getInstance());
+                    ConversationManager.getInstance());
         } else {
             relogin(CallManager.getInstance(),
-                    ThreadManager.getInstance(),
+                    ConversationManager.getInstance(),
                     reloginInfo);
         }
         mLoginPerformed = true;

@@ -37,6 +37,7 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.ParticipantInfo;
+import com.openpeer.sdk.utils.OPModelUtils;
 
 public class OPConversationThread {
 
@@ -46,6 +47,10 @@ public class OPConversationThread {
     ParticipantInfo mParticipantInfo;
 
     public ParticipantInfo getParticipantInfo() {
+        if (mParticipantInfo == null) {
+            List<OPUser> users = OPModelUtils.getParticipantsOfThread(this);
+            mParticipantInfo = new ParticipantInfo(OPModelUtils.getWindowId(users), users);
+        }
         return mParticipantInfo;
     }
 

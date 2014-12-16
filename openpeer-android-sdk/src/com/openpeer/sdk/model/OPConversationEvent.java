@@ -32,11 +32,24 @@ package com.openpeer.sdk.model;
  *
  */
 public class OPConversationEvent {
-    private OPConversation mConversation;
+    String conversationId;
     private EventTypes event;
     private String mDescription;
     private long mId;
     private long mTime;
+    long cbcId;
+
+    public long getTime() {
+        return mTime;
+    }
+
+    public long getCbcId() {
+        return cbcId;
+    }
+
+    public void setCbcId(long cbcId) {
+        this.cbcId = cbcId;
+    }
 
     /**
      * @param conversation
@@ -46,25 +59,29 @@ public class OPConversationEvent {
      *            TODO
      */
     public OPConversationEvent(OPConversation conversation, EventTypes event, String description) {
-        this(conversation, event, description, System.currentTimeMillis());
+        this(conversation.getConversationId(), event, description, conversation.getCurrentWindowId(),System.currentTimeMillis());
     }
 
-    public OPConversationEvent(OPConversation conversation, EventTypes event, String description,
+    public OPConversationEvent(String conversationId,
+                               EventTypes event,
+                               String description,
+                               long cbcId,
             long time) {
         super();
-        this.mConversation = conversation;
+        this.conversationId = conversationId;
         this.event = event;
         this.mDescription = description;
+        this.cbcId=cbcId;
         this.mTime = time;
 
     }
 
-    public OPConversation getConversation() {
-        return mConversation;
+    public String getConversationId() {
+        return conversationId;
     }
 
-    public void setConversation(OPConversation conversation) {
-        this.mConversation = conversation;
+    public void setConversation(String conversationId) {
+        this.conversationId = conversationId;
     }
 
     public String getDescription() {
@@ -82,7 +99,8 @@ public class OPConversationEvent {
     public enum EventTypes {
         NewConversation,
         ContactsAdded,
-        ContactsRemoved
+        ContactsRemoved,
+        TopicChange
     }
 
     public EventTypes getEvent() {

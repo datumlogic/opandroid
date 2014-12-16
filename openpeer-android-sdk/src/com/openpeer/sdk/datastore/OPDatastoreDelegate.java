@@ -210,11 +210,10 @@ public interface OPDatastoreDelegate {
      * Save a new message received or sent
      * 
      * @param message
-     * @param conversation
-     *            Associated conversation TODO
+     * @param participantInfo
      * @return
      */
-    public Uri saveMessage(OPMessage message, OPConversation conversation);
+    public Uri saveMessage(OPMessage message, String conversationId, ParticipantInfo participantInfo);
 
     /**
      * Update or replace a message. This function should be called when editing/deleting a message or received a editing/deleting message
@@ -240,11 +239,11 @@ public interface OPDatastoreDelegate {
      * 
      * @param messageId
      *            TODO
-     * @param deliveryStatus
-     * @return
+     * @param conversationId
+     *@param deliveryStatus  @return
      */
     boolean updateMessageDeliveryStatus(String messageId,
-            MessageDeliveryStates deliveryStatus);
+                                        String conversationId, MessageDeliveryStates deliveryStatus);
 
     /**
      * Save a new call event, e.g. call answered, hangup,hold,etc

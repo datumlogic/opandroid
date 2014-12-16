@@ -104,7 +104,7 @@ public class UAPushService implements PushServiceInterface {
                                                                      .getDatastoreDelegate()
                                                                      .updateMessageDeliveryStatus(
                                                                          message.getMessageId(),
-                                                                         MessageDeliveryStates
+                                                                         conversation.getConversationId(), MessageDeliveryStates
                                                                              .MessageDeliveryState_Sent);
 
                                                              }

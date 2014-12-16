@@ -209,15 +209,7 @@ public class ChatsFragment extends BaseFragment implements
         public void onChatsEmptyViewClick();
     }
     public Uri getChatsUri() {
-        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
-        case ContactsBased:
-            return OPContentProvider
-                    .getContentUri(WindowViewEntry.URI_PATH_INFO_CBC);
-        case ContextBased:
-            return OPContentProvider
-                    .getContentUri(WindowViewEntry.URI_PATH_INFO_CONTEXT);
-        default:
-            return null;
-        }
+        return OPContentProvider
+            .getContentUri(WindowViewEntry.URI_PATH_INFO_CONTEXT);
     }
 }

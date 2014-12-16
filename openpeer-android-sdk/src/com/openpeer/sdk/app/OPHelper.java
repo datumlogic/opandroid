@@ -53,13 +53,10 @@ import com.openpeer.javaapi.VideoOrientations;
 import com.openpeer.sdk.datastore.OPDatastoreDelegate;
 import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
-import com.openpeer.sdk.delegates.OPIdentityDelegateImpl;
 import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
 import com.openpeer.sdk.model.CallManager;
 import com.openpeer.sdk.model.ConversationManager;
-import com.openpeer.sdk.model.PushServiceInterface;
-import com.openpeer.sdk.model.ThreadManager;
 
 /**
  * 
@@ -287,7 +284,6 @@ public class OPHelper {
         Intent intent = new Intent();
         if (isSigningOut) {
             CallManager.clearOnSignout();
-            ThreadManager.clearOnSignout();
             ConversationManager.clearOnSignout();
             mCacheDelegate.clear(null);
             intent.setAction(IntentData.ACTION_SIGNOUT_DONE);
@@ -304,13 +300,4 @@ public class OPHelper {
     public static OPSettingsDelegate getSettingsDelegate() {
         return instance.mSettingsDelegate;
     }
-
-    public static void registerPushServiceProvider(PushServiceInterface pushService) {
-        ThreadManager.getInstance().registerPushService(pushService);
-    }
-
-    public static void unregisterPushServiceProvider() {
-        ThreadManager.getInstance().unregisterPushService();
-    }
-
 }

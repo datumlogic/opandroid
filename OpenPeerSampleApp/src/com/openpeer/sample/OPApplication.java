@@ -42,6 +42,7 @@ import com.openpeer.sample.push.PushIntentReceiver;
 import com.openpeer.sample.push.UAPushService;
 import com.openpeer.sample.util.SettingsHelper;
 import com.openpeer.sdk.app.OPHelper;
+import com.openpeer.sdk.model.ConversationManager;
 import com.urbanairship.AirshipConfigOptions;
 import com.urbanairship.Logger;
 import com.urbanairship.UAirship;
@@ -112,7 +113,7 @@ public class OPApplication extends Application {
         PushManager.shared().setNotificationBuilder(
                 new OPPushNotificationBuilder());
         PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
-        OPHelper.registerPushServiceProvider(UAPushService.getInstance());
+        ConversationManager.getInstance().registerPushService(UAPushService.getInstance());
 
         OPHelper.getInstance().init(this, null);
         // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);

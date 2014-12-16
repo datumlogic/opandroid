@@ -287,7 +287,7 @@ public class CoreTestObjectFactory {
         Mockito.when(conversation.getParticipants()).thenReturn(users);
         Mockito.when(conversation.getCurrentWindowId()).thenReturn(2530l);
         Mockito.when(conversation.getType()).thenReturn(GroupChatMode.ContactsBased);
-        Mockito.when(conversation.getContextId()).thenReturn("contextId-01");
+        Mockito.when(conversation.getConversationId()).thenReturn("contextId-01");
         OPConversationEvent lastEvent = new OPConversationEvent(conversation, OPConversationEvent
             .EventTypes.NewConversation, "no description");
         Mockito.when(conversation.getLastEvent()).thenReturn(lastEvent);

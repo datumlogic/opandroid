@@ -79,7 +79,7 @@ public class LoginUIListenerImpl implements LoginUIListener {
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(mActivity);
             progressDialog.setIndeterminate(true);
-            progressDialog.setCancelable(false);
+//            progressDialog.setCancelable(false);
         }
         progressDialog.setMessage(message);
 

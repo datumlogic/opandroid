@@ -48,5 +48,6 @@ public interface SessionListener {
     public boolean onNewContactJoined(OPContact contact);
 
     public boolean onContactsChanged();
+    public boolean onConversationTopicChanged(String newTopic);
 
 }

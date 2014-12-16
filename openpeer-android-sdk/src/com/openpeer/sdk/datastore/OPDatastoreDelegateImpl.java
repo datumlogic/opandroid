@@ -51,7 +51,6 @@ import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPAccount;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPLogLevel;
@@ -60,7 +59,6 @@ import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.javaapi.OPRolodexContact.OPAvatar;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.AccountEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.AssociatedIdentityEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.AvatarEntry;
@@ -75,8 +73,6 @@ import com.openpeer.sdk.datastore.DatabaseContracts.MessageEventEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.OpenpeerContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
-import com.openpeer.sdk.datastore.DatabaseContracts.ThreadEntry;
-import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import com.openpeer.sdk.model.CallEvent;
 import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.MessageEditState;
@@ -201,7 +197,6 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     @Override
     public String getAvatarUri(long rolodexId, int width, int height) {
         SQLiteDatabase db = getWritableDB();
-        // String rawQuery = "select * from avatar where rolodex_id=" + rolodexId;
         String orderBy = " width-" + width;
         String limit = "1";
         Cursor cursor = db.query(AvatarEntry.TABLE_NAME,
@@ -391,7 +386,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         Cursor cursor = mContext
                 .getContentResolver()
                 .query(OPContentProvider.getContentUri(OpenpeerContactEntry.URI_PATH_INFO_DETAIL
-                        + "/" + id), null, null, null, null);
+                                                           + "/" + id), null, null, null, null);
         if(cursor.getCount()>0) {
             user = fromDetailCursor(cursor);
             cacheUser(user);
@@ -405,29 +400,35 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         String args[] = null;
         switch (type){
         case ContactsBased:{
-            where = ConversationEntry.COLUMN_PARTICIPANTS + "=" + participantInfo.getCbcId();
+            where = ConversationEntry.COLUMN_PARTICIPANTS + "=" + participantInfo.getCbcId() +
+                " and " + ConversationEntry.COLUMN_TYPE + "=?";
+            args = new String[]{type.name()};
+
             break;
         }
         case ContextBased:{
-            where = ConversationEntry.COLUMN_CONVERSATION_ID + "=?";
-            args = new String[]{conversationId};
+            where = ConversationEntry.COLUMN_CONVERSATION_ID + "=?" +
+                " and " + ConversationEntry.COLUMN_TYPE + "=?";
+            args = new String[]{conversationId, type.name()};
             break;
         }
         default:
             break;
         }
-        Cursor cursor = getWritableDB().query(ConversationEntry.TABLE_NAME, null,
-                                              where,
-                                              args,
-                                              null,
-                                              null, null);
+        Cursor cursor = query(ConversationEntry.TABLE_NAME, null, where, args);
         OPConversation conversation = null;
-        if (cursor.getCount() > 0) {
+        if (cursor.getCount() == 1) {
             cursor.moveToFirst();
+            // We always use existing conversationId
+            conversationId = cursor.getString(cursor.getColumnIndex(ConversationEntry
+                                                                        .COLUMN_CONVERSATION_ID));
             conversation = new OPConversation(participantInfo, conversationId, type);
             conversation.setId(cursor.getLong(0));
             conversation.setCbcId(cursor.getLong(cursor.getColumnIndex(ConversationEntry
                                                                            .COLUMN_PARTICIPANTS)));
+
+        } else {
+            //TODO: error handling. There should be only one record
         }
         cursor.close();
         return conversation;
@@ -528,129 +529,100 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public void markMessagesRead(OPConversation conversation) {
         ContentValues values = new ContentValues();
         values.put(MessageEntry.COLUMN_MESSAGE_READ, 1);
-        String where = MessageEntry.COLUMN_MESSAGE_READ + "=0";
-        String url = null;
-        switch (conversation.getType()) {
-        case ContactsBased:
-            url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
-                    + conversation.getCurrentWindowId();
-            break;
-        case ContextBased:
-            url = DatabaseContracts.MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE
-                    + conversation.getConversationId();
-            break;
-        default:
-            return;
-        }
+        String where = MessageEntry.COLUMN_MESSAGE_READ + "=0 ";
+        String url = MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + conversation.getConversationId();
 
-        int count = mContext.getContentResolver().update(
-                OPContentProvider.getContentUri(url), values, where, null);
+        int count = update(url, values, where, null);
         OPLogger.debug(OPLogLevel.LogLevel_Debug, "markMessagesRead update count " + count);
     }
 
     @Override
     public int updateMessage(OPMessage message, OPConversation conversation) {
         int count = 0;
-        SQLiteDatabase db = getWritableDB();
-        try {
-            db.beginTransaction();
-            MessageEvent event = null;
-            if (TextUtils.isEmpty(message.getMessage())) {
 
-                message.setEditState(MessageEditState.Deleted);
-                event = new MessageEvent(message.getMessageId(), MessageEvent.EventType.Delete, "",
-                        System.currentTimeMillis());
-                saveMessageEvent(event);
-            } else {
-                // this is an edit. put in the edited flag and new message text
-                message.setEditState(MessageEditState.Edited);
-                event = new MessageEvent(message.getMessageId(), MessageEvent.EventType.Delete, "",
-                        System.currentTimeMillis());
-                saveMessageEvent(event);
-            }
-            String where = MessageEntry.COLUMN_MESSAGE_ID + "=?";
-            String args[] = new String[] { message.getReplacesMessageId() };
-            String url = DatabaseContracts.MessageEntry.URI_PATH_WINDOW_ID_URI_BASE
-                    + conversation.getCurrentWindowId();
-
-            ContentValues values = new ContentValues();
-            values.put(MessageEntry.COLUMN_MESSAGE_ID, message.getMessageId());
-            values.put(MessageEntry.COLUMN_MESSAGE_TEXT, message.getMessage());
-
-            values.put(MessageEntry.COLUMN_MESSAGE_TYPE,
-                    message.getMessageType());
-            values.put(MessageEntry.COLUMN_SENDER_ID, message.getSenderId());
-            values.put(MessageEntry.COLUMN_CBC_ID, conversation.getCurrentWindowId());
-            values.put(MessageEntry.COLUMN_CONTEXT_ID, conversation.getConversationId());
-
-            values.put(MessageEntry.COLUMN_MESSAGE_READ, message.isRead());
-            values.put(MessageEntry.COLUMN_EDIT_STATUS, message.getEditState()
-                    .ordinal());
-
-            count = mContext.getContentResolver().update(
-                    OPContentProvider.getContentUri(url), values, where, args);
-            if (count == 0) {
-                OPLogger.error(OPLogLevel.LogLevel_Basic,
-                        "updating message failed " + message.getMessageId());
-            }
-            db.setTransactionSuccessful();
-        } catch (SQLiteException e) {
-
-        } finally {
-            db.endTransaction();
+        MessageEvent event = null;
+        if (TextUtils.isEmpty(message.getMessage())) {
+            message.setEditState(MessageEditState.Deleted);
+            event = new MessageEvent(message.getMessageId(), MessageEvent.EventType.Delete, "",
+                                     System.currentTimeMillis());
+            saveMessageEvent(event);
+        } else {
+            // this is an edit. put in the edited flag and new message text
+            message.setEditState(MessageEditState.Edited);
+            event = new MessageEvent(message.getMessageId(), MessageEvent.EventType.Delete, "",
+                                     System.currentTimeMillis());
+            saveMessageEvent(event);
         }
+        String where = MessageEntry.COLUMN_MESSAGE_ID + "=?";
+        String args[] = new String[]{message.getReplacesMessageId()};
+        String url = MessageEntry.URI_PATH_INFO_CONTEXT + conversation.getConversationId();
+
+        ContentValues values = new ContentValues();
+        values.put(MessageEntry.COLUMN_MESSAGE_ID, message.getMessageId());
+        values.put(MessageEntry.COLUMN_MESSAGE_TEXT, message.getMessage());
+
+        values.put(MessageEntry.COLUMN_MESSAGE_TYPE,
+                   message.getMessageType());
+        values.put(MessageEntry.COLUMN_SENDER_ID, message.getSenderId());
+        values.put(MessageEntry.COLUMN_CBC_ID, conversation.getCurrentWindowId());
+        values.put(MessageEntry.COLUMN_CONTEXT_ID, conversation.getConversationId());
+
+        values.put(MessageEntry.COLUMN_MESSAGE_READ, message.isRead());
+        values.put(MessageEntry.COLUMN_EDIT_STATUS, message.getEditState()
+            .ordinal());
+
+        count = mContext.getContentResolver().update(
+            OPContentProvider.getContentUri(url), values, where, args);
+        if (count == 0) {
+            OPLogger.error(OPLogLevel.LogLevel_Basic,
+                           "updating message failed " + message.getMessageId());
+        }
+
         return count;
     }
 
     @Override
-    public Uri saveMessage(OPMessage message, OPConversation conversation) {
-        SQLiteDatabase db = getWritableDB();
+    public Uri saveMessage(OPMessage message, String conversationId, ParticipantInfo participantInfo) {
         ContentValues values = new ContentValues();
         values.put(MessageEntry.COLUMN_MESSAGE_ID, message.getMessageId());
         values.put(MessageEntry.COLUMN_MESSAGE_TEXT, message.getMessage());
 
         values.put(MessageEntry.COLUMN_MESSAGE_TYPE, message.getMessageType());
         values.put(MessageEntry.COLUMN_SENDER_ID, message.getSenderId());
-        values.put(MessageEntry.COLUMN_CBC_ID, conversation.getCurrentWindowId());
-        values.put(MessageEntry.COLUMN_CONTEXT_ID, conversation.getConversationId());
+
+        values.put(MessageEntry.COLUMN_CONTEXT_ID, conversationId);
+        values.put(MessageEntry.COLUMN_CBC_ID,participantInfo.getCbcId());
         values.put(MessageEntry.COLUMN_MESSAGE_READ, message.isRead());
         values.put(MessageEntry.COLUMN_EDIT_STATUS, message.getEditState().ordinal());
 
         // we set the time here because we don't want to update the message time for edit/delete
         values.put(MessageEntry.COLUMN_MESSAGE_TIME, message.getTime().toMillis(false));
-        values.put(MessageEntry.COLUMN_CONVERSATION_EVENT_ID, conversation.getLastEvent().getId());
-        long id = db.insert(MessageEntry.TABLE_NAME, null, values);
+        Uri uri= insert(MessageEntry.TABLE_NAME,  values);
 
-        Uri uri = notifyMessageChanged(conversation.getType(),conversation.getConversationId(),
-                conversation.getCurrentWindowId(), id);
+        uri = notifyMessageChanged(conversationId, 0);
 
         return uri;
     }
 
     @Override
     public boolean updateMessageDeliveryStatus(String messageId,
-            MessageDeliveryStates deliveryStatus) {
-        int count = 0;
-        SQLiteDatabase db = getWritableDB();
-        try {
-            db.beginTransaction();
-            ContentValues values = new ContentValues();
-            values.put(MessageEntry.COLUMN_MESSAGE_ID, messageId);
-            values.put(MessageEntry.COLUMN_MESSAGE_DELIVERY_STATUS, deliveryStatus.name());
-            String selection = MessageEntry.COLUMN_MESSAGE_ID + "=?";
-            String args[] = new String[] { messageId };
-            count = update(MessageEntry.TABLE_NAME, values, selection, args);
-            MessageEvent event = new MessageEvent(messageId,
-                    MessageEvent.EventType.DeliveryStateChange,
-                    MessageEvent.getStateChangeJsonBlob(deliveryStatus),
-                    System.currentTimeMillis());
-            saveMessageEvent(event);
-            db.setTransactionSuccessful();
-        } catch (SQLiteException e) {
+                                               String conversationId, MessageDeliveryStates deliveryStatus) {
+        int count;
 
-        } finally {
-            db.endTransaction();
-        }
+        ContentValues values = new ContentValues();
+        values.put(MessageEntry.COLUMN_MESSAGE_ID, messageId);
+        values.put(MessageEntry.COLUMN_MESSAGE_DELIVERY_STATUS, deliveryStatus.name());
+        String selection = MessageEntry.COLUMN_MESSAGE_ID + "=?";
+        String args[] = new String[]{messageId};
+        count = update(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + conversationId, values,
+                       selection, args);
+        MessageEvent event = new MessageEvent(messageId,
+                                              MessageEvent.EventType.DeliveryStateChange,
+                                              MessageEvent.getStateChangeJsonBlob
+                                                  (deliveryStatus),
+                                              System.currentTimeMillis());
+        saveMessageEvent(event);
+
         return count > 0;
     }
 
@@ -834,7 +806,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
             values.put(ConversationEntry.COLUMN_CONVERSATION_ID,
                     conversation.getConversationId());
             values.put(ConversationEntry.COLUMN_ACCOUNT_ID, getLoggedinUser().getUserId());
-            id = db.insertWithOnConflict(ConversationEntry.TABLE_NAME,null, values,SQLiteDatabase.CONFLICT_IGNORE);
+            id = db.insertWithOnConflict(ConversationEntry.TABLE_NAME, null, values,
+                                         SQLiteDatabase.CONFLICT_IGNORE);
             conversation.setId(id);
             saveParticipants(conversation.getCurrentWindowId(), conversation.getParticipants());
             db.setTransactionSuccessful();
@@ -868,27 +841,20 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public long saveConversationEvent(OPConversationEvent event) {
         SQLiteDatabase db = getWritableDB();
         ContentValues values = new ContentValues();
-        OPConversation conversation = event.getConversation();
-        values.put(ConversationEventEntry.COLUMN_CONVERSATION_ID,
-                conversation.getId());
+        values.put(ConversationEventEntry.COLUMN_CONVERSATION_ID,event.getConversationId());
         values.put(ConversationEventEntry.COLUMN_EVENT, event.getEvent().name());
         values.put(ConversationEventEntry.COLUMN_CONTENT, event.getContent());
-        values.put(ConversationEventEntry.COLUMN_PARTICIPANTS, conversation.getCurrentWindowId());
-        values.put(ConversationEventEntry.COLUMN_TIME,
-                System.currentTimeMillis());
+        values.put(ConversationEventEntry.COLUMN_PARTICIPANTS, event.getCbcId());
+        values.put(ConversationEventEntry.COLUMN_TIME, event.getTime());
         long id = db.insert(ConversationEventEntry.TABLE_NAME, null, values);
-        saveParticipants(conversation.getCurrentWindowId(), conversation.getParticipants());
         return id;
     }
 
     @Override
     public long saveMessageEvent(MessageEvent event) {
         SQLiteDatabase db = getWritableDB();
-        long messageRecordId = DbUtils.simpleQueryForId(db, MessageEntry.TABLE_NAME,
-                MessageEntry.COLUMN_MESSAGE_ID + "=?",
-                new String[] { event.getMessageId() });
         ContentValues values = new ContentValues();
-        values.put(MessageEventEntry.COLUMN_MESSAGE_ID, messageRecordId);
+        values.put(MessageEventEntry.COLUMN_MESSAGE_ID, event.getMessageId());
         values.put(MessageEventEntry.COLUMN_EVENT, event.getEvent().name());
         values.put(MessageEventEntry.COLUMN_DESCRIPTION, event.getDescription());
         values.put(MessageEventEntry.COLUMN_TIME, event.getTime());
@@ -908,7 +874,7 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         ContentValues values = new ContentValues();
         values.put(CallEntry.COLUMN_CALL_ID, callId);
         values.put(CallEntry.COLUMN_CBC_ID, conversation.getCurrentWindowId());
-        values.put(CallEntry.COLUMN_CONTVERSATION_ID, conversation.getId());
+        values.put(CallEntry.COLUMN_CONTVERSATION_ID, conversation.getConversationId());
 
         values.put(CallEntry.COLUMN_CONVERSATION_EVENT_ID, conversation.getLastEvent().getId());
         values.put(CallEntry.COLUMN_PEER_ID, call.getPeerUser().getUserId());
@@ -933,41 +899,41 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         try {
             db.beginTransaction();
             Cursor cursor = db.query(CallEntry.TABLE_NAME, null,
-                    CallEntry.COLUMN_CALL_ID + "=?",
-                    new String[] { callId }, null, null, null);
+                                     CallEntry.COLUMN_CALL_ID + "=?",
+                                     new String[]{callId}, null, null, null);
             if (cursor == null) {
 
             }
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
-                long callRecordId = cursor.getLong(0);
                 String conversationId = cursor.getString(cursor
-                        .getColumnIndex(CallEntry.COLUMN_CONTVERSATION_ID));
-                long cbcId = cursor.getLong(cursor
-                        .getColumnIndex(CallEntry.COLUMN_CBC_ID));
+                                                             .getColumnIndex(CallEntry
+                                                                                 .COLUMN_CONTVERSATION_ID));
+
                 ContentValues values = new ContentValues();
-                values.put(CallEventEntry.COLUMN_CALL_ID, callRecordId);
+                values.put(CallEventEntry.COLUMN_CALL_ID, callId);
                 values.put(CallEventEntry.COLUMN_EVENT, event.getState().name());
                 values.put(MessageEventEntry.COLUMN_TIME, event.getTime());
                 if (event.getState() == CallStates.CallState_Open) {
                     ContentValues callValues = new ContentValues();
                     callValues.put(CallEntry.COLUMN_ANSWER_TIME,
-                            System.currentTimeMillis());
+                                   System.currentTimeMillis());
 
                     int count = db
-                            .update(CallEntry.TABLE_NAME, values, "_id=" + callRecordId, null);
+                        .update(CallEntry.TABLE_NAME, values, CallEventEntry.COLUMN_CALL_ID +
+                            "=?", new String[]{callId});
                 }
                 if (event.getState() == CallStates.CallState_Closed) {
                     ContentValues callValues = new ContentValues();
                     callValues.put(CallEntry.COLUMN_END_TIME, System.currentTimeMillis());
-                    updateCallTable(callRecordId, callValues);
+                    updateCallTable(callId, callValues);
                 }
 
                 eventRecordId = db.insert(CallEventEntry.TABLE_NAME, null, values);
-                notifyMessageChanged(conversationId, cbcId, 30000 + eventRecordId);
+                notifyMessageChanged(conversationId, 30000 + eventRecordId);
             }
             db.setTransactionSuccessful();
-        } catch (SQLiteException e) {
+        } catch(SQLiteException e) {
             // TODO: handle exception
         } finally {
             db.endTransaction();
@@ -1042,18 +1008,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     }
 
-    private void updateCallTable(long id, ContentValues values) {
+    private void updateCallTable(String callId, ContentValues values) {
 
-    }
-
-    private void saveThread(long conversationId,
-            OPConversationThread thread) {
-        SQLiteDatabase db = getWritableDB();
-        ContentValues values = new ContentValues();
-        values.put(ThreadEntry.COLUMN_CONVERSATION_ID, conversationId);
-        values.put(ThreadEntry.COLUMN_THREAD_ID, thread.getThreadID());
-        values.put(ThreadEntry.COLUMN_TIME, System.currentTimeMillis());
-        db.insert(ThreadEntry.TABLE_NAME, null, values);
     }
 
     private long saveRolodexContactTable(OPRolodexContact contact,
@@ -1326,27 +1282,10 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         return contact;
     }
 
-    private Uri notifyMessageChanged(String conversationId, long cbcId,
-            long id) {
-
+    private Uri notifyMessageChanged(String conversationId, long id) {
         StringBuilder sb = new StringBuilder();
-        switch (OPSdkConfig.getInstance().getGroupChatMode()) {
-        case ContactsBased:
 
-            sb.append(MessageEntry.URI_PATH_WINDOW_ID_URI_BASE + cbcId);
-            mContext.getContentResolver()
-                    .notifyChange(
-                            OPContentProvider
-                                    .getContentUri(WindowViewEntry.URI_PATH_INFO_CBC),
-                            null);
-            break;
-        case ContextBased:
-            sb.append(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + conversationId);
-
-            break;
-        default:
-            break;
-        }
+        sb.append(MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + conversationId);
 
         if (id != 0) {
             sb.append("/" + id);
@@ -1394,11 +1333,6 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         Log.d("test", "Inserted window participants " + count + " values "
                 + Arrays.deepToString(contentValues));
 
-        mContext.getContentResolver()
-                .notifyChange(
-                        OPContentProvider
-                                .getContentUri(WindowViewEntry.URI_PATH_INFO_CBC),
-                        null);
     }
 
     private boolean saveOrUpdateIdentities(List<OPIdentity> identities,
