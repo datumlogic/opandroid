@@ -1,6 +1,6 @@
 pushd .
 cd assets
-ln -s ../openpeer-android-sdk/assets/openpeer_database.sql assets/openpeer_database.sql
+ln -s ../../openpeer-android-sdk/assets/openpeer_database.sql openpeer_database.sql
 popd
 
 rm src/com/openpeer/javaapi
