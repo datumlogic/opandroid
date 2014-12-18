@@ -147,14 +147,10 @@ public class PushIntentReceiver extends BroadcastReceiver {
             }
 
             String conversationId = "";
-            ParticipantInfo info = new ParticipantInfo(OPModelUtils.getWindowId(users), users);
-            OPConversation conversation = ConversationManager.getInstance().
-                getConversation(GroupChatMode.ContactsBased,
-                     info,
-                     null, true);
+            ParticipantInfo participantInfo = new ParticipantInfo(OPModelUtils.getWindowId(users), users);
 
             OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
-                                                             conversationId,info);
+                                                             conversationId,participantInfo);
             //TODO: Now notify observer
 
         } else if (action.equals(PushManager.ACTION_NOTIFICATION_OPENED)) {

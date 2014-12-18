@@ -38,15 +38,9 @@ import com.openpeer.javaapi.OPMessage;
  * UI listener of session state changes
  */
 public interface SessionListener {
-    public void onContactComposingStateChanged(ComposingStates state,
-            OPUser user);
-
+    public void onContactComposingStateChanged(ComposingStates state, OPUser user);
     public boolean onNewMessage(OPMessage message);
-
     public boolean onPushMessage(OPMessage message);
-
-    public boolean onNewContactJoined(OPContact contact);
-
     public boolean onContactsChanged();
     public boolean onConversationTopicChanged(String newTopic);
 

@@ -75,6 +75,7 @@ import com.openpeer.sample.OPNotificationBuilder;
 import com.openpeer.sample.R;
 import com.openpeer.sample.contacts.ProfilePickerActivity;
 import com.openpeer.sdk.app.OPDataManager;
+import com.openpeer.sdk.app.OPSdkConfig;
 import com.openpeer.sdk.datastore.DatabaseContracts.MessageEntry;
 import com.openpeer.sdk.datastore.OPContentProvider;
 import com.openpeer.sdk.datastore.OPModelCursorHelper;
@@ -110,24 +111,9 @@ public class ChatFragment extends BaseFragment implements
     boolean mTyping;
     private OPMessage mEditingMessage;
 
-    public static ChatFragment newInstance(long[] userIdList, String conversationId) {
-        ChatFragment fragment = new ChatFragment();
-        Bundle args = new Bundle();
-        args.putLongArray(IntentData.ARG_PEER_USER_IDS, userIdList);
-        args.putString(IntentData.ARG_CONVERSATION_ID, conversationId);
-
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static ChatFragment newInstance(String peerContactId) {
-        ChatFragment fragment = new ChatFragment();
-        Bundle args = new Bundle();
-        args.putString(IntentData.ARG_PEER_CONTACT_ID, peerContactId);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    String mConversationId;
+    String mType;
+    ParticipantInfo mParticipantInfo;
     public static ChatFragment newTestInstance() {
         ChatFragment fragment = new ChatFragment();
         return fragment;
@@ -137,40 +123,44 @@ public class ChatFragment extends BaseFragment implements
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        String conversationId;
-        String type;
-        long[] userIDs;
-        long cbcId;
+        long[] userIds;
         if (savedInstanceState == null) {
             Bundle args = getArguments();
-            userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
-            conversationId = args.getString(IntentData.ARG_CONVERSATION_ID);
-            type = args.getString(IntentData.ARG_CONVERSATION_TYPE);
+            userIds = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
+            mConversationId = args.getString(IntentData.ARG_CONVERSATION_ID);
+            mType = args.getString(IntentData.ARG_CONVERSATION_TYPE);
         } else {
-            userIDs = savedInstanceState
+            userIds = savedInstanceState
                 .getLongArray(IntentData.ARG_PEER_USER_IDS);
-            conversationId = savedInstanceState.getString(IntentData.ARG_CONVERSATION_ID);
-            type = savedInstanceState.getString(IntentData.ARG_CONVERSATION_TYPE);
+            mConversationId = savedInstanceState.getString(IntentData.ARG_CONVERSATION_ID);
+            mType = savedInstanceState.getString(IntentData.ARG_CONVERSATION_TYPE);
         }
-        List<OPUser> participants = OPDataManager.getDatastoreDelegate().getUsers(userIDs);
-        cbcId = OPModelUtils.getWindowId(userIDs);
+        long cbcId = OPModelUtils.getWindowId(userIds);
         OPNotificationBuilder.cancelNotificationForChat((int) cbcId);
+        List<OPUser> participants = OPDataManager.getDatastoreDelegate().getUsers(userIds);
+        mParticipantInfo = new ParticipantInfo(cbcId,participants);
         setHasOptionsMenu(true);
-        ParticipantInfo participantInfo = new ParticipantInfo(cbcId,participants);
-        mSession = ConversationManager.getInstance().getConversation(GroupChatMode.valueOf(type),
-                                                                     participantInfo,
-                                                                     conversationId, true);
+        if(OPDataManager.getInstance().isAccountReady()){
+            setup();
+        }
+    }
+
+    void setup(){
+        mSession = ConversationManager.getInstance().getConversation(GroupChatMode.valueOf(mType),
+                                                                     mParticipantInfo,
+                                                                     mConversationId, true);
 
         if (TextUtils.isEmpty(mSession.getConversationId())) {
-            mSession.setConversationId(conversationId);
+            mSession.setConversationId(mConversationId);
         }
         mSession.registerListener(this);
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mSession.unregisterListener(this);
+        if(mSession!=null) {
+            mSession.unregisterListener(this);
+        }
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -218,7 +208,8 @@ public class ChatFragment extends BaseFragment implements
         mSession.setComposingStatus(ComposingStates.ComposingState_Inactive);
     }
 
-    void updateUsersView(List<OPUser> users) {
+    void updateUsersView() {
+        List<OPUser> users=mParticipantInfo.getParticipants();
         if (users.size() == 1) {
             getActivity().getActionBar().setTitle(users.get(0).getName());
         } else {
@@ -258,7 +249,7 @@ public class ChatFragment extends BaseFragment implements
         mComposeBox = (TextView) layout.findViewById(R.id.text);
         mSendButton = layout.findViewById(R.id.send);
 
-        updateUsersView(mSession.getParticipants());
+        updateUsersView();
         mSendButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -597,6 +588,10 @@ public class ChatFragment extends BaseFragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
         case R.id.menu_call:{
+            if(mSession==null){
+                //TODO: error handling
+                return true;
+            }
             if (OPDataManager.getInstance().getSharedAccount()
                 .getState(0, null) != AccountStates.AccountState_Ready) {
                 BaseActivity.showInvalidStateWarning(getActivity());
@@ -629,43 +624,31 @@ public class ChatFragment extends BaseFragment implements
         }
     }
 
-    void onParticipantsChanged(long[] userIdsToAdd,long[] userIdsToRemove) {
-        if (userIdsToAdd != null) {
-            List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIdsToAdd);
-            if (users != null) {
-                mSession.addParticipants(users);
-            }
-        }
-        if (userIdsToRemove != null) {
-            List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIdsToRemove);
-            if (users != null) {
-                mSession.removeParticipants(users);
-            }
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putLongArray(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
-        if (mSession.getConversationId() != null) {
-            outState.putString(IntentData.ARG_CONVERSATION_ID, mSession.getConversationId());
+        outState.putLongArray(IntentData.ARG_PEER_USER_IDS,
+                              OPModelUtils.getUserIds(mParticipantInfo.getParticipants()));
+        if (!TextUtils.isEmpty(mConversationId)) {
+            outState.putString(IntentData.ARG_CONVERSATION_ID, mConversationId);
         }
-        outState.putString(IntentData.ARG_CONVERSATION_TYPE, mSession.getType().name());
-        outState.putLong(IntentData.ARG_CONVERSATION_TYPE, mSession.getCurrentWindowId());
+        outState.putString(IntentData.ARG_CONVERSATION_TYPE, mType);
+        outState.putLong(IntentData.ARG_CONVERSATION_TYPE, mParticipantInfo.getCbcId());
         super.onSaveInstanceState(outState);
     }
 
     // After adding a new participant we'll have to switch chat window
     private void onProfilePickerClick() {
-        List<OPUser> users = mSession.getParticipants();
+        List<OPUser> users = mParticipantInfo.getParticipants();
         if (users.size() == 1) {
             Intent intent = new Intent(getActivity(), ProfilePickerActivity.class);
-            intent.putExtra(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
+            intent.putExtra(IntentData.ARG_PEER_USER_IDS,
+                            OPModelUtils.getUserIds(mParticipantInfo.getParticipants()));
             startActivityForResult(intent,
                                    IntentData.REQUEST_CODE_ADD_CONTACTS);
         } else {
             Intent intent = new Intent(getActivity(), ParticipantsManagementActivity.class);
-            intent.putExtra(IntentData.ARG_PEER_USER_IDS, mSession.getParticipantIDs());
+            intent.putExtra(IntentData.ARG_PEER_USER_IDS,
+                            OPModelUtils.getUserIds(mParticipantInfo.getParticipants()));
             startActivityForResult(intent, IntentData.REQUEST_CODE_PARTICIPANTS);
         }
     }
@@ -680,14 +663,31 @@ public class ChatFragment extends BaseFragment implements
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
                 List<OPUser> newParticipants = new ArrayList<>();
-                newParticipants.addAll(mSession.getParticipants());
-                newParticipants.addAll(OPDataManager.getDatastoreDelegate().getUsers(userIds));
-                mSession = ConversationManager.getInstance().
-                    getConversation(GroupChatMode.ContactsBased,
-                                    new ParticipantInfo(OPModelUtils.getWindowId(newParticipants)
-                                        , newParticipants), null, true);
-                onContactsChanged();
-//                onParticipantsChanged(userIds, null);
+                switch (OPSdkConfig.getInstance().getGroupChatMode()){
+                case ContactsBased:{
+                    newParticipants.addAll(mParticipantInfo.getParticipants());
+                    newParticipants.addAll(OPDataManager.getDatastoreDelegate().getUsers(userIds));
+                    mParticipantInfo = new ParticipantInfo(OPModelUtils.getWindowId(newParticipants)
+                        , newParticipants);
+                    getNewContactsBasedConversation();
+                    onContactsChanged();
+                }
+                break;
+                case ContextBased:{
+                    if (mSession.getType() == GroupChatMode.ContactsBased) {
+                        newParticipants.addAll(mParticipantInfo.getParticipants());
+                        newParticipants.addAll(OPDataManager.getDatastoreDelegate().getUsers
+                            (userIds));
+                        mParticipantInfo = new ParticipantInfo(
+                            OPModelUtils.getWindowId(newParticipants), newParticipants);
+                        getNewThreadBasedConversation();
+                        onContactsChanged();
+                    } else {
+                        mSession.addParticipants(newParticipants);
+                    }
+                }
+                break;
+                }
             }
             break;
         case IntentData.REQUEST_CODE_PARTICIPANTS:
@@ -695,21 +695,37 @@ public class ChatFragment extends BaseFragment implements
                 long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
                 List<OPUser> newParticipants = OPDataManager.getDatastoreDelegate().getUsers
                     (userIds);
-                mSession = ConversationManager.getInstance().
-                    getConversation(GroupChatMode.ContactsBased,
-                                    new ParticipantInfo
-                                        (OPModelUtils.getWindowId(newParticipants),
-                                         newParticipants), null, true);
-                ;
-                onContactsChanged();
-//                mSession.onContactsChanged(users);
+                mParticipantInfo = new ParticipantInfo(OPModelUtils.getWindowId(newParticipants)
+                    , newParticipants);
+                switch (OPSdkConfig.getInstance().getGroupChatMode()){
+                case ContactsBased:{
+
+                    getNewContactsBasedConversation();
+                    onContactsChanged();
+                }
+                break;
+                case ContextBased:{
+                    if (mSession != null) {
+                        if (mSession.getType() == GroupChatMode.ContactsBased) {
+                            getNewThreadBasedConversation();
+
+                            onContactsChanged();
+                        } else {
+                            mSession.onContactsChanged(newParticipants);
+                        }
+                    } else {
+
+                    }
+                }
+                break;
+                }
             }
             break;
         case IntentData.REQUEST_CODE_GET_CALLEE:
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                makeCall(mSession.getParticipantIDs(), mVideo);
+                makeCall(userIds, mVideo);
             }
             break;
         }
@@ -808,11 +824,24 @@ public class ChatFragment extends BaseFragment implements
 
     Uri getMessagesUri() {
 
-        if (TextUtils.isEmpty(mSession.getConversationId())) {
+        if (TextUtils.isEmpty(mConversationId)) {
             return null;
         }
         return OPContentProvider.getContentUri(
-            MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mSession.getConversationId());
+            MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mConversationId);
+    }
+    void getNewContactsBasedConversation(){
+        mType = GroupChatMode.ContactsBased.name();
+        mSession = ConversationManager.getInstance().
+            getConversation(GroupChatMode.ContactsBased, mParticipantInfo, null, true);
+        mConversationId = mSession.getConversationId();
+    }
+    void getNewThreadBasedConversation(){
+        mSession = ConversationManager.getInstance().
+            getConversation(GroupChatMode.ContextBased, mParticipantInfo,
+                            null, true);
+        mConversationId = mSession.getConversationId();
+        mType = GroupChatMode.ContextBased.name();
     }
     // Beginning of SessionListener implementation
     static final int MENUID_DELETE_MESSAGE = 10000;
@@ -861,13 +890,11 @@ public class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public boolean onNewContactJoined(OPContact opContact) {
-        return false;
-    }
-
-    @Override
     public boolean onContactsChanged() {
-        updateUsersView(mSession.getParticipants());
+        if (mSession != null) {
+            mParticipantInfo = mSession.getParticipantInfo();
+        }
+        updateUsersView();
         getLoaderManager().restartLoader(URL_LOADER, null, this);
 
         return true;

@@ -93,9 +93,6 @@ public class OPConversation extends Observable {
         this.conversationId = conversationId;
         type = mode;
         this.participantInfo = participantInfo;
-        mLastEvent = new OPConversationEvent(this,
-                                             OPConversationEvent.EventTypes.NewConversation,
-                                             "");
     }
 
     public long save() {
@@ -185,6 +182,9 @@ public class OPConversation extends Observable {
      */
     public void setThread(OPConversationThread thread) {
         mConvThread = thread;
+        if(conversationId==null){
+            conversationId=mConvThread.getConversationId();
+        }
     }
 
     public OPConversationThread getThread(boolean createIfNo) {
@@ -223,19 +223,7 @@ public class OPConversation extends Observable {
     }
 
     private void addContactsToThread(List<OPUser> users) {
-        List<OPContactProfileInfo> contactProfiles = new ArrayList<>();
-        for (OPUser user : users) {
-            if (!user.getOPContact().isSelf()) {
-                OPContactProfileInfo info = new OPContactProfileInfo();
-
-                OPContact newContact = user.getOPContact();
-                info.setIdentityContacts(user.getIdentityContacts());
-                info.setContact(newContact);
-
-                contactProfiles.add(info);
-            }
-        }
-        mConvThread.addContacts(contactProfiles);
+        OPModelUtils.addParticipantsToThread(mConvThread,users);
     }
 
     public OPCall placeCall(OPUser user,
@@ -324,17 +312,15 @@ public class OPConversation extends Observable {
     }
 
     public void removeParticipants(List<OPUser> users) {
-        List<OPContact> contacts = new ArrayList<>();
         if (mConvThread != null) {
-            for (OPUser user : users) {
-                contacts.add(user.getOPContact());
-            }
-            mConvThread.removeContacts(contacts);
+            OPModelUtils.removeParticipantsFromThread(mConvThread, users);
         } else {
             participantInfo.getParticipants().removeAll(users);
             long oldCbcId = participantInfo.getCbcId();
             participantInfo.setCbcId(OPModelUtils.getWindowId(participantInfo.getParticipants()));
-            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId, participantInfo.getCbcId());
+            ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId,
+                                                                               participantInfo
+                                                                                   .getCbcId());
             OPConversationEvent event = new OPConversationEvent(
                 this,
                 OPConversationEvent.EventTypes.ContactsRemoved,
@@ -381,12 +367,7 @@ public class OPConversation extends Observable {
      * @return ID array of the participants, excluding yourself
      */
     public long[] getParticipantIDs() {
-        long IDs[] = new long[participantInfo.getParticipants().size()];
-        for (int i = 0; i < IDs.length; i++) {
-            OPUser user = participantInfo.getParticipants().get(i);
-            IDs[i] = user.getUserId();
-        }
-        return IDs;
+        return OPModelUtils.getUserIds(participantInfo.getParticipants());
     }
 
     /**

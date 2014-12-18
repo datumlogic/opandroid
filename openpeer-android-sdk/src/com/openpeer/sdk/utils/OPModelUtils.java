@@ -36,6 +36,7 @@ import java.util.List;
 import android.util.Log;
 
 import com.openpeer.javaapi.OPContact;
+import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.sdk.app.OPDataManager;
@@ -134,5 +135,37 @@ public class OPModelUtils {
             }
         }
         return users;
+    }
+
+    public static void addParticipantsToThread(OPConversationThread thread, List<OPUser> users){
+        List<OPContactProfileInfo> contactProfiles = new ArrayList<>();
+        for (OPUser user : users) {
+            if (!user.getOPContact().isSelf()) {
+                OPContactProfileInfo info = new OPContactProfileInfo();
+
+                OPContact newContact = user.getOPContact();
+                info.setIdentityContacts(user.getIdentityContacts());
+                info.setContact(newContact);
+
+                contactProfiles.add(info);
+            }
+        }
+        thread.addContacts(contactProfiles);
+    }
+    public static void removeParticipantsFromThread(OPConversationThread thread,List<OPUser> users){
+        List<OPContact> contacts = new ArrayList<>(users.size());
+        for (OPUser user : users) {
+            contacts.add(user.getOPContact());
+        }
+        thread.removeContacts(contacts);
+    }
+
+    public static long[] getUserIds(List<OPUser> users){
+        long IDs[] = new long[users.size()];
+        for (int i = 0; i < IDs.length; i++) {
+            OPUser user = users.get(i);
+            IDs[i] = user.getUserId();
+        }
+        return IDs;
     }
 }

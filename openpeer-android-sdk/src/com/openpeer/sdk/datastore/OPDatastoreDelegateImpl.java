@@ -443,10 +443,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     @Override
     public List<OPConversationEvent> getConversationEvents(OPConversation conversation) {
         List<OPConversationEvent> events = null;
-        Cursor cursor = getWritableDB().query(ConversationEventEntry.TABLE_NAME, null,
-                ConversationEventEntry.COLUMN_CONVERSATION_ID + "=" + conversation.getId(), null,
-                null,
-                null, null);
+        Cursor cursor = query(ConversationEventEntry.TABLE_NAME, null,
+                ConversationEventEntry.COLUMN_CONVERSATION_ID + "=?" ,new String[]{conversation.getConversationId()});
         if (cursor.getCount() > 0) {
             events = new ArrayList<OPConversationEvent>();
             cursor.moveToFirst();
@@ -821,7 +819,6 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     @Override
     public long updateConversation(OPConversation conversation) {
-        SQLiteDatabase db = getWritableDB();
         ContentValues values = new ContentValues();
         values.put(ConversationEntry.COLUMN_TYPE, conversation.getType().name());
         values.put(ConversationEntry.COLUMN_START_TIME,
@@ -831,10 +828,10 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         values.put(ConversationEntry.COLUMN_CONVERSATION_ID,
                 conversation.getConversationId());
         values.put(ConversationEntry.COLUMN_ACCOUNT_ID, getLoggedinUser().getUserId());
-        long id = db.update(ConversationEntry.TABLE_NAME, values,
-                BaseColumns._ID + "=" + conversation.getId(), null);
+        int count= update(ConversationEntry.TABLE_NAME, values,
+                BaseColumns._ID + "=?",new String[]{conversation.getConversationId()});
 
-        return id;
+        return count;
     }
 
     @Override
@@ -876,7 +873,6 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         values.put(CallEntry.COLUMN_CBC_ID, conversation.getCurrentWindowId());
         values.put(CallEntry.COLUMN_CONTVERSATION_ID, conversation.getConversationId());
 
-        values.put(CallEntry.COLUMN_CONVERSATION_EVENT_ID, conversation.getLastEvent().getId());
         values.put(CallEntry.COLUMN_PEER_ID, call.getPeerUser().getUserId());
         // 0 for outgoing,1 for incoming
         values.put(CallEntry.COLUMN_DIRECTION, call.getCaller().isSelf() ? 0 : 1);

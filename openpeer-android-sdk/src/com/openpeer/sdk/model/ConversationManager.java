@@ -122,7 +122,10 @@ public class ConversationManager extends OPConversationThreadDelegate {
                     (type, participantInfo, conversationId);
                 if (conversation != null) {
                     conversation.setParticipants(participantInfo.getParticipants());
-                    conversation.getThread(true);
+                    conversation = OPDataManager.getDatastoreDelegate().getConversation
+                        (type, participantInfo, conversationId);
+                    conversation.setThread(getThread(type, conversationId, participantInfo,
+                                                     true));
                     cacheCbcToConversation(participantInfo.getCbcId(), conversation);
                     cacheConversation(conversation);
                 }
@@ -134,13 +137,15 @@ public class ConversationManager extends OPConversationThreadDelegate {
                 conversation = getConversationById(conversationId);
 
                 if (conversation == null) {
-                    conversation = OPDataManager.getDatastoreDelegate().getConversation
-                        (type, participantInfo, conversationId);
+
                     if (conversation != null) {
+                        conversation = OPDataManager.getDatastoreDelegate().getConversation
+                            (type, participantInfo, conversationId);
+                        conversation.setThread(getThread(type, conversationId, participantInfo,
+                                                         true));
+
                         if (conversation.getCurrentWindowId() != participantInfo.getCbcId()) {
-                            conversation.setCbcId(participantInfo.getCbcId());
-                            conversation.setParticipants(participantInfo.getParticipants());
-                            conversation.getThread(true);
+                            conversation.setParticipantInfo(participantInfo);
                         }
                         cacheCbcToConversation(participantInfo.getCbcId(), conversation);
                         cacheConversation(conversation);
@@ -153,10 +158,9 @@ public class ConversationManager extends OPConversationThreadDelegate {
             return null;
         }
         if (conversation == null && createNew) {
-            if (conversationId == null) {
-                conversationId = UUID.randomUUID().toString();
-            }
             conversation = new OPConversation(participantInfo, conversationId, type);
+
+            conversation.setThread(getThread(type, conversationId, participantInfo, true));
             cacheCbcToConversation(participantInfo.getCbcId(), conversation);
             cacheConversation(conversation);
             conversation.save();
@@ -224,23 +228,25 @@ public class ConversationManager extends OPConversationThreadDelegate {
     public OPConversationThread getThread(GroupChatMode mode, String conversationId,
                                           ParticipantInfo participantInfo, boolean createNew) {
         OPConversationThread thread = null;
-        switch (mode){
-        case ContactsBased:{
-            thread = findThreadByCbcId(participantInfo.getCbcId());
-            break;
-        }
-        case ContextBased:{
-            if (mThreads != null) {
-                thread = mThreads.get(conversationId);
-            }
-            break;
-        }
-        }
+//        switch (mode){
+//        case ContactsBased:{
+//            thread = findThreadByCbcId(participantInfo.getCbcId());
+//            break;
+//        }
+//        case ContextBased:{
+//            if (mThreads != null) {
+//                thread = mThreads.get(conversationId);
+//            }
+//            break;
+//        }
+//        }
         if (thread == null && createNew) {
             thread = OPConversationThread.create(
                 OPDataManager.getInstance().getSharedAccount(),
                 OPDataManager.getInstance().getSelfContacts());
+            OPModelUtils.addParticipantsToThread(thread, participantInfo.getParticipants());
             thread.setParticipantInfo(participantInfo);
+
             cacheThread(thread);
             cacheCbcToThread(participantInfo.getCbcId(), thread);
         }
