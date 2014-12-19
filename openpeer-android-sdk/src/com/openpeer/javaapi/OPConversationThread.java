@@ -133,7 +133,9 @@ public class OPConversationThread {
             boolean includeCommaPrefix);
 
     public static native OPConversationThread create(OPAccount account,
-            List<OPIdentityContact> identityContactsOfSelf);
+            List<OPIdentityContact> identityContactsOfSelf,
+            List<OPContactProfileInfo> addContacts,
+            String threadID);
 
     public static native List<OPConversationThread> getConversationThreads(
             OPAccount account);
@@ -177,6 +179,8 @@ public class OPConversationThread {
             String messageType, String message, boolean signMessage);
 
     private native OPMessage getMessage(String messageID);
+    
+    public native void getMessageDeliveryState(String messageID, MessageDeliveryStates state);
 
     public native MessageDeliveryStates getMessageDeliveryState(String messageID);
 

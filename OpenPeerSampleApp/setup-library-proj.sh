@@ -1,14 +1,6 @@
 pushd .
 cd assets
-<<<<<<< Updated upstream
-ln -s ../openpeer-android-sdk/assets/openpeer_database.sql assets/openpeer_database.sql
-=======
-<<<<<<< Updated upstream
 ln -s ../../openpeer-android-sdk/assets/openpeer_database.sql openpeer_database.sql
-=======
-ln -s ../openpeer-android-sdk/assets/openpeer_database.sql openpeer_database.sql
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 popd
 
 rm src/com/openpeer/javaapi

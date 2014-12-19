@@ -34,10 +34,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    create
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;)Lcom/openpeer/javaapi/OPConversationThread;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;Ljava/util/List;Ljava/lang/String;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
-  (JNIEnv *, jclass, jobject, jobject);
+  (JNIEnv *, jclass, jobject, jobject, jobject, jstring);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -174,6 +174,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMess
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMessageDeliveryState
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    setMessageDeliveryState
+ * Signature: (Ljava/lang/String;Lcom/openpeer/javaapi/MessageDeliveryStates;)V
+ */
+JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_setMessageDeliveryState
+  (JNIEnv *, jobject, jstring, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
