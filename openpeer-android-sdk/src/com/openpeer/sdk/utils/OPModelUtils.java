@@ -138,19 +138,7 @@ public class OPModelUtils {
     }
 
     public static void addParticipantsToThread(OPConversationThread thread, List<OPUser> users){
-        List<OPContactProfileInfo> contactProfiles = new ArrayList<>();
-        for (OPUser user : users) {
-            if (!user.getOPContact().isSelf()) {
-                OPContactProfileInfo info = new OPContactProfileInfo();
-
-                OPContact newContact = user.getOPContact();
-                info.setIdentityContacts(user.getIdentityContacts());
-                info.setContact(newContact);
-
-                contactProfiles.add(info);
-            }
-        }
-        thread.addContacts(contactProfiles);
+        thread.addContacts(getProfileInfo(users));
     }
     public static void removeParticipantsFromThread(OPConversationThread thread,List<OPUser> users){
         List<OPContact> contacts = new ArrayList<>(users.size());
@@ -167,5 +155,21 @@ public class OPModelUtils {
             IDs[i] = user.getUserId();
         }
         return IDs;
+    }
+
+    public static List<OPContactProfileInfo> getProfileInfo(List<OPUser> users){
+        List<OPContactProfileInfo> contactProfiles = new ArrayList<>();
+        for (OPUser user : users) {
+            if (!user.getOPContact().isSelf()) {
+                OPContactProfileInfo info = new OPContactProfileInfo();
+
+                OPContact newContact = user.getOPContact();
+                info.setIdentityContacts(user.getIdentityContacts());
+                info.setContact(newContact);
+
+                contactProfiles.add(info);
+            }
+        }
+        return contactProfiles;
     }
 }

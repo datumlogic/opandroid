@@ -46,7 +46,6 @@ import com.openpeer.sdk.utils.OPModelUtils;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.UUID;
 
 public class ConversationManager extends OPConversationThreadDelegate {
     private static ConversationManager instance;
@@ -75,10 +74,6 @@ public class ConversationManager extends OPConversationThreadDelegate {
             conversationTable = new Hashtable<>();
         }
         conversationTable.put(conversation.getConversationId(), conversation);
-    }
-
-    void onConversationThreadChange(OPConversation conversation, String oldThreadId,
-                                    String newThreadId) {
     }
 
     void onConversationParticipantsChange(OPConversation conversation, long oldCbcId,
@@ -193,13 +188,6 @@ public class ConversationManager extends OPConversationThreadDelegate {
 
     public void unregisterPushService() {
         mPushService = null;
-    }
-
-    OPConversationThread findThreadByCbcId(long id) {
-        if (mCbcToThreads == null) {
-            return null;
-        }
-        return mCbcToThreads.get(id);
     }
 
     void cacheCbcToThread(long cbcId, OPConversationThread thread) {

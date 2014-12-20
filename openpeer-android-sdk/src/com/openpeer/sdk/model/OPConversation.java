@@ -37,7 +37,6 @@ import com.openpeer.javaapi.ComposingStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
-import com.openpeer.javaapi.OPContactProfileInfo;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPIdentityContact;
 import com.openpeer.javaapi.OPMessage;
@@ -83,11 +82,6 @@ public class OPConversation extends Observable {
 
     ParticipantInfo participantInfo;
     private GroupChatMode type;
-
-//    public static enum ConversationType{
-//        ContactsBased,
-//        ContextBased
-//    }
 
     public OPConversation(ParticipantInfo participantInfo, String conversationId, GroupChatMode mode) {
         this.conversationId = conversationId;
@@ -277,15 +271,6 @@ public class OPConversation extends Observable {
     private interface MessageDeliveryCallback {
         public void onMessageDeliveryStateChange(String messageId,
                                                  MessageDeliveryStates state);
-    }
-
-    boolean hasOPContact(OPContact contact) {
-        for (OPUser user : participantInfo.getParticipants()) {
-            if (user.isSame(contact)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean isForUsers(List<OPUser> users) {
@@ -505,20 +490,6 @@ public class OPConversation extends Observable {
             OPDataManager.getDatastoreDelegate().saveCall(call, this);
         }
         OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(), event);
-    }
-
-
-    private String getContactsIdString(List<OPUser> users) {
-        StringBuilder sb = new StringBuilder();
-        if (!users.isEmpty()) {
-            for (OPUser user : users) {
-                sb.append(user.getUserId() + ",");
-            }
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        String ids = sb.toString();
-
-        return ids;
     }
 
     /**
