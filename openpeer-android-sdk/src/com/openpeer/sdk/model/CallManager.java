@@ -36,15 +36,21 @@ import android.content.Intent;
 
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
+import com.openpeer.javaapi.CallSystemMessageTypes;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
+import com.openpeer.javaapi.OPCallSystemMessage;
+import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
+import com.openpeer.javaapi.OPMessage;
+import com.openpeer.javaapi.OPSystemMessage;
 import com.openpeer.sdk.app.IntentData;
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.app.OPHelper;
 import com.openpeer.sdk.utils.OPModelUtils;
 
 import java.util.Hashtable;
+import java.util.UUID;
 
 public class CallManager extends OPCallDelegate {
 
@@ -67,17 +73,19 @@ public class CallManager extends OPCallDelegate {
 
     @Override
     public void onCallStateChanged(OPCall call, CallStates state) {
+            OPConversationThread thread = call.getConversationThread();
+            call.setCbcId(OPModelUtils.getWindowIdForThread(thread));
+            OPConversation conversation = ConversationManager.getInstance().
+                getConversation(thread, true);
         if (state == CallStates.CallState_Preparing) {
             //Handle racing condition. SImply hangup the existing call for now.
             OPCall oldCall = findCallForPeer(call.getPeerUser().getUserId());
             if (oldCall != null) {
                 call.hangup(CallClosedReasons.CallClosedReason_NotAcceptableHere);
             }
-            OPConversationThread thread = call.getConversationThread();
-            call.setCbcId(OPModelUtils.getWindowIdForThread(thread));
             OPDataManager.getDatastoreDelegate().saveCall(
                 call,
-                ConversationManager.getInstance().getConversation(thread, true));
+                conversation);
             cacheCall(call);
         }
 
@@ -95,9 +103,34 @@ public class CallManager extends OPCallDelegate {
 
         OPHelper.getInstance().sendBroadcast(intent);
         switch (state){
-        case CallState_Closed:
+        case CallState_Placed:{
+            OPMessage message = callSystemMessage(
+                CallSystemMessageTypes.CallSystemMessageType_Placed,
+                call.getCallee());
+            conversation.sendMessage(message, false);
+        }
+        break;
+        case CallState_Open:{
+            if(call.getCaller().isSelf()) {
+                OPMessage message = callSystemMessage(
+                    CallSystemMessageTypes.CallSystemMessageType_Answered,
+                    call.getCallee());
+                conversation.sendMessage(message, false);
+            }
+        }
+        break;
+
+        case CallState_Closed:{
+            if(call.getCaller().isSelf()) {
+                OPMessage message = callSystemMessage(
+                    CallSystemMessageTypes.CallSystemMessageType_Hungup,
+                    call.getCallee());
+                conversation.sendMessage(message, false);
+            }
             removeCallCache(call);
-            break;
+        }
+        break;
+        default:break;
 
         }
     }
@@ -182,5 +215,15 @@ public class CallManager extends OPCallDelegate {
             instance.mUserIdToCalls = null;
             instance.mCallStates = null;
         }
+    }
+
+    OPMessage callSystemMessage(CallSystemMessageTypes type,OPContact callee){
+        OPCallSystemMessage systemMessage = OPCallSystemMessage.create(type, callee, 0);
+        OPMessage message = new OPMessage(
+            OPDataManager.getInstance().getSharedAccount().getSelfContactId(),
+            OPSystemMessage.getMessageType(), systemMessage.toString(),
+            System.currentTimeMillis(),
+            UUID.randomUUID().toString());
+        return message;
     }
 }
