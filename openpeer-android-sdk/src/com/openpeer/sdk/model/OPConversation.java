@@ -318,7 +318,7 @@ public class OPConversation extends Observable {
     }
 
     public void onMessageReceived(OPConversationThread thread, OPMessage message) {
-        if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
+//        if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
             OPContact opContact = message.getFrom();
             OPUser user = OPDataManager.getDatastoreDelegate().
                 getUserByPeerUri(opContact.getPeerURI());
@@ -328,8 +328,7 @@ public class OPConversation extends Observable {
             }
             message.setSenderId(user.getUserId());
             if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
-                OPDataManager.getDatastoreDelegate().updateMessage(message,
-                                                                   this);
+                OPDataManager.getDatastoreDelegate().updateMessage(message, this);
             } else {
                 if (!mSessionListeners.isEmpty()) {
                     message.setRead(true);
@@ -340,11 +339,11 @@ public class OPConversation extends Observable {
                 // TODO: Now notify observer
 
             }
-        } else {
-            Log.d("test",
-                  "SessionManager onMessageReceived "
-                      + message.getMessageType());
-        }
+//        } else {
+//            Log.d("test",
+//                  "SessionManager onMessageReceived "
+//                      + message.getMessageType());
+//        }
         selectActiveThread(thread);
     }
 

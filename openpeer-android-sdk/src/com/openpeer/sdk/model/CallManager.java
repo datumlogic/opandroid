@@ -73,10 +73,10 @@ public class CallManager extends OPCallDelegate {
 
     @Override
     public void onCallStateChanged(OPCall call, CallStates state) {
-            OPConversationThread thread = call.getConversationThread();
-            call.setCbcId(OPModelUtils.getWindowIdForThread(thread));
-            OPConversation conversation = ConversationManager.getInstance().
-                getConversation(thread, true);
+        OPConversationThread thread = call.getConversationThread();
+        call.setCbcId(OPModelUtils.getWindowIdForThread(thread));
+        OPConversation conversation = ConversationManager.getInstance().
+            getConversation(thread, true);
         if (state == CallStates.CallState_Preparing) {
             //Handle racing condition. SImply hangup the existing call for now.
             OPCall oldCall = findCallForPeer(call.getPeerUser().getUserId());
@@ -105,32 +105,33 @@ public class CallManager extends OPCallDelegate {
         switch (state){
         case CallState_Placed:{
             OPMessage message = callSystemMessage(
-                CallSystemMessageTypes.CallSystemMessageType_Placed,
-                call.getCallee());
+                CallSystemMessage.TYPE_PLACED,
+                call);
             conversation.sendMessage(message, false);
         }
         break;
         case CallState_Open:{
-            if(call.getCaller().isSelf()) {
+            if (call.getCaller().isSelf()) {
                 OPMessage message = callSystemMessage(
-                    CallSystemMessageTypes.CallSystemMessageType_Answered,
-                    call.getCallee());
+                    CallSystemMessage.TYPE_ANSWERED,
+                    call);
                 conversation.sendMessage(message, false);
             }
         }
         break;
 
         case CallState_Closed:{
-            if(call.getCaller().isSelf()) {
+            if (call.getCaller().isSelf()) {
                 OPMessage message = callSystemMessage(
-                    CallSystemMessageTypes.CallSystemMessageType_Hungup,
-                    call.getCallee());
+                    CallSystemMessage.TYPE_HUNGUP,
+                    call);
                 conversation.sendMessage(message, false);
             }
             removeCallCache(call);
         }
         break;
-        default:break;
+        default:
+            break;
 
         }
     }
@@ -217,11 +218,18 @@ public class CallManager extends OPCallDelegate {
         }
     }
 
-    OPMessage callSystemMessage(CallSystemMessageTypes type,OPContact callee){
-        OPCallSystemMessage systemMessage = OPCallSystemMessage.create(type, callee, 0);
+    OPMessage callSystemMessage(String status, OPCall call) {
+        String mediaType = call.hasVideo() ? CallSystemMessage.MEDIATYPE_VIDEO :
+            CallSystemMessage.MEDIATYPE_AUDIO;
+        CallSystemMessage callSystemMessage = new CallSystemMessage(call.getCallID(), status,
+                                                                    mediaType,
+                                                                    call.getCallee().getPeerURI());
+        SystemMessage<CallSystemMessage> systemMessage =
+            new SystemMessage<CallSystemMessage>(callSystemMessage);
         OPMessage message = new OPMessage(
             OPDataManager.getInstance().getSharedAccount().getSelfContactId(),
-            OPSystemMessage.getMessageType(), systemMessage.toString(),
+            OPSystemMessage.getMessageType(),
+            systemMessage.toString(),
             System.currentTimeMillis(),
             UUID.randomUUID().toString());
         return message;
