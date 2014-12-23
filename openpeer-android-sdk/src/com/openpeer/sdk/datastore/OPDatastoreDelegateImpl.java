@@ -176,13 +176,11 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public String getDownloadedContactsVersion(String identityUri) {
         String version = null;
         SQLiteDatabase db = getWritableDB();
-        Cursor cursor = simpleQuery(
-                db,
-                AssociatedIdentityEntry.TABLE_NAME,
-                new String[] { AssociatedIdentityEntry.COLUMN_IDENTITY_CONTACTS_VERSION },
-                AssociatedIdentityEntry.COLUMN_IDENTITY_URI + "=?",
-                new String[] { identityUri }
-                );
+        Cursor cursor = query(
+            AssociatedIdentityEntry.TABLE_NAME,
+            new String[]{AssociatedIdentityEntry.COLUMN_IDENTITY_CONTACTS_VERSION},
+            AssociatedIdentityEntry.COLUMN_IDENTITY_URI + "=?",
+            new String[]{identityUri});
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -196,21 +194,21 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     @Override
     public String getAvatarUri(long rolodexId, int width, int height) {
-        SQLiteDatabase db = getWritableDB();
         String orderBy = " width-" + width;
         String limit = "1";
-        Cursor cursor = db.query(AvatarEntry.TABLE_NAME,
+        Cursor cursor = query(AvatarEntry.TABLE_NAME,
                 new String[] { AvatarEntry.COLUMN_AVATAR_URI },
-                AvatarEntry.COLUMN_ROLODEX_ID + "=" + rolodexId, null, null,
-                null, orderBy, limit);
+                AvatarEntry.COLUMN_ROLODEX_ID + "=" + rolodexId, null);
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             String url = cursor.getString(0);
 
             cursor.close();
             return url;
+        } else {
+            cursor.close();
+            return null;
         }
-        return null;
     }
 
     public List<OPAvatar> getAvatars(long contactId) {
@@ -354,11 +352,10 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
 
     @Override
     public List<OPUser> getUsersByCbcId(long cbcId) {
-        SQLiteDatabase db = getWritableDB();
-        Cursor cursor = db.query(ParticipantEntry.TABLE_NAME,
+        Cursor cursor = query(ParticipantEntry.TABLE_NAME,
                                  new String[]{ParticipantEntry.COLUMN_CONTACT_ID},
                                  ParticipantEntry.COLUMN_CBC_ID + "=" + cbcId,
-                                 null, null, null, null);
+                                 null);
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 List<OPUser> users = new ArrayList<>(cursor.getCount());
