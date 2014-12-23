@@ -50,29 +50,38 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    create
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;Ljava/util/List;Ljava/lang/String;)Lcom/openpeer/javaapi/OPConversationThread;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lcom/openpeer/javaapi/OPElement;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 (JNIEnv *, jclass,
 		jobject javaAccount,
 		jobject identityContacts,
 		jobject addContacts,
-		jstring threadID)
+		jstring threadID,
+		jobject metadata)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 	IConversationThreadPtr conversationThreadPtr;
-	bool hasThreadID = false;
+	ElementPtr* metadataCoreElementPtr = new boost::shared_ptr<Element>();
 
 	jni_env = getEnv();
 
-	const char *threadIDStr;
+	const char *threadIDStr = NULL;
 	threadIDStr = jni_env->GetStringUTFChars(threadID, NULL);
-	if (threadIDStr != NULL) {
-		hasThreadID = true;
+
+	if(metadata != NULL)
+	{
+		jclass elementClass = findClass("com/openpeer/javaapi/OPElement");
+		jfieldID elementFID = jni_env->GetFieldID(elementClass, "nativeClassPointer", "J");
+		jlong elementPointerValue = jni_env->GetLongField(metadata, elementFID);
+
+		metadataCoreElementPtr = (ElementPtr*)elementPointerValue;
 	}
+
+
 
 	//Core contact profile list
 	IdentityContactList coreIdentityContacts;
@@ -351,16 +360,9 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 		}
 	}
 
-	if (hasThreadID)
-	{
-		conversationThreadPtr = IConversationThread::create(*coreAccountPtr,
-					coreIdentityContacts, coreAddContacts, threadIDStr);
-	}
-	else
-	{
-		conversationThreadPtr = IConversationThread::create(*coreAccountPtr,
-					coreIdentityContacts, coreAddContacts);
-	}
+
+	conversationThreadPtr = IConversationThread::create(*coreAccountPtr,
+			coreIdentityContacts, coreAddContacts, threadIDStr, *metadataCoreElementPtr);
 
 	if (conversationThreadPtr)
 	{

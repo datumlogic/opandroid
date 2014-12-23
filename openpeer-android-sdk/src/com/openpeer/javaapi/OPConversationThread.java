@@ -135,7 +135,8 @@ public class OPConversationThread {
     public static native OPConversationThread create(OPAccount account,
             List<OPIdentityContact> identityContactsOfSelf,
             List<OPContactProfileInfo> addContacts,
-            String threadID);
+            String threadID, 
+            OPElement metaData);
 
     public static native List<OPConversationThread> getConversationThreads(
             OPAccount account);
