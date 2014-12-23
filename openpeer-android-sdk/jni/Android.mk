@@ -505,6 +505,7 @@ LOCAL_SRC_FILES := \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPCall.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPContact.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPConversationThread.cpp \
+		openpeer-android-sdk/jni/com_openpeer_javaapi_OPConversationThreadType.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPComposingStatus.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPSystemMessage.cpp \
 		openpeer-android-sdk/jni/com_openpeer_javaapi_OPCallSystemMessage.cpp \

@@ -34,10 +34,10 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    create
- * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;Ljava/util/List;Ljava/lang/String;)Lcom/openpeer/javaapi/OPConversationThread;
+ * Signature: (Lcom/openpeer/javaapi/OPAccount;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lcom/openpeer/javaapi/OPElement;)Lcom/openpeer/javaapi/OPConversationThread;
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
-  (JNIEnv *, jclass, jobject, jobject, jobject, jstring);
+  (JNIEnv *, jclass, jobject, jobject, jobject, jstring, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
