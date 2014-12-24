@@ -228,7 +228,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
 //            break;
 //        }
 //        }
-        String metaData = ThreadMetaData.newMetaData(conversationType.toString()).toString();
+        String metaData = ThreadMetaData.newMetaData(conversationType.toString()).toJsonBlob();
         if (thread == null && createNew) {
             thread = OPConversationThread.create(
                 OPDataManager.getInstance().getSharedAccount(),

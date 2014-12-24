@@ -29,15 +29,16 @@
  *******************************************************************************/
 package com.openpeer.javaapi;
 
-import java.util.List;
-
 import android.util.Log;
 
 import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.OPUser;
 import com.openpeer.sdk.model.ParticipantInfo;
+import com.openpeer.sdk.model.ThreadMetaData;
 import com.openpeer.sdk.utils.OPModelUtils;
+
+import java.util.List;
 
 public class OPConversationThread {
 
@@ -59,10 +60,11 @@ public class OPConversationThread {
         this.mParticipantInfo = mParticipants;
     }
 
-    public GroupChatMode getConverationType(){
-        if(mConversationType==null){
+    public GroupChatMode getConverationType() {
+        if (mConversationType == null) {
             String metadata = getMetaData();
-            
+            ThreadMetaData threadMetaData = ThreadMetaData.fromJsonBlob(metadata);
+            mConversationType = GroupChatMode.valueOf(threadMetaData.getConversationType());
         }
         return mConversationType;
     }
