@@ -117,9 +117,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
                     (type, participantInfo, conversationId);
                 if (conversation != null) {
                     conversation.setParticipants(participantInfo.getParticipants());
-                    conversation = OPDataManager.getDatastoreDelegate().getConversation
-                        (type, participantInfo, conversationId);
-                    conversation.setThread(getThread(type, conversationId, participantInfo,
+                    conversation.setThread(getThread(type, conversation.getConversationId(), participantInfo,
                                                      true));
                     cacheCbcToConversation(participantInfo.getCbcId(), conversation);
                     cacheConversation(conversation);
@@ -132,11 +130,11 @@ public class ConversationManager extends OPConversationThreadDelegate {
                 conversation = getConversationById(conversationId);
 
                 if (conversation == null) {
-
+                    conversation = OPDataManager.getDatastoreDelegate().getConversation
+                        (type, participantInfo, conversationId);
                     if (conversation != null) {
-                        conversation = OPDataManager.getDatastoreDelegate().getConversation
-                            (type, participantInfo, conversationId);
-                        conversation.setThread(getThread(type, conversationId, participantInfo,
+                        conversation.setThread(getThread(type, conversation.getConversationId(),
+                                                         participantInfo,
                                                          true));
 
                         if (conversation.getCurrentWindowId() != participantInfo.getCbcId()) {
