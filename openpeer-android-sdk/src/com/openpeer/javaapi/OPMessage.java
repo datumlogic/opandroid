@@ -53,21 +53,6 @@ public class OPMessage {
 
     }
 
-    /**
-     * @ExcludeFromJavadoc
-     */
-    public static class SystemMessageType {
-        public static final int SystemMessage_EstablishSessionBetweenTwoPeers = 0;
-        public static final int SystemMessage_IsContactAvailable = 1;
-        public static final int SystemMessage_IsContactAvailable_Response = 2;
-        public static final int SystemMessage_CallAgain = 3;
-        public static final int SystemMessage_CheckAvailability = 4;
-        public static final int SystemMessage_APNS_Request = 5;
-        public static final int SystemMessage_APNS_Response = 6;
-
-        public static final int SystemMessage_None = 111;
-    }
-
     private OPContact mFrom;
     private String mMessageType;
     private String mMessage;
