@@ -77,11 +77,19 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 	jni_env = getEnv();
 
 	const char *threadIDStr = NULL;
-	threadIDStr = jni_env->GetStringUTFChars(threadID, NULL);
+    if (threadID) {
+      threadIDStr = jni_env->GetStringUTFChars(threadID, NULL);
+    }
 
 	if(metadata != NULL)
 	{
-		metadataCoreElementPtr = IHelper::createElement(jni_env->GetStringUTFChars(metadata,0));
+	  String s = jni_env->GetStringUTFChars(metadata,NULL);
+	  __android_log_print(ANDROID_LOG_DEBUG, "com.openpeer.jni",
+	                         "OPConversationThread native create core metadata %s",s.c_str());
+		metadataCoreElementPtr = IHelper::createElement(s);
+	} else {
+	  __android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+	                   "OPConversationThread native create core metadata is NULL!!!");
 	}
 
 	//Core contact profile list
@@ -367,6 +375,10 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 
 	if (conversationThreadPtr)
 	{
+	  __android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+	                  "OPConversationThread create verify metadata after thread create %s",
+	                  IHelper::convertToString(conversationThreadPtr->getMetaData()).c_str());
+
 		jni_env = getEnv();
 		if (jni_env)
 		{
@@ -410,7 +422,7 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMeta
       else
       {
           __android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
-                  "OPConversationThread native getThreadID core pointer is NULL!!!");
+                  "OPConversationThread native getMetaData core pointer is NULL!!!");
       }
       return ret;
 
