@@ -122,7 +122,7 @@ public class DatastoreDelegateImplTest {
         OPUser user2 = CoreTestObjectFactory.getUser2();
         users.add(user1);
         users.add(user2);
-        OPConversation conversation = new OPConversation(users, "123", GroupChatMode.ContactsBased);
+        OPConversation conversation = new OPConversation(users, "123", GroupChatMode.contact);
         long id = delegate.saveConversation(conversation);
         Assert.assertEquals(id, 1);
     }

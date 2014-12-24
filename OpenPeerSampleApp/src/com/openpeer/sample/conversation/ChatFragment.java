@@ -65,7 +65,6 @@ import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.ComposingStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPCall;
-import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPMessage.OPMessageType;
 import com.openpeer.sample.BaseActivity;
@@ -418,9 +417,9 @@ public class ChatFragment extends BaseFragment implements
                 .equals(type)) {
                 return VIEWTYPE_CALL_VIEW;
             }
-            if (OPConversationEvent.EventTypes.ContactsAdded.name()
+            if (OPConversationEvent.EventTypes.ContactsAdded.toString()
                     .equals(type)
-                    || OPConversationEvent.EventTypes.ContactsRemoved.name()
+                    || OPConversationEvent.EventTypes.ContactsRemoved.toString()
                             .equals(type)) {
                 return VIEWTYPE_CONVERSATION_EVENT_VIEW;
             }
@@ -664,7 +663,7 @@ public class ChatFragment extends BaseFragment implements
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
                 List<OPUser> newParticipants = new ArrayList<>();
                 switch (OPSdkConfig.getInstance().getGroupChatMode()){
-                case ContactsBased:{
+                case contact:{
                     newParticipants.addAll(mParticipantInfo.getParticipants());
                     newParticipants.addAll(OPDataManager.getDatastoreDelegate().getUsers(userIds));
                     mParticipantInfo = new ParticipantInfo(OPModelUtils.getWindowId(newParticipants)
@@ -673,8 +672,8 @@ public class ChatFragment extends BaseFragment implements
                     onContactsChanged();
                 }
                 break;
-                case ContextBased:{
-                    if (mSession.getType() == GroupChatMode.ContactsBased) {
+                case thread:{
+                    if (mSession.getType() == GroupChatMode.contact) {
                         newParticipants.addAll(mParticipantInfo.getParticipants());
                         newParticipants.addAll(OPDataManager.getDatastoreDelegate().getUsers
                             (userIds));
@@ -698,15 +697,15 @@ public class ChatFragment extends BaseFragment implements
                 mParticipantInfo = new ParticipantInfo(OPModelUtils.getWindowId(newParticipants)
                     , newParticipants);
                 switch (OPSdkConfig.getInstance().getGroupChatMode()){
-                case ContactsBased:{
+                case contact:{
 
                     getNewContactsBasedConversation();
                     onContactsChanged();
                 }
                 break;
-                case ContextBased:{
+                case thread:{
                     if (mSession != null) {
-                        if (mSession.getType() == GroupChatMode.ContactsBased) {
+                        if (mSession.getType() == GroupChatMode.contact) {
                             getNewThreadBasedConversation();
 
                             onContactsChanged();
@@ -759,7 +758,7 @@ public class ChatFragment extends BaseFragment implements
                     if (checkBox.isChecked()) {
                         //TODO: create new session
                         mSession = ConversationManager.getInstance().
-                            getConversation(GroupChatMode.ContextBased,
+                            getConversation(GroupChatMode.thread,
                                             mSession.getParticipantInfo(),
                                             null, true);
                         mSession.setTopic(topic);
@@ -831,17 +830,17 @@ public class ChatFragment extends BaseFragment implements
             MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mConversationId);
     }
     void getNewContactsBasedConversation(){
-        mType = GroupChatMode.ContactsBased.name();
+        mType = GroupChatMode.contact.name();
         mSession = ConversationManager.getInstance().
-            getConversation(GroupChatMode.ContactsBased, mParticipantInfo, null, true);
+            getConversation(GroupChatMode.contact, mParticipantInfo, null, true);
         mConversationId = mSession.getConversationId();
     }
     void getNewThreadBasedConversation(){
         mSession = ConversationManager.getInstance().
-            getConversation(GroupChatMode.ContextBased, mParticipantInfo,
+            getConversation(GroupChatMode.thread, mParticipantInfo,
                             null, true);
         mConversationId = mSession.getConversationId();
-        mType = GroupChatMode.ContextBased.name();
+        mType = GroupChatMode.thread.name();
     }
     // Beginning of SessionListener implementation
     static final int MENUID_DELETE_MESSAGE = 10000;

@@ -362,7 +362,7 @@ public class OPConversation extends Observable {
      */
     public void onContactsChanged(List<OPUser> users) {
         switch (type){
-        case ContextBased:{
+        case thread:{
             long cbcId = OPModelUtils.getWindowId(users);
             if (cbcId == getCurrentWindowId()) {
                 return;

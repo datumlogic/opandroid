@@ -45,6 +45,7 @@ public class OPConversationThread {
             .getSimpleName();
 
     ParticipantInfo mParticipantInfo;
+    GroupChatMode mConversationType;
 
     public ParticipantInfo getParticipantInfo() {
         if (mParticipantInfo == null) {
@@ -59,7 +60,11 @@ public class OPConversationThread {
     }
 
     public GroupChatMode getConverationType(){
-        return GroupChatMode.ContextBased;
+        if(mConversationType==null){
+            String metadata = getMetaData();
+            
+        }
+        return mConversationType;
     }
     /**
      * Helper function to make sure required fields are populated.
@@ -136,8 +141,9 @@ public class OPConversationThread {
             List<OPIdentityContact> identityContactsOfSelf,
             List<OPContactProfileInfo> addContacts,
             String threadID, 
-            OPElement metaData);
+            String metaData);
 
+    public  native String getMetaData();
     public static native List<OPConversationThread> getConversationThreads(
             OPAccount account);
 

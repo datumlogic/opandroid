@@ -396,14 +396,14 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         String where = null;
         String args[] = null;
         switch (type){
-        case ContactsBased:{
+        case contact:{
             where = ConversationEntry.COLUMN_PARTICIPANTS + "=" + participantInfo.getCbcId() +
                 " and " + ConversationEntry.COLUMN_TYPE + "=?";
             args = new String[]{type.name()};
 
             break;
         }
-        case ContextBased:{
+        case thread:{
             where = ConversationEntry.COLUMN_CONVERSATION_ID + "=?" +
                 " and " + ConversationEntry.COLUMN_TYPE + "=?";
             args = new String[]{conversationId, type.name()};
@@ -781,9 +781,9 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     public long saveConversation(OPConversation conversation) {
         SQLiteDatabase db = getWritableDB();
         long id = 0;
-        String where =conversation.getType()== GroupChatMode.ContactsBased?ConversationEntry.COLUMN_PARTICIPANTS+"="+conversation.getCurrentWindowId():
+        String where =conversation.getType()== GroupChatMode.contact ?ConversationEntry.COLUMN_PARTICIPANTS+"="+conversation.getCurrentWindowId():
             ConversationEntry.COLUMN_CONVERSATION_ID+"=?";
-        String args[] = conversation.getType()== GroupChatMode.ContactsBased?null:new String[]{conversation.getConversationId()};
+        String args[] = conversation.getType()== GroupChatMode.contact ?null:new String[]{conversation.getConversationId()};
         id = DbUtils.simpleQueryForId(db,ConversationEntry.TABLE_NAME,where,args);
         if(id!=0){
             conversation.setId(id);

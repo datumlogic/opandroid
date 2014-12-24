@@ -198,7 +198,7 @@ public class OPSdkConfig {
     public GroupChatMode getGroupChatMode() {
         String mode = OPHelper.getSettingsDelegate().getString(KEY_CHAT_MODE);
         if (TextUtils.isEmpty(mode)) {
-            return GroupChatMode.ContactsBased;
+            return GroupChatMode.contact;
         } else {
             return GroupChatMode.valueOf(mode);
         }

@@ -109,10 +109,10 @@ public class ConversationManager extends OPConversationThreadDelegate {
                                           boolean createNew) {
         OPConversation conversation = null;
         switch (type){
-        case ContactsBased:{
+        case contact:{
             long cbcId = participantInfo.getCbcId();
             conversation = getConversationByCbcId(cbcId);
-            if (conversation == null || conversation.getType() != GroupChatMode.ContactsBased) {
+            if (conversation == null || conversation.getType() != GroupChatMode.contact) {
                 conversation = OPDataManager.getDatastoreDelegate().getConversation
                     (type, participantInfo, conversationId);
                 if (conversation != null) {
@@ -127,7 +127,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
             }
         }
         break;
-        case ContextBased:{
+        case thread:{
             if (conversationId != null) {
                 conversation = getConversationById(conversationId);
 
@@ -213,26 +213,29 @@ public class ConversationManager extends OPConversationThreadDelegate {
         }
     }
 
-    public OPConversationThread getThread(GroupChatMode mode, String conversationId,
+    public OPConversationThread getThread(GroupChatMode conversationType, String conversationId,
                                           ParticipantInfo participantInfo, boolean createNew) {
         OPConversationThread thread = null;
 //        switch (mode){
-//        case ContactsBased:{
+//        case contact:{
 //            thread = findThreadByCbcId(participantInfo.getCbcId());
 //            break;
 //        }
-//        case ContextBased:{
+//        case thread:{
 //            if (mThreads != null) {
 //                thread = mThreads.get(conversationId);
 //            }
 //            break;
 //        }
 //        }
+        String metaData = ThreadMetaData.newMetaData(conversationType.toString()).toString();
         if (thread == null && createNew) {
             thread = OPConversationThread.create(
                 OPDataManager.getInstance().getSharedAccount(),
-                OPDataManager.getInstance().getSelfContacts());
-            OPModelUtils.addParticipantsToThread(thread, participantInfo.getParticipants());
+                OPDataManager.getInstance().getSelfContacts(),
+                OPModelUtils.getProfileInfo(participantInfo.getParticipants()),
+                conversationId,
+                metaData);
             thread.setParticipantInfo(participantInfo);
 
             cacheThread(thread);

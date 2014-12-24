@@ -117,7 +117,7 @@ public class ContactItemView extends RelativeLayout {
     public void click() {
         final long userIds[] = {mUserId};
         ConversationActivity.launchForChat(getContext(),
-                                           GroupChatMode.ContactsBased.name(),
+                                           GroupChatMode.contact.toString(),
                                            null,
                                            userIds);
     }

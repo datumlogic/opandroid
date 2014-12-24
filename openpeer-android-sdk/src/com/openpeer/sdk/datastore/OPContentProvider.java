@@ -545,10 +545,6 @@ public class OPContentProvider extends ContentProvider {
         return instance;
     }
 
-    GroupChatMode getGroupChatMode() {
-        return GroupChatMode.ContactsBased;
-    }
-
     static String getIdClause(Uri uri) {
         return BaseColumns._ID + "=" + uri.getLastPathSegment();
     }
