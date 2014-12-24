@@ -40,6 +40,7 @@ import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
+import com.openpeer.sdk.model.ParticipantInfo;
 import com.openpeer.utils.CoreTestObjectFactory;
 
 import org.junit.After;
@@ -122,7 +123,8 @@ public class DatastoreDelegateImplTest {
         OPUser user2 = CoreTestObjectFactory.getUser2();
         users.add(user1);
         users.add(user2);
-        OPConversation conversation = new OPConversation(users, "123", GroupChatMode.contact);
+        ParticipantInfo info=new ParticipantInfo(2530l,users);
+        OPConversation conversation = new OPConversation(info, "123", GroupChatMode.contact);
         long id = delegate.saveConversation(conversation);
         Assert.assertEquals(id, 1);
     }

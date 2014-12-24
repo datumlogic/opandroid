@@ -1,5 +1,8 @@
 package com.openpeer.sdk.model;
 
+/**
+ * {"metaData" : { "conversationType" : "contact" } }
+ */
 public class ThreadMetaData {
     Data metaData;
 
@@ -18,9 +21,10 @@ public class ThreadMetaData {
         return metaData.conversationType;
     }
 
-    public String toJsonBlob(){
+    public String toJsonBlob() {
         return GsonFactory.getGson().toJson(this);
     }
+
     static class Data {
         String conversationType;
     }

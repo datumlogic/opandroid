@@ -37,13 +37,19 @@ import org.robolectric.annotation.Config;
 
 //@Config(emulateSdk = 21)
 @RunWith(RobolectricTestRunner.class)
-public class SystemMessageTest {
+public class ThreadMetaDataTest {
+    String jsonBlob = "{\"metaData\":{\"conversationType\":\"contact\"}}";
     @Test
-    public void testConstruct() {
-        String messageStr = "{\"system\":{\"callStatus\":{\"$id\":\"adf\",\"status\":\"placed\",\"mediaType\":\"audio\", \"callee\":\"peer://opp.me/kadjfadkfj\",\"error\":{\"$id\":404}}}}";
-        SystemMessage<CallSystemMessage> systemMessage = SystemMessage.parseCallSystemMessage(messageStr);
-        assert (systemMessage.system!=null);
-        assert (systemMessage.system.callStatus!=null);
-        assert (systemMessage.system.callStatus.id.equals("adf"));
+    public void testFromJsonBlob() {
+        ThreadMetaData data = ThreadMetaData.fromJsonBlob(jsonBlob);
+        assert (data.getConversationType().equals("contact"));
+        assert (data.toJsonBlob().equals(jsonBlob));
+    }
+
+    @Test
+    public void testNewMetaData() {
+        ThreadMetaData data = ThreadMetaData.newMetaData("contact");
+        assert (data.getConversationType().equals("contact"));
+        assert (data.toJsonBlob().equals(jsonBlob));
     }
 }
