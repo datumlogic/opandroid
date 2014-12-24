@@ -58,7 +58,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThreadType_ext
 
 	ElementPtr* coreElementPtr = (ElementPtr*)elementPointerValue;
 
-	conversationThreadTypePtr = ConversationThreadType::extract(*coreElementPtr);
+//	conversationThreadTypePtr = ConversationThreadType::extract(*coreElementPtr);
 
 
 
@@ -111,7 +111,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThreadType_insert
 	ConversationThreadTypePtr* conversationThreadTypePtr = (ConversationThreadTypePtr*)pointerValue;
 	if (conversationThreadTypePtr)
 	{
-		conversationThreadTypePtr->get()->insert(*coreElementPtr);
+//		conversationThreadTypePtr->get()->insert(*coreElementPtr);
 	}
 	else
 	{
@@ -144,7 +144,7 @@ JNIEXPORT jboolean JNICALL Java_com_openpeer_javaapi_OPConversationThreadType_ha
 	ConversationThreadTypePtr* conversationThreadTypePtr = (ConversationThreadTypePtr*)pointerValue;
 	if (conversationThreadTypePtr)
 	{
-		ret = (jboolean) conversationThreadTypePtr->get()->hasData();
+//		ret = (jboolean) conversationThreadTypePtr->get()->hasData();
 	}
 	else
 	{
@@ -178,7 +178,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThreadType_toD
 	ConversationThreadTypePtr* conversationThreadTypePtr = (ConversationThreadTypePtr*)pointerValue;
 	if (conversationThreadTypePtr)
 	{
-		ElementPtr coreEl = conversationThreadTypePtr->get()->toDebug();
+		ElementPtr coreEl;// = conversationThreadTypePtr->get()->toDebug();
 		ElementPtr* ptrToElement = new boost::shared_ptr<Element>(coreEl);
 		cls = findClass("com/openpeer/javaapi/OPElement");
 		method = jni_env->GetMethodID(cls, "<init>", "()V");

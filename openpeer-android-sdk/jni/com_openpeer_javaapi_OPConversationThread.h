@@ -38,6 +38,13 @@ JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_toDebug
  */
 JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
   (JNIEnv *, jclass, jobject, jobject, jobject, jstring, jobject);
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    getMetaData
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMetaData
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
@@ -198,6 +205,8 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_markAllMes
  */
 JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_releaseCoreObjects
   (JNIEnv *, jobject);
+
+IConversationThreadPtr* getCoreThreadPtr(JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

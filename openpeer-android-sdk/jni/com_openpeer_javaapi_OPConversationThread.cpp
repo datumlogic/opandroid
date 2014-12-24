@@ -14,6 +14,13 @@ using namespace openpeer::core;
 #ifdef __cplusplus
 extern "C" {
 #endif
+IConversationThreadPtr* getCoreThreadPtr(JNIEnv* jni_env, jobject javaThread) {
+  jclass cls = findClass("com/openpeer/javaapi/OPConversationThread");
+  jfieldID fid = jni_env->GetFieldID(cls, "nativeClassPointer", "J");
+  jlong pointerValue = jni_env->GetLongField(javaThread, fid);
+return (IConversationThreadPtr*)pointerValue;
+}
+
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    toString
@@ -58,14 +65,14 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 		jobject identityContacts,
 		jobject addContacts,
 		jstring threadID,
-		jobject metadata)
+		jstring metadata)
 {
 	jclass cls;
 	jmethodID method;
 	jobject object;
 	JNIEnv *jni_env = 0;
 	IConversationThreadPtr conversationThreadPtr;
-	ElementPtr* metadataCoreElementPtr = new boost::shared_ptr<Element>();
+	ElementPtr metadataCoreElementPtr;
 
 	jni_env = getEnv();
 
@@ -74,14 +81,8 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 
 	if(metadata != NULL)
 	{
-		jclass elementClass = findClass("com/openpeer/javaapi/OPElement");
-		jfieldID elementFID = jni_env->GetFieldID(elementClass, "nativeClassPointer", "J");
-		jlong elementPointerValue = jni_env->GetLongField(metadata, elementFID);
-
-		metadataCoreElementPtr = (ElementPtr*)elementPointerValue;
+		metadataCoreElementPtr = IHelper::createElement(jni_env->GetStringUTFChars(metadata,0));
 	}
-
-
 
 	//Core contact profile list
 	IdentityContactList coreIdentityContacts;
@@ -362,7 +363,7 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 
 
 	conversationThreadPtr = IConversationThread::create(*coreAccountPtr,
-			coreIdentityContacts, coreAddContacts, threadIDStr, *metadataCoreElementPtr);
+			coreIdentityContacts, coreAddContacts, threadIDStr, metadataCoreElementPtr);
 
 	if (conversationThreadPtr)
 	{
@@ -387,7 +388,33 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 	}
 	return object;
 }
+/*
+ * Class:     com_openpeer_javaapi_OPConversationThread
+ * Method:    getMetaData
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_openpeer_javaapi_OPConversationThread_getMetaData
+  (JNIEnv *, jobject javaThread){
+  jstring ret;
+      JNIEnv *jni_env = 0;
 
+      jni_env = getEnv();
+
+      IConversationThreadPtr* coreConversationThreadPtr =
+              getCoreThreadPtr(jni_env,javaThread);
+      if (coreConversationThreadPtr)
+      {
+        ElementPtr coreMetaDataEl = coreConversationThreadPtr->get()->getMetaData();
+        ret = jni_env->NewStringUTF(IHelper::convertToString(coreMetaDataEl).c_str());
+      }
+      else
+      {
+          __android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
+                  "OPConversationThread native getThreadID core pointer is NULL!!!");
+      }
+      return ret;
+
+}
 /*
  * Class:     com_openpeer_javaapi_OPConversationThread
  * Method:    getConversationThreads
@@ -1689,6 +1716,7 @@ JNIEXPORT void JNICALL Java_com_openpeer_javaapi_OPConversationThread_releaseCor
 		__android_log_print(ANDROID_LOG_WARN, "com.openpeer.jni", "OPConversationThread Conversation Thread Core object not deleted - already NULL!");
 	}
 }
+
 
 #ifdef __cplusplus
 }
