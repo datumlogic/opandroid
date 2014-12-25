@@ -91,8 +91,6 @@ public class OPConversation extends Observable {
 
     public long save() {
         _id = OPDataManager.getDatastoreDelegate().saveConversation(this);
-
-        onNewEvent(mLastEvent);
         return _id;
     }
 
@@ -281,8 +279,8 @@ public class OPConversation extends Observable {
         if (mConvThread != null) {
             addContactsToThread(users);
         } else {
-            participantInfo.addUsers(users);
             long oldCbcId = participantInfo.getCbcId();
+            participantInfo.addUsers(users);
             participantInfo.setCbcId(OPModelUtils.getWindowId(participantInfo.getParticipants()));
             ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId, participantInfo.getCbcId());
 
@@ -300,8 +298,9 @@ public class OPConversation extends Observable {
         if (mConvThread != null) {
             OPModelUtils.removeParticipantsFromThread(mConvThread, users);
         } else {
-            participantInfo.getParticipants().removeAll(users);
             long oldCbcId = participantInfo.getCbcId();
+
+            participantInfo.getParticipants().removeAll(users);
             participantInfo.setCbcId(OPModelUtils.getWindowId(participantInfo.getParticipants()));
             ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId,
                                                                                participantInfo
@@ -390,20 +389,23 @@ public class OPConversation extends Observable {
      */
     public boolean onContactsChanged(OPConversationThread conversationThread) {
 
-        List<OPUser> currentUsers=participantInfo.getParticipants();
+        List<OPUser> currentUsers = participantInfo.getParticipants();
         List<OPUser> newUsers = conversationThread.getParticipantInfo().getParticipants();
         List<OPUser> addedUsers = new ArrayList<OPUser>();
         List<OPUser> deletedUsers = new ArrayList<OPUser>();
 
-        CollectionUtils.diff(currentUsers,newUsers,addedUsers,deletedUsers);
-        if (addedUsers.isEmpty()&&deletedUsers.isEmpty()) {
+        CollectionUtils.diff(currentUsers, newUsers, addedUsers, deletedUsers);
+        if (addedUsers.isEmpty() && deletedUsers.isEmpty()) {
             Log.e(TAG, "onContactsChanged called when no contacts change");
             return false;
         }
 
         long oldCbcId = participantInfo.getCbcId();
-        participantInfo.setCbcId(OPModelUtils.getWindowId(participantInfo.getParticipants()));
-        ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId, participantInfo.getCbcId());
+        mConvThread = conversationThread;
+        participantInfo = conversationThread.getParticipantInfo();
+        ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId,
+                                                                           participantInfo
+                                                                               .getCbcId());
         if (!addedUsers.isEmpty()) {
 
             OPConversationEvent event = new OPConversationEvent(

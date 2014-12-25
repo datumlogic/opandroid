@@ -826,8 +826,11 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
                 conversation.getConversationId());
         values.put(ConversationEntry.COLUMN_ACCOUNT_ID, getLoggedinUser().getUserId());
         int count= update(ConversationEntry.TABLE_NAME, values,
-                BaseColumns._ID + "=?",new String[]{conversation.getConversationId()});
+                ConversationEntry.COLUMN_CONVERSATION_ID + "=?",
+                new String[]{conversation.getConversationId()});
 
+        mContext.getContentResolver().notifyChange(
+            OPContentProvider.getContentUri(DatabaseContracts.WindowViewEntry.URI_PATH_INFO_CONTEXT), null);
         return count;
     }
 

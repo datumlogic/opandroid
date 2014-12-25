@@ -378,6 +378,8 @@ public class OPContentProvider extends ContentProvider {
         case CONVERSATION_HISTORY:
             return updateMessages(uri, values, selection,
                     selectionArgs);
+        case CONVERSATIONS:
+
         default:
             String table = uri.getLastPathSegment();
             SQLiteDatabase db = mOpenHelper.getWritableDatabase();
