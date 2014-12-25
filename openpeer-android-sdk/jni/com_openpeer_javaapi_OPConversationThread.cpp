@@ -375,10 +375,6 @@ JNIEXPORT jobject JNICALL Java_com_openpeer_javaapi_OPConversationThread_create
 
 	if (conversationThreadPtr)
 	{
-	  __android_log_print(ANDROID_LOG_ERROR, "com.openpeer.jni",
-	                  "OPConversationThread create verify metadata after thread create %s",
-	                  IHelper::convertToString(conversationThreadPtr->getMetaData()).c_str());
-
 		jni_env = getEnv();
 		if (jni_env)
 		{
