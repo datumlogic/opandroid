@@ -74,8 +74,6 @@ public class ProfilePickerFragment extends BaseFragment implements
         SwipeRefreshLayout.OnRefreshListener,
         LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
 
-    static final String PARAM_IDS_EXCLUDE = "exclude";
-    static final String PARAM_IDS_INCLUDE = "include";
     private SwipeRefreshLayout mRootLayout;
     @InjectView(R.id.listview)
     ListView mListView;
@@ -87,27 +85,14 @@ public class ProfilePickerFragment extends BaseFragment implements
     MenuItem mDoneMenu;
     @InjectView(R.id.empty_view)
     ProgressEmptyView emptyView;
-    public static ProfilePickerFragment newInstance(long idsExclude[], long[] idsInclude) {
-        Bundle bundle = new Bundle();
-        if(idsExclude!=null) {
-            bundle.putLongArray(PARAM_IDS_EXCLUDE, idsExclude);
-        }
-        if(idsInclude!=null){
-            bundle.putLongArray(PARAM_IDS_INCLUDE, idsExclude);
-        }
-        ProfilePickerFragment fragment = new ProfilePickerFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         this.setHasOptionsMenu(true);
-        mIdsInclude = getArguments().getLongArray(PARAM_IDS_INCLUDE);
-        mIdsExclude = getArguments().getLongArray(PARAM_IDS_EXCLUDE);
-        return setupView(inflater.inflate(R.layout.fragment_profile_picker,
-                null));
+        mIdsInclude = getArguments().getLongArray(IntentData.ARG_USER_IDS_INCLUDE);
+        mIdsExclude = getArguments().getLongArray(IntentData.ARG_PEER_USER_IDS);
+        return setupView(inflater.inflate(R.layout.fragment_profile_picker, null));
     }
 
     @Override

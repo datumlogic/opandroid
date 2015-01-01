@@ -44,12 +44,6 @@ public class CallActivity extends BaseActivity {
 
     private static final String TAG = CallActivity.class.getSimpleName();
 
-    public static void launchForCall(Context context, long[] peerContactId) {
-        Intent intent = new Intent(context, CallActivity.class);
-        intent.putExtra(IntentData.ARG_PEER_USER_IDS, peerContactId);
-        context.startActivity(intent);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

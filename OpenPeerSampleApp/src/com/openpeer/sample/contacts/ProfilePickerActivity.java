@@ -52,15 +52,13 @@ public class ProfilePickerActivity extends BaseActivity {
 			Log.d("test", "ContactsActivity launching test fragment");
 			// this.setContentFragment(ContactsFragment.newTestInstance());
 		} else {
-			long excludeIds[] = getIntent().getLongArrayExtra(
-					IntentData.ARG_PEER_USER_IDS);
-            long includeIds[] = getIntent().getLongArrayExtra(
-					IntentData.ARG_USER_IDS_INCLUDE);
+            Bundle args = getIntent().getExtras();
 
-			this.setContentFragment(ProfilePickerFragment
-					.newInstance(excludeIds, includeIds));
-		}
-	}
+            ProfilePickerFragment fragment = new ProfilePickerFragment();
+            fragment.setArguments(args);
+            this.setContentFragment(fragment);
+        }
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

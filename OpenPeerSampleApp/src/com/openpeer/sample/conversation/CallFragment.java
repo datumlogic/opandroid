@@ -112,7 +112,6 @@ public class CallFragment extends BaseFragment {
         userIDs = args.getLongArray(IntentData.ARG_PEER_USER_IDS);
         String callId = args.getString(IntentData.ARG_CALL_ID);
         String conversationId = args.getString(IntentData.ARG_CONVERSATION_ID);
-        mConversation = ConversationManager.getInstance().getConversationById(conversationId);
 
         if(callId!=null){
             mCall=CallManager.getInstance().findCallById(callId);
@@ -126,10 +125,12 @@ public class CallFragment extends BaseFragment {
         if (mCall != null) {
             mVideo = mCall.hasVideo();
         } else {
-
+            if(conversationId!=null) {
+                mConversation = ConversationManager.getInstance().getConversationById(conversationId);
+            }
             mVideo = args.getBoolean(IntentData.ARG_VIDEO, true);
         }
-        mVideo = mVideo && AppConfig.FEATURE_CALL;
+
         getActivity().registerReceiver(receiver,
                                        new IntentFilter(IntentData.ACTION_CALL_STATE_CHANGE));
 
