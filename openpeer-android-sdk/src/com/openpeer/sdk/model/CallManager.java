@@ -36,11 +36,8 @@ import android.content.Intent;
 
 import com.openpeer.javaapi.CallClosedReasons;
 import com.openpeer.javaapi.CallStates;
-import com.openpeer.javaapi.CallSystemMessageTypes;
 import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPCallDelegate;
-import com.openpeer.javaapi.OPCallSystemMessage;
-import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPConversationThread;
 import com.openpeer.javaapi.OPMessage;
 import com.openpeer.javaapi.OPSystemMessage;
@@ -77,23 +74,12 @@ public class CallManager extends OPCallDelegate {
         call.setCbcId(OPModelUtils.getWindowIdForThread(thread));
         OPConversation conversation = ConversationManager.getInstance().
             getConversation(thread, true);
-        if (state == CallStates.CallState_Preparing) {
-            //Handle racing condition. SImply hangup the existing call for now.
-            OPCall oldCall = findCallForPeer(call.getPeerUser().getUserId());
-            if (oldCall != null) {
-                call.hangup(CallClosedReasons.CallClosedReason_NotAcceptableHere);
-            }
-            OPDataManager.getDatastoreDelegate().saveCall(
-                call,
-                conversation);
-            cacheCall(call);
-        }
 
-        CallEvent event = new CallEvent(call.getCallID(),
-                                        state,
-                                        System.currentTimeMillis());
-
-        OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(), event);
+//        CallEvent event = new CallEvent(call.getCallID(),
+//                                        state,
+//                                        System.currentTimeMillis());
+//
+//        OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(), event);
         Intent intent = new Intent();
 
         intent.setAction(IntentData.ACTION_CALL_STATE_CHANGE);
@@ -103,11 +89,34 @@ public class CallManager extends OPCallDelegate {
 
         OPHelper.getInstance().sendBroadcast(intent);
         switch (state){
+        case CallState_Preparing:{
+            //Handle racing condition. SImply hangup the existing call for now.
+            OPCall oldCall = findCallForPeer(call.getPeerUser().getUserId());
+            if (oldCall != null) {
+                call.hangup(CallClosedReasons.CallClosedReason_NotAcceptableHere);
+            }
+            int direction = call.getCaller().isSelf() ? 0 : 1;
+            OPDataManager.getDatastoreDelegate().saveCall(
+                call.getCallID(),
+                conversation.getConversationId(),
+                call.getPeerUser().getUserId(),
+                direction,
+                call.hasVideo() ? CallSystemMessage.MEDIATYPE_VIDEO : CallSystemMessage
+                    .MEDIATYPE_AUDIO);
+            cacheCall(call);
+        }
+            break;
         case CallState_Placed:{
             OPMessage message = callSystemMessage(
                 CallSystemMessage.TYPE_PLACED,
                 call);
             conversation.sendMessage(message, false);
+            CallEvent event = new CallEvent(call.getCallID(),
+                                            CallSystemMessage.TYPE_PLACED,
+                                            message.getTime().toMillis(false));
+            OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(),
+                                                               conversation.getConversationId(),
+                                                               event);
         }
         break;
         case CallState_Open:{
@@ -116,6 +125,12 @@ public class CallManager extends OPCallDelegate {
                     CallSystemMessage.TYPE_ANSWERED,
                     call);
                 conversation.sendMessage(message, false);
+                CallEvent event = new CallEvent(call.getCallID(),
+                                                CallSystemMessage.TYPE_ANSWERED,
+                                                message.getTime().toMillis(false));
+                OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(),
+                                                                   conversation.getConversationId(),
+                                                                   event);
             }
         }
         break;
@@ -126,6 +141,12 @@ public class CallManager extends OPCallDelegate {
                     CallSystemMessage.TYPE_HUNGUP,
                     call);
                 conversation.sendMessage(message, false);
+                CallEvent event = new CallEvent(call.getCallID(),
+                                                CallSystemMessage.TYPE_HUNGUP,
+                                                message.getTime().toMillis(false));
+                OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(),
+                                                                   conversation.getConversationId(),
+                                                                   event);
             }
             removeCallCache(call);
         }
@@ -164,6 +185,26 @@ public class CallManager extends OPCallDelegate {
 
     }
 
+    public void handleCallSystemMessage(CallSystemMessage message, String conversationId,
+                                        long timestamp) {
+        OPCall call = findCallById(message.getCallId());
+        OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(message
+                                                                                .getCalleePeerUri
+                                                                                    ());
+        if (call == null) {
+            //couldn't find call in memory. try to save call
+            OPDataManager.getDatastoreDelegate().saveCall(message.getCallId(),
+                                                          conversationId,
+                                                          user.getUserId(),
+                                                          OPCall.DIRECTION_INCOMING,
+                                                          message.getMediaType());
+        }
+        CallEvent event = new CallEvent(message.getCallId(),
+                                        message.getStatus(),
+                                        timestamp);
+        OPDataManager.getDatastoreDelegate().saveCallEvent(message.getCallId(), conversationId,
+                                                           event);
+    }
     public boolean hasCalls() {
         return mIdToCalls != null && mIdToCalls.size() > 0;
     }

@@ -35,13 +35,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-//@Config(emulateSdk = 21)
+@Config(emulateSdk = 17)
 @RunWith(RobolectricTestRunner.class)
 public class SystemMessageTest {
     @Test
     public void testConstruct() {
         String messageStr = "{\"system\":{\"callStatus\":{\"$id\":\"adf\",\"status\":\"placed\",\"mediaType\":\"audio\", \"callee\":\"peer://opp.me/kadjfadkfj\",\"error\":{\"$id\":404}}}}";
-        SystemMessage<CallSystemMessage> systemMessage = SystemMessage.parseCallSystemMessage(messageStr);
+        SystemMessage<CallSystemMessage> systemMessage = SystemMessage.parseSystemMessage(messageStr);
         assert (systemMessage.system!=null);
         assert (systemMessage.system.callStatus!=null);
         assert (systemMessage.system.callStatus.id.equals("adf"));

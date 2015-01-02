@@ -28,13 +28,15 @@
  */
 package com.openpeer.sdk.model;
 
+import com.google.gson.reflect.TypeToken;
+
 /**
  *
  */
-public class OPConversationEvent {
+public class OPConversationEvent<T> {
     String conversationId;
-    private EventTypes event;
-    private String mDescription;
+    private EventTypes eventType;
+    private T event;
     private long mId;
     private long mTime;
     long cbcId;
@@ -51,27 +53,51 @@ public class OPConversationEvent {
         this.cbcId = cbcId;
     }
 
+    public static OPConversationEvent newContactsChangeEvent(String conversationId,
+                                                             long cbcId, long[] added,
+                                                             long[] removed) {
+        OPConversationEvent<ContactsChange> changeEvent = new OPConversationEvent<ContactsChange>
+            (conversationId,
+                                                                                                  EventTypes.ContactsChange,
+                                                                                                  null,
+                                                                                                  cbcId,
+                                                                                                  System.currentTimeMillis());
+        ContactsChange change = new ContactsChange();
+        if (added != null) {
+            change.added = added;
+        }
+        if (removed != null) {
+            change.removed = removed;
+        }
+        changeEvent.event = change;
+        return changeEvent;
+    }
+
+    public static ContactsChange contactsChangeFromJson(String jsonBlob) {
+        ContactsChange event = GsonFactory.getGson().fromJson(jsonBlob, ContactsChange.class);
+        return event;
+    }
+
     /**
-     * @param conversation
-     *            TODO
-     * @param event
-     * @param description
-     *            TODO
+     * @param conversation TODO
+     * @param type
+     * @param event        TODO
      */
-    public OPConversationEvent(OPConversation conversation, EventTypes event, String description) {
-        this(conversation.getConversationId(), event, description, conversation.getCurrentWindowId(),System.currentTimeMillis());
+    public OPConversationEvent(OPConversation conversation, EventTypes type, T event) {
+        this(conversation.getConversationId(), type, event, conversation.getCurrentWindowId(),
+             System.currentTimeMillis());
     }
 
     public OPConversationEvent(String conversationId,
                                EventTypes event,
-                               String description,
+                               T description,
                                long cbcId,
-            long time) {
+                               long time) {
         super();
         this.conversationId = conversationId;
-        this.event = event;
-        this.mDescription = description;
-        this.cbcId=cbcId;
+        this.eventType = event;
+        this.event = description;
+        this.cbcId = cbcId;
         this.mTime = time;
 
     }
@@ -84,12 +110,8 @@ public class OPConversationEvent {
         this.conversationId = conversationId;
     }
 
-    public String getDescription() {
-        return mDescription;
-    }
-
-    public void setDescription(String description) {
-        this.mDescription = description;
+    public void setEvent(T description) {
+        this.event = description;
     }
 
     public void setId(long id) {
@@ -97,26 +119,20 @@ public class OPConversationEvent {
     }
 
     public enum EventTypes {
-        NewConversation,
-        ContactsAdded,
-        ContactsRemoved,
+        ContactsChange,
         TopicChange
     }
 
-    public EventTypes getEvent() {
-        return event;
+    public EventTypes getEventType() {
+        return eventType;
     }
 
-    public void setEvent(EventTypes event) {
-        this.event = event;
+    public void setEventType(EventTypes eventType) {
+        this.eventType = eventType;
     }
 
-    public String getContent() {
-        return mDescription;
-    }
-
-    public void setContent(String content) {
-        this.mDescription = content;
+    public String getContentString() {
+        return GsonFactory.getGson().toJson(event);
     }
 
     /**
@@ -125,6 +141,19 @@ public class OPConversationEvent {
     public long getId() {
         // TODO Auto-generated method stub
         return mId;
+    }
+
+    public static class ContactsChange {
+
+        long added[];
+        long removed[];
+        public long[] getAdded() {
+            return added;
+        }
+
+        public long[] getRemoved() {
+            return removed;
+        }
     }
 
 }

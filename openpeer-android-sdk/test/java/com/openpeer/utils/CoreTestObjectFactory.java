@@ -289,7 +289,7 @@ public class CoreTestObjectFactory {
         Mockito.when(conversation.getType()).thenReturn(GroupChatMode.contact);
         Mockito.when(conversation.getConversationId()).thenReturn("contextId-01");
         OPConversationEvent lastEvent = new OPConversationEvent(conversation, OPConversationEvent
-            .EventTypes.NewConversation, "no description");
+            .EventTypes.ContactsChange, "no description");
         Mockito.when(conversation.getLastEvent()).thenReturn(lastEvent);
         return conversation;
     }

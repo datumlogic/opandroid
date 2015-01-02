@@ -29,9 +29,6 @@
  *******************************************************************************/
 package com.openpeer.sdk.datastore;
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -57,7 +54,9 @@ import com.openpeer.sdk.datastore.DatabaseContracts.OpenpeerContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
-import com.openpeer.sdk.model.GroupChatMode;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class OPContentProvider extends ContentProvider {
 
@@ -105,7 +104,9 @@ public class OPContentProvider extends ContentProvider {
         AVATAR(AvatarEntry.TABLE_NAME + "/#"),
 
         CALLS(CallEntry.TABLE_NAME),
-        CALL(CallEntry.TABLE_NAME + "/#");
+        CALL(CallEntry.TABLE_NAME + "/#"),
+        CALL_EVENTS(DatabaseContracts.CallEventEntry.TABLE_NAME),
+        CALL_EVENT(DatabaseContracts.CallEventEntry.TABLE_NAME + "/#");
 
         private final String mPath;
 
@@ -225,7 +226,7 @@ public class OPContentProvider extends ContentProvider {
             stringBuilder
                 .append(" union "
                             + DatabaseContracts.QUERY_CONVERSATION_EVENT)
-                .append(" and ").append("c.conversation_id=?");
+                .append(" where ").append("c.conversation_id=?");
             stringBuilder.append(" order by time");
 
             String conversationId = uri.getLastPathSegment();

@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -46,10 +47,8 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.openpeer.javaapi.CallStates;
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -74,6 +73,7 @@ import com.openpeer.sdk.datastore.DatabaseContracts.OpenpeerContactEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.ParticipantEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.RolodexContactEntry;
 import com.openpeer.sdk.model.CallEvent;
+import com.openpeer.sdk.model.CallSystemMessage;
 import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.MessageEditState;
 import com.openpeer.sdk.model.MessageEvent;
@@ -510,8 +510,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
             cursor.moveToFirst();
             while (!cursor.isLast()) {
                 CallEvent event = new CallEvent(callId,
-                        CallStates.valueOf(cursor.getString(cursor
-                                .getColumnIndex(CallEventEntry.COLUMN_EVENT))),
+                        cursor.getString(cursor
+                                .getColumnIndex(CallEventEntry.COLUMN_EVENT)),
                         cursor.getLong(cursor.getColumnIndex(CallEventEntry.COLUMN_TIME)));
                 events.add(event);
             }
@@ -839,8 +839,8 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         SQLiteDatabase db = getWritableDB();
         ContentValues values = new ContentValues();
         values.put(ConversationEventEntry.COLUMN_CONVERSATION_ID,event.getConversationId());
-        values.put(ConversationEventEntry.COLUMN_EVENT, event.getEvent().name());
-        values.put(ConversationEventEntry.COLUMN_CONTENT, event.getContent());
+        values.put(ConversationEventEntry.COLUMN_EVENT, event.getEventType().name());
+        values.put(ConversationEventEntry.COLUMN_CONTENT, event.getContentString());
         values.put(ConversationEventEntry.COLUMN_PARTICIPANTS, event.getCbcId());
         values.put(ConversationEventEntry.COLUMN_TIME, event.getTime());
         long id = db.insert(ConversationEventEntry.TABLE_NAME, null, values);
@@ -859,81 +859,58 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     }
 
     @Override
-    public long saveCall(OPCall call,
-            OPConversation conversation) {
+    public long saveCall(String callId,
+                         String conversationId,
+                         long peerId,
+                         int direction,
+                         String mediaType) {
         SQLiteDatabase db = getWritableDB();
-        String callId = call.getCallID();
         long callRecordId = DbUtils.simpleQueryForId(db, CallEntry.TABLE_NAME,
-                CallEntry.COLUMN_CALL_ID + "=?", new String[] { callId });
+                                                     CallEntry.COLUMN_CALL_ID + "=?",
+                                                     new String[]{callId});
         if (callRecordId != 0) {
             return callRecordId;
         }
         ContentValues values = new ContentValues();
         values.put(CallEntry.COLUMN_CALL_ID, callId);
-        values.put(CallEntry.COLUMN_CBC_ID, conversation.getCurrentWindowId());
-        values.put(CallEntry.COLUMN_CONTVERSATION_ID, conversation.getConversationId());
+        values.put(CallEntry.COLUMN_CONTVERSATION_ID, conversationId);
 
-        values.put(CallEntry.COLUMN_PEER_ID, call.getPeerUser().getUserId());
+        values.put(CallEntry.COLUMN_PEER_ID, peerId);
         // 0 for outgoing,1 for incoming
-        values.put(CallEntry.COLUMN_DIRECTION, call.getCaller().isSelf() ? 0 : 1);
+        values.put(CallEntry.COLUMN_DIRECTION, direction);
         values.put(CallEntry.COLUMN_TIME, System.currentTimeMillis());
-        if (call.hasVideo()) {
-            values.put(CallEntry.COLUMN_TYPE,
-                    OPMessage.OPMessageType.TYPE_INERNAL_CALL_VIDEO);
-        } else {
-            values.put(CallEntry.COLUMN_TYPE,
-                    OPMessage.OPMessageType.TYPE_INERNAL_CALL_AUDIO);
-        }
-        return db.insert(CallEntry.TABLE_NAME, null, values);
+
+        values.put(CallEntry.COLUMN_TYPE, "call/"+mediaType);
+
+        Uri uri= insert(CallEntry.TABLE_NAME, values);
+        return ContentUris.parseId(uri);
     }
 
     @Override
-    public long saveCallEvent(String callId,
-            CallEvent event) {
+    public long saveCallEvent(String callId, String conversationId, CallEvent event) {
         long eventRecordId = 0;
-        SQLiteDatabase db = getWritableDB();
-        try {
-            db.beginTransaction();
-            Cursor cursor = db.query(CallEntry.TABLE_NAME, null,
-                                     CallEntry.COLUMN_CALL_ID + "=?",
-                                     new String[]{callId}, null, null, null);
-            if (cursor == null) {
 
-            }
-            if (cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                String conversationId = cursor.getString(cursor
-                                                             .getColumnIndex(CallEntry
-                                                                                 .COLUMN_CONTVERSATION_ID));
-
-                ContentValues values = new ContentValues();
-                values.put(CallEventEntry.COLUMN_CALL_ID, callId);
-                values.put(CallEventEntry.COLUMN_EVENT, event.getState().name());
-                values.put(MessageEventEntry.COLUMN_TIME, event.getTime());
-                if (event.getState() == CallStates.CallState_Open) {
-                    ContentValues callValues = new ContentValues();
-                    callValues.put(CallEntry.COLUMN_ANSWER_TIME,
-                                   System.currentTimeMillis());
-
-                    int count = db
-                        .update(CallEntry.TABLE_NAME, values, CallEventEntry.COLUMN_CALL_ID +
-                            "=?", new String[]{callId});
-                }
-                if (event.getState() == CallStates.CallState_Closed) {
-                    ContentValues callValues = new ContentValues();
-                    callValues.put(CallEntry.COLUMN_END_TIME, System.currentTimeMillis());
-                    updateCallTable(callId, callValues);
-                }
-
-                eventRecordId = db.insert(CallEventEntry.TABLE_NAME, null, values);
-                notifyMessageChanged(conversationId, 30000 + eventRecordId);
-            }
-            db.setTransactionSuccessful();
-        } catch(SQLiteException e) {
-            // TODO: handle exception
-        } finally {
-            db.endTransaction();
+        switch (event.getState()){
+        case CallSystemMessage.TYPE_ANSWERED:{
+            ContentValues callValues = new ContentValues();
+            callValues.put(CallEntry.COLUMN_ANSWER_TIME,
+                           System.currentTimeMillis());
+            updateCallTable(callId, callValues);
         }
+        break;
+        case CallSystemMessage.TYPE_HUNGUP:{
+            ContentValues callValues = new ContentValues();
+            callValues.put(CallEntry.COLUMN_END_TIME, System.currentTimeMillis());
+            updateCallTable(callId, callValues);
+        }
+        break;
+        }
+        ContentValues values = new ContentValues();
+        values.put(CallEventEntry.COLUMN_CALL_ID, callId);
+        values.put(CallEventEntry.COLUMN_EVENT, event.getState());
+        values.put(MessageEventEntry.COLUMN_TIME, event.getTime());
+        eventRecordId = ContentUris.parseId(insert(CallEventEntry.TABLE_NAME, values));
+        notifyMessageChanged(conversationId, 30000 + eventRecordId);
 
         return eventRecordId;
     }
@@ -1005,7 +982,9 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
     }
 
     private void updateCallTable(String callId, ContentValues values) {
-
+        String where = CallEntry.COLUMN_CALL_ID + "=?";
+        String[] args = new String[]{callId};
+        update(CallEntry.TABLE_NAME, values, where, args);
     }
 
     private long saveRolodexContactTable(OPRolodexContact contact,
@@ -1353,7 +1332,27 @@ public class OPDatastoreDelegateImpl implements OPDatastoreDelegate {
         return db.query(tableName, columns, selection, selectionArgs, null,
                 null, null);
     }
+    private Cursor simpleQuery( String tableName,
+                               String[] columns, String selection, String[] selectionArgs) {
+        // TODO Auto-generated method stub
+        return query(tableName, columns, selection, selectionArgs);
+    }
 
+    private String simpleQueryForString(String tableName,
+                                        String column,
+                                        String where, String[] args) {
+        String value = null;
+        Cursor cursor = query(tableName, new String[]{column}, where, args);
+        if (cursor == null) {
+
+        }
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            value = cursor.getString(0);
+        }
+        cursor.close();
+        return value;
+    }
     private String simpleQueryForString(SQLiteDatabase db, String tableName,
             String column,
             String where, String[] args) {

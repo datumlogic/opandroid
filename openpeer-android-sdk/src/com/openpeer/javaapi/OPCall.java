@@ -37,6 +37,9 @@ import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.model.OPUser;
 
 public class OPCall {
+    public static final int DIRECTION_OUTGOING = 0;
+    public static final int DIRECTION_INCOMING = 1;
+
     public long getCbcId() {
         return mCbcId;
     }

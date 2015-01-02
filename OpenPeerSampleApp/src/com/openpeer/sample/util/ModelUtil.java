@@ -54,6 +54,13 @@ public class ModelUtil {
             return sb.toString();
         }
         return null;
-
+    }
+    public static String getNamesStringFromUsers(List<OPUser> users){
+        StringBuilder sb = new StringBuilder();
+        for (OPUser user : users) {
+            sb.append(user.getName() + ",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
     }
 }

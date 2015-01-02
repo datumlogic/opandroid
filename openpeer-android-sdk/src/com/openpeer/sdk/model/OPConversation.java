@@ -138,10 +138,13 @@ public class OPConversation extends Observable {
         getThread(true).sendMessage(message.getMessageId(),
                                     message.getReplacesMessageId(),
                                     message.getMessageType(), message.getMessage(), signMessage);
-        if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
-            OPDataManager.getDatastoreDelegate().updateMessage(message, this);
-        } else {
-            OPDataManager.getDatastoreDelegate().saveMessage(message, conversationId, participantInfo);
+        if(message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
+            if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
+                OPDataManager.getDatastoreDelegate().updateMessage(message, this);
+            } else {
+                OPDataManager.getDatastoreDelegate().saveMessage(message, conversationId, participantInfo);
+
+            }
         }
         return message;
     }
@@ -282,12 +285,14 @@ public class OPConversation extends Observable {
             long oldCbcId = participantInfo.getCbcId();
             participantInfo.addUsers(users);
             participantInfo.setCbcId(OPModelUtils.getWindowId(participantInfo.getParticipants()));
-            ConversationManager.getInstance().onConversationParticipantsChange(this,oldCbcId, participantInfo.getCbcId());
+            ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId,
+                                                                               participantInfo
+                                                                                   .getCbcId());
 
-            OPConversationEvent event = new OPConversationEvent(
-                this,
-                OPConversationEvent.EventTypes.ContactsAdded,
-                "");
+            OPConversationEvent event = OPConversationEvent.newContactsChangeEvent(
+                getConversationId(),
+                getCurrentWindowId(),
+                OPModelUtils.getUserIds(users), null);
             onNewEvent(event);
             OPDataManager.getDatastoreDelegate().updateConversation(this);
             notifyContactsChanged();
@@ -305,10 +310,11 @@ public class OPConversation extends Observable {
             ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId,
                                                                                participantInfo
                                                                                    .getCbcId());
-            OPConversationEvent event = new OPConversationEvent(
-                this,
-                OPConversationEvent.EventTypes.ContactsRemoved,
-                null);
+            OPConversationEvent event = OPConversationEvent.newContactsChangeEvent(
+                getConversationId(),
+                getCurrentWindowId(),
+                null,
+                OPModelUtils.getUserIds(users));
             onNewEvent(event);
             OPDataManager.getDatastoreDelegate().updateConversation(this);
 
@@ -317,7 +323,7 @@ public class OPConversation extends Observable {
     }
 
     public void onMessageReceived(OPConversationThread thread, OPMessage message) {
-//        if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
+        if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
             OPContact opContact = message.getFrom();
             OPUser user = OPDataManager.getDatastoreDelegate().
                 getUserByPeerUri(opContact.getPeerURI());
@@ -334,15 +340,22 @@ public class OPConversation extends Observable {
                     //TODO: decide if this shoudl be done in listener
                 }
 
-                OPDataManager.getDatastoreDelegate().saveMessage(message, conversationId, participantInfo);
+                OPDataManager.getDatastoreDelegate().saveMessage(message, conversationId,
+                                                                 participantInfo);
                 // TODO: Now notify observer
 
             }
-//        } else {
-//            Log.d("test",
-//                  "SessionManager onMessageReceived "
-//                      + message.getMessageType());
-//        }
+        } else if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_JSON_SYSTEM_MESSAGE)) {
+            SystemMessage systemMessage = SystemMessage.parseSystemMessage(message.getMessage());
+            if (systemMessage.getSystemObject() instanceof CallSystemMessage) {
+                CallSystemMessage callSystemMessage = (CallSystemMessage) systemMessage
+                    .getSystemObject();
+                CallManager.getInstance().
+                    handleCallSystemMessage(callSystemMessage, getConversationId(),
+                                            message.getTime().toMillis(false));
+
+            }
+        }
         selectActiveThread(thread);
     }
 
@@ -406,20 +419,12 @@ public class OPConversation extends Observable {
         ConversationManager.getInstance().onConversationParticipantsChange(this, oldCbcId,
                                                                            participantInfo
                                                                                .getCbcId());
-        if (!addedUsers.isEmpty()) {
-
-            OPConversationEvent event = new OPConversationEvent(
-                this,
-                OPConversationEvent.EventTypes.ContactsAdded,
-                "");
-            onNewEvent(event);
-        }
-        if (!deletedUsers.isEmpty()) {
-            OPConversationEvent event = new OPConversationEvent(
-                this,
-                OPConversationEvent.EventTypes.ContactsRemoved, null);
-            onNewEvent(event);
-        }
+        OPConversationEvent event = OPConversationEvent.
+            newContactsChangeEvent(getConversationId(),
+                                   getCurrentWindowId(),
+                                   OPModelUtils.getUserIds(addedUsers),
+                                   OPModelUtils.getUserIds(deletedUsers));
+        onNewEvent(event);
         OPDataManager.getDatastoreDelegate().updateConversation(this);
         notifyContactsChanged();
         return true;
@@ -485,12 +490,6 @@ public class OPConversation extends Observable {
      * @param state
      */
     public void onCallStateChanged(OPCall call, CallStates state) {
-        CallEvent event = new CallEvent(call.getCallID(), state,
-                                        System.currentTimeMillis());
-        if (state == CallStates.CallState_Preparing) {
-            OPDataManager.getDatastoreDelegate().saveCall(call, this);
-        }
-        OPDataManager.getDatastoreDelegate().saveCallEvent(call.getCallID(), event);
     }
 
     /**

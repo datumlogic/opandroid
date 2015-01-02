@@ -96,7 +96,7 @@ public class DatastoreDelegateImplTest {
 
         OPCall call = CoreTestObjectFactory.getMockCall();
         OPConversation conversation = CoreTestObjectFactory.getMockConversation();
-        long id = delegate.saveCall(call, conversation);
+        long id = delegate.saveCall(call.getCallID(), conversation.getConversationId(),1 ,0 ,"audio" );
         Assert.assertEquals(1, id);
     }
 

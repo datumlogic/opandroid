@@ -411,14 +411,10 @@ public class ChatFragment extends BaseFragment implements
             String type = cursor.getString(cursor
                                                .getColumnIndex(MessageEntry.COLUMN_MESSAGE_TYPE));
             if (OPMessage.OPMessageType.TYPE_INERNAL_CALL_AUDIO.equals(type)
-                || OPMessage.OPMessageType.TYPE_INERNAL_CALL_VIDEO
-                .equals(type)) {
+                || OPMessage.OPMessageType.TYPE_INERNAL_CALL_VIDEO.equals(type)) {
                 return VIEWTYPE_CALL_VIEW;
             }
-            if (OPConversationEvent.EventTypes.ContactsAdded.toString()
-                    .equals(type)
-                    || OPConversationEvent.EventTypes.ContactsRemoved.toString()
-                            .equals(type)) {
+            if (OPConversationEvent.EventTypes.ContactsChange.toString().equals(type)) {
                 return VIEWTYPE_CONVERSATION_EVENT_VIEW;
             }
 

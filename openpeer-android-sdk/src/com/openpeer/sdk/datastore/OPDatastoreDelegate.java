@@ -35,7 +35,6 @@ import android.net.Uri;
 
 import com.openpeer.javaapi.MessageDeliveryStates;
 import com.openpeer.javaapi.OPAccount;
-import com.openpeer.javaapi.OPCall;
 import com.openpeer.javaapi.OPContact;
 import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPIdentityContact;
@@ -250,22 +249,24 @@ public interface OPDatastoreDelegate {
      * 
      * @param callId
      *            string id of the call
-     * @param event
-     *            new CallEvent object
-     * @return
+     * @param conversationId
+     *@param event
+     *            new CallEvent object  @return
      */
-    long saveCallEvent(String callId, CallEvent event);
+    long saveCallEvent(String callId, String conversationId, CallEvent event);
 
     /**
      * Save a new call created or received.
-     * 
-     * @param call
+     * @param callId
      *            OPCall object
-     * @param conversation
+     * @param conversationId
      *            associated conversation TODO
-     * @return
+     * @param peerId
+     * @param direction @return
+     * @param mediaType
      */
-    long saveCall(OPCall call, OPConversation conversation);
+    long saveCall(String callId, String conversationId, long peerId, int direction, String
+        mediaType);
 
     /**
      * Delete an associated identity.This is not supported now because we don't support multiple identity yet.
