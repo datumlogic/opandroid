@@ -58,7 +58,7 @@ import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import java.util.Arrays;
 import java.util.List;
 
-public class OPContentProvider extends ContentProvider {
+public class OPContentProvider extends ContentProvider implements ContentUriProvider{
 
     private OPDatabaseHelper mOpenHelper;
 
@@ -125,7 +125,7 @@ public class OPContentProvider extends ContentProvider {
      * @param path
      * @return
      */
-    public static Uri getContentUri(String path) {
+    public Uri getContentUri(String path) {
         return Uri.parse(SCHEME + sAuthority + path);
     }
 
@@ -201,6 +201,7 @@ public class OPContentProvider extends ContentProvider {
         mOpenHelper = OPDatabaseHelper.getInstance(getContext());
         initMatcher();
         instance = this;
+        OPDatastoreDelegateImpl.getInstance().setContentUriProvider(this);
         return true;
     }
 
@@ -216,16 +217,16 @@ public class OPContentProvider extends ContentProvider {
 
         switch (value) {
         case CONVERSATION_HISTORY:{
-            stringBuilder.append(DatabaseContracts.QUERY_MESSAGES)
+            stringBuilder.append(QUERY_MESSAGES)
                 .append("where " + MessageEntry.COLUMN_CONTEXT_ID)
                 .append("=?");
 
-            stringBuilder.append(" union " + DatabaseContracts.QUERY_CALL)
+            stringBuilder.append(" union " + QUERY_CALL)
                 .append(" where ")
                 .append(MessageEntry.COLUMN_CONTEXT_ID + "=?");
             stringBuilder
                 .append(" union "
-                            + DatabaseContracts.QUERY_CONVERSATION_EVENT)
+                            + QUERY_CONVERSATION_EVENT)
                 .append(" where ").append("c.conversation_id=?");
             stringBuilder.append(" order by time");
 
@@ -306,7 +307,7 @@ public class OPContentProvider extends ContentProvider {
      */
     private Cursor queryConversationHisotry(Uri uri, String[] projection,
                                             String selection, String[] selectionArgs, String sortOrder) {
-        String rawQuery = DatabaseContracts.QUERY_OPENPEER_CHATS_CONTEXT_BASED;
+        String rawQuery = QUERY_OPENPEER_CHATS_CONTEXT_BASED;
         if (!TextUtils.isEmpty(selection)) {
             rawQuery = rawQuery + " where " + selection;
         }
@@ -330,15 +331,12 @@ public class OPContentProvider extends ContentProvider {
     private Cursor queryOpenPeerContact(Uri uri, String[] projection,
             String selection, String[] selectionArgs, String sortOrder) {
         long id = Integer.parseInt(uri.getLastPathSegment());
-        // String rawQuery =
-        // "select oc._id as openpeer_id, oc.stable_id, pf.peer_uri as peer_uri,pf.peerfile_public as peerfile_public,oc.name as name, oc.identity_uri as identity_uri,ip.identity_provider_domain as identity_provider_domain from openpeer_contact oc"
-        // +
-        // " left join peefile_public pf on oc.peerfile_id=left join rolodex_contact rc on oc._id=rc.openpeer_contact_id left join identity_contact ic on rc.identity_contact_id=ic._id left join identity_provider ip on rc.identity_provider_id=ip._id"
-        // + " where oc.id=" + id;
-        String rawQuery = "select oc._id as openpeer_contact_id, oc.stable_id as stable_id, pf.peer_uri as peer_uri,pf.peerfile_public as peerfile_public from openpeer_contact oc left join peerfile_public pf on oc.peerfile_id=pf._id where oc._id="
-                + id;
+        String rawQuery = "select oc._id as openpeer_contact_id, oc.stable_id as stable_id, " +
+            "pf.peer_uri as peer_uri,pf.peerfile_public as peerfile_public from openpeer_contact " +
+            "oc left join peerfile_public pf on oc.peerfile_id=pf._id where oc._id="
+            + id;
         Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(rawQuery,
-                null);
+                                                                   null);
         return cursor;
     }
 
@@ -357,11 +355,11 @@ public class OPContentProvider extends ContentProvider {
         String rawQuery = null;
 
         if (!TextUtils.isEmpty(selection)) {
-            rawQuery = DatabaseContracts.QUERY_OPENPEER_CONTACT_DETAIL
+            rawQuery = QUERY_OPENPEER_CONTACT_DETAIL
                     + " where "
                     + selection;
         } else {
-            rawQuery = DatabaseContracts.QUERY_OPENPEER_CONTACT_DETAIL;
+            rawQuery = QUERY_OPENPEER_CONTACT_DETAIL;
         }
         Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(
                 rawQuery,
@@ -518,23 +516,6 @@ public class OPContentProvider extends ContentProvider {
         return cursor;
     }
 
-    Cursor queryWindows(Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Cursor cursor = db.query(
-                DatabaseContracts.WindowViewEntry.TABLE_NAME,
-                projection, // The columns to return from the query
-                selection, // The columns for the where clause
-                selectionArgs, // The values for the where clause
-                null, // don't group the rows
-                null, // don't filter by row groups
-                sortOrder // The sort order
-                );
-        Log.d("test", "query uri " + uri + " result " + cursor.getCount());
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        return cursor;
-    }
-
     void notifyChatHistoryChange() {
             getContext().getContentResolver().notifyChange(
                     getContentUri(WindowViewEntry.URI_PATH_INFO_CONTEXT), null);
@@ -560,4 +541,12 @@ public class OPContentProvider extends ContentProvider {
         }
         return selection;
     }
+
+    private static final String QUERY_OPENPEER_CONTACT_DETAIL = "select oc._id as _id, oc.stable_id as stable_id, oc.peer_uri as peer_uri,oc.peerfile_public as peerfile_public,rc._id as rolodex_id,rc.name as name, rc.identity_uri as identity_uri,rc.profile_url as profile_url,rc.vprofile_url as vprofile_url, ip.domain as domain, ic.identity_proof_bundle as identity_proof_bundle,ic.priority as priority,ic.weight as weight,ic.last_update_time as last_update_time,ic.expire as expire from openpeer_contact oc left join rolodex_contact rc on oc._id=rc.openpeer_contact_id left join identity_contact ic on rc.identity_contact_id=ic._id left join identity_provider ip on rc.identity_provider_id=ip._id";
+    private static final String QUERY_OPENPEER_CHATS_CONTACT_BASED = "SELECT d.cbc_id as _id,d.openpeer_contact_id as openpeer_contact_id,d.rolodex_id as rolodex_id,d.name as name,c.text as last_message,c.time as last_message_time, e.count as unread_count from (select a.cbc_id as cbc_id,group_concat(a.openpeer_contact_id,',') as openpeer_contact_id,group_concat(b._id,',') as rolodex_id,group_concat(b.name,',') as name from participants a  left join rolodex_contact b  on a.openpeer_contact_id=b.openpeer_contact_id and b.is_primary=1 group by cbc_id) d inner join (select cbc_id,text,time from message group by cbc_id) c using(cbc_id)  left join (select count(*) as count,cbc_id from message where read=0 group by cbc_id) e using(cbc_id) group by cbc_id";
+    private static final String QUERY_OPENPEER_CHATS_CONTEXT_BASED = "SELECT d._id as _id,d.conversation_id as conversation_id,d.type as type,d.cbc_id as cbc_id,d.openpeer_contact_id as openpeer_contact_id,d.rolodex_id as rolodex_id,d.name as name,c.text as last_message,c.time as last_message_time, e.count as unread_count from (select z._id as _id,z.participants as cbc_id,z.type as type,z.conversation_id as conversation_id,group_concat(a.openpeer_contact_id,',') as openpeer_contact_id,group_concat(b._id,',') as rolodex_id,group_concat(b.name,',') as name from conversation z left join participants a on z.participants=a.cbc_id left join rolodex_contact b  on a.openpeer_contact_id=b.openpeer_contact_id and b.is_primary=1 group by conversation_id) d inner join (select conversation_id,text,time from message group by conversation_id) c using(conversation_id)  left join (select count(*) as count,conversation_id from message where read=0 group by conversation_id) e using(conversation_id) group by conversation_id";
+    private static final String QUERY_MESSAGES = "select m._id as _id, message_id,sender_id,type, text,time,outgoing_message_status,edit_status,rc.name as name from message m left join rolodex_contact rc on m.sender_id=rc.openpeer_contact_id ";
+    private static final String QUERY_CALL = "select ce._id+30000 as _id,c.call_id as message_id, c.peer_id as sender_id,c.type as type, c.call_id||','||c.peer_id||','||c.direction||','||ce.event as text,ce.time as time,'' as outgoing_delivery_status,0 as edit_status,rc.name as name from call c inner join call_event ce on ce.call_id=c.call_id and ce.event not in ('CallState_Preparing','CallState_Closing')  left join rolodex_contact rc on c.peer_id=rc.openpeer_contact_id ";
+    private static final String QUERY_CONVERSATION_EVENT = "select ce._id+60000 as _id,ce._id as message_id, 0 as sender_id,ce.event as type,ce.content as text,ce.time as time,'' as outgoing_delivery_status,0 as edit_status, '' as name from conversation_event ce left join conversation c on ce.conversation_id=c.conversation_id";
+
 }

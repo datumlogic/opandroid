@@ -58,20 +58,6 @@ public class DatabaseContracts {
     public static final String COLUMN_CBC_ID = "cbc_id";
     public static final String COLUMN_OPENPEER_CONTACT_ID = "openpeer_contact_id";
 
-    static String getCompositePrimaryKey(String[] columnNames) {
-        StringBuilder stringBuilder = new StringBuilder("PRIMARY KEY (");
-        for (int i = 0; i < columnNames.length; i++) {
-            String columnName = columnNames[i];
-            stringBuilder.append(columnName);
-            if (i < columnNames.length - 1) {
-                stringBuilder.append(COMMA_SEP);
-            } else {
-                stringBuilder.append(")");
-            }
-        }
-        return stringBuilder.toString();
-    }
-
     public DatabaseContracts() {
     }
 
@@ -156,9 +142,9 @@ public class DatabaseContracts {
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
         // use this URI to retrieve full info of openpeer contact from all three tables(openpeer_contact,rolodex_contact,identity_contact0
         public static final String URI_PATH_INFO_DETAIL = "/" + TABLE_NAME
-                + "/detail";
+            + "/detail";
         public static final String URI_PATH_INFO_DETAIL_ID = "/" + TABLE_NAME
-                + "/detail/#";
+            + "/detail/#";
 
         public static final String COLUMN_PEERURI = "peer_uri";
         public static final String COLUMN_PEERFILE_PUBLIC = "peerfile_public";
@@ -192,11 +178,11 @@ public class DatabaseContracts {
     public static abstract class MessageEntry implements BaseColumns {
         public static final String TABLE_NAME = "message";
         public static final String URI_PATH_INFO_CONTEXT = "/" + TABLE_NAME
-                + "/conversation/*";//URI used for matcher
+            + "/conversation/*";//URI used for matcher
         public static final String URI_PATH_INFO_CONTEXT_URI_BASE = "/"
-                + TABLE_NAME + "/conversation/";//URL used to construct query URI
+            + TABLE_NAME + "/conversation/";//URL used to construct query URI
 
-        public static final String URI_PATH_INFO_CONTEXT_ID = URI_PATH_INFO_CONTEXT+"/#";
+        public static final String URI_PATH_INFO_CONTEXT_ID = URI_PATH_INFO_CONTEXT + "/#";
 
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/";
 
@@ -281,9 +267,9 @@ public class DatabaseContracts {
         public static final String URI_PATH_INFO_CONTEXT = "/" + TABLE_NAME;
 
         public static final int INFO_ID_PATH_POSITION = 1;
-        public static final String COLUMN_CONVERSATION_TYPE="type";
-        public static final String COLUMN_CBC_ID=DatabaseContracts.COLUMN_CBC_ID;
-        public static final String COLUMN_CONVERSATION_ID="conversation_id";
+        public static final String COLUMN_CONVERSATION_TYPE = "type";
+        public static final String COLUMN_CBC_ID = DatabaseContracts.COLUMN_CBC_ID;
+        public static final String COLUMN_CONVERSATION_ID = "conversation_id";
         public static final String COLUMN_AVATAR_URI = "avatar_uri";
         // This is window id based on participants
         public static final String COLUMN_LAST_READ_MSG_ID = "lrm_id";
@@ -297,8 +283,6 @@ public class DatabaseContracts {
 
     /**
      * View to get all the information of a contact
-     * 
-     * 
      */
     public static abstract class ContactsViewEntry implements BaseColumns {
         public static final String TABLE_NAME = "op_contacts";
@@ -335,9 +319,4 @@ public class DatabaseContracts {
 
     }
 
-    public static final String QUERY_OPENPEER_CONTACT_DETAIL = "select oc._id as _id, oc.stable_id as stable_id, oc.peer_uri as peer_uri,oc.peerfile_public as peerfile_public,rc._id as rolodex_id,rc.name as name, rc.identity_uri as identity_uri,rc.profile_url as profile_url,rc.vprofile_url as vprofile_url, ip.domain as domain, ic.identity_proof_bundle as identity_proof_bundle,ic.priority as priority,ic.weight as weight,ic.last_update_time as last_update_time,ic.expire as expire from openpeer_contact oc left join rolodex_contact rc on oc._id=rc.openpeer_contact_id left join identity_contact ic on rc.identity_contact_id=ic._id left join identity_provider ip on rc.identity_provider_id=ip._id";
-    public static final String QUERY_OPENPEER_CHATS_CONTACT_BASED = "SELECT d.cbc_id as _id,d.openpeer_contact_id as openpeer_contact_id,d.rolodex_id as rolodex_id,d.name as name,c.text as last_message,c.time as last_message_time, e.count as unread_count from (select a.cbc_id as cbc_id,group_concat(a.openpeer_contact_id,',') as openpeer_contact_id,group_concat(b._id,',') as rolodex_id,group_concat(b.name,',') as name from participants a  left join rolodex_contact b  on a.openpeer_contact_id=b.openpeer_contact_id and b.is_primary=1 group by cbc_id) d inner join (select cbc_id,text,time from message group by cbc_id) c using(cbc_id)  left join (select count(*) as count,cbc_id from message where read=0 group by cbc_id) e using(cbc_id) group by cbc_id";
-    public static final String QUERY_OPENPEER_CHATS_CONTEXT_BASED = "SELECT d._id as _id,d.conversation_id as conversation_id,d.type as type,d.cbc_id as cbc_id,d.openpeer_contact_id as openpeer_contact_id,d.rolodex_id as rolodex_id,d.name as name,c.text as last_message,c.time as last_message_time, e.count as unread_count from (select z._id as _id,z.participants as cbc_id,z.type as type,z.conversation_id as conversation_id,group_concat(a.openpeer_contact_id,',') as openpeer_contact_id,group_concat(b._id,',') as rolodex_id,group_concat(b.name,',') as name from conversation z left join participants a on z.participants=a.cbc_id left join rolodex_contact b  on a.openpeer_contact_id=b.openpeer_contact_id and b.is_primary=1 group by conversation_id) d inner join (select conversation_id,text,time from message group by conversation_id) c using(conversation_id)  left join (select count(*) as count,conversation_id from message where read=0 group by conversation_id) e using(conversation_id) group by conversation_id";
-    public static final String QUERY_MESSAGES = "select m._id as _id, message_id,sender_id,type, text,time,outgoing_message_status,edit_status,rc.name as name from message m left join rolodex_contact rc on m.sender_id=rc.openpeer_contact_id ";
-    public static final String QUERY_CALL = "select ce._id+30000 as _id,c.call_id as message_id, c.peer_id as sender_id,c.type as type, c.call_id||','||c.peer_id||','||c.direction||','||ce.event as text,ce.time as time,'' as outgoing_delivery_status,0 as edit_status,rc.name as name from call c inner join call_event ce on ce.call_id=c.call_id and ce.event not in ('CallState_Preparing','CallState_Closing')  left join rolodex_contact rc on c.peer_id=rc.openpeer_contact_id ";
-    public static final String QUERY_CONVERSATION_EVENT = "select ce._id+60000 as _id,ce._id as message_id, 0 as sender_id,ce.event as type,ce.content as text,ce.time as time,'' as outgoing_delivery_status,0 as edit_status, '' as name from conversation_event ce left join conversation c on ce.conversation_id=c.conversation_id";}
+}
