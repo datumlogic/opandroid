@@ -58,7 +58,7 @@ import com.openpeer.sdk.datastore.DatabaseContracts.WindowViewEntry;
 import java.util.Arrays;
 import java.util.List;
 
-public class OPContentProvider extends ContentProvider implements ContentUriProvider{
+public class OPContentProvider extends ContentProvider implements ContentUriResolver {
 
     private OPDatabaseHelper mOpenHelper;
 
@@ -91,6 +91,7 @@ public class OPContentProvider extends ContentProvider implements ContentUriProv
         OPENPEER_CONTACT(OpenpeerContactEntry.URI_PATH_INFO_ID),
         OPENPEER_CONTACT_DETAIL(OpenpeerContactEntry.URI_PATH_INFO_DETAIL),
         OPENPEER_CONTACT_DETAIL_ID(OpenpeerContactEntry.URI_PATH_INFO_DETAIL_ID),
+        OPENPEER_CONTACT_LOGGEDIN(OpenpeerContactEntry.URI_PATH_LOGGED_USER),
 
         // USER(UserEntry.TABLE_NAME + "/#"),
 
@@ -263,6 +264,10 @@ public class OPContentProvider extends ContentProvider implements ContentUriProv
             return queryRolodexContacts(uri, projection, selection,
                     selectionArgs,
                     sortOrder);
+        case OPENPEER_CONTACT_LOGGEDIN:
+            return queryLoggedInUser(uri, projection, selection,
+                                     selectionArgs,
+                                     sortOrder);
         case CONVERSATIONS_VIEW:
             return queryConversationHisotry(uri, projection, selection,
                                             selectionArgs,
@@ -340,6 +345,14 @@ public class OPContentProvider extends ContentProvider implements ContentUriProv
         return cursor;
     }
 
+    private Cursor queryLoggedInUser(Uri uri, String[] projection,
+                                     String selection, String[] selectionArgs, String sortOrder) {
+        String rawQuery = "select openpeer_contact_id from rolodex_contact where _id=(select " +
+            "self_contact_id from associated_identity where account_id =(select _id from account " +
+            "where logged_in=1))";
+        Cursor cursor = mOpenHelper.getReadableDatabase().rawQuery(rawQuery, null);
+        return cursor;
+    }
     /**
      * Should be used to retrieve user details like identityContact info
      * 
@@ -549,4 +562,7 @@ public class OPContentProvider extends ContentProvider implements ContentUriProv
     private static final String QUERY_CALL = "select ce._id+30000 as _id,c.call_id as message_id, c.peer_id as sender_id,c.type as type, c.call_id||','||c.peer_id||','||c.direction||','||ce.event as text,ce.time as time,'' as outgoing_delivery_status,0 as edit_status,rc.name as name from call c inner join call_event ce on ce.call_id=c.call_id and ce.event not in ('CallState_Preparing','CallState_Closing')  left join rolodex_contact rc on c.peer_id=rc.openpeer_contact_id ";
     private static final String QUERY_CONVERSATION_EVENT = "select ce._id+60000 as _id,ce._id as message_id, 0 as sender_id,ce.event as type,ce.content as text,ce.time as time,'' as outgoing_delivery_status,0 as edit_status, '' as name from conversation_event ce left join conversation c on ce.conversation_id=c.conversation_id";
 
+    public void onSignout(){
+        mOpenHelper.closeAndDeleteDB();
+    }
 }
