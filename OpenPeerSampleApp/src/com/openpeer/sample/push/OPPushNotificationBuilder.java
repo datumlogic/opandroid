@@ -61,12 +61,12 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
         String senderUri = extras.get(KEY_PEER_URI);
         String messageId = extras.get(KEY_MESSAGE_ID);
         // If message is already received, ignore notification
-        if (null != OPDataManager.getDatastoreDelegate().getMessage(messageId)) {
+        if (null != OPDataManager.getInstance().getMessage(messageId)) {
             Log.e(TAG, "received push for message that is already received "
                     + messageId);
             return null;
         }
-        OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(
+        OPUser sender = OPDataManager.getInstance().getUserByPeerUri(
                 senderUri);
         if (sender == null) {
             Log.e("test", "Couldn't find user for peer " + senderUri);
@@ -85,7 +85,7 @@ public class OPPushNotificationBuilder implements PushNotificationBuilder {
     @Override
     public int getNextId(String alert, Map<String, String> extras) {
         String senderUri = extras.get(KEY_PEER_URI);
-        OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(
+        OPUser sender = OPDataManager.getInstance().getUserByPeerUri(
                 senderUri);
         if (sender != null) {
             return (int) OPModelUtils.getWindowId(new long[] {

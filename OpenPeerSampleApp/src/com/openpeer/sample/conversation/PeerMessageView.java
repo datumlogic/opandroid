@@ -79,7 +79,7 @@ public class PeerMessageView extends RelativeLayout {
     public void update(OPMessage data) {
         mMessage = data;
 
-        OPUser user = OPDataManager.getDatastoreDelegate().getUserById(data.getSenderId());
+        OPUser user = OPDataManager.getInstance().getUserById(data.getSenderId());
         if (user != null) {
             if (user.getName() != null) {
                 title.setText(user.getName());

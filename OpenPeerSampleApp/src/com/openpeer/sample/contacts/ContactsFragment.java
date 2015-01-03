@@ -183,7 +183,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
 	static String oldQuery;
 
 	void setupContent() {
-		// mAdapter.mContacts = OPDataManager.getDatastoreDelegate()
+		// mAdapter.mContacts = OPDataManager.getInstance()
 		// .getContacts(0);
 		//
 		// mAdapter.notifyDataSetChanged();
@@ -221,7 +221,7 @@ public class ContactsFragment extends BaseFragment implements SwipeRefreshLayout
         case URL_LOADER:
             emptyView.showProgress();
             return new CursorLoader(getActivity(), // Parent activity context
-                    OPContentProvider
+                    OPDataManager.getInstance()
                             .getContentUri(RolodexContactEntry.URI_PATH_INFO),
 
                     null, // Projection to return

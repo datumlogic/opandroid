@@ -80,14 +80,14 @@ public class ConversationEventView extends LinearLayout {
             OPConversationEvent.ContactsChange event = OPConversationEvent.contactsChangeFromJson
                 (message.getMessage());
             if ( event.getAdded().length>0) {
-                List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(event.getAdded
+                List<OPUser> users = OPDataManager.getInstance().getUsers(event.getAdded
                     ());
                 String names = ModelUtil.getNamesStringFromUsers(users);
                 if (!TextUtils.isEmpty(names)) {
                     mTitleView.setText(names + " joined");
                 }
             } else {
-                List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(
+                List<OPUser> users = OPDataManager.getInstance().getUsers(
                     event.getRemoved());
                 String names = ModelUtil.getNamesStringFromUsers(users);
                 if (!TextUtils.isEmpty(names)) {

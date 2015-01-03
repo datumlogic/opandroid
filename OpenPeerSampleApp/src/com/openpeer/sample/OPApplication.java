@@ -115,7 +115,7 @@ public class OPApplication extends Application {
         PushManager.shared().setIntentReceiver(PushIntentReceiver.class);
         ConversationManager.getInstance().registerPushService(UAPushService.getInstance());
 
-        OPHelper.getInstance().init(this, null);
+        OPHelper.getInstance().init(this);
         // OPHelper.getInstance().setChatGroupMode(OPHelper.MODE_CONTACTS_BASED);
 //        OPSessionManager.getInstance().init();
         SettingsHelper.getInstance().initLoggers();

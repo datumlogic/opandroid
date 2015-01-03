@@ -43,6 +43,7 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.openpeer.sdk.app.OPDataManager;
 import com.openpeer.sdk.datastore.DatabaseContracts.AccountEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.AssociatedIdentityEntry;
 import com.openpeer.sdk.datastore.DatabaseContracts.AvatarEntry;
@@ -80,6 +81,8 @@ public class OPContentProvider extends ContentProvider implements ContentUriReso
 
         MESSAGES(MessageEntry.TABLE_NAME),
         MESSAGE(MessageEntry.TABLE_NAME + "/#"),
+        MESSAGE_EVENTS(DatabaseContracts.MessageEventEntry.TABLE_NAME),
+        MESSAGE_EVENT(DatabaseContracts.MessageEventEntry.TABLE_NAME + "/#"),
 
         CONVERSATIONS(ConversationEntry.URI_PATH_INFO),//Conversations table for direct access
         CONVERSATION(ConversationEntry.URI_PATH_INFO_ID),// Conversation item
@@ -88,10 +91,13 @@ public class OPContentProvider extends ContentProvider implements ContentUriReso
         WINDOW_PARTICIPANT(ParticipantEntry.URI_PATH_INFO_ID),
 
         CONVERSATIONS_VIEW(WindowViewEntry.URI_PATH_INFO_CONTEXT),//Conversation informations to construct the conversations view
+        OPENPEER_CONTACTs(OpenpeerContactEntry.URI_PATH_INFO),
         OPENPEER_CONTACT(OpenpeerContactEntry.URI_PATH_INFO_ID),
         OPENPEER_CONTACT_DETAIL(OpenpeerContactEntry.URI_PATH_INFO_DETAIL),
         OPENPEER_CONTACT_DETAIL_ID(OpenpeerContactEntry.URI_PATH_INFO_DETAIL_ID),
-        OPENPEER_CONTACT_LOGGEDIN(OpenpeerContactEntry.URI_PATH_LOGGED_USER),
+        OPENPEER_CONTACT_LOGGEDIN(OpenpeerContactEntry.URI_PATH_LOGIN_USER),
+
+        IDENTITY_PROVIDERS(DatabaseContracts.IdentityProviderEntry.TABLE_NAME),
 
         // USER(UserEntry.TABLE_NAME + "/#"),
 
@@ -202,7 +208,7 @@ public class OPContentProvider extends ContentProvider implements ContentUriReso
         mOpenHelper = OPDatabaseHelper.getInstance(getContext());
         initMatcher();
         instance = this;
-        OPDatastoreDelegateImpl.getInstance().setContentUriProvider(this);
+        OPDataManager.getInstance().setContentUriProvider(this);
         return true;
     }
 

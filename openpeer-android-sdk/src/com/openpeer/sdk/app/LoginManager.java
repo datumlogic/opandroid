@@ -184,9 +184,8 @@ public class LoginManager {
 
             } else {
 
-                String version = OPDataManager
-                        .getDatastoreDelegate()
-                        .getDownloadedContactsVersion(identity.getIdentityURI());
+                String version = OPDataManager.getInstance()
+                    .getDownloadedContactsVersion(identity.getIdentityURI());
                 if (TextUtils.isEmpty(version)) {
                     OPLogger.debug(OPLogLevel.LogLevel_Detail,
                             "start download initial contacts");
@@ -229,9 +228,8 @@ public class LoginManager {
 
     public void onIdentityLoginSucceed(OPIdentity identity) {
         if (identity.isAssociating()) {
-            String version = OPDataManager
-                    .getDatastoreDelegate()
-                    .getDownloadedContactsVersion(identity.getIdentityURI());
+            String version = OPDataManager.getInstance()
+                .getDownloadedContactsVersion(identity.getIdentityURI());
             if (TextUtils.isEmpty(version)) {
                 OPLogger.debug(OPLogLevel.LogLevel_Detail,
                         "start download initial contacts");

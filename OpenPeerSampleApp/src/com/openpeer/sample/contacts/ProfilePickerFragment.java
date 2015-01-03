@@ -173,7 +173,7 @@ public class ProfilePickerFragment extends BaseFragment implements
             public void update(Cursor cursor) {
                 long rolodexId = cursor.getLong(0);
                 final long userId = cursor.getLong(1);
-                String avatar = OPDataManager.getDatastoreDelegate().getAvatarUri(
+                String avatar = OPDataManager.getInstance().getAvatarUri(
                         rolodexId, 48, 48);
                 String name = cursor
                         .getString(cursor
@@ -250,7 +250,7 @@ public class ProfilePickerFragment extends BaseFragment implements
             }
             emptyView.showProgress();
             return new CursorLoader(getActivity(), // Parent activity context
-                                    OPContentProvider
+                                    OPDataManager.getInstance()
                                         .getContentUri(RolodexContactEntry.URI_PATH_INFO),
 
                                     null, // Projection to return

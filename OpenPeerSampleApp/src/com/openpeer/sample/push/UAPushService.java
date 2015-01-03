@@ -100,8 +100,7 @@ public class UAPushService implements PushServiceInterface {
                                                              public void success(
                                                                  PushResult pushResult,
                                                                  Response response) {
-                                                                 OPDataManager
-                                                                     .getDatastoreDelegate()
+                                                                 OPDataManager.getInstance()
                                                                      .updateMessageDeliveryStatus(
                                                                          message.getMessageId(),
                                                                          conversation.getConversationId(), MessageDeliveryStates

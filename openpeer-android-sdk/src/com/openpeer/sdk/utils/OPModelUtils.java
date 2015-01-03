@@ -53,7 +53,7 @@ public class OPModelUtils {
      */
     public static long getWindowId(long userIds[]) {
         long tmp[] = new long[userIds.length + 1];
-        tmp[userIds.length] = OPDataManager.getDatastoreDelegate()
+        tmp[userIds.length] = OPDataManager.getInstance()
                 .getLoggedinUser()
                 .getUserId();
         System.arraycopy(userIds, 0, tmp, 0, userIds.length);
@@ -86,7 +86,7 @@ public class OPModelUtils {
         List<OPUser> users = new ArrayList<OPUser>();
         for (OPContact contact : contacts) {
             if (!contact.isSelf()) {
-                OPUser user = OPDataManager.getDatastoreDelegate().getUser(
+                OPUser user = OPDataManager.getInstance().getUser(
                         contact,
                         mConvThread.getIdentityContactList(contact));
                 // This function will also set the userId so don't worry
@@ -127,7 +127,7 @@ public class OPModelUtils {
         List<OPContact> contacts = thread.getContacts();
         for (OPContact contact : contacts) {
             if (!contact.isSelf()) {
-                OPUser user = OPDataManager.getDatastoreDelegate().getUser(
+                OPUser user = OPDataManager.getInstance().getUser(
                     contact,
                     thread.getIdentityContactList(contact));
                 // This function will also set the userId so don't worry

@@ -209,7 +209,7 @@ public class ChatsFragment extends BaseFragment implements
         public void onChatsEmptyViewClick();
     }
     public Uri getChatsUri() {
-        return OPContentProvider
+        return OPDataManager.getInstance()
             .getContentUri(WindowViewEntry.URI_PATH_INFO_CONTEXT);
     }
 }

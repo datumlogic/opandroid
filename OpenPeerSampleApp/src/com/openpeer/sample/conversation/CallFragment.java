@@ -194,7 +194,7 @@ public class CallFragment extends BaseFragment {
         }
         initMedia(view);
         if (mCall == null) {
-            OPUser user = OPDataManager.getDatastoreDelegate().getUserById(mPeerId);
+            OPUser user = OPDataManager.getInstance().getUserById(mPeerId);
             mCall = mConversation.placeCall(user, true, mVideo);
 
         } else {

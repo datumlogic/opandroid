@@ -44,7 +44,7 @@ public class ModelUtil {
             for (int i = 0; i < ids.length; i++) {
                 lIds[i] = Long.parseLong(ids[i]);
             }
-            List<OPUser> users = OPDataManager.getDatastoreDelegate()
+            List<OPUser> users = OPDataManager.getInstance()
                     .getUsers(lIds);
             StringBuilder sb = new StringBuilder();
             for (OPUser user : users) {

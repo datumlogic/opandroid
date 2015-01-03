@@ -88,7 +88,7 @@ public class ParticipantsManagementFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.inject(this,view);
         mAdapter = new ParticipantsAdapter();
-        mAdapter.mUserList = OPDataManager.getDatastoreDelegate().getUsers(participantIds);
+        mAdapter.mUserList = OPDataManager.getInstance().getUsers(participantIds);
         mAdapter.participantsView = new WeakReference<>(this);
         participantsView.setAdapter(mAdapter);
     }
@@ -204,7 +204,7 @@ public class ParticipantsManagementFragment extends BaseFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-            List<OPUser> users = OPDataManager.getDatastoreDelegate().getUsers(userIds);
+            List<OPUser> users = OPDataManager.getInstance().getUsers(userIds);
             mAdapter.mUserList.addAll(users);
             mAdapter.notifyDataSetChanged();
         }

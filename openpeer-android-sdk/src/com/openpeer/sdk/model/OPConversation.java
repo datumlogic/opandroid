@@ -90,7 +90,7 @@ public class OPConversation extends Observable {
     }
 
     public long save() {
-        _id = OPDataManager.getDatastoreDelegate().saveConversation(this);
+        _id = OPDataManager.getInstance().saveConversation(this);
         return _id;
     }
 
@@ -140,9 +140,9 @@ public class OPConversation extends Observable {
                                     message.getMessageType(), message.getMessage(), signMessage);
         if(message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
             if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
-                OPDataManager.getDatastoreDelegate().updateMessage(message, this);
+                OPDataManager.getInstance().updateMessage(message, this);
             } else {
-                OPDataManager.getDatastoreDelegate().saveMessage(message, conversationId, participantInfo);
+                OPDataManager.getInstance().saveMessage(message, conversationId, participantInfo);
 
             }
         }
@@ -213,7 +213,7 @@ public class OPConversation extends Observable {
     }
 
     public void onNewEvent(OPConversationEvent event) {
-        OPDataManager.getDatastoreDelegate().saveConversationEvent(event);
+        OPDataManager.getInstance().saveConversationEvent(event);
         mLastEvent = event;
     }
 
@@ -294,7 +294,7 @@ public class OPConversation extends Observable {
                 getCurrentWindowId(),
                 OPModelUtils.getUserIds(users), null);
             onNewEvent(event);
-            OPDataManager.getDatastoreDelegate().updateConversation(this);
+            OPDataManager.getInstance().updateConversation(this);
             notifyContactsChanged();
         }
     }
@@ -316,7 +316,7 @@ public class OPConversation extends Observable {
                 null,
                 OPModelUtils.getUserIds(users));
             onNewEvent(event);
-            OPDataManager.getDatastoreDelegate().updateConversation(this);
+            OPDataManager.getInstance().updateConversation(this);
 
             notifyContactsChanged();
         }
@@ -325,22 +325,22 @@ public class OPConversation extends Observable {
     public void onMessageReceived(OPConversationThread thread, OPMessage message) {
         if (message.getMessageType().equals(OPMessage.OPMessageType.TYPE_TEXT)) {
             OPContact opContact = message.getFrom();
-            OPUser user = OPDataManager.getDatastoreDelegate().
+            OPUser user = OPDataManager.getInstance().
                 getUserByPeerUri(opContact.getPeerURI());
             if (user == null) {
                 List<OPIdentityContact> contacts = thread.getIdentityContactList(opContact);
-                user = OPDataManager.getDatastoreDelegate().getUser(opContact, contacts);
+                user = OPDataManager.getInstance().getUser(opContact, contacts);
             }
             message.setSenderId(user.getUserId());
             if (!TextUtils.isEmpty(message.getReplacesMessageId())) {
-                OPDataManager.getDatastoreDelegate().updateMessage(message, this);
+                OPDataManager.getInstance().updateMessage(message, this);
             } else {
                 if (!mSessionListeners.isEmpty()) {
                     message.setRead(true);
                     //TODO: decide if this shoudl be done in listener
                 }
 
-                OPDataManager.getDatastoreDelegate().saveMessage(message, conversationId,
+                OPDataManager.getInstance().saveMessage(message, conversationId,
                                                                  participantInfo);
                 // TODO: Now notify observer
 
@@ -425,7 +425,7 @@ public class OPConversation extends Observable {
                                    OPModelUtils.getUserIds(addedUsers),
                                    OPModelUtils.getUserIds(deletedUsers));
         onNewEvent(event);
-        OPDataManager.getDatastoreDelegate().updateConversation(this);
+        OPDataManager.getInstance().updateConversation(this);
         notifyContactsChanged();
         return true;
     }
@@ -440,7 +440,7 @@ public class OPConversation extends Observable {
 
     public void onContactComposingStateChanged(ComposingStates state,
                                                OPContact contact) {
-        OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(contact.getPeerURI());
+        OPUser user = OPDataManager.getInstance().getUserByPeerUri(contact.getPeerURI());
         if (user == null) {
             Log.e(TAG, "onContactComposingStateChanged couldn't find particpants");
             return;
@@ -498,7 +498,7 @@ public class OPConversation extends Observable {
      * view is open
      */
     public void markAllMessagesRead() {
-        OPDataManager.getDatastoreDelegate().markMessagesRead(this);
+        OPDataManager.getInstance().markMessagesRead(this);
         if (mConvThread != null) {
             mConvThread.markAllMessagesRead();
         }

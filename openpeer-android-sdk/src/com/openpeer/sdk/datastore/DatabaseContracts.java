@@ -137,7 +137,7 @@ public class DatabaseContracts {
 
     public static abstract class OpenpeerContactEntry implements BaseColumns {
         public static final String TABLE_NAME = "openpeer_contact";
-        public static final String URI_PATH_LOGGED_USER = "/" + TABLE_NAME+"/loggedin";
+        public static final String URI_PATH_LOGIN_USER = "/" + TABLE_NAME+"/loggedin";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
         // use this URI to retrieve full info of openpeer contact from all three tables(openpeer_contact,rolodex_contact,identity_contact0
@@ -153,7 +153,7 @@ public class DatabaseContracts {
     }
 
     public static abstract class ConversationEntry implements BaseColumns {
-        static final String TABLE_NAME = "conversation";
+        public static final String TABLE_NAME = "conversation";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
         public static final String COLUMN_TYPE = "type";
@@ -164,7 +164,7 @@ public class DatabaseContracts {
     }
 
     public static abstract class ConversationEventEntry implements BaseColumns {
-        static final String TABLE_NAME = "conversation_event";
+        public static final String TABLE_NAME = "conversation_event";
         public static final String URI_PATH_INFO = "/" + TABLE_NAME;
         public static final String URI_PATH_INFO_ID = "/" + TABLE_NAME + "/#";
         public static final String COLUMN_EVENT = "event";

@@ -113,7 +113,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
             long cbcId = participantInfo.getCbcId();
             conversation = getConversationByCbcId(cbcId);
             if (conversation == null || conversation.getType() != GroupChatMode.contact) {
-                conversation = OPDataManager.getDatastoreDelegate().getConversation
+                conversation = OPDataManager.getInstance().getConversation
                     (type, participantInfo, conversationId);
                 if (conversation != null) {
                     conversation.setParticipants(participantInfo.getParticipants());
@@ -130,7 +130,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
                 conversation = getConversationById(conversationId);
 
                 if (conversation == null) {
-                    conversation = OPDataManager.getDatastoreDelegate().getConversation
+                    conversation = OPDataManager.getInstance().getConversation
                         (type, participantInfo, conversationId);
                     if (conversation != null) {
                         conversation.setThread(getThread(type, conversation.getConversationId(),
@@ -252,7 +252,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
         long cbcId = OPModelUtils.getWindowId(participants);
         thread.setParticipantInfo(new ParticipantInfo(cbcId, participants));
 
-        OPDataManager.getDatastoreDelegate().saveParticipants(cbcId, participants);
+        OPDataManager.getInstance().saveParticipants(cbcId, participants);
         OPLogger.debug(OPLogLevel.LogLevel_Detail, "onConversationThreadNew caching new thread id" +
             " " + thread.getThreadID() + " cbcId " + cbcId);
         cacheThread(thread);
@@ -262,7 +262,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
     @Override
     public void onConversationThreadContactsChanged(OPConversationThread thread) {
 
-        OPDataManager.getDatastoreDelegate().
+        OPDataManager.getInstance().
             saveParticipants(thread.getParticipantInfo().getCbcId(),
                              thread.getParticipantInfo().getParticipants());
 
@@ -333,7 +333,7 @@ public class ConversationManager extends OPConversationThreadDelegate {
     public void onConversationThreadMessageDeliveryStateChanged(
         OPConversationThread conversationThread, String messageID,
         MessageDeliveryStates state) {
-        OPDataManager.getDatastoreDelegate().
+        OPDataManager.getInstance().
             updateMessageDeliveryStatus(messageID,
                                         conversationThread.getConversationId(),
                                         state);

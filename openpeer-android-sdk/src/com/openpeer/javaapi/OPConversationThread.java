@@ -77,7 +77,7 @@ public class OPConversationThread {
     public OPMessage getMessageById(String messageID) {
         OPMessage message = getMessage(messageID);
         OPContact from = message.getFrom();
-        OPUser user = OPDataManager.getDatastoreDelegate().getUser(from,
+        OPUser user = OPDataManager.getInstance().getUser(from,
                 getIdentityContactList(from));
         message.setSenderId(user.getUserId());
         return message;

@@ -50,8 +50,6 @@ import com.openpeer.javaapi.OPStack;
 import com.openpeer.javaapi.OPStackDelegate;
 import com.openpeer.javaapi.OPStackMessageQueue;
 import com.openpeer.javaapi.VideoOrientations;
-import com.openpeer.sdk.datastore.OPDatastoreDelegate;
-import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.delegates.OPCacheDelegateImpl;
 import com.openpeer.sdk.delegates.OPSettingsDelegateImpl;
 import com.openpeer.sdk.delegates.OPStackMessageQueueDelegateImpl;
@@ -145,25 +143,22 @@ public class OPHelper {
 
     /**
      * Intilialize the SDK. All the delegates will get default implementation if received null parameter
-     * 
-     * @param datastoreDelegate
-     *            passing in null will use default implementation
+     *
      */
-    public void init(Context context, OPDatastoreDelegate datastoreDelegate) {
-        init(context, datastoreDelegate, null, null, null, null);
+    public void init(Context context) {
+        init(context, null, null, null, null);
     }
 
     /**
      * Intilialize the SDK. All the delegates will get default implementation if received null parameter
      * 
      * @param context
-     * @param datastoreDelegate
      * @param cacheDelegate
      * @param settingsDelegate
      * @param stackDelegate
      * @param mediaengineDelegate
      */
-    public void init(Context context, OPDatastoreDelegate datastoreDelegate,
+    public void init(Context context,
             OPCacheDelegate cacheDelegate,
             OPSettingsDelegate settingsDelegate, OPStackDelegate stackDelegate,
             OPMediaEngineDelegate mediaengineDelegate) {
@@ -201,12 +196,7 @@ public class OPHelper {
         // OPSettings.applyDefaults();
 
         stack.setup(stackDelegate, mediaengineDelegate);
-        if (datastoreDelegate != null) {
-            OPDataManager.getInstance().init(datastoreDelegate);
-        } else {
-            OPDataManager.getInstance().init(
-                    OPDatastoreDelegateImpl.getInstance().init(mContext));
-        }
+
     }
 
     private String createHttpSettings() {

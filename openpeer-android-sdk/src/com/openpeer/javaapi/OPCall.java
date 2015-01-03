@@ -70,7 +70,7 @@ public class OPCall {
      */
     public OPUser getPeerUser() {
         OPContact contact = getPeer();
-        return OPDataManager.getDatastoreDelegate().getUser(contact,
+        return OPDataManager.getInstance().getUser(contact,
                 getIdentityContactList(contact));
     }
 

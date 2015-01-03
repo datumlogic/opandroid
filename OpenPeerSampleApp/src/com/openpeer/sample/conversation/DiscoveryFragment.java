@@ -172,7 +172,7 @@ public class DiscoveryFragment extends BaseFragment implements
     static String oldQuery;
 
     void setupContent() {
-        // mAdapter.mContacts = OPDataManager.getDatastoreDelegate()
+        // mAdapter.mContacts = OPDataManager.getInstance()
         // .getContacts(0);
         //
         // mAdapter.notifyDataSetChanged();
@@ -213,7 +213,7 @@ public class DiscoveryFragment extends BaseFragment implements
             emptyView.showProgress();
             // Returns a new CursorLoader
             return new CursorLoader(getActivity(), // Parent activity context
-                    OPContentProvider
+                    OPDataManager.getInstance()
                             .getContentUri(RolodexContactEntry.URI_PATH_INFO),
 
                     null, // Projection to return

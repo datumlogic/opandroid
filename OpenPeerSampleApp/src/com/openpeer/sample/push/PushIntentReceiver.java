@@ -110,7 +110,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
             String replacesMessageId = intent
                     .getStringExtra(KEY_REPLACES_MESSAGE_ID);
 
-            OPUser sender = OPDataManager.getDatastoreDelegate()
+            OPUser sender = OPDataManager.getInstance()
                     .getUserByPeerUri(senderUri);
             if (sender == null) {
                 Log.e(logTag, "onReceive Couldn't find user for peer "
@@ -124,7 +124,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
             if(!TextUtils.isEmpty(peerURIsString)) {
                 String peerURIs[] = TextUtils.split(peerURIsString, ",");
                 for (String uri : peerURIs) {
-                    OPUser user = OPDataManager.getDatastoreDelegate().getUserByPeerUri(uri);
+                    OPUser user = OPDataManager.getInstance().getUserByPeerUri(uri);
                     if (user == null) {
                         //TODO: error handling
                         Log.e(logTag, "peerUri user not found " + uri);
@@ -149,7 +149,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
             String conversationId = "";
             ParticipantInfo participantInfo = new ParticipantInfo(OPModelUtils.getWindowId(users), users);
 
-            OPDataManager.getDatastoreDelegate().saveMessage(opMessage,
+            OPDataManager.getInstance().saveMessage(opMessage,
                                                              conversationId,participantInfo);
             //TODO: Now notify observer
 
@@ -239,7 +239,7 @@ public class PushIntentReceiver extends BroadcastReceiver {
 
         Log.d("test", "peerURI " + senderUri + " sender name " + senderName
                 + " message id " + messageId);
-        OPUser sender = OPDataManager.getDatastoreDelegate().getUserByPeerUri(
+        OPUser sender = OPDataManager.getInstance().getUserByPeerUri(
                 senderUri);
         if (sender == null) {
             Log.e("test", "Couldn't find user for peer " + senderUri);

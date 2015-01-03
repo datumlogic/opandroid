@@ -136,7 +136,7 @@ public class ChatFragment extends BaseFragment implements
         }
         long cbcId = OPModelUtils.getWindowId(userIds);
         OPNotificationBuilder.cancelNotificationForChat((int) cbcId);
-        List<OPUser> participants = OPDataManager.getDatastoreDelegate().getUsers(userIds);
+        List<OPUser> participants = OPDataManager.getInstance().getUsers(userIds);
         mParticipantInfo = new ParticipantInfo(cbcId,participants);
         setHasOptionsMenu(true);
         if(OPDataManager.getInstance().isAccountReady()){
@@ -655,7 +655,7 @@ public class ChatFragment extends BaseFragment implements
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data
                     .getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                List<OPUser> newParticipants = OPDataManager.getDatastoreDelegate().getUsers(userIds);
+                List<OPUser> newParticipants = OPDataManager.getInstance().getUsers(userIds);
                 switch (OPSdkConfig.getInstance().getGroupChatMode()){
                 case contact:{
                     newParticipants.addAll(mParticipantInfo.getParticipants());
@@ -683,7 +683,7 @@ public class ChatFragment extends BaseFragment implements
         case IntentData.REQUEST_CODE_PARTICIPANTS:
             if (resultCode == Activity.RESULT_OK) {
                 long userIds[] = data.getLongArrayExtra(IntentData.ARG_PEER_USER_IDS);
-                List<OPUser> newParticipants = OPDataManager.getDatastoreDelegate().getUsers
+                List<OPUser> newParticipants = OPDataManager.getInstance().getUsers
                     (userIds);
                 mParticipantInfo = new ParticipantInfo(OPModelUtils.getWindowId(newParticipants)
                     , newParticipants);
@@ -819,7 +819,7 @@ public class ChatFragment extends BaseFragment implements
         if (TextUtils.isEmpty(mConversationId)) {
             return null;
         }
-        return OPContentProvider.getContentUri(
+        return OPDataManager.getInstance().getContentUri(
             MessageEntry.URI_PATH_INFO_CONTEXT_URI_BASE + mConversationId);
     }
 

@@ -36,7 +36,6 @@ import com.openpeer.javaapi.OPIdentity;
 import com.openpeer.javaapi.OPLogger;
 import com.openpeer.javaapi.OPRolodexContact;
 import com.openpeer.sdk.app.OPDataManager;
-import com.openpeer.sdk.datastore.OPDatastoreDelegateImpl;
 import com.openpeer.sdk.model.GroupChatMode;
 import com.openpeer.sdk.model.OPConversation;
 import com.openpeer.sdk.model.OPUser;
